@@ -18,12 +18,15 @@ public class TCHTextField extends TextField {
 		switch (size) {
 			case SMALL:
 				this.setPrefWidth(150);
+				this.setMaxWidth(150);
 				break;
 			case MEDIUM:
 				this.setPrefWidth(300);
+				this.setMaxWidth(300);
 				break;
 			case LARGE:
 				this.setPrefWidth(500);
+				this.setMaxWidth(500);
 				break;
 		}
 	}

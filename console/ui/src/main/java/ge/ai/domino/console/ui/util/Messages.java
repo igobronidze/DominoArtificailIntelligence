@@ -32,9 +32,7 @@ public class Messages {
                     Reader bufferedReader = new InputStreamReader(is, "UTF-8");
                     properties.load(bufferedReader);
                     messages.put(langCode, properties);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                } catch (IOException ignore) {}
             }
             return properties.getProperty(key, key);
         }

@@ -38,6 +38,7 @@ public class StringUtil {
     public static List<Integer> getIntegerListFromString(String input, String delimiter) {
         List<Integer> result = new ArrayList<>();
         for (String part : input.split(delimiter)) {
+            part = part.trim();
             if (!isEmpty(part)) {
                 try {
                     result.add(Integer.parseInt(part));

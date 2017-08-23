@@ -10,9 +10,9 @@ import ge.ai.domino.console.ui.TCHcomponents.TCHComboBox;
 import ge.ai.domino.console.ui.TCHcomponents.TCHComponentSize;
 import ge.ai.domino.console.ui.TCHcomponents.TCHFieldLabel;
 import ge.ai.domino.console.ui.TCHcomponents.TCHTextField;
-import ge.ai.domino.console.ui.main.ControlPanel;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.dialog.DAIExceptionHandling;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -47,7 +47,10 @@ public class SystemParametersPane extends HBox {
 
     private TCHComboBox typeComboBox;
 
-    public SystemParametersPane() {
+    private  DoubleBinding doubleBinding;
+
+    public SystemParametersPane(DoubleBinding doubleBinding) {
+        this.doubleBinding = doubleBinding;
         initUI();
     }
 
@@ -60,20 +63,20 @@ public class SystemParametersPane extends HBox {
 
     @SuppressWarnings("unchecked")
     private void initTable() {
-        DoubleBinding doubleProperty = ControlPanel.getCenterWidthBinding().subtract(250 + 90 + 60 + 50);
+        doubleBinding = doubleBinding.subtract(250 + 90 + 60 + 50);
         tableView = new TableView<>();
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
         TableColumn<SystemParameterProperty, Boolean> idColumn = new TableColumn<>(Messages.get("id"));
         idColumn.setPrefWidth(60);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         TableColumn<SystemParameterProperty, Boolean> keyColumn = new TableColumn<>(Messages.get("key"));
-        keyColumn.prefWidthProperty().bind(doubleProperty.divide(3));
+        keyColumn.prefWidthProperty().bind(doubleBinding.divide(3));
         keyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
         TableColumn<SystemParameterProperty, Boolean> valueColumn = new TableColumn<>(Messages.get("value"));
-        valueColumn.prefWidthProperty().bind(doubleProperty.divide(3));
+        valueColumn.prefWidthProperty().bind(doubleBinding.divide(3));
         valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
         TableColumn<SystemParameterProperty, Boolean> typeColumn = new TableColumn<>(Messages.get("type"));
-        typeColumn.prefWidthProperty().bind(doubleProperty.divide(3));
+        typeColumn.prefWidthProperty().bind(doubleBinding.divide(3));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         TableColumn deleteColumn = new TableColumn<>("");
         deleteColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SystemParameterProperty, Boolean>, ObservableValue<Boolean>>() {
@@ -138,7 +141,7 @@ public class SystemParametersPane extends HBox {
                     clearFields();
                     loadSystemParameters();
                 } catch (DAIConsoleException ex) {
-                    ex.printStackTrace();
+                    DAIExceptionHandling.handleException(ex);
                 }
             }
         });

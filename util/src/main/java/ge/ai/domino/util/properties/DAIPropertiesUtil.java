@@ -1,13 +1,16 @@
 package ge.ai.domino.util.properties;
 
-import java.io.File;
+import org.apache.log4j.Logger;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 public class DAIPropertiesUtil {
 
-    protected static String daiPropertyPath = "properties/dai.properties";
+    private static final Logger logger = Logger.getLogger(DAIPropertiesUtil.class);
+
+    static String daiPropertyPath = "properties/dai.properties";
 
     private static Properties properties;
 
@@ -20,12 +23,10 @@ public class DAIPropertiesUtil {
 
     private static void init() {
         properties = new Properties();
-        File file = new File(daiPropertyPath);
-
         try (FileInputStream in = new FileInputStream(daiPropertyPath)) {
             properties.load(in);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.error("Error occurred while init DAI properties", ex);
         }
     }
 }

@@ -1,9 +1,13 @@
 package ge.ai.domino.util.string;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class StringUtil {
+
+    private static final Logger logger = Logger.getLogger(StringUtil.class);
 
     private static final String DEFAULT_DELIMITER = ",";
 
@@ -38,7 +42,7 @@ public class StringUtil {
                 try {
                     result.add(Integer.parseInt(part));
                 } catch (NumberFormatException ex) {
-                    System.out.println(ex.getMessage());
+                    logger.warn("Can't parse to int", ex);
                 }
             }
         }

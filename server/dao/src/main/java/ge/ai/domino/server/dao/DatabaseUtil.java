@@ -1,12 +1,15 @@
 package ge.ai.domino.server.dao;
 
 import ge.ai.domino.util.properties.DAIPropertiesUtil;
+import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseUtil {
+
+    private static final Logger logger = Logger.getLogger(DatabaseUtil.class);
 
     private static String databaseDriver;
 
@@ -26,7 +29,7 @@ public class DatabaseUtil {
             Class.forName(databaseDriver);
             connection = DriverManager.getConnection(databaseURL, databaseUsername, databasePassword);
         } catch (Exception ex) {
-            System.out.println("Sql connection problem...");
+            logger.error("Error occurred while connect db", ex);
         }
         return connection;
     }
@@ -37,7 +40,7 @@ public class DatabaseUtil {
                 connection.close();
             }
         } catch (SQLException ex) {
-            System.out.println("Sql connection closing problem...");
+            logger.error("Error occurred while close db connection", ex);
         }
     }
 

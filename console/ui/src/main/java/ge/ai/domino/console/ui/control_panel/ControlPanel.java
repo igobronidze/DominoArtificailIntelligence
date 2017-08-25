@@ -1,6 +1,5 @@
 package ge.ai.domino.console.ui.control_panel;
 
-import ge.ai.domino.console.ui.main.GamePropertiesPane;
 import ge.ai.domino.console.ui.util.Messages;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -32,5 +31,9 @@ public class ControlPanel extends Application {
 
     public static Stage getStage() {
         return stage;
+    }
+
+    public static BorderPane getRoot() {
+        return root;
     }
 }

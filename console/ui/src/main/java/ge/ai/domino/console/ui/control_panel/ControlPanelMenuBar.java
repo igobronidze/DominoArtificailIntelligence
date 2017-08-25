@@ -74,6 +74,9 @@ public class ControlPanelMenuBar extends MenuBar {
     private Menu getFileMenu() {
         Menu fileMenu = new Menu(Messages.get("file"));
         MenuItem newItem = new MenuItem(Messages.get("new"));
+        newItem.setOnAction(e -> {
+            ControlPanel.initComponents();
+        });
         MenuItem closeItem = new MenuItem(Messages.get("close"));
         closeItem.setOnAction(e -> {
             ControlPanel.getStage().close();

@@ -2,17 +2,18 @@ package ge.ai.domino.console.transfer.manager.domino;
 
 import ge.ai.domino.console.transfer.dto.domino.GameDTO;
 import ge.ai.domino.console.transfer.dto.domino.GamePropertiesDTO;
+import ge.ai.domino.console.transfer.dto.domino.HandDTO;
 import ge.ai.domino.console.transfer.dto.domino.PlayDirectionDTO;
 
 public interface DominoManager {
 
     GameDTO startGame(GamePropertiesDTO gameProperties);
 
-    GameDTO addTileForMe(GameDTO game, int x, int y);
+    HandDTO addTileForMe(HandDTO hand, int x, int y);
 
-    GameDTO addTileForHim(GameDTO game);
+    HandDTO addTileForHim(HandDTO hand, int gameId);
 
-    GameDTO playForMe(GameDTO game, int x, int y, PlayDirectionDTO direction);
+    HandDTO playForMe(HandDTO hand, int x, int y, PlayDirectionDTO direction);
 
-    GameDTO playForHim(GameDTO game, int x, int y, PlayDirectionDTO direction);
+    HandDTO playForHim(HandDTO hand, int x, int y, PlayDirectionDTO direction, int gameId);
 }

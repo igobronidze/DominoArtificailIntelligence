@@ -2,6 +2,7 @@ package ge.ai.domino.console.transfer.manager.domino;
 
 import ge.ai.domino.console.transfer.dto.domino.GameDTO;
 import ge.ai.domino.console.transfer.dto.domino.GamePropertiesDTO;
+import ge.ai.domino.console.transfer.dto.domino.HandDTO;
 import ge.ai.domino.console.transfer.dto.domino.PlayDirectionDTO;
 import ge.ai.domino.domain.domino.PlayDirection;
 import ge.ai.domino.util.domino.DominoService;
@@ -17,22 +18,22 @@ public class DominoMangerImpl implements DominoManager {
     }
 
     @Override
-    public GameDTO addTileForMe(GameDTO game, int x, int y) {
-        return GameDTO.toGameDTO(dominoService.addTileForMe(GameDTO.toGame(game), x, y));
+    public HandDTO addTileForMe(HandDTO hand, int x, int y) {
+        return HandDTO.toHandDTO(dominoService.addTileForMe(HandDTO.toHand(hand), x, y));
     }
 
     @Override
-    public GameDTO addTileForHim(GameDTO game) {
-        return GameDTO.toGameDTO(dominoService.addTileForHim(GameDTO.toGame(game)));
+    public HandDTO addTileForHim(HandDTO hand, int gameId) {
+        return HandDTO.toHandDTO(dominoService.addTileForHim(HandDTO.toHand(hand), gameId));
     }
 
     @Override
-    public GameDTO playForMe(GameDTO game, int x, int y, PlayDirectionDTO direction) {
-        return GameDTO.toGameDTO(dominoService.playForMe(GameDTO.toGame(game), x, y, PlayDirection.valueOf(direction.name())));
+    public HandDTO playForMe(HandDTO hand, int x, int y, PlayDirectionDTO direction) {
+        return HandDTO.toHandDTO(dominoService.playForMe(HandDTO.toHand(hand), x, y, PlayDirection.valueOf(direction.name())));
     }
 
     @Override
-    public GameDTO playForHim(GameDTO game, int x, int y, PlayDirectionDTO direction) {
-        return GameDTO.toGameDTO(dominoService.playForHim(GameDTO.toGame(game), x, y, PlayDirection.valueOf(direction.name())));
+    public HandDTO playForHim(HandDTO hand, int x, int y, PlayDirectionDTO direction, int gameId) {
+        return HandDTO.toHandDTO(dominoService.playForHim(HandDTO.toHand(hand), x, y, PlayDirection.valueOf(direction.name()), gameId));
     }
 }

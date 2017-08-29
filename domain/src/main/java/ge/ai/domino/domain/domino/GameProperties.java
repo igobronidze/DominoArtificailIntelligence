@@ -6,7 +6,7 @@ public class GameProperties {
 
     private String website;
 
-    private int pointForWin;
+    private int pointsForWin;
 
     private boolean start;
 
@@ -26,12 +26,12 @@ public class GameProperties {
         this.website = website;
     }
 
-    public int getPointForWin() {
-        return pointForWin;
+    public int getPointsForWin() {
+        return pointsForWin;
     }
 
-    public void setPointForWin(int pointForWin) {
-        this.pointForWin = pointForWin;
+    public void setPointsForWin(int pointsForWin) {
+        this.pointsForWin = pointsForWin;
     }
 
     public boolean isStart() {

@@ -59,7 +59,7 @@ public class GamePropertiesPane extends VBox {
         startButton.setOnAction(e -> {
             GamePropertiesDTO gameProperties = new GamePropertiesDTO();
             gameProperties.setStart(startCheckBox.isSelected());
-            gameProperties.setPointForWin(Integer.parseInt(pointComboBox.getValue().toString()));
+            gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
             gameProperties.setWebsite(websiteField.getText());
             gameProperties.setOpponentName(nameField.getText());
             GameDTO game = dominoManager.startGame(gameProperties);

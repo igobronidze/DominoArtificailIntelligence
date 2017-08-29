@@ -3,6 +3,7 @@ package ge.ai.domino.console.ui.domino;
 import ge.ai.domino.console.transfer.dto.domino.GameDTO;
 import ge.ai.domino.console.transfer.dto.domino.HandDTO;
 import ge.ai.domino.console.transfer.dto.domino.PlayDirectionDTO;
+import ge.ai.domino.console.transfer.dto.domino.TableInfoDTO;
 import ge.ai.domino.console.transfer.dto.domino.TileDTO;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.transfer.dto.domino.PlayTypeDTO;
@@ -10,31 +11,36 @@ import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 
+import java.util.HashMap;
 import java.util.Map;
 
 abstract class TilesPane extends FlowPane {
 
     static final int IMAGE_WIDTH = 65;
 
-    static final int IMAGE_HEIGHT = 115;
+    static final int IMAGE_HEIGHT = 110;
 
-    Map<String, TileDTO> tiles;
+    static Map<String, TileDTO> tiles;
 
-    GameDTO game;
+    static GameDTO game;
+
+    static ImageView upArrow;
+
+    static ImageView rightArrow;
+
+    static ImageView downArrow;
+
+    static ImageView leftArrow;
+
+    static private TilesPane tilePane;
+
+    static private String tileUID;
+
+    static private boolean arrowsVisible;
 
     PlayTypeDTO playType;
 
-    ImageView upArrow;
-
-    ImageView rightArrow;
-
-    ImageView downArrow;
-
-    ImageView leftArrow;
-
-    private TilesPane tilePane;
-
-    private String tileUID;
+    Map<String, ImageView> imageViews = new HashMap<>();
 
     TilesPane(GameDTO game, PlayTypeDTO playType) {
         this.tiles = game.getCurrHand().getTiles();
@@ -48,44 +54,22 @@ abstract class TilesPane extends FlowPane {
         this.setVgap(10);
         upArrow = new ImageView(ImageFactory.getImage("arrows/up.png"));
         setImageStyle(upArrow);
-        final HandDTO hand = game.getCurrHand();
-        final TileDTO clickedTile = tiles.get(tileUID);
         upArrow.setOnMouseClicked(e -> {
-            Integer top = hand.getTop();
-            if (top != null && (top == clickedTile.getX() || top == clickedTile.getY())) {
-                tilePane.onTileClick(clickedTile, PlayDirectionDTO.TOP);
-            } else {
-                tilePane.onTileClick(clickedTile, PlayDirectionDTO.INCORRECT);
-            }
+            onUpArrowPressed();
         });
         rightArrow = new ImageView(ImageFactory.getImage("arrows/right.png"));
         setImageStyle(rightArrow);
         rightArrow.setOnMouseClicked(e -> {
-            Integer right = hand.getRight();
-            if (right != null && (right == clickedTile.getX() || right == clickedTile.getY())) {
-                tilePane.onTileClick(clickedTile, PlayDirectionDTO.RIGHT);
-            } else {
-                tilePane.onTileClick(clickedTile, PlayDirectionDTO.INCORRECT);
-            }
+            onRightArrowPressed();
         });
         downArrow = new ImageView(ImageFactory.getImage("arrows/down.png"));
         setImageStyle(downArrow);
         downArrow.setOnMouseClicked(e -> {
-            Integer bottom = hand.getBottom();
-            if (bottom != null && (bottom == clickedTile.getX() || bottom == clickedTile.getY())) {
-                tilePane.onTileClick(clickedTile, PlayDirectionDTO.BOTTOM);
-            } else {
-                tilePane.onTileClick(clickedTile, PlayDirectionDTO.INCORRECT);
-            }
+            onDownArrowPressed();
         });
         leftArrow = new ImageView(ImageFactory.getImage("arrows/left.png"));
         leftArrow.setOnMouseClicked(e -> {
-            Integer left = hand.getLeft();
-            if (left != null && (left == clickedTile.getX() || left == clickedTile.getY())) {
-                tilePane.onTileClick(clickedTile, PlayDirectionDTO.LEFT);
-            } else {
-                tilePane.onTileClick(clickedTile, PlayDirectionDTO.INCORRECT);
-            }
+            onLeftArrowPressed();
         });
         setImageStyle(leftArrow);
         setImageVisibility(false);
@@ -110,14 +94,15 @@ abstract class TilesPane extends FlowPane {
     }
 
     void showArrows(TilesPane tilesPane, String tileUID) {
-        this.tilePane = tilesPane;
-        this.tileUID = tileUID;
+        TilesPane.tilePane = tilesPane;
+        TilesPane.tileUID = tileUID;
         setImageVisibility(true);
     }
 
     boolean isFirsTurn() {
         HandDTO hand = game.getCurrHand();
-        return hand.getTop() == null && hand.getRight() == null && hand.getBottom() == null && hand.getLeft() == null;
+        TableInfoDTO tableInfoD = hand.getTableInfo();
+        return tableInfoD.getTop() == null && tableInfoD.getRight() == null && tableInfoD.getBottom() == null && tableInfoD.getLeft() == null;
     }
 
     private void setImageVisibility(boolean visible) {
@@ -125,7 +110,54 @@ abstract class TilesPane extends FlowPane {
         rightArrow.setVisible(visible);
         downArrow.setVisible(visible);
         leftArrow.setVisible(visible);
+        TilesPane.arrowsVisible = visible;
     }
 
-    public abstract void onTileClick(TileDTO tile, PlayDirectionDTO direction);
+    static void onUpArrowPressed() {
+        TableInfoDTO tableInfo = game.getCurrHand().getTableInfo();
+        Integer top = tableInfo.getTop().getOpenSide();
+        if ((top == tiles.get(tileUID).getX() || top == tiles.get(tileUID).getY()) && !tableInfo.getLeft().isCenter() && !tableInfo.getRight().isCenter()) {
+            tilePane.onTileEntered(tiles.get(tileUID), PlayDirectionDTO.TOP);
+        } else {
+            tilePane.onTileEntered(tiles.get(tileUID), PlayDirectionDTO.INCORRECT);
+        }
+    }
+
+    static void onRightArrowPressed() {
+        Integer right = game.getCurrHand().getTableInfo().getRight().getOpenSide();
+        if (right == tiles.get(tileUID).getX() || right == tiles.get(tileUID).getY()) {
+            tilePane.onTileEntered(tiles.get(tileUID), PlayDirectionDTO.RIGHT);
+        } else {
+            tilePane.onTileEntered(tiles.get(tileUID), PlayDirectionDTO.INCORRECT);
+        }
+    }
+
+    static void onDownArrowPressed() {
+        TableInfoDTO tableInfo = game.getCurrHand().getTableInfo();
+        Integer bottom = tableInfo.getBottom().getOpenSide();
+        if ((bottom == tiles.get(tileUID).getX() || bottom == tiles.get(tileUID).getY()) && !tableInfo.getLeft().isCenter() && !tableInfo.getRight().isCenter()) {
+            tilePane.onTileEntered(tiles.get(tileUID), PlayDirectionDTO.BOTTOM);
+        } else {
+            tilePane.onTileEntered(tiles.get(tileUID), PlayDirectionDTO.INCORRECT);
+        }
+    }
+
+    static void onLeftArrowPressed() {
+        Integer left = game.getCurrHand().getTableInfo().getLeft().getOpenSide();
+        if (left == tiles.get(tileUID).getX() || left == tiles.get(tileUID).getY()) {
+            tilePane.onTileEntered(tiles.get(tileUID), PlayDirectionDTO.LEFT);
+        } else {
+            tilePane.onTileEntered(tiles.get(tileUID), PlayDirectionDTO.INCORRECT);
+        }
+    }
+
+    static boolean isArrowsVisible() {
+        return arrowsVisible;
+    }
+
+    public abstract void onTilePressed(String uid);
+
+    public abstract void onTileEntered(TileDTO tile, PlayDirectionDTO direction);
+
+    public abstract boolean showTile(String uid);
 }

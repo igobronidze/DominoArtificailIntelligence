@@ -1,5 +1,6 @@
 package ge.ai.domino.console.transfer.dto.domino;
 
+import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.domino.Hand;
 
 import java.util.ArrayList;
@@ -9,31 +10,11 @@ import java.util.Map;
 
 public class HandDTO {
 
-    private boolean myTurn;
-
     private Map<String, TileDTO> tiles = new HashMap<>();
 
-    private int tilesInBazaar;
+    private TableInfoDTO tableInfo;
 
-    private boolean hasCenter;
-
-    private Integer top;
-
-    private Integer right;
-
-    private Integer bottom;
-
-    private Integer left;
-
-    private BestPredictionDTO bestPrediction;
-
-    public boolean isMyTurn() {
-        return myTurn;
-    }
-
-    public void setMyTurn(boolean myTurn) {
-        this.myTurn = myTurn;
-    }
+    private AIPredictionDTO aiPrediction;
 
     public Map<String, TileDTO> getTiles() {
         return tiles;
@@ -43,87 +24,36 @@ public class HandDTO {
         this.tiles = tiles;
     }
 
-    public int getTilesInBazaar() {
-        return tilesInBazaar;
+    public TableInfoDTO getTableInfo() {
+        return tableInfo;
     }
 
-    public void setTilesInBazaar(int tilesInBazaar) {
-        this.tilesInBazaar = tilesInBazaar;
+    public void setTableInfo(TableInfoDTO tableInfo) {
+        this.tableInfo = tableInfo;
     }
 
-    public boolean isHasCenter() {
-        return hasCenter;
+    public AIPredictionDTO getAiPrediction() {
+        return aiPrediction;
     }
 
-    public void setHasCenter(boolean hasCenter) {
-        this.hasCenter = hasCenter;
-    }
-
-    public Integer getTop() {
-        return top;
-    }
-
-    public void setTop(Integer top) {
-        this.top = top;
-    }
-
-    public Integer getRight() {
-        return right;
-    }
-
-    public void setRight(Integer right) {
-        this.right = right;
-    }
-
-    public Integer getBottom() {
-        return bottom;
-    }
-
-    public void setBottom(Integer bottom) {
-        this.bottom = bottom;
-    }
-
-    public Integer getLeft() {
-        return left;
-    }
-
-    public void setLeft(Integer left) {
-        this.left = left;
-    }
-
-    public BestPredictionDTO getBestPrediction() {
-        return bestPrediction;
-    }
-
-    public void setBestPrediction(BestPredictionDTO bestPrediction) {
-        this.bestPrediction = bestPrediction;
+    public void setAiPrediction(AIPredictionDTO aiPrediction) {
+        this.aiPrediction = aiPrediction;
     }
 
     public static HandDTO toHandDTO(Hand hand) {
         HandDTO dto = new HandDTO();
-        dto.setMyTurn(hand.isMyTurn());
         dto.setTiles(TileDTO.toTileDTOMap(hand.getTiles()));
-        dto.setTilesInBazaar(hand.getTilesInBazaar());
-        dto.setHasCenter(hand.isHasCenter());
-        dto.setTop(hand.getTop());
-        dto.setRight(hand.getRight());
-        dto.setBottom(hand.getBottom());
-        dto.setLeft(hand.getLeft());
-        dto.setBestPrediction(BestPredictionDTO.toBestPredictionDTO(hand.getBestPrediction()));
+        dto.setTableInfo(TableInfoDTO.toTableInfoDTO(hand.getTableInfo()));
+        dto.setAiPrediction(AIPredictionDTO.toBestPredictionDTO(hand.getAiPrediction()));
         return dto;
     }
 
     public static Hand toHand(HandDTO dto) {
         Hand hand = new Hand();
-        hand.setMyTurn(dto.isMyTurn());
         hand.setTiles(TileDTO.toTileMap(dto.getTiles()));
-        hand.setTilesInBazaar(dto.getTilesInBazaar());
-        hand.setHasCenter(dto.isHasCenter());
-        hand.setTop(dto.getTop());
-        hand.setRight(dto.getRight());
-        hand.setBottom(dto.getBottom());
-        hand.setLeft(dto.getLeft());
-        hand.setBestPrediction(BestPredictionDTO.toBestPrediction(dto.getBestPrediction()));
+        hand.setTableInfo(TableInfoDTO.toTableInfo(dto.getTableInfo()));
+        hand.setAiPrediction(AIPredictionDTO.toBestPrediction(dto.getAiPrediction()));
+        hand.setAiExtraInfo(new AIExtraInfo());
         return hand;
     }
 

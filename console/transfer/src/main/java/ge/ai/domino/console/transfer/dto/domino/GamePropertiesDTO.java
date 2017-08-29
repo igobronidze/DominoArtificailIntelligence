@@ -8,7 +8,7 @@ public class GamePropertiesDTO {
 
     private String website;
 
-    private int pointForWin;
+    private int pointsForWin;
 
     private boolean start;
 
@@ -28,12 +28,12 @@ public class GamePropertiesDTO {
         this.website = website;
     }
 
-    public int getPointForWin() {
-        return pointForWin;
+    public int getPointsForWin() {
+        return pointsForWin;
     }
 
-    public void setPointForWin(int pointForWin) {
-        this.pointForWin = pointForWin;
+    public void setPointsForWin(int pointsForWin) {
+        this.pointsForWin = pointsForWin;
     }
 
     public boolean isStart() {
@@ -48,7 +48,7 @@ public class GamePropertiesDTO {
         GameProperties gameProperties = new GameProperties();
         gameProperties.setOpponentName(dto.getOpponentName());
         gameProperties.setWebsite(dto.getWebsite());
-        gameProperties.setPointForWin(dto.getPointForWin());
+        gameProperties.setPointsForWin(dto.getPointsForWin());
         gameProperties.setStart(dto.isStart());
         return gameProperties;
     }
@@ -57,7 +57,7 @@ public class GamePropertiesDTO {
         GamePropertiesDTO dto = new GamePropertiesDTO();
         dto.setOpponentName(gameProperties.getOpponentName());
         dto.setWebsite(gameProperties.getWebsite());
-        dto.setPointForWin(gameProperties.getPointForWin());
+        dto.setPointsForWin(gameProperties.getPointsForWin());
         dto.setStart(gameProperties.isStart());
         return dto;
     }

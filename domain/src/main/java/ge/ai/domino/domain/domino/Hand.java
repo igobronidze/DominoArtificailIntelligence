@@ -1,35 +1,19 @@
 package ge.ai.domino.domain.domino;
 
+import ge.ai.domino.domain.ai.AIExtraInfo;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Hand {
 
-    private boolean myTurn;
-
     private Map<String, Tile> tiles = new HashMap<>();
 
-    private int tilesInBazaar;
+    private AIPrediction aiPrediction;
 
-    private boolean hasCenter;
+    private TableInfo tableInfo;
 
-    private Integer top;
-
-    private Integer right;
-
-    private Integer bottom;
-
-    private Integer left;
-
-    private BestPrediction bestPrediction;
-
-    public boolean isMyTurn() {
-        return myTurn;
-    }
-
-    public void setMyTurn(boolean myTurn) {
-        this.myTurn = myTurn;
-    }
+    private AIExtraInfo aiExtraInfo;
 
     public Map<String, Tile> getTiles() {
         return tiles;
@@ -39,59 +23,27 @@ public class Hand {
         this.tiles = tiles;
     }
 
-    public int getTilesInBazaar() {
-        return tilesInBazaar;
+    public AIPrediction getAiPrediction() {
+        return aiPrediction;
     }
 
-    public void setTilesInBazaar(int tilesInBazaar) {
-        this.tilesInBazaar = tilesInBazaar;
+    public void setAiPrediction(AIPrediction aiPrediction) {
+        this.aiPrediction = aiPrediction;
     }
 
-    public boolean isHasCenter() {
-        return hasCenter;
+    public TableInfo getTableInfo() {
+        return tableInfo;
     }
 
-    public void setHasCenter(boolean hasCenter) {
-        this.hasCenter = hasCenter;
+    public void setTableInfo(TableInfo tableInfo) {
+        this.tableInfo = tableInfo;
     }
 
-    public Integer getTop() {
-        return top;
+    public AIExtraInfo getAiExtraInfo() {
+        return aiExtraInfo;
     }
 
-    public void setTop(Integer top) {
-        this.top = top;
-    }
-
-    public Integer getRight() {
-        return right;
-    }
-
-    public void setRight(Integer right) {
-        this.right = right;
-    }
-
-    public Integer getBottom() {
-        return bottom;
-    }
-
-    public void setBottom(Integer bottom) {
-        this.bottom = bottom;
-    }
-
-    public Integer getLeft() {
-        return left;
-    }
-
-    public void setLeft(Integer left) {
-        this.left = left;
-    }
-
-    public BestPrediction getBestPrediction() {
-        return bestPrediction;
-    }
-
-    public void setBestPrediction(BestPrediction bestPrediction) {
-        this.bestPrediction = bestPrediction;
+    public void setAiExtraInfo(AIExtraInfo aiExtraInfo) {
+        this.aiExtraInfo = aiExtraInfo;
     }
 }

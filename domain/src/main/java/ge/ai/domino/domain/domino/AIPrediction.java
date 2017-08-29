@@ -1,6 +1,6 @@
 package ge.ai.domino.domain.domino;
 
-public class BestPrediction {
+public class AIPrediction {
 
     private int x;
 

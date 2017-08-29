@@ -13,9 +13,9 @@ public class Game {
 
     private List<Hand> history = new ArrayList<>();
 
-    private int myPoint;
+    private int myPoints;
 
-    private int himPoint;
+    private int himPoints;
 
     public int getId() {
         return id;
@@ -49,19 +49,19 @@ public class Game {
         this.history = history;
     }
 
-    public int getMyPoint() {
-        return myPoint;
+    public int getMyPoints() {
+        return myPoints;
     }
 
-    public void setMyPoint(int myPoint) {
-        this.myPoint = myPoint;
+    public void setMyPoints(int myPoints) {
+        this.myPoints = myPoints;
     }
 
-    public int getHimPoint() {
-        return himPoint;
+    public int getHimPoints() {
+        return himPoints;
     }
 
-    public void setHimPoint(int himPoint) {
-        this.himPoint = himPoint;
+    public void setHimPoints(int himPoints) {
+        this.himPoints = himPoints;
     }
 }

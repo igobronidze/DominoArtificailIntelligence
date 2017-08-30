@@ -1,10 +1,5 @@
 package ge.ai.domino.console.ui.sysparam;
 
-import ge.ai.domino.console.transfer.dto.exception.DAIConsoleException;
-import ge.ai.domino.console.transfer.dto.sysparam.SystemParameterDTO;
-import ge.ai.domino.console.transfer.dto.sysparam.SystemParameterTypeDTO;
-import ge.ai.domino.console.transfer.manager.sysparam.SystemParameterManager;
-import ge.ai.domino.console.transfer.manager.sysparam.SystemParameterManagerImpl;
 import ge.ai.domino.console.ui.TCHcomponents.TCHButton;
 import ge.ai.domino.console.ui.TCHcomponents.TCHComboBox;
 import ge.ai.domino.console.ui.TCHcomponents.TCHComponentSize;
@@ -13,6 +8,11 @@ import ge.ai.domino.console.ui.TCHcomponents.TCHTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.DAIExceptionHandling;
+import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.domain.sysparam.SystemParameter;
+import ge.ai.domino.domain.sysparam.SystemParameterType;
+import ge.ai.domino.util.sysparam.SystemParameterService;
+import ge.ai.domino.util.sysparam.SystemParameterServiceImpl;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -37,7 +37,7 @@ import java.util.List;
 
 public class SystemParametersPane extends HBox {
 
-    private SystemParameterManager systemParameterManager = new SystemParameterManagerImpl();
+    private SystemParameterService systemParameterService = new SystemParameterServiceImpl();
 
     private TableView<SystemParameterProperty> tableView;
 
@@ -118,7 +118,7 @@ public class SystemParametersPane extends HBox {
         vBox.setStyle("-fx-border-color: green; -fx-border-radius: 25px; -fx-border-size: 1px;");
         keyField = new TCHTextField(TCHComponentSize.SMALL);
         valueField = new TCHTextField(TCHComponentSize.SMALL);
-        typeComboBox = new TCHComboBox(Arrays.asList(SystemParameterTypeDTO.values()));
+        typeComboBox = new TCHComboBox(Arrays.asList(SystemParameterType.values()));
         TCHFieldLabel keyFieldLabel = new TCHFieldLabel(Messages.get("key"), keyField);
         TCHFieldLabel valueFieldLabel = new TCHFieldLabel(Messages.get("value"), valueField);
         TCHFieldLabel typeFieldLabel = new TCHFieldLabel(Messages.get("type"), typeComboBox);
@@ -130,17 +130,17 @@ public class SystemParametersPane extends HBox {
             String key = keyField.getText();
             String value = valueField.getText();
             String type = typeComboBox.getValue().toString();
-            SystemParameterDTO systemParameter = new SystemParameterDTO(0, key, value, SystemParameterTypeDTO.valueOf(type));
+            SystemParameter systemParameter = new SystemParameter(0, key, value, SystemParameterType.valueOf(type));
             if (!key.isEmpty() && !value.isEmpty()) {
                 try {
                     if (keyField.isDisabled()) {
-                        systemParameterManager.editSystemParameter(systemParameter);
+                        systemParameterService.editSystemParameter(systemParameter);
                     } else {
-                        systemParameterManager.addSystemParameter(systemParameter);
+                        systemParameterService.addSystemParameter(systemParameter);
                     }
                     clearFields();
                     loadSystemParameters();
-                } catch (DAIConsoleException ex) {
+                } catch (DAIException ex) {
                     DAIExceptionHandling.handleException(ex);
                 }
             }
@@ -172,10 +172,10 @@ public class SystemParametersPane extends HBox {
             cellButton.setOnAction(t -> {
                 SystemParameterProperty systemParameterProperty = DeleteButtonCell.this.getTableView().getItems().get(DeleteButtonCell.this.getIndex());
                 try {
-                    systemParameterManager.deleteSystemParameter(systemParameterProperty.getKey());
+                    systemParameterService.deleteSystemParameter(systemParameterProperty.getKey());
                     loadSystemParameters();
-                } catch (DAIConsoleException ex) {
-                    ex.printStackTrace();
+                } catch (DAIException ex) {
+                    DAIExceptionHandling.handleException(ex);
                 }
             });
         }
@@ -189,9 +189,9 @@ public class SystemParametersPane extends HBox {
     }
 
     private void loadSystemParameters() {
-        List<SystemParameterDTO> systemParameters = systemParameterManager.getSystemParameters(null, null);
+        List<SystemParameter> systemParameters = systemParameterService.getSystemParameters(null, null);
         List<SystemParameterProperty> systemParameterProperties = new ArrayList<>();
-        for (SystemParameterDTO systemParameter : systemParameters) {
+        for (SystemParameter systemParameter : systemParameters) {
             systemParameterProperties.add(new SystemParameterProperty(systemParameter));
         }
         ObservableList<SystemParameterProperty> data = FXCollections.observableArrayList(systemParameterProperties);

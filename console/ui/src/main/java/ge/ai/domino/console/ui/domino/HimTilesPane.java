@@ -1,10 +1,9 @@
 package ge.ai.domino.console.ui.domino;
 
-import ge.ai.domino.console.transfer.dto.domino.GameDTO;
-import ge.ai.domino.console.transfer.dto.domino.PlayDirectionDTO;
-import ge.ai.domino.console.transfer.dto.domino.PlayTypeDTO;
-import ge.ai.domino.console.transfer.dto.domino.TileDTO;
 import ge.ai.domino.console.ui.util.ImageFactory;
+import ge.ai.domino.domain.domino.Game;
+import ge.ai.domino.domain.domino.PlayDirection;
+import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.util.tile.TileUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,7 +17,7 @@ import java.text.NumberFormat;
 
 abstract class HimTilesPane extends TilesPane {
 
-    HimTilesPane(GameDTO game, PlayTypeDTO playType) {
+    HimTilesPane(Game game, PlayType playType) {
         super(game, playType);
         initComponents();
     }
@@ -34,7 +33,7 @@ abstract class HimTilesPane extends TilesPane {
             for (int j = i; j >= 0; j--) {
                 String uid = TileUtil.getTileUID(i, j);
                 if (showTile(uid)) {
-                    TileDTO tile = tiles.get(uid);
+                    Tile tile = tiles.get(uid);
                     ImageView imageView = getImageView(uid, true);
                     Label himLabel = new Label("" + formatter.format(tile.getHim()));
                     himLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red; -fx-font-weight: bold");
@@ -55,7 +54,7 @@ abstract class HimTilesPane extends TilesPane {
             }
             this.getChildren().add(hBox);
         }
-        if (playType == PlayTypeDTO.HIM) {
+        if (playType == PlayType.HIM) {
             ImageView addImageView = new ImageView(ImageFactory.getImage("add_black.png"));
             setImageStyle(addImageView);
             this.getChildren().add(addImageView);
@@ -66,13 +65,13 @@ abstract class HimTilesPane extends TilesPane {
     @SuppressWarnings("Duplicates")
     @Override
     public void onTilePressed(String uid) {
-        if (playType == PlayTypeDTO.HIM) {
+        if (playType == PlayType.HIM) {
             if (!isFirsTurn()) {
                 imageViews.get(uid).setFitHeight(IMAGE_HEIGHT + 10);
                 imageViews.get(uid).setFitWidth(IMAGE_WIDTH + 10);
                 showArrows(this, uid);
             } else {
-                onTileEntered(tiles.get(uid), PlayDirectionDTO.LEFT);
+                onTileEntered(tiles.get(uid), PlayDirection.LEFT);
             }
         } else {
             onTileEntered(tiles.get(uid), null);
@@ -81,7 +80,7 @@ abstract class HimTilesPane extends TilesPane {
 
     @Override
     public boolean showTile(String uid) {
-        TileDTO tile = tiles.get(uid);
+        Tile tile = tiles.get(uid);
         return !tile.isPlayed() && tile.getMe() != 1.0;
     }
 

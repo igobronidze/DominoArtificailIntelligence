@@ -1,8 +1,8 @@
 package ge.ai.domino.console.ui.util;
 
-import ge.ai.domino.console.transfer.dto.sysparam.SysParamDTO;
-import ge.ai.domino.console.transfer.manager.sysparam.SystemParameterManager;
-import ge.ai.domino.console.transfer.manager.sysparam.SystemParameterManagerImpl;
+import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.util.sysparam.SystemParameterService;
+import ge.ai.domino.util.sysparam.SystemParameterServiceImpl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,9 +14,9 @@ import java.util.Properties;
 
 public class Messages {
 
-    private static SystemParameterManager systemParameterManager = new SystemParameterManagerImpl();
+    private static SystemParameterService systemParameterService = new SystemParameterServiceImpl();
 
-    private static SysParamDTO systemLanguageCode = new SysParamDTO("systemLanguageCode", "KA");
+    private static SysParam systemLanguageCode = new SysParam("systemLanguageCode", "KA");
 
     private static Map<String, Properties> messages = new HashMap<>();
 
@@ -42,7 +42,7 @@ public class Messages {
     public static String get(String key) {
         if (languageCode == null) {
             messages = new HashMap<>();
-            languageCode = systemParameterManager.getStringParameterValue(systemLanguageCode);
+            languageCode = systemParameterService.getStringParameterValue(systemLanguageCode);
         }
         return get(key, languageCode);
     }

@@ -13,7 +13,12 @@
     <dependencies>
         <dependency>
             <groupId>ge.ai.domino</groupId>
-            <artifactId>transfer</artifactId>
+            <artifactId>domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ge.ai.domino</groupId>
+            <artifactId>service</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

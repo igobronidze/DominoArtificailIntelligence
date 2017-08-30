@@ -5,5 +5,6 @@ public enum PlayDirection {
     TOP,
     RIGHT,
     BOTTOM,
-    LEFT
+    LEFT,
+    INCORRECT
 }

@@ -22,8 +22,6 @@ public class MinMax {
 
     private static final SystemParameterProcessor systemParameterProcessor = new SystemParameterProcessor();
 
-    private static final int sumAndLastTilesConst = 1009;
-
     private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "4");
 
     private static final HandHeuristic handheuristic = new SimpleHandHeuristic();
@@ -102,6 +100,8 @@ public class MinMax {
         } else {
             dominoProcessor.updateTileCountBeforePlayHim(nextHand);
         }
+        dominoProcessor.countScore(hand);
+        hand.getTableInfo().setMyTurn(!hand.getTableInfo().isMyTurn());
         return nextHand;
     }
 

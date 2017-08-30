@@ -85,6 +85,8 @@ public class DominoProcessor {
         makeTileAsPlayed(hand.getTiles().get(TileUtil.getTileUID(x, y)));
         playTile(hand.getTableInfo(), x, y, direction);
         updateTileCountBeforePlayMe(hand);
+        countScore(hand);
+        hand.getTableInfo().setMyTurn(!hand.getTableInfo().isMyTurn());
         logger.info("Play tile for me");
         if (systemParameterProcessor.getBooleanParameterValue(logTilesAfterMethod)) {
             LoggingProcessor.logTilesFullInfo(hand);
@@ -102,6 +104,8 @@ public class DominoProcessor {
         updateTileCountBeforePlayHim(hand);
         AIPrediction aiPrediction = MinMax.minMax(CloneUtil.getClone(hand));
         hand.setAiPrediction(aiPrediction);
+        countScore(hand);
+        hand.getTableInfo().setMyTurn(!hand.getTableInfo().isMyTurn());
         logger.info("Play tile for him");
         if (systemParameterProcessor.getBooleanParameterValue(logTilesAfterMethod)) {
             LoggingProcessor.logTilesFullInfo(hand);
@@ -202,7 +206,6 @@ public class DominoProcessor {
                 case LEFT:
                     tableInfo.setLeft(new PlayedTile(tableInfo.getLeft().getOpenSide() == x ? y : x, x == y, true, false));
                     break;
-
             }
         }
         tableInfo.setLastPlayedUID(TileUtil.getTileUID(x, y));
@@ -307,5 +310,29 @@ public class DominoProcessor {
     public void updateTileCountBeforePlayHim(Hand hand) {
         TableInfo tableInfo = hand.getTableInfo();
         tableInfo.setHimTilesCount(tableInfo.getHimTilesCount() - 1);
+    }
+
+    public void countScore(Hand hand) {
+        int count = 0;
+        TableInfo tableInfo = hand.getTableInfo();
+        if (tableInfo.getLeft().getOpenSide() == tableInfo.getRight().getOpenSide() && tableInfo.getLeft().isDouble() && tableInfo.getRight().isDouble()) {
+            count = tableInfo.getLeft().getOpenSide() * 2;
+        } else {
+            count += tableInfo.getLeft().isDouble() ? tableInfo.getLeft().getOpenSide() * 2 : tableInfo.getLeft().getOpenSide();
+            count += tableInfo.getRight().isDouble() ? tableInfo.getRight().getOpenSide() * 2 : tableInfo.getRight().getOpenSide();
+            if (tableInfo.getTop().isCountInSum()) {
+                count += tableInfo.getTop().isDouble() ? tableInfo.getTop().getOpenSide() * 2 : tableInfo.getTop().getOpenSide();
+            }
+            if (tableInfo.getBottom().isCountInSum()) {
+                count += tableInfo.getBottom().isDouble() ? tableInfo.getBottom().getOpenSide() * 2 : tableInfo.getBottom().getOpenSide();
+            }
+        }
+        if (count > 0 && count % 5 == 0) {
+            if (tableInfo.isMyTurn()) {
+                hand.getAiExtraInfo().setMyPoints(hand.getAiExtraInfo().getMyPoints() + count);
+            } else {
+                hand.getAiExtraInfo().setHimPoints(hand.getAiExtraInfo().getHimPoints() + count);
+            }
+        }
     }
 }

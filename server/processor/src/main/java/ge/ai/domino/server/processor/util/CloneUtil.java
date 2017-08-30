@@ -3,6 +3,7 @@ package ge.ai.domino.server.processor.util;
 import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.domino.AIPrediction;
 import ge.ai.domino.domain.domino.Hand;
+import ge.ai.domino.domain.domino.PlayedTile;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
 
@@ -33,14 +34,28 @@ public class CloneUtil {
 
     private static TableInfo getClone(TableInfo tableInfo) {
         TableInfo clone = new TableInfo();
-        clone.setTop(tableInfo.getTop());
-        clone.setRight(tableInfo.getRight());
-        clone.setBottom(tableInfo.getBottom());
-        clone.setLeft(tableInfo.getLeft());
+        clone.setTop(getClone(tableInfo.getTop()));
+        clone.setRight(getClone(tableInfo.getRight()));
+        clone.setBottom(getClone(tableInfo.getBottom()));
+        clone.setLeft(getClone(tableInfo.getLeft()));
         clone.setHimTilesCount(tableInfo.getHimTilesCount());
         clone.setMyTilesCount(tableInfo.getMyTilesCount());
         clone.setBazaarTilesCount(tableInfo.getBazaarTilesCount());
         clone.setMyTurn(tableInfo.isMyTurn());
+        clone.setWithCenter(tableInfo.isWithCenter());
+        clone.setLastPlayedUID(tableInfo.getLastPlayedUID());
+        return clone;
+    }
+
+    private static PlayedTile getClone(PlayedTile playedTile) {
+        if (playedTile == null) {
+            return null;
+        }
+        PlayedTile clone = new PlayedTile();
+        clone.setCountInSum(playedTile.isCountInSum());
+        clone.setDouble(playedTile.isDouble());
+        clone.setCenter(playedTile.isCenter());
+        clone.setOpenSide(playedTile.getOpenSide());
         return clone;
     }
 
@@ -70,6 +85,7 @@ public class CloneUtil {
         AIExtraInfo clone = new AIExtraInfo();
         clone.setHimPoints(aiExtraInfo.getHimPoints());
         clone.setMyPoints(aiExtraInfo.getMyPoints());
+        clone.setHeuristicValue(aiExtraInfo.getHeuristicValue());
         return clone;
     }
 }

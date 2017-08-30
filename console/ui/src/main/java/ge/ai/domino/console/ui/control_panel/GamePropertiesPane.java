@@ -1,12 +1,5 @@
 package ge.ai.domino.console.ui.control_panel;
 
-import ge.ai.domino.console.transfer.dto.domino.GameDTO;
-import ge.ai.domino.console.transfer.dto.domino.GamePropertiesDTO;
-import ge.ai.domino.console.transfer.dto.sysparam.SysParamDTO;
-import ge.ai.domino.console.transfer.manager.domino.DominoManager;
-import ge.ai.domino.console.transfer.manager.domino.DominoMangerImpl;
-import ge.ai.domino.console.transfer.manager.sysparam.SystemParameterManager;
-import ge.ai.domino.console.transfer.manager.sysparam.SystemParameterManagerImpl;
 import ge.ai.domino.console.ui.TCHcomponents.TCHButton;
 import ge.ai.domino.console.ui.TCHcomponents.TCHComboBox;
 import ge.ai.domino.console.ui.TCHcomponents.TCHComponentSize;
@@ -14,6 +7,13 @@ import ge.ai.domino.console.ui.TCHcomponents.TCHFieldLabel;
 import ge.ai.domino.console.ui.TCHcomponents.TCHTextField;
 import ge.ai.domino.console.ui.domino.DominoPane;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.domain.domino.Game;
+import ge.ai.domino.domain.domino.GameProperties;
+import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.util.domino.DominoService;
+import ge.ai.domino.util.domino.DominoServiceImpl;
+import ge.ai.domino.util.sysparam.SystemParameterService;
+import ge.ai.domino.util.sysparam.SystemParameterServiceImpl;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
@@ -24,11 +24,11 @@ import java.util.List;
 
 public class GamePropertiesPane extends VBox {
 
-    private static final SystemParameterManager systemParameterManage = new SystemParameterManagerImpl();
+    private static final SystemParameterService systemParameterService = new SystemParameterServiceImpl();
 
-    private static final DominoManager dominoManager = new DominoMangerImpl();
+    private static final DominoService dominoService = new DominoServiceImpl();
 
-    private static final SysParamDTO possiblePoints = new SysParamDTO("possiblePoints", "75,155,255");
+    private static final SysParam possiblePoints = new SysParam("possiblePoints", "75,155,255");
 
     public GamePropertiesPane() {
         initComponents();
@@ -46,7 +46,7 @@ public class GamePropertiesPane extends VBox {
         TCHFieldLabel websiteFieldLabel = new TCHFieldLabel(Messages.get("website"), websiteField);
         TCHTextField nameField = new TCHTextField(TCHComponentSize.MEDIUM);
         TCHFieldLabel nameFieldLabel = new TCHFieldLabel(Messages.get("name"), nameField);
-        List<Integer> points = systemParameterManage.getIntegerListParameterValue(possiblePoints);
+        List<Integer> points = systemParameterService.getIntegerListParameterValue(possiblePoints);
         List<Object> objPoints = new ArrayList<>();
         for (Integer point : points) {
             objPoints.add(point);
@@ -57,12 +57,12 @@ public class GamePropertiesPane extends VBox {
         TCHFieldLabel startFieldLabel = new TCHFieldLabel(Messages.get("start"), startCheckBox);
         TCHButton startButton = new TCHButton(Messages.get("start"));
         startButton.setOnAction(e -> {
-            GamePropertiesDTO gameProperties = new GamePropertiesDTO();
+            GameProperties gameProperties = new GameProperties();
             gameProperties.setStart(startCheckBox.isSelected());
             gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
             gameProperties.setWebsite(websiteField.getText());
             gameProperties.setOpponentName(nameField.getText());
-            GameDTO game = dominoManager.startGame(gameProperties);
+            Game game = dominoService.startGame(gameProperties);
             ControlPanel.getRoot().setCenter(new DominoPane(game));
         });
         this.getChildren().addAll(websiteFieldLabel, nameFieldLabel, pointFieldLabel, startFieldLabel, startButton);

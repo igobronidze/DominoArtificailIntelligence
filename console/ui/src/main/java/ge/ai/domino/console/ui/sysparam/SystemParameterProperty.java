@@ -1,6 +1,6 @@
 package ge.ai.domino.console.ui.sysparam;
 
-import ge.ai.domino.console.transfer.dto.sysparam.SystemParameterDTO;
+import ge.ai.domino.domain.sysparam.SystemParameter;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -14,7 +14,7 @@ public class SystemParameterProperty {
 
     private SimpleStringProperty type;
 
-    public SystemParameterProperty(SystemParameterDTO systemParameter) {
+    public SystemParameterProperty(SystemParameter systemParameter) {
         this.id = new SimpleIntegerProperty(systemParameter.getId());
         this.key = new SimpleStringProperty(systemParameter.getKey());
         this.value = new SimpleStringProperty(systemParameter.getValue());

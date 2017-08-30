@@ -1,16 +1,15 @@
 package ge.ai.domino.console.ui.domino;
 
-import ge.ai.domino.console.transfer.dto.domino.GameDTO;
-import ge.ai.domino.console.transfer.dto.domino.PlayDirectionDTO;
-import ge.ai.domino.console.transfer.dto.domino.PlayTypeDTO;
-import ge.ai.domino.console.transfer.dto.domino.TableInfoDTO;
-import ge.ai.domino.console.transfer.dto.domino.TileDTO;
-import ge.ai.domino.console.transfer.manager.domino.DominoManager;
-import ge.ai.domino.console.transfer.manager.domino.DominoMangerImpl;
 import ge.ai.domino.console.ui.TCHcomponents.TCHLabel;
 import ge.ai.domino.console.ui.control_panel.ControlPanel;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
+import ge.ai.domino.domain.domino.Game;
+import ge.ai.domino.domain.domino.PlayDirection;
+import ge.ai.domino.domain.domino.TableInfo;
+import ge.ai.domino.domain.domino.Tile;
+import ge.ai.domino.util.domino.DominoService;
+import ge.ai.domino.util.domino.DominoServiceImpl;
 import ge.ai.domino.util.string.StringUtil;
 import ge.ai.domino.util.tile.TileUtil;
 import javafx.geometry.Insets;
@@ -21,13 +20,13 @@ import javafx.scene.layout.FlowPane;
 
 public class DominoPane extends BorderPane {
 
-    private static final DominoManager dominoManager = new DominoMangerImpl();
+    private static final DominoService dominoService = new DominoServiceImpl();
 
-    private PlayTypeDTO playType;
+    private PlayType playType;
 
     private int startedTiles = 0;
 
-    private GameDTO game;
+    private Game game;
 
     private HimTilesPane himTilesPane;
 
@@ -37,9 +36,9 @@ public class DominoPane extends BorderPane {
 
     private int firstPressedNumber;
 
-    public DominoPane(GameDTO game) {
+    public DominoPane(Game game) {
         this.game = game;
-        this.playType = PlayTypeDTO.GET_STARTED_TILES;
+        this.playType = PlayType.GET_STARTED_TILES;
         reload();
     }
 
@@ -56,7 +55,7 @@ public class DominoPane extends BorderPane {
     }
 
     private void initTopPane() {
-        TableInfoDTO tableInfo = game.getCurrHand().getTableInfo();
+        TableInfo tableInfo = game.getCurrHand().getTableInfo();
         Label myPointsLabel = new TCHLabel(Messages.get("me") + " - " + game.getMyPoints() + " (" + tableInfo.getMyTilesCount() + ")");
         String opponentName = game.getGameProperties().getOpponentName();
         Label himPointLabel = new TCHLabel((StringUtil.isEmpty(opponentName) ? Messages.get("unknown") : opponentName) + " - " + game.getHimPoints() + " (" + tableInfo.getHimTilesCount() + ")");
@@ -70,28 +69,28 @@ public class DominoPane extends BorderPane {
     private void initCenterPane() {
         himTilesPane = new HimTilesPane(DominoPane.this.game, playType) {
             @Override
-            public void onTileEntered(TileDTO tile, PlayDirectionDTO direction) {
-                if (direction == PlayDirectionDTO.INCORRECT) {
+            public void onTileEntered(Tile tile, PlayDirection direction) {
+                if (direction == PlayDirection.INCORRECT) {
                     showIncorrectTurnMessage();
                     reload();
                 } else {
-                    if (DominoPane.this.playType == PlayTypeDTO.GET_STARTED_TILES) {
-                        DominoPane.this.game.setCurrHand(dominoManager.addTileForMe(DominoPane.this.game.getCurrHand(), tile.getX(), tile.getY()));
+                    if (DominoPane.this.playType == PlayType.GET_STARTED_TILES) {
+                        DominoPane.this.game.setCurrHand(dominoService.addTileForMe(DominoPane.this.game.getCurrHand(), tile.getX(), tile.getY()));
                         startedTiles++;
                         if (startedTiles == 7) {
                             startedTiles = 100;
-                            DominoPane.this.playType = game.getCurrHand().getTableInfo().isMyTurn() ? PlayTypeDTO.ME : PlayTypeDTO.HIM;
+                            DominoPane.this.playType = game.getCurrHand().getTableInfo().isMyTurn() ? PlayType.ME : PlayType.HIM;
                         }
                         reload();
-                    } else if (DominoPane.this.playType == PlayTypeDTO.ME) {
+                    } else if (DominoPane.this.playType == PlayType.ME) {
                         if (DominoPane.this.game.getCurrHand().getTableInfo().getBazaarTilesCount() == 2) {
-                            DominoPane.this.playType = PlayTypeDTO.HIM;
+                            DominoPane.this.playType = PlayType.HIM;
                         }
-                        DominoPane.this.game.setCurrHand(dominoManager.addTileForMe(DominoPane.this.game.getCurrHand(), tile.getX(), tile.getY()));
+                        DominoPane.this.game.setCurrHand(dominoService.addTileForMe(DominoPane.this.game.getCurrHand(), tile.getX(), tile.getY()));
                         reload();
-                    } else if (DominoPane.this.playType == PlayTypeDTO.HIM) {
-                        DominoPane.this.game.setCurrHand(dominoManager.playForHim(DominoPane.this.game.getCurrHand(), tile.getX(), tile.getY(), direction, DominoPane.this.game.getId()));
-                        DominoPane.this.playType = PlayTypeDTO.ME;
+                    } else if (DominoPane.this.playType == PlayType.HIM) {
+                        DominoPane.this.game.setCurrHand(dominoService.playForHim(DominoPane.this.game.getCurrHand(), tile.getX(), tile.getY(), direction, DominoPane.this.game.getId()));
+                        DominoPane.this.playType = PlayType.ME;
                         reload();
                     }
                 }
@@ -100,9 +99,9 @@ public class DominoPane extends BorderPane {
             @Override
             public void onAddTileEntered() {
                 if (DominoPane.this.game.getCurrHand().getTableInfo().getBazaarTilesCount() == 2) {
-                    DominoPane.this.playType = PlayTypeDTO.ME;
+                    DominoPane.this.playType = PlayType.ME;
                 } else {
-                    DominoPane.this.game.setCurrHand(dominoManager.addTileForHim(DominoPane.this.game.getCurrHand(), DominoPane.this.game.getId()));
+                    DominoPane.this.game.setCurrHand(dominoService.addTileForHim(DominoPane.this.game.getCurrHand(), DominoPane.this.game.getId()));
                     reload();
                 }
             }
@@ -113,13 +112,13 @@ public class DominoPane extends BorderPane {
     private void initBottomPane() {
         myTilesPane = new MyTilesPane(DominoPane.this.game, playType) {
             @Override
-            public void onTileEntered(TileDTO tile, PlayDirectionDTO direction) {
-                if (direction == PlayDirectionDTO.INCORRECT) {
+            public void onTileEntered(Tile tile, PlayDirection direction) {
+                if (direction == PlayDirection.INCORRECT) {
                     showIncorrectTurnMessage();
                     reload();
                 } else {
-                    DominoPane.this.game.setCurrHand(dominoManager.playForMe(DominoPane.this.game.getCurrHand(), tile.getX(), tile.getY(), direction));
-                    DominoPane.this.playType = PlayTypeDTO.HIM;
+                    DominoPane.this.game.setCurrHand(dominoService.playForMe(DominoPane.this.game.getCurrHand(), tile.getX(), tile.getY(), direction));
+                    DominoPane.this.playType = PlayType.HIM;
                     reload();
                 }
             }

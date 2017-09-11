@@ -51,7 +51,13 @@ public class DominoProcessor {
         if (hand.getTableInfo().getBazaarTilesCount() == 2) {
             return hand;
         }
-        addTileForMe(hand.getTiles(), x, y);
+        Map<String, Tile> tiles = hand.getTiles();
+        Tile tile = tiles.get(TileUtil.getTileUID(x, y));
+        double him = tile.getHim();
+        double bazaar = tile.getBazaar();
+        makeTileForMe(tile);
+        addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him, HIM);
+        addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), bazaar - 1, BAZAAR);
         updateTileCountBeforeAddMe(hand);
         logger.info("Added tile for me");
         if (systemParameterProcessor.getBooleanParameterValue(logTilesAfterMethod)) {
@@ -64,6 +70,7 @@ public class DominoProcessor {
         logger.info("Start add tile for him method");
         if (tilesFromBazaar.get(gameId) == null || tilesFromBazaar.get(gameId) == 0) {
             makeTilesAsInBazaarAndUpdateProbabilitiesForOther(hand);
+            updateTileCountBeforeAddHim(hand);
         }
         if (hand.getTableInfo().getBazaarTilesCount() == 2) {
             if (tilesFromBazaar.get(gameId) != null && tilesFromBazaar.get(gameId) > 0) {
@@ -97,8 +104,15 @@ public class DominoProcessor {
         logger.info("Start play for him method for tile [" + x + "-" + y + "] direction [" + direction.name() + "]");
         if (tilesFromBazaar.get(gameId) != null && tilesFromBazaar.get(gameId) > 0) {
             updateProbabilitiesForLastPickedTiles(hand, gameId);
+        } else {
+            Map<String, Tile> tiles = hand.getTiles();
+            Tile playedTile = tiles.get(TileUtil.getTileUID(x, y));
+            double him = playedTile.getHim();
+            double bazaar = playedTile.getBazaar();
+            makeTileAsPlayed(playedTile);
+            addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him - 1, HIM);
+            addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), bazaar, BAZAAR);
         }
-        makeTileAsPlayed(hand.getTiles().get(TileUtil.getTileUID(x, y)));
         playTile(hand.getTableInfo(), x, y, direction);
         updateTileCountBeforePlayHim(hand);
         hand.getTableInfo().setMyTurn(true);
@@ -123,14 +137,16 @@ public class DominoProcessor {
         double bazaarSum = 0.0;
         Set<String> mayHaveTiles = new HashSet<>();
         for (Tile tile : hand.getTiles().values()) {
-            if (notUsedNumbers.contains(tile.getX()) || notUsedNumbers.contains(tile.getY())) {
-                himSum += tile.getHim();
-                bazaarSum += (1.0 - tile.getBazaar());
-                tile.setHim(0);
-                tile.setMe(0);
-                tile.setBazaar(1.0);
-            } else if (!tile.isPlayed() && tile.getMe() != 1.0) {
-                mayHaveTiles.add(TileUtil.getTileUID(tile.getX(), tile.getY()));
+            if (!tile.isPlayed() && tile.getMe() != 1.0) {
+                if (notUsedNumbers.contains(tile.getX()) || notUsedNumbers.contains(tile.getY())) {
+                    himSum += tile.getHim();
+                    bazaarSum += (1.0 - tile.getBazaar());
+                    tile.setHim(0);
+                    tile.setMe(0);
+                    tile.setBazaar(1.0);
+                } else {
+                    mayHaveTiles.add(TileUtil.getTileUID(tile.getX(), tile.getY()));
+                }
             }
         }
         addProbabilitiesProportional(hand.getTiles(), mayHaveTiles, himSum, HIM);
@@ -169,60 +185,10 @@ public class DominoProcessor {
         return notUsedNumbers;
     }
 
-    public void playTile(TableInfo tableInfo, int x, int y, PlayDirection direction) {
-        if (!tableInfo.isWithCenter() && x == y) {
-            tableInfo.setTop(new PlayedTile(x, true, false, true));
-            tableInfo.setBottom(new PlayedTile(x, true, false, true));
-            if (tableInfo.getLeft() == null) {
-                tableInfo.setLeft(new PlayedTile(x, true, true, true));
-                tableInfo.setRight(new PlayedTile(x, true, true, true));
-            } else {
-                if (direction == PlayDirection.LEFT) {
-                    tableInfo.setLeft(new PlayedTile(x, true, true, true));
-                } else if (direction == PlayDirection.RIGHT) {
-                    tableInfo.setRight(new PlayedTile(x, true, true, true));
-                }
-            }
-            tableInfo.setWithCenter(true);
-        } else {
-            switch (direction) {
-                case TOP:
-                    tableInfo.setTop(new PlayedTile(tableInfo.getTop().getOpenSide() == x ? y : x, x == y, true, false));
-                    break;
-                case RIGHT:
-                    tableInfo.setRight(new PlayedTile(tableInfo.getRight().getOpenSide() == x ? y : x, x == y, true, false));
-                    break;
-                case BOTTOM:
-                    tableInfo.setBottom(new PlayedTile(tableInfo.getBottom().getOpenSide() == x ? y : x, x == y, true, false));
-                    break;
-                case LEFT:
-                    tableInfo.setLeft(new PlayedTile(tableInfo.getLeft().getOpenSide() == x ? y : x, x == y, true, false));
-                    break;
-            }
-        }
-        tableInfo.setLastPlayedUID(TileUtil.getTileUID(x, y));
-    }
-
-    private void addTileForMe(Map<String, Tile> tiles, int x, int y) {
-        Tile tile = tiles.get(TileUtil.getTileUID(x, y));
-        double him = tile.getHim();
-        double bazaar = tile.getBazaar();
-        makeTileForMe(tile);
-        addProbabilitiesProportional(tiles, getNotPlayedAndNotMineTiles(tiles), him, HIM);
-        addProbabilitiesProportional(tiles, getNotPlayedAndNotMineTiles(tiles), bazaar - 1, BAZAAR);
-    }
-
     private void makeTileForMe(Tile tile) {
         tile.setMe(1.0);
         tile.setHim(0.0);
         tile.setBazaar(0.0);
-    }
-
-    public void makeTileAsPlayed(Tile tile) {
-        tile.setMe(0);
-        tile.setHim(0);
-        tile.setBazaar(0);
-        tile.setPlayed(true);
     }
 
     /**
@@ -245,11 +211,11 @@ public class DominoProcessor {
         }
     }
 
-    private Set<String> getNotPlayedAndNotMineTiles(Map<String, Tile> tiles) {
+    private Set<String> getNotPlayedMineOrBazaarTiles(Map<String, Tile> tiles) {
         Set<String> keys = new HashSet<>();
         for (String key : tiles.keySet()) {
             Tile tile = tiles.get(key);
-            if (!tile.isPlayed() && tile.getMe() != 1.0) {
+            if (!tile.isPlayed() && tile.getMe() != 1.0 && tile.getBazaar() != 1.0) {
                 keys.add(key);
             }
         }
@@ -294,13 +260,54 @@ public class DominoProcessor {
         tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
     }
 
-    public void updateTileCountBeforePlayMe(Hand hand) {
+    void updateTileCountBeforePlayMe(Hand hand) {
         TableInfo tableInfo = hand.getTableInfo();
         tableInfo.setMyTilesCount(tableInfo.getMyTilesCount() - 1);
     }
 
-    public void updateTileCountBeforePlayHim(Hand hand) {
+    void updateTileCountBeforePlayHim(Hand hand) {
         TableInfo tableInfo = hand.getTableInfo();
         tableInfo.setHimTilesCount(tableInfo.getHimTilesCount() - 1);
+    }
+
+    void makeTileAsPlayed(Tile tile) {
+        tile.setMe(0);
+        tile.setHim(0);
+        tile.setBazaar(0);
+        tile.setPlayed(true);
+    }
+
+    void playTile(TableInfo tableInfo, int x, int y, PlayDirection direction) {
+        if (!tableInfo.isWithCenter() && x == y) {
+            tableInfo.setTop(new PlayedTile(x, true, false, true));
+            tableInfo.setBottom(new PlayedTile(x, true, false, true));
+            if (tableInfo.getLeft() == null) {
+                tableInfo.setLeft(new PlayedTile(x, true, true, true));
+                tableInfo.setRight(new PlayedTile(x, true, true, true));
+            } else {
+                if (direction == PlayDirection.LEFT) {
+                    tableInfo.setLeft(new PlayedTile(x, true, true, true));
+                } else if (direction == PlayDirection.RIGHT) {
+                    tableInfo.setRight(new PlayedTile(x, true, true, true));
+                }
+            }
+            tableInfo.setWithCenter(true);
+        } else {
+            switch (direction) {
+                case TOP:
+                    tableInfo.setTop(new PlayedTile(tableInfo.getTop().getOpenSide() == x ? y : x, x == y, true, false));
+                    break;
+                case RIGHT:
+                    tableInfo.setRight(new PlayedTile(tableInfo.getRight().getOpenSide() == x ? y : x, x == y, true, false));
+                    break;
+                case BOTTOM:
+                    tableInfo.setBottom(new PlayedTile(tableInfo.getBottom().getOpenSide() == x ? y : x, x == y, true, false));
+                    break;
+                case LEFT:
+                    tableInfo.setLeft(new PlayedTile(tableInfo.getLeft().getOpenSide() == x ? y : x, x == y, true, false));
+                    break;
+            }
+        }
+        tableInfo.setLastPlayedUID(TileUtil.getTileUID(x, y));
     }
 }

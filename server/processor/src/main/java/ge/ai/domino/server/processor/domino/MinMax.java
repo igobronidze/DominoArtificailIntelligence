@@ -25,7 +25,7 @@ public class MinMax {
 
     private static final SystemParameterProcessor systemParameterProcessor = new SystemParameterProcessor();
 
-    private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "8");
+    private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "6");
 
     private static final DominoProcessor dominoProcessor = new DominoProcessor();
 

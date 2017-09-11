@@ -61,4 +61,23 @@ public class Tile {
     public void setBazaar(double bazaar) {
         this.bazaar = bazaar;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tile tile = (Tile) o;
+
+        if (x != tile.x) return false;
+        return y == tile.y;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        return result;
+    }
 }

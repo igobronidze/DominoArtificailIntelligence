@@ -5,23 +5,34 @@ import ge.ai.domino.domain.domino.Tile;
 
 public class PossibleTurn {
 
-    private Tile tile;
+    private int x;
+
+    private int y;
 
     private PlayDirection direction;
 
     public PossibleTurn() {}
 
-    public PossibleTurn(Tile tile, PlayDirection direction) {
-        this.tile = tile;
+    public PossibleTurn(int x, int y, PlayDirection direction) {
+        this.x = x;
+        this.y = y;
         this.direction = direction;
     }
 
-    public Tile getTile() {
-        return tile;
+    public int getX() {
+        return x;
     }
 
-    public void setTile(Tile tile) {
-        this.tile = tile;
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public PlayDirection getDirection() {
@@ -30,5 +41,26 @@ public class PossibleTurn {
 
     public void setDirection(PlayDirection direction) {
         this.direction = direction;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PossibleTurn that = (PossibleTurn) o;
+
+        if (x != that.x) return false;
+        if (y != that.y) return false;
+        return direction == that.direction;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        result = 31 * result + direction.hashCode();
+        return result;
     }
 }

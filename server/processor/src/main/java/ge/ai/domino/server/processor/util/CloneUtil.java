@@ -83,8 +83,6 @@ public class CloneUtil {
             return null;
         }
         AIExtraInfo clone = new AIExtraInfo();
-        clone.setHimPoints(aiExtraInfo.getHimPoints());
-        clone.setMyPoints(aiExtraInfo.getMyPoints());
         clone.setHeuristicValue(aiExtraInfo.getHeuristicValue());
         return clone;
     }

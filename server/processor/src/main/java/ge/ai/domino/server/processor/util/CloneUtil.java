@@ -2,6 +2,7 @@ package ge.ai.domino.server.processor.util;
 
 import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.domino.AIPrediction;
+import ge.ai.domino.domain.domino.GameInfo;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayedTile;
 import ge.ai.domino.domain.domino.TableInfo;
@@ -17,6 +18,7 @@ public class CloneUtil {
         clone.setAiExtraInfo(getClone(hand.getAiExtraInfo()));
         clone.setAiPrediction(getClone(hand.getAiPrediction()));
         clone.setTableInfo(getClone(hand.getTableInfo()));
+        clone.setGameInfo(getClone(hand.getGameInfo()));
         clone.setTiles(getClone(hand.getTiles()));
         return clone;
     }
@@ -84,6 +86,14 @@ public class CloneUtil {
         }
         AIExtraInfo clone = new AIExtraInfo();
         clone.setHeuristicValue(aiExtraInfo.getHeuristicValue());
+        return clone;
+    }
+
+    private static GameInfo getClone(GameInfo gameInfo) {
+        GameInfo clone = new GameInfo();
+        clone.setGameId(gameInfo.getGameId());
+        clone.setMyPoints(gameInfo.getMyPoints());
+        clone.setHimPoints(gameInfo.getHimPoints());
         return clone;
     }
 }

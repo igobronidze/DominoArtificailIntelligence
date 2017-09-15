@@ -1,7 +1,7 @@
 package ge.ai.domino.console.ui.domino;
 
 import ge.ai.domino.domain.domino.AIPrediction;
-import ge.ai.domino.domain.domino.Game;
+import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.util.tile.TileUtil;
@@ -13,8 +13,8 @@ import javafx.scene.layout.VBox;
 
 abstract class MyTilesPane extends TilesPane {
 
-    MyTilesPane(Game game, PlayType playType) {
-        super(game, playType);
+    MyTilesPane(Hand hand, PlayType playType) {
+        super(hand, playType);
         initUI();
         initComponents();
     }
@@ -34,7 +34,7 @@ abstract class MyTilesPane extends TilesPane {
                 vBox.setAlignment(Pos.TOP_CENTER);
                 ImageView imageView = getImageView(uid, playType == PlayType.ME);
                 imageViews.put(uid, imageView);
-                AIPrediction aiPrediction = game.getCurrHand().getAiPrediction();
+                AIPrediction aiPrediction = hand.getAiPrediction();
                 if (aiPrediction != null) {
                     int bestX = aiPrediction.getX();
                     int bestY = aiPrediction.getY();

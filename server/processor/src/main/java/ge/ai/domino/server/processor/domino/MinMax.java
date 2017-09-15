@@ -61,8 +61,17 @@ public class MinMax {
     }
 
     private static void updateHeuristicValue(Hand hand, int height) {
+        if (hand.getTableInfo().getHimTilesCount() == 0) {
+            hand.getAiExtraInfo().setHeuristicValue(dominoProcessor.countLeftTiles(hand.getTiles(), true));
+            return;
+        }
+        if (hand.getTableInfo().getMyTilesCount() == 0) {
+            hand.getAiExtraInfo().setHeuristicValue(-1 * dominoProcessor.countLeftTiles(hand.getTiles(), false));
+            return;
+        }
         if (height == treeHeight) {
-            hand.getAiExtraInfo().setHeuristicValue(countScore(hand));
+            int count = dominoProcessor.countScore(hand);
+            hand.getAiExtraInfo().setHeuristicValue(hand.getTableInfo().isMyTurn() ? -1 * count : count);
             return;
         }
         Set<PossibleTurn> possibleTurns = getPossibleTurns(hand);
@@ -95,11 +104,8 @@ public class MinMax {
                 remainingProbability -= prob;
             }
         }
-        if (possibleTurns.isEmpty()) {
-            hand.getAiExtraInfo().setHeuristicValue(countScore(hand) + (hand.getTableInfo().isMyTurn() ? -20 : 20));
-        } else {
-            hand.getAiExtraInfo().setHeuristicValue(countScore(hand) + heuristic);
-        }
+        int count = dominoProcessor.countScore(hand);
+        hand.getAiExtraInfo().setHeuristicValue((hand.getTableInfo().isMyTurn() ? -1 * count : count) + heuristic + remainingProbability * (hand.getTableInfo().isMyTurn() ? -20 : 20));
     }
 
     private static Hand play(Hand hand, PossibleTurn possibleTurn) {
@@ -161,31 +167,5 @@ public class MinMax {
     private static int hashForPlayedTile(PlayedTile playedTile) {
         int p = 10;
         return (playedTile.getOpenSide() + 1) * (playedTile.isDouble() ? p : 1);
-    }
-
-    private static double countScore(Hand hand) {
-        int count = 0;
-        TableInfo tableInfo = hand.getTableInfo();
-        if (tableInfo.getLeft().getOpenSide() == tableInfo.getRight().getOpenSide() && tableInfo.getLeft().isDouble() && tableInfo.getRight().isDouble()) {
-            count = tableInfo.getLeft().getOpenSide() * 2;
-        } else {
-            count += tableInfo.getLeft().isDouble() ? (tableInfo.getLeft().getOpenSide() * 2) : tableInfo.getLeft().getOpenSide();
-            count += tableInfo.getRight().isDouble() ? (tableInfo.getRight().getOpenSide() * 2) : tableInfo.getRight().getOpenSide();
-            if (tableInfo.getTop().isCountInSum()) {
-                count += tableInfo.getTop().isDouble() ? (tableInfo.getTop().getOpenSide() * 2) : tableInfo.getTop().getOpenSide();
-            }
-            if (tableInfo.getBottom().isCountInSum()) {
-                count += tableInfo.getBottom().isDouble() ? (tableInfo.getBottom().getOpenSide() * 2) : tableInfo.getBottom().getOpenSide();
-            }
-        }
-        if (count > 0 && count % 5 == 0) {
-            if (tableInfo.isMyTurn()) {
-                return -1 * count;
-            } else {
-                return count;
-            }
-        } else {
-            return 0;
-        }
     }
 }

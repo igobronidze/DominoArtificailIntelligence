@@ -15,6 +15,8 @@ public class Hand {
 
     private AIExtraInfo aiExtraInfo;
 
+    private GameInfo gameInfo;
+
     public Map<String, Tile> getTiles() {
         return tiles;
     }
@@ -45,5 +47,13 @@ public class Hand {
 
     public void setAiExtraInfo(AIExtraInfo aiExtraInfo) {
         this.aiExtraInfo = aiExtraInfo;
+    }
+
+    public GameInfo getGameInfo() {
+        return gameInfo;
+    }
+
+    public void setGameInfo(GameInfo gameInfo) {
+        this.gameInfo = gameInfo;
     }
 }

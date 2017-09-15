@@ -1,7 +1,6 @@
 package ge.ai.domino.console.ui.domino;
 
 import ge.ai.domino.console.ui.util.ImageFactory;
-import ge.ai.domino.domain.domino.Game;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
 import ge.ai.domino.domain.domino.TableInfo;
@@ -21,7 +20,7 @@ abstract class TilesPane extends FlowPane {
 
     static Map<String, Tile> tiles;
 
-    static Game game;
+    static Hand hand;
 
     static ImageView upArrow;
 
@@ -41,10 +40,10 @@ abstract class TilesPane extends FlowPane {
 
     Map<String, ImageView> imageViews = new HashMap<>();
 
-    TilesPane(Game game, PlayType playType) {
-        this.tiles = game.getCurrHand().getTiles();
+    TilesPane(Hand hand, PlayType playType) {
+        this.tiles = hand.getTiles();
         this.playType = playType;
-        this.game = game;
+        this.hand = hand;
         initBasicUI();
     }
 
@@ -99,7 +98,6 @@ abstract class TilesPane extends FlowPane {
     }
 
     boolean isFirsTurn() {
-        Hand hand = game.getCurrHand();
         TableInfo tableInfoD = hand.getTableInfo();
         return tableInfoD.getTop() == null && tableInfoD.getRight() == null && tableInfoD.getBottom() == null && tableInfoD.getLeft() == null;
     }
@@ -113,7 +111,7 @@ abstract class TilesPane extends FlowPane {
     }
 
     static void onUpArrowPressed() {
-        TableInfo tableInfo = game.getCurrHand().getTableInfo();
+        TableInfo tableInfo = hand.getTableInfo();
         Integer top = tableInfo.getTop().getOpenSide();
         if ((top == tiles.get(tileUID).getX() || top == tiles.get(tileUID).getY()) && !tableInfo.getLeft().isCenter() && !tableInfo.getRight().isCenter()) {
             tilePane.onTileEntered(tiles.get(tileUID), PlayDirection.TOP);
@@ -123,7 +121,7 @@ abstract class TilesPane extends FlowPane {
     }
 
     static void onRightArrowPressed() {
-        Integer right = game.getCurrHand().getTableInfo().getRight().getOpenSide();
+        Integer right = hand.getTableInfo().getRight().getOpenSide();
         if (right == tiles.get(tileUID).getX() || right == tiles.get(tileUID).getY()) {
             tilePane.onTileEntered(tiles.get(tileUID), PlayDirection.RIGHT);
         } else {
@@ -132,7 +130,7 @@ abstract class TilesPane extends FlowPane {
     }
 
     static void onDownArrowPressed() {
-        TableInfo tableInfo = game.getCurrHand().getTableInfo();
+        TableInfo tableInfo = hand.getTableInfo();
         Integer bottom = tableInfo.getBottom().getOpenSide();
         if ((bottom == tiles.get(tileUID).getX() || bottom == tiles.get(tileUID).getY()) && !tableInfo.getLeft().isCenter() && !tableInfo.getRight().isCenter()) {
             tilePane.onTileEntered(tiles.get(tileUID), PlayDirection.BOTTOM);
@@ -142,7 +140,7 @@ abstract class TilesPane extends FlowPane {
     }
 
     static void onLeftArrowPressed() {
-        Integer left = game.getCurrHand().getTableInfo().getLeft().getOpenSide();
+        Integer left = hand.getTableInfo().getLeft().getOpenSide();
         if (left == tiles.get(tileUID).getX() || left == tiles.get(tileUID).getY()) {
             tilePane.onTileEntered(tiles.get(tileUID), PlayDirection.LEFT);
         } else {

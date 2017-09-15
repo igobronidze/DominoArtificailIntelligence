@@ -1,6 +1,5 @@
 package ge.ai.domino.util.domino;
 
-import ge.ai.domino.domain.domino.Game;
 import ge.ai.domino.domain.domino.GameProperties;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
@@ -11,7 +10,7 @@ public class DominoServiceImpl implements DominoService {
     private static final DominoProcessor dominoProcessor = new DominoProcessor();
 
     @Override
-    public Game startGame(GameProperties gameProperties) {
+    public Hand startGame(GameProperties gameProperties) {
         return dominoProcessor.startGame(gameProperties);
     }
 
@@ -21,8 +20,8 @@ public class DominoServiceImpl implements DominoService {
     }
 
     @Override
-    public Hand addTileForHim(Hand hand, int gameId) {
-        return dominoProcessor.addTileForHim(hand, gameId);
+    public Hand addTileForHim(Hand hand) {
+        return dominoProcessor.addTileForHim(hand);
     }
 
     @Override
@@ -31,7 +30,7 @@ public class DominoServiceImpl implements DominoService {
     }
 
     @Override
-    public Hand playForHim(Hand hand, int x, int y, PlayDirection direction, int gameId) {
-        return dominoProcessor.playForHim(hand, x, y, direction, gameId);
+    public Hand playForHim(Hand hand, int x, int y, PlayDirection direction) {
+        return dominoProcessor.playForHim(hand, x, y, direction);
     }
 }

@@ -2,6 +2,7 @@ package ge.ai.domino.console.ui.domino;
 
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.domain.domino.Game;
+import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.util.tile.TileUtil;
@@ -17,8 +18,8 @@ import java.text.NumberFormat;
 
 abstract class HimTilesPane extends TilesPane {
 
-    HimTilesPane(Game game, PlayType playType) {
-        super(game, playType);
+    HimTilesPane(Hand hand, PlayType playType) {
+        super(hand, playType);
         initComponents();
     }
 

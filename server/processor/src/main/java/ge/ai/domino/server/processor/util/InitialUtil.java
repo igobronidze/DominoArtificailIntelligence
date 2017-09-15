@@ -2,6 +2,7 @@ package ge.ai.domino.server.processor.util;
 
 import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.domino.Game;
+import ge.ai.domino.domain.domino.GameInfo;
 import ge.ai.domino.domain.domino.GameProperties;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.TableInfo;
@@ -25,20 +26,22 @@ public class InitialUtil {
     public static Game getInitialGame(GameProperties gameProperties) {
         Game game = new Game();
         game.setGameProperties(gameProperties);
-        game.setCurrHand(getInitialHand(gameProperties));
+        game.setCurrHand(getInitialHand(gameProperties.isStart()));
         game.setId(new Random().nextInt());  // TODO[IG] it temporary, id may set by database
+        game.getCurrHand().getGameInfo().setGameId(game.getId());
         return game;
     }
 
-    private static Hand getInitialHand(GameProperties gameProperties) {
+    public static Hand getInitialHand(boolean startMe) {
         TableInfo tableInfo = new TableInfo();
-        tableInfo.setMyTurn(gameProperties.isStart());
+        tableInfo.setMyTurn(startMe);
         tableInfo.setBazaarTilesCount(INITIAL_COUNT_TILES_IN_BAZAAR);
         tableInfo.setHimTilesCount(INITIAL_COUNT_TILES_FOR_HIM);
         Hand hand = new Hand();
         hand.setTiles(getInitialTiles());
         hand.setTableInfo(tableInfo);
         hand.setAiExtraInfo(new AIExtraInfo());
+        hand.setGameInfo(new GameInfo());
         return hand;
     }
 

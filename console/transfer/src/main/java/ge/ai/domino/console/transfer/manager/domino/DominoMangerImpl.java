@@ -1,6 +1,5 @@
 package ge.ai.domino.console.transfer.manager.domino;
 
-import ge.ai.domino.console.transfer.dto.domino.GameDTO;
 import ge.ai.domino.console.transfer.dto.domino.GamePropertiesDTO;
 import ge.ai.domino.console.transfer.dto.domino.HandDTO;
 import ge.ai.domino.console.transfer.dto.domino.PlayDirectionDTO;
@@ -13,8 +12,8 @@ public class DominoMangerImpl implements DominoManager {
     private static final DominoService dominoService = new DominoServiceImpl();
 
     @Override
-    public GameDTO startGame(GamePropertiesDTO gameProperties) {
-        return GameDTO.toGameDTO(dominoService.startGame(GamePropertiesDTO.toGameProperties(gameProperties)));
+    public HandDTO startGame(GamePropertiesDTO gameProperties) {
+        return HandDTO.toHandDTO(dominoService.startGame(GamePropertiesDTO.toGameProperties(gameProperties)));
     }
 
     @Override
@@ -23,8 +22,8 @@ public class DominoMangerImpl implements DominoManager {
     }
 
     @Override
-    public HandDTO addTileForHim(HandDTO hand, int gameId) {
-        return HandDTO.toHandDTO(dominoService.addTileForHim(HandDTO.toHand(hand), gameId));
+    public HandDTO addTileForHim(HandDTO hand) {
+        return HandDTO.toHandDTO(dominoService.addTileForHim(HandDTO.toHand(hand)));
     }
 
     @Override
@@ -33,7 +32,7 @@ public class DominoMangerImpl implements DominoManager {
     }
 
     @Override
-    public HandDTO playForHim(HandDTO hand, int x, int y, PlayDirectionDTO direction, int gameId) {
-        return HandDTO.toHandDTO(dominoService.playForHim(HandDTO.toHand(hand), x, y, PlayDirection.valueOf(direction.name()), gameId));
+    public HandDTO playForHim(HandDTO hand, int x, int y, PlayDirectionDTO direction) {
+        return HandDTO.toHandDTO(dominoService.playForHim(HandDTO.toHand(hand), x, y, PlayDirection.valueOf(direction.name())));
     }
 }

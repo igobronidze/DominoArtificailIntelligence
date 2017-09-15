@@ -7,8 +7,8 @@ import ge.ai.domino.console.ui.TCHcomponents.TCHFieldLabel;
 import ge.ai.domino.console.ui.TCHcomponents.TCHTextField;
 import ge.ai.domino.console.ui.domino.DominoPane;
 import ge.ai.domino.console.ui.util.Messages;
-import ge.ai.domino.domain.domino.Game;
 import ge.ai.domino.domain.domino.GameProperties;
+import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.util.domino.DominoService;
 import ge.ai.domino.util.domino.DominoServiceImpl;
@@ -62,8 +62,8 @@ public class GamePropertiesPane extends VBox {
             gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
             gameProperties.setWebsite(websiteField.getText());
             gameProperties.setOpponentName(nameField.getText());
-            Game game = dominoService.startGame(gameProperties);
-            ControlPanel.getRoot().setCenter(new DominoPane(game));
+            Hand hand = dominoService.startGame(gameProperties);
+            ControlPanel.getRoot().setCenter(new DominoPane(hand));
         });
         this.getChildren().addAll(websiteFieldLabel, nameFieldLabel, pointFieldLabel, startFieldLabel, startButton);
     }

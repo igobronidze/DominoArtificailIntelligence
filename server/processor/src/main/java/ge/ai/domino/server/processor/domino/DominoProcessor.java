@@ -2,6 +2,7 @@ package ge.ai.domino.server.processor.domino;
 
 import ge.ai.domino.domain.domino.AIPrediction;
 import ge.ai.domino.domain.domino.Game;
+import ge.ai.domino.domain.domino.GameInfo;
 import ge.ai.domino.domain.domino.GameProperties;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
@@ -34,21 +35,31 @@ public class DominoProcessor {
 
     private static final String BAZAAR = "bazaar";
 
-    private static final Map<Integer, Integer> tilesFromBazaar = new HashMap<>();
+    private static Map<Integer, Integer> tilesFromBazaar = new HashMap<>();
 
-    public Game startGame(GameProperties gameProperties) {
+    private static Map<Integer, String> omittedGames = new HashMap<>();
+
+    private static final Map<Integer, Game> cachedGames = new HashMap<>();
+
+    public Hand startGame(GameProperties gameProperties) {
         logger.info("Started prepare new game");
         Game game = InitialUtil.getInitialGame(gameProperties);
+        cachedGames.put(game.getId(), game);
         logger.info("Started new game");
         if (systemParameterProcessor.getBooleanParameterValue(logTilesAfterMethod)) {
             LoggingProcessor.logTilesFullInfo(game.getCurrHand());
         }
-        return game;
+        return game.getCurrHand();
     }
 
     public Hand addTileForMe(Hand hand, int x, int y) {
         logger.info("Start add tile for me method for tile [" + x + "-" + y + "]");
         if (hand.getTableInfo().getBazaarTilesCount() == 2) {
+            if (HIM.equals(omittedGames.get(hand.getGameInfo().getGameId()))) {
+                return finishedLastAndGetNewHand(hand, true);
+            } else {
+                omittedGames.put(hand.getGameInfo().getGameId(), ME);
+            }
             return hand;
         }
         Map<String, Tile> tiles = hand.getTiles();
@@ -66,13 +77,22 @@ public class DominoProcessor {
         return hand;
     }
 
-    public Hand addTileForHim(Hand hand, int gameId) {
+    public Hand addTileForHim(Hand hand) {
         logger.info("Start add tile for him method");
+        int gameId = hand.getGameInfo().getGameId();
         if (tilesFromBazaar.get(gameId) == null || tilesFromBazaar.get(gameId) == 0) {
             makeTilesAsInBazaarAndUpdateProbabilitiesForOther(hand);
             updateTileCountBeforeAddHim(hand);
         }
         if (hand.getTableInfo().getBazaarTilesCount() == 2) {
+            if (hand.getTableInfo().getBazaarTilesCount() == 2) {
+                if (ME.equals(omittedGames.get(hand.getGameInfo().getGameId()))) {
+                    return finishedLastAndGetNewHand(hand, false);
+                } else {
+                    omittedGames.put(hand.getGameInfo().getGameId(), HIM);
+                }
+                return hand;
+            }
             if (tilesFromBazaar.get(gameId) != null && tilesFromBazaar.get(gameId) > 0) {
                 updateProbabilitiesForLastPickedTiles(hand, gameId);
             }
@@ -92,7 +112,11 @@ public class DominoProcessor {
         makeTileAsPlayed(hand.getTiles().get(TileUtil.getTileUID(x, y)));
         playTile(hand.getTableInfo(), x, y, direction);
         updateTileCountBeforePlayMe(hand);
+        hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + countScore(hand));
         hand.getTableInfo().setMyTurn(false);
+        if (hand.getTableInfo().getMyTilesCount() == 0) {
+            return finishedLastAndGetNewHand(hand, true);
+        }
         logger.info("Play tile for me");
         if (systemParameterProcessor.getBooleanParameterValue(logTilesAfterMethod)) {
             LoggingProcessor.logTilesFullInfo(hand);
@@ -100,8 +124,9 @@ public class DominoProcessor {
         return hand;
     }
 
-    public Hand playForHim(Hand hand, int x, int y, PlayDirection direction, int gameId) {
+    public Hand playForHim(Hand hand, int x, int y, PlayDirection direction) {
         logger.info("Start play for him method for tile [" + x + "-" + y + "] direction [" + direction.name() + "]");
+        int gameId = hand.getGameInfo().getGameId();
         if (tilesFromBazaar.get(gameId) != null && tilesFromBazaar.get(gameId) > 0) {
             updateProbabilitiesForLastPickedTiles(hand, gameId);
         } else {
@@ -115,7 +140,11 @@ public class DominoProcessor {
         }
         playTile(hand.getTableInfo(), x, y, direction);
         updateTileCountBeforePlayHim(hand);
+        hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + countScore(hand));
         hand.getTableInfo().setMyTurn(true);
+        if (hand.getTableInfo().getHimTilesCount() == 0) {
+            return finishedLastAndGetNewHand(hand, false);
+        }
         AIPrediction aiPrediction = MinMax.minMax(CloneUtil.getClone(hand));
         hand.setAiPrediction(aiPrediction);
         logger.info("Play tile for him");
@@ -125,12 +154,6 @@ public class DominoProcessor {
         return hand;
     }
 
-    /**
-     * თუ პირველად წავიდა ბაზარში, ვიღებთ ყველა შესაძლო სვლას და ვაცხადებთ, რომ მას ეს ქვები არ ყავს
-     * შესაბამის ალბათობებს ვუნაწილებთ სხვას
-     *
-     * @param hand
-     */
     private void makeTilesAsInBazaarAndUpdateProbabilitiesForOther(Hand hand) {
         Set<Integer> notUsedNumbers = getNotUsedNumbers(hand);
         double himSum = 0.0;
@@ -191,14 +214,6 @@ public class DominoProcessor {
         tile.setBazaar(0.0);
     }
 
-    /**
-     * probability ნაწილდება possibleTiles ქვებზე
-     *
-     * @param tiles არსებული ყველა ქვა
-     * @param possibleTiles ის ქვები, რომელსაც უნდა შეეხოს ალბათობის მომატება
-     * @param probability მთლიანი ალბათობა რომელიც უნდა გადანაწილდეს ქვებზე
-     * @param type ტიპი (HIM, ME, BAZAAR)
-     */
     private void addProbabilitiesProportional(Map<String, Tile> tiles, Set<String> possibleTiles, double probability, String type) {
         double sum = 0.0;
         for (String key : possibleTiles) {
@@ -260,6 +275,31 @@ public class DominoProcessor {
         tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
     }
 
+    private Hand finishedLastAndGetNewHand(Hand hand, boolean me) {
+        omittedGames = new HashMap<>();
+        tilesFromBazaar = new HashMap<>();
+        GameInfo gameInfo = hand.getGameInfo();
+        if (me) {
+            gameInfo.setMyPoints(gameInfo.getMyPoints() + countLeftTiles(hand.getTiles(), true));
+        } else {
+            gameInfo.setHimPoints(gameInfo.getHimPoints() + countLeftTiles(hand.getTiles(), false));
+        }
+        int scoreForWin = cachedGames.get(hand.getGameInfo().getGameId()).getGameProperties().getPointsForWin();
+        if (gameInfo.getMyPoints() >= scoreForWin) {
+            logger.info("I win the game");
+            return null;
+        } else if (gameInfo.getHimPoints() >= scoreForWin) {
+            logger.info("He win the game");
+            return null;
+        } else {
+            Game game = cachedGames.get(hand.getGameInfo().getGameId());
+            game.getHistory().add(hand);
+            game.setCurrHand(InitialUtil.getInitialHand(false));
+            game.getCurrHand().setGameInfo(hand.getGameInfo());
+            return game.getCurrHand();
+        }
+    }
+
     void updateTileCountBeforePlayMe(Hand hand) {
         TableInfo tableInfo = hand.getTableInfo();
         tableInfo.setMyTilesCount(tableInfo.getMyTilesCount() - 1);
@@ -309,5 +349,43 @@ public class DominoProcessor {
             }
         }
         tableInfo.setLastPlayedUID(TileUtil.getTileUID(x, y));
+    }
+
+    int countLeftTiles(Map<String, Tile> tiles, boolean me) {
+        double cont = 0;
+        for (Tile tile : tiles.values()) {
+            if (me) {
+                cont += tile.getMe() * (tile.getX() + tile.getY());
+            } else {
+                cont += tile.getHim() * (tile.getX() + tile.getY());
+            }
+        }
+        for (int i = 5; ; i+=5) {
+            if (i >= cont) {
+                return i;
+            }
+        }
+    }
+
+    int countScore(Hand hand) {
+        int count = 0;
+        TableInfo tableInfo = hand.getTableInfo();
+        if (tableInfo.getLeft().getOpenSide() == tableInfo.getRight().getOpenSide() && tableInfo.getLeft().isDouble() && tableInfo.getRight().isDouble()) {
+            count = tableInfo.getLeft().getOpenSide() * 2;
+        } else {
+            count += tableInfo.getLeft().isDouble() ? (tableInfo.getLeft().getOpenSide() * 2) : tableInfo.getLeft().getOpenSide();
+            count += tableInfo.getRight().isDouble() ? (tableInfo.getRight().getOpenSide() * 2) : tableInfo.getRight().getOpenSide();
+            if (tableInfo.getTop().isCountInSum()) {
+                count += tableInfo.getTop().isDouble() ? (tableInfo.getTop().getOpenSide() * 2) : tableInfo.getTop().getOpenSide();
+            }
+            if (tableInfo.getBottom().isCountInSum()) {
+                count += tableInfo.getBottom().isDouble() ? (tableInfo.getBottom().getOpenSide() * 2) : tableInfo.getBottom().getOpenSide();
+            }
+        }
+        if (count > 0 && count % 5 == 0) {
+            return count;
+        } else {
+            return 0;
+        }
     }
 }

@@ -10,6 +10,8 @@ public class GameProperties {
 
     private boolean start;
 
+    private boolean firstHand;
+
     public String getOpponentName() {
         return opponentName;
     }
@@ -40,5 +42,13 @@ public class GameProperties {
 
     public void setStart(boolean start) {
         this.start = start;
+    }
+
+    public boolean isFirstHand() {
+        return firstHand;
+    }
+
+    public void setFirstHand(boolean firstHand) {
+        this.firstHand = firstHand;
     }
 }

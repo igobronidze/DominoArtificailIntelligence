@@ -47,7 +47,7 @@ public class SystemParametersPane extends HBox {
 
     private TCHComboBox typeComboBox;
 
-    private  DoubleBinding doubleBinding;
+    private DoubleBinding doubleBinding;
 
     public SystemParametersPane(DoubleBinding doubleBinding) {
         this.doubleBinding = doubleBinding;

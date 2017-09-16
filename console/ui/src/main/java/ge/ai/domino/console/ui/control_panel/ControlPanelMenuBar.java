@@ -1,5 +1,7 @@
 package ge.ai.domino.console.ui.control_panel;
 
+import ge.ai.domino.console.ui.domino.DominoPane;
+import ge.ai.domino.console.ui.shortcut.ShortcutPane;
 import ge.ai.domino.console.ui.sysparam.SystemParametersPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
@@ -31,6 +33,16 @@ public class ControlPanelMenuBar extends MenuBar {
 
     private Menu getHelpMenu() {
         Menu helpMenu = new Menu(Messages.get("help"));
+        MenuItem shortcutItem = new MenuItem(Messages.get("shortcut"));
+        shortcutItem.setOnAction(e -> {
+            Stage stage = new Stage();
+            stage.setHeight(650);
+            stage.setWidth(900);
+            stage.setScene(new Scene(new ShortcutPane(stage.widthProperty().subtract(10))));
+            stage.setTitle(Messages.get("shortcut"));
+            stage.show();
+        });
+        helpMenu.getItems().addAll(shortcutItem);
         return helpMenu;
     }
 

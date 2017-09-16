@@ -46,13 +46,9 @@ public class MinMax {
         }
         if (bestTurn == null) {
             logger.info("No AIPrediction");
-        } else {
-            logger.info("AIPrediction is [" + bestTurn.getX() + "-" + bestTurn.getY() + " " + bestTurn.getDirection().name() + "], " +
-                    "heuristic - " + bestHeuristic);
-        }
-        if (bestTurn == null) {
             return null;
         }
+        logger.info("AIPrediction is [" + bestTurn.getX() + "-" + bestTurn.getY() + " " + bestTurn.getDirection().name() + "], " + "heuristic - " + bestHeuristic);
         AIPrediction aiPrediction = new AIPrediction();
         aiPrediction.setX(bestTurn.getX());
         aiPrediction.setY(bestTurn.getY());

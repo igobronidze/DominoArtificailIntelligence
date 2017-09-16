@@ -62,6 +62,7 @@ public class GamePropertiesPane extends VBox {
             gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
             gameProperties.setWebsite(websiteField.getText());
             gameProperties.setOpponentName(nameField.getText());
+            gameProperties.setFirstHand(true);
             Hand hand = dominoService.startGame(gameProperties);
             ControlPanel.getRoot().setCenter(new DominoPane(hand));
         });

@@ -54,9 +54,9 @@ public class DominoPane extends BorderPane {
     private void initTopPane() {
         TableInfo tableInfo = hand.getTableInfo();
         GameInfo gameInfo = hand.getGameInfo();
-        Label myPointsLabel = new TCHLabel(Messages.get("me") + " - " + gameInfo.getMyPoints() + " (" + tableInfo.getMyTilesCount() + ")");
-        Label himPointLabel = new TCHLabel(Messages.get("opponent") + " - " + gameInfo.getHimPoints() + " (" + tableInfo.getHimTilesCount() + ")");
-        Label bazaarCountLabel = new TCHLabel(Messages.get("bazaar") + " (" + tableInfo.getBazaarTilesCount() + ")");
+        Label myPointsLabel = new TCHLabel(Messages.get("me") + " - " + gameInfo.getMyPoints() + " (" + (int)tableInfo.getMyTilesCount() + ")");
+        Label himPointLabel = new TCHLabel(Messages.get("opponent") + " - " + gameInfo.getHimPoints() + " (" + (int)tableInfo.getHimTilesCount() + ")");
+        Label bazaarCountLabel = new TCHLabel(Messages.get("bazaar") + " (" + (int)tableInfo.getBazaarTilesCount() + ")");
         ImageView undoImage = new ImageView(ImageFactory.getImage("undo.png"));
         undoImage.setOnMouseClicked(event -> onUndo());
         FlowPane flowPane = new FlowPane(30, 10);
@@ -111,59 +111,69 @@ public class DominoPane extends BorderPane {
     private void initKeyboardListener() {
         ControlPanel.getScene().setOnKeyPressed(e -> {
             Integer secondPressedNumber = null;
+            if (e.getCode() == KeyCode.BACK_SPACE) {
+                reload();
+                return;
+            }
             if (e.getCode() == KeyCode.CONTROL) {
                 pressedOnCtrl = true;
-            } else if (pressedOnCtrl && firstPressedNumber == null) {
+                return;
+            }
+            if (pressedOnCtrl && firstPressedNumber == null) {
                 try {
                     firstPressedNumber = Integer.parseInt(e.getText());
-                } catch (NumberFormatException ignore) {
-                }
+                    return;
+                } catch (NumberFormatException ignore) {}
             } else if (pressedOnCtrl) {
                 try {
                     secondPressedNumber = Integer.parseInt(e.getText());
-                } catch (NumberFormatException ignore) {
-                }
+                    int tmp = secondPressedNumber;
+                    if (secondPressedNumber > firstPressedNumber) {
+                        secondPressedNumber = firstPressedNumber;
+                        firstPressedNumber = tmp;
+                    }
+                    String uid = TileUtil.getTileUID(firstPressedNumber, secondPressedNumber);
+                    if (myTilesPane.showTile(uid)) {
+                        myTilesPane.onTilePressed(uid);
+                    } else if (himTilesPane.showTile(uid)) {
+                        himTilesPane.onTilePressed(uid);
+                    }
+                    firstPressedNumber = null;
+                    secondPressedNumber = null;
+                    return;
+                } catch (NumberFormatException ignore) {}
             }
             if (pressedOnCtrl && TilesPane.isArrowsVisible()) {
                 if (e.getCode() == KeyCode.UP) {
                     TilesPane.onUpArrowPressed();
+                    return;
                 }
                 if (e.getCode() == KeyCode.LEFT) {
                     TilesPane.onLeftArrowPressed();
+                    return;
                 }
                 if (e.getCode() == KeyCode.DOWN) {
                     TilesPane.onDownArrowPressed();
+                    return;
                 }
                 if (e.getCode() == KeyCode.RIGHT) {
                     TilesPane.onRightArrowPressed();
+                    return;
                 }
             }
             if (pressedOnCtrl && e.getCode() == KeyCode.ADD) {
                 himTilesPane.onAddTileEntered();
+                return;
             }
-            if (secondPressedNumber != null && firstPressedNumber != null) {
-                int tmp = secondPressedNumber;
-                if (secondPressedNumber > firstPressedNumber) {
-                    secondPressedNumber = firstPressedNumber;
-                    firstPressedNumber = tmp;
-                }
-                String uid = TileUtil.getTileUID(firstPressedNumber, secondPressedNumber);
-                if (myTilesPane.showTile(uid)) {
-                    myTilesPane.onTilePressed(uid);
-                } else if (himTilesPane.showTile(uid)) {
-                    himTilesPane.onTilePressed(uid);
-                }
-                firstPressedNumber = null;
-                secondPressedNumber = null;
-            }
-            if (e.getCode() == KeyCode.Z) {
+            if (pressedOnCtrl && e.getCode() == KeyCode.Z) {
                 onUndo();
+                return;
             }
         });
-        this.setOnKeyReleased(e -> {
+        ControlPanel.getScene().setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.CONTROL) {
                 pressedOnCtrl = false;
-                firstPressedNumber = 0;
+                firstPressedNumber = null;
             }
         });
     }

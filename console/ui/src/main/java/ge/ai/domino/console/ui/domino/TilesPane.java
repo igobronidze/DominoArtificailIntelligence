@@ -36,13 +36,10 @@ abstract class TilesPane extends FlowPane {
 
     static private boolean arrowsVisible;
 
-    PlayType playType;
-
     Map<String, ImageView> imageViews = new HashMap<>();
 
-    TilesPane(Hand hand, PlayType playType) {
+    TilesPane(Hand hand) {
         this.tiles = hand.getTiles();
-        this.playType = playType;
         this.hand = hand;
         initBasicUI();
     }

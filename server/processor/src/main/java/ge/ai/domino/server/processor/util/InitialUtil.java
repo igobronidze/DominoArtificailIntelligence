@@ -26,7 +26,7 @@ public class InitialUtil {
     public static Game getInitialGame(GameProperties gameProperties) {
         Game game = new Game();
         game.setGameProperties(gameProperties);
-        game.setCurrHand(getInitialHand(gameProperties.isStart()));
+        game.setCurrHand(getInitialHand(true));
         game.setId(new Random().nextInt());  // TODO[IG] it temporary, id may set by database
         game.getCurrHand().getGameInfo().setGameId(game.getId());
         return game;

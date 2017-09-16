@@ -1,7 +1,7 @@
 package ge.ai.domino.domain.domino;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class Game {
 
@@ -11,7 +11,7 @@ public class Game {
 
     private Hand currHand;
 
-    private List<Hand> history = new ArrayList<>();
+    private Deque<Hand> history = new ArrayDeque<>();
 
     public int getId() {
         return id;
@@ -37,11 +37,11 @@ public class Game {
         this.currHand = currHand;
     }
 
-    public List<Hand> getHistory() {
+    public Deque<Hand> getHistory() {
         return history;
     }
 
-    public void setHistory(List<Hand> history) {
+    public void setHistory(Deque<Hand> history) {
         this.history = history;
     }
 }

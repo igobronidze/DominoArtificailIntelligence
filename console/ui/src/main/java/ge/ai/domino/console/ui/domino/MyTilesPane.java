@@ -13,8 +13,8 @@ import javafx.scene.layout.VBox;
 
 abstract class MyTilesPane extends TilesPane {
 
-    MyTilesPane(Hand hand, PlayType playType) {
-        super(hand, playType);
+    MyTilesPane(Hand hand) {
+        super(hand);
         initUI();
         initComponents();
     }
@@ -32,7 +32,7 @@ abstract class MyTilesPane extends TilesPane {
             if (showTile(uid)) {
                 VBox vBox = new VBox();
                 vBox.setAlignment(Pos.TOP_CENTER);
-                ImageView imageView = getImageView(uid, playType == PlayType.ME);
+                ImageView imageView = getImageView(uid, hand.getTableInfo().isMyTurn());
                 imageViews.put(uid, imageView);
                 AIPrediction aiPrediction = hand.getAiPrediction();
                 if (aiPrediction != null) {
@@ -54,7 +54,7 @@ abstract class MyTilesPane extends TilesPane {
     @SuppressWarnings("Duplicates")
     @Override
     public void onTilePressed(String uid) {
-        if (playType == PlayType.ME) {
+        if (hand.getTableInfo().isMyTurn()) {
             if (!isFirsTurn()) {
                 imageViews.get(uid).setFitHeight(IMAGE_HEIGHT + 10);
                 imageViews.get(uid).setFitWidth(IMAGE_WIDTH + 10);

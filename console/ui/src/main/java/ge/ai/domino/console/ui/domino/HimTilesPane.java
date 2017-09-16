@@ -1,7 +1,6 @@
 package ge.ai.domino.console.ui.domino;
 
 import ge.ai.domino.console.ui.util.ImageFactory;
-import ge.ai.domino.domain.domino.Game;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
 import ge.ai.domino.domain.domino.Tile;
@@ -18,8 +17,8 @@ import java.text.NumberFormat;
 
 abstract class HimTilesPane extends TilesPane {
 
-    HimTilesPane(Hand hand, PlayType playType) {
-        super(hand, playType);
+    HimTilesPane(Hand hand) {
+        super(hand);
         initComponents();
     }
 
@@ -55,7 +54,7 @@ abstract class HimTilesPane extends TilesPane {
             }
             this.getChildren().add(hBox);
         }
-        if (playType == PlayType.HIM) {
+        if (!hand.getTableInfo().isMyTurn()) {
             ImageView addImageView = new ImageView(ImageFactory.getImage("add_black.png"));
             setImageStyle(addImageView);
             this.getChildren().add(addImageView);
@@ -66,7 +65,7 @@ abstract class HimTilesPane extends TilesPane {
     @SuppressWarnings("Duplicates")
     @Override
     public void onTilePressed(String uid) {
-        if (playType == PlayType.HIM) {
+        if (!hand.getTableInfo().isMyTurn()) {
             if (!isFirsTurn()) {
                 imageViews.get(uid).setFitHeight(IMAGE_HEIGHT + 10);
                 imageViews.get(uid).setFitWidth(IMAGE_WIDTH + 10);

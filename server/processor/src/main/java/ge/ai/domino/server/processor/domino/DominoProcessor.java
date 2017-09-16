@@ -54,12 +54,14 @@ public class DominoProcessor {
 
     public Hand addTileForMe(Hand hand, int x, int y) {
         logger.info("Start add tile for me method for tile [" + x + "-" + y + "]");
+        cachedGames.get(hand.getGameInfo().getGameId()).getHistory().push(CloneUtil.getClone(hand));
         if (hand.getTableInfo().getBazaarTilesCount() == 2) {
             if (HIM.equals(omittedGames.get(hand.getGameInfo().getGameId()))) {
                 return finishedLastAndGetNewHand(hand, true);
             } else {
                 omittedGames.put(hand.getGameInfo().getGameId(), ME);
             }
+            hand.getTableInfo().setMyTurn(false);
             return hand;
         }
         Map<String, Tile> tiles = hand.getTiles();
@@ -70,6 +72,9 @@ public class DominoProcessor {
         addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him, HIM);
         addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), bazaar - 1, BAZAAR);
         updateTileCountBeforeAddMe(hand);
+        if (hand.getTableInfo().getLeft() == null && hand.getTableInfo().getMyTilesCount() == 7) {
+            hand.getTableInfo().setMyTurn(cachedGames.get(hand.getGameInfo().getGameId()).getGameProperties().isStart());
+        }
         logger.info("Added tile for me");
         if (systemParameterProcessor.getBooleanParameterValue(logTilesAfterMethod)) {
             LoggingProcessor.logTilesFullInfo(hand);
@@ -80,6 +85,7 @@ public class DominoProcessor {
     public Hand addTileForHim(Hand hand) {
         logger.info("Start add tile for him method");
         int gameId = hand.getGameInfo().getGameId();
+        cachedGames.get(hand.getGameInfo().getGameId()).getHistory().push(CloneUtil.getClone(hand));
         if (tilesFromBazaar.get(gameId) == null || tilesFromBazaar.get(gameId) == 0) {
             makeTilesAsInBazaarAndUpdateProbabilitiesForOther(hand);
             updateTileCountBeforeAddHim(hand);
@@ -91,6 +97,7 @@ public class DominoProcessor {
                 } else {
                     omittedGames.put(hand.getGameInfo().getGameId(), HIM);
                 }
+                hand.getTableInfo().setMyTurn(true);
                 return hand;
             }
             if (tilesFromBazaar.get(gameId) != null && tilesFromBazaar.get(gameId) > 0) {
@@ -109,6 +116,7 @@ public class DominoProcessor {
 
     public Hand playForMe(Hand hand, int x, int y, PlayDirection direction) {
         logger.info("Start play for me method for tile [" + x + "-" + y + "] direction [" + direction.name() + "]");
+        cachedGames.get(hand.getGameInfo().getGameId()).getHistory().push(CloneUtil.getClone(hand));
         makeTileAsPlayed(hand.getTiles().get(TileUtil.getTileUID(x, y)));
         playTile(hand.getTableInfo(), x, y, direction);
         updateTileCountBeforePlayMe(hand);
@@ -126,6 +134,7 @@ public class DominoProcessor {
 
     public Hand playForHim(Hand hand, int x, int y, PlayDirection direction) {
         logger.info("Start play for him method for tile [" + x + "-" + y + "] direction [" + direction.name() + "]");
+        cachedGames.get(hand.getGameInfo().getGameId()).getHistory().push(CloneUtil.getClone(hand));
         int gameId = hand.getGameInfo().getGameId();
         if (tilesFromBazaar.get(gameId) != null && tilesFromBazaar.get(gameId) > 0) {
             updateProbabilitiesForLastPickedTiles(hand, gameId);
@@ -152,6 +161,16 @@ public class DominoProcessor {
             LoggingProcessor.logTilesFullInfo(hand);
         }
         return hand;
+    }
+
+    public Hand getLastPlayedHand(Hand hand) {
+        logger.info("Start get last played hand method for gameId[" + hand.getGameInfo().getGameId() +"]");
+        Game game = cachedGames.get(hand.getGameInfo().getGameId());
+        if (game.getHistory().isEmpty()) {
+            return hand;
+        }
+        logger.info("Undo last played hand");
+        return game.getHistory().poll();
     }
 
     private void makeTilesAsInBazaarAndUpdateProbabilitiesForOther(Hand hand) {
@@ -294,7 +313,8 @@ public class DominoProcessor {
         } else {
             Game game = cachedGames.get(hand.getGameInfo().getGameId());
             game.getHistory().add(hand);
-            game.setCurrHand(InitialUtil.getInitialHand(false));
+            game.setCurrHand(InitialUtil.getInitialHand(true));
+            game.getGameProperties().setStart(me);
             game.getCurrHand().setGameInfo(hand.getGameInfo());
             return game.getCurrHand();
         }

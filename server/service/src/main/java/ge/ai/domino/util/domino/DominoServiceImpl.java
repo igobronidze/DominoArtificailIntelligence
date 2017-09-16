@@ -33,4 +33,9 @@ public class DominoServiceImpl implements DominoService {
     public Hand playForHim(Hand hand, int x, int y, PlayDirection direction) {
         return dominoProcessor.playForHim(hand, x, y, direction);
     }
+
+    @Override
+    public Hand getLastPlayedHand(Hand hand) {
+        return dominoProcessor.getLastPlayedHand(hand);
+    }
 }

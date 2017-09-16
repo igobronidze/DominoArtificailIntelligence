@@ -15,4 +15,6 @@ public interface DominoService {
     Hand playForMe(Hand hand, int x, int y, PlayDirection direction);
 
     Hand playForHim(Hand hand, int x, int y, PlayDirection direction);
+
+    Hand getLastPlayedHand(Hand hand);
 }

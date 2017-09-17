@@ -38,4 +38,9 @@ public class DominoServiceImpl implements DominoService {
     public Hand getLastPlayedHand(Hand hand) {
         return dominoProcessor.getLastPlayedHand(hand);
     }
+
+    @Override
+    public Hand addLeftTilesForHim(Hand hand, int count) {
+        return dominoProcessor.addLeftTilesForHim(hand, count);
+    }
 }

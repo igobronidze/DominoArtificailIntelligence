@@ -17,4 +17,6 @@ public interface DominoService {
     Hand playForHim(Hand hand, int x, int y, PlayDirection direction);
 
     Hand getLastPlayedHand(Hand hand);
+
+    Hand addLeftTilesForHim(Hand hand, int count);
 }

@@ -22,6 +22,8 @@ public class TableInfo {
 
     private String lastPlayedUID;
 
+    private boolean needToAddLeftTiles;
+
     public boolean isWithCenter() {
         return withCenter;
     }
@@ -100,5 +102,13 @@ public class TableInfo {
 
     public void setLastPlayedUID(String lastPlayedUID) {
         this.lastPlayedUID = lastPlayedUID;
+    }
+
+    public boolean isNeedToAddLeftTiles() {
+        return needToAddLeftTiles;
+    }
+
+    public void setNeedToAddLeftTiles(boolean needToAddLeftTiles) {
+        this.needToAddLeftTiles = needToAddLeftTiles;
     }
 }

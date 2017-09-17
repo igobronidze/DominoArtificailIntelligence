@@ -125,33 +125,41 @@ public class MinMax {
         PlayedTile right = tableInfo.getRight();
         PlayedTile top = tableInfo.getTop();
         PlayedTile bottom = tableInfo.getBottom();
-        for (Tile tile : hand.getTiles().values()) {
-            if (!tile.isPlayed()) {
-                Set<Integer> played = new HashSet<>();
-                if ((me && tile.getMe() > 0.0) || (!me && tile.getHim() > 0)) {
-                    // LEFT RIGHT TOP BOTTOM მიმდევრობა მნიშვნელოვანია
-                    if (!played.contains(hashForPlayedTile(left))) {
-                        if (left.getOpenSide() == tile.getX() || left.getOpenSide() == tile.getY()) {
-                            possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.LEFT));
-                            played.add(hashForPlayedTile(left));
+        if (me && tableInfo.getLeft() == null) {
+            for (Tile tile : hand.getTiles().values()) {
+                if (tile.getMe() > 0.0) {
+                    possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.LEFT));
+                }
+            }
+        } else {
+            for (Tile tile : hand.getTiles().values()) {
+                if (!tile.isPlayed()) {
+                    Set<Integer> played = new HashSet<>();
+                    if ((me && tile.getMe() > 0.0) || (!me && tile.getHim() > 0)) {
+                        // LEFT RIGHT TOP BOTTOM მიმდევრობა მნიშვნელოვანია
+                        if (!played.contains(hashForPlayedTile(left))) {
+                            if (left.getOpenSide() == tile.getX() || left.getOpenSide() == tile.getY()) {
+                                possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.LEFT));
+                                played.add(hashForPlayedTile(left));
+                            }
                         }
-                    }
-                    if (!played.contains(hashForPlayedTile(right))) {
-                        if (right.getOpenSide() == tile.getX() || right.getOpenSide() == tile.getY()) {
-                            possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.RIGHT));
-                            played.add(hashForPlayedTile(right));
+                        if (!played.contains(hashForPlayedTile(right))) {
+                            if (right.getOpenSide() == tile.getX() || right.getOpenSide() == tile.getY()) {
+                                possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.RIGHT));
+                                played.add(hashForPlayedTile(right));
+                            }
                         }
-                    }
-                    if (top != null && !played.contains(hashForPlayedTile(top))) {
-                        if ((top.getOpenSide() == tile.getX() || top.getOpenSide() == tile.getY()) && !left.isCenter() && !right.isCenter()) {
-                            possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.TOP));
-                            played.add(hashForPlayedTile(top));
+                        if (top != null && !played.contains(hashForPlayedTile(top))) {
+                            if ((top.getOpenSide() == tile.getX() || top.getOpenSide() == tile.getY()) && !left.isCenter() && !right.isCenter()) {
+                                possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.TOP));
+                                played.add(hashForPlayedTile(top));
+                            }
                         }
-                    }
-                    if (bottom != null && !played.contains(hashForPlayedTile(bottom))) {
-                        if ((bottom.getOpenSide() == tile.getX() || bottom.getOpenSide() == tile.getY()) && !left.isCenter() && !right.isCenter()) {
-                            possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.BOTTOM));
-                            played.add(hashForPlayedTile(bottom));
+                        if (bottom != null && !played.contains(hashForPlayedTile(bottom))) {
+                            if ((bottom.getOpenSide() == tile.getX() || bottom.getOpenSide() == tile.getY()) && !left.isCenter() && !right.isCenter()) {
+                                possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.BOTTOM));
+                                played.add(hashForPlayedTile(bottom));
+                            }
                         }
                     }
                 }

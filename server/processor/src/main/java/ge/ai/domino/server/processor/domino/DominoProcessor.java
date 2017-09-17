@@ -54,10 +54,11 @@ public class DominoProcessor {
 
     public Hand addTileForMe(Hand hand, int x, int y) {
         logger.info("Start add tile for me method for tile [" + x + "-" + y + "]");
-        cachedGames.get(hand.getGameInfo().getGameId()).getHistory().push(CloneUtil.getClone(hand));
+        Game game = cachedGames.get(hand.getGameInfo().getGameId());
+        game.getHistory().push(CloneUtil.getClone(hand));
         if (hand.getTableInfo().getBazaarTilesCount() == 2) {
             if (HIM.equals(omittedGames.get(hand.getGameInfo().getGameId()))) {
-                return finishedLastAndGetNewHand(hand, true);
+                return finishedLastAndGetNewHand(hand, true, true);
             } else {
                 omittedGames.put(hand.getGameInfo().getGameId(), ME);
             }
@@ -73,7 +74,11 @@ public class DominoProcessor {
         addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), bazaar - 1, BAZAAR);
         updateTileCountBeforeAddMe(hand);
         if (hand.getTableInfo().getLeft() == null && hand.getTableInfo().getMyTilesCount() == 7) {
-            hand.getTableInfo().setMyTurn(cachedGames.get(hand.getGameInfo().getGameId()).getGameProperties().isStart());
+            hand.getTableInfo().setMyTurn(game.getGameProperties().isStart());
+            if (!game.getGameProperties().isFirstHand() && hand.getTableInfo().isMyTurn()) {
+                AIPrediction aiPrediction = MinMax.minMax(CloneUtil.getClone(hand));
+                hand.setAiPrediction(aiPrediction);
+            }
         }
         if (hand.getTableInfo().getLeft() != null) {
             AIPrediction aiPrediction = MinMax.minMax(CloneUtil.getClone(hand));
@@ -96,7 +101,8 @@ public class DominoProcessor {
         if (hand.getTableInfo().getBazaarTilesCount() == 2) {
             if (hand.getTableInfo().getBazaarTilesCount() == 2) {
                 if (ME.equals(omittedGames.get(hand.getGameInfo().getGameId()))) {
-                    return finishedLastAndGetNewHand(hand, false);
+                    hand.getTableInfo().setNeedToAddLeftTiles(true);
+                    return hand;
                 }
                 omittedGames.put(hand.getGameInfo().getGameId(), HIM);
                 hand.getTableInfo().setMyTurn(true);
@@ -131,7 +137,7 @@ public class DominoProcessor {
         hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + countScore(hand));
         hand.getTableInfo().setMyTurn(false);
         if (hand.getTableInfo().getMyTilesCount() == 0) {
-            return finishedLastAndGetNewHand(hand, true);
+            return finishedLastAndGetNewHand(hand, true, true);
         }
         logger.info("Play tile for me");
         if (systemParameterProcessor.getBooleanParameterValue(logTilesAfterMethod)) {
@@ -164,7 +170,7 @@ public class DominoProcessor {
         hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + countScore(hand));
         hand.getTableInfo().setMyTurn(true);
         if (hand.getTableInfo().getHimTilesCount() == 0) {
-            return finishedLastAndGetNewHand(hand, false);
+            return finishedLastAndGetNewHand(hand, false, true);
         }
         AIPrediction aiPrediction = MinMax.minMax(CloneUtil.getClone(hand));
         hand.setAiPrediction(aiPrediction);
@@ -185,6 +191,15 @@ public class DominoProcessor {
         return game.getHistory().poll();
     }
 
+    public Hand addLeftTilesForHim(Hand hand, int count) {
+        logger.info("Start add left tile for him method");
+        hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + count);
+        hand.getTableInfo().setNeedToAddLeftTiles(false);
+        logger.info("Added lef tiles for him");
+        return finishedLastAndGetNewHand(hand, false, false);
+    }
+
+    @SuppressWarnings("Duplicates")
     private void makeTilesAsInBazaarAndUpdateProbabilitiesForOther(Hand hand) {
         Set<Integer> notUsedNumbers = getNotUsedNumbers(hand);
         double himSum = 0.0;
@@ -326,22 +341,24 @@ public class DominoProcessor {
         tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
     }
 
-    private Hand finishedLastAndGetNewHand(Hand hand, boolean me) {
+    private Hand finishedLastAndGetNewHand(Hand hand, boolean me, boolean countLeft) {
         omittedGames = new HashMap<>();
         tilesFromBazaar = new HashMap<>();
         GameInfo gameInfo = hand.getGameInfo();
-        if (me) {
-            gameInfo.setMyPoints(gameInfo.getMyPoints() + countLeftTiles(hand.getTiles(), true));
-        } else {
-            gameInfo.setHimPoints(gameInfo.getHimPoints() + countLeftTiles(hand.getTiles(), false));
+        if (countLeft) {
+            if (me) {
+                gameInfo.setMyPoints(gameInfo.getMyPoints() + countLeftTiles(hand.getTiles(), true));
+            } else {
+                gameInfo.setHimPoints(gameInfo.getHimPoints() + countLeftTiles(hand.getTiles(), false));
+            }
         }
         int scoreForWin = cachedGames.get(hand.getGameInfo().getGameId()).getGameProperties().getPointsForWin();
-        if (gameInfo.getMyPoints() >= scoreForWin) {
+        if (gameInfo.getMyPoints() >= scoreForWin && gameInfo.getMyPoints() >= gameInfo.getHimPoints()) {
             logger.info("I win the game");
-            return null;
+            return hand;
         } else if (gameInfo.getHimPoints() >= scoreForWin) {
             logger.info("He win the game");
-            return null;
+            return hand;
         } else {
             Game game = cachedGames.get(hand.getGameInfo().getGameId());
             game.getHistory().add(hand);
@@ -371,45 +388,44 @@ public class DominoProcessor {
     }
 
     void playTile(TableInfo tableInfo, int x, int y, PlayDirection direction) {
-        if (!tableInfo.isWithCenter() && x == y) {
-            tableInfo.setTop(new PlayedTile(x, true, false, true));
-            tableInfo.setBottom(new PlayedTile(x, true, false, true));
-            if (tableInfo.getLeft() == null) {
+        if (tableInfo.getLeft() == null) {
+            if (x == y) {
+                tableInfo.setTop(new PlayedTile(x, true, false, true));
+                tableInfo.setBottom(new PlayedTile(x, true, false, true));
                 tableInfo.setLeft(new PlayedTile(x, true, true, true));
                 tableInfo.setRight(new PlayedTile(x, true, true, true));
             } else {
-                if (direction == PlayDirection.LEFT) {
-                    tableInfo.setLeft(new PlayedTile(x, true, true, true));
-                } else if (direction == PlayDirection.RIGHT) {
-                    tableInfo.setRight(new PlayedTile(x, true, true, true));
-                }
+                tableInfo.setLeft(new PlayedTile(x, false, true, false));
+                tableInfo.setRight(new PlayedTile(y, false, true, false));
             }
-            tableInfo.setWithCenter(true);
-        } else if (tableInfo.getLeft() == null) {
-            PlayedTile playedTileLeft = new PlayedTile();
-            playedTileLeft.setCenter(false);
-            playedTileLeft.setDouble(false);
-            playedTileLeft.setCountInSum(true);
-            playedTileLeft.setOpenSide(x);
-            tableInfo.setLeft(playedTileLeft);
-            PlayedTile playedTileRight = new PlayedTile();
-            playedTileRight.setCenter(false);
-            playedTileRight.setDouble(false);
-            playedTileRight.setCountInSum(true);
-            playedTileRight.setOpenSide(y);
-            tableInfo.setRight(playedTileRight);
         } else {
             switch (direction) {
                 case TOP:
                     tableInfo.setTop(new PlayedTile(tableInfo.getTop().getOpenSide() == x ? y : x, x == y, true, false));
                     break;
                 case RIGHT:
+                    if (!tableInfo.isWithCenter()) {
+                        PlayedTile right = tableInfo.getRight();
+                        if (right.isDouble()) {
+                            tableInfo.setTop(new PlayedTile(right.getOpenSide(), true, false, true));
+                            tableInfo.setBottom(new PlayedTile(right.getOpenSide(), true, false, true));
+                            tableInfo.setWithCenter(true);
+                        }
+                    }
                     tableInfo.setRight(new PlayedTile(tableInfo.getRight().getOpenSide() == x ? y : x, x == y, true, false));
                     break;
                 case BOTTOM:
                     tableInfo.setBottom(new PlayedTile(tableInfo.getBottom().getOpenSide() == x ? y : x, x == y, true, false));
                     break;
                 case LEFT:
+                    if (!tableInfo.isWithCenter()) {
+                        PlayedTile left = tableInfo.getLeft();
+                        if (left.isDouble()) {
+                            tableInfo.setTop(new PlayedTile(left.getOpenSide(), true, false, true));
+                            tableInfo.setBottom(new PlayedTile(left.getOpenSide(), true, false, true));
+                            tableInfo.setWithCenter(true);
+                        }
+                    }
                     tableInfo.setLeft(new PlayedTile(tableInfo.getLeft().getOpenSide() == x ? y : x, x == y, true, false));
                     break;
             }

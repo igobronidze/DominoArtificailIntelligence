@@ -46,6 +46,7 @@ public class CloneUtil {
         clone.setMyTurn(tableInfo.isMyTurn());
         clone.setWithCenter(tableInfo.isWithCenter());
         clone.setLastPlayedUID(tableInfo.getLastPlayedUID());
+        clone.setNeedToAddLeftTiles(tableInfo.isNeedToAddLeftTiles());
         return clone;
     }
 

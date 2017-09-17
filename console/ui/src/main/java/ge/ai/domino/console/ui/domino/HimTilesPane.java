@@ -7,6 +7,7 @@ import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.util.tile.TileUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -56,6 +57,8 @@ abstract class HimTilesPane extends TilesPane {
         }
         if (!hand.getTableInfo().isMyTurn()) {
             ImageView addImageView = new ImageView(ImageFactory.getImage("add_black.png"));
+            addImageView.setOnMouseEntered(event -> this.setCursor(Cursor.HAND));
+            addImageView.setOnMouseExited(event -> this.setCursor(Cursor.DEFAULT));
             setImageStyle(addImageView);
             this.getChildren().add(addImageView);
             addImageView.setOnMouseClicked(e -> onAddTileEntered());

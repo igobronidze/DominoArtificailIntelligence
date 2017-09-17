@@ -1,6 +1,9 @@
 package ge.ai.domino.console.ui.domino;
 
+import ge.ai.domino.console.ui.TCHcomponents.TCHButton;
+import ge.ai.domino.console.ui.TCHcomponents.TCHComponentSize;
 import ge.ai.domino.console.ui.TCHcomponents.TCHLabel;
+import ge.ai.domino.console.ui.TCHcomponents.TCHNumberTextField;
 import ge.ai.domino.console.ui.control_panel.ControlPanel;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
@@ -14,11 +17,16 @@ import ge.ai.domino.util.domino.DominoService;
 import ge.ai.domino.util.domino.DominoServiceImpl;
 import ge.ai.domino.util.tile.TileUtil;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class DominoPane extends BorderPane {
 
@@ -45,6 +53,9 @@ public class DominoPane extends BorderPane {
         initCenterPane();
         initBottomPane();
         initKeyboardListener();
+        if (hand.getTableInfo().isNeedToAddLeftTiles()) {
+            showAddLeftTilesCount();
+        }
     }
 
     private void initUI() {
@@ -185,5 +196,27 @@ public class DominoPane extends BorderPane {
 
     private void showIncorrectTurnMessage() {
         WarnDialog.showWarnDialog(Messages.get("incorrectTurn"));
+    }
+
+    private void showAddLeftTilesCount() {
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setTitle(Messages.get("addLeftCount"));
+        TCHNumberTextField countField = new TCHNumberTextField(TCHComponentSize.MEDIUM);
+        TCHButton button = new TCHButton(Messages.get("add"));
+        button.setOnAction(event -> {
+            hand = dominoService.addLeftTilesForHim(hand, countField.getNumber().intValue());
+            stage.close();
+            reload();
+        });
+        VBox vBox = new VBox(10);
+        vBox.setPadding(new Insets(20));
+        vBox.setAlignment(Pos.TOP_CENTER);
+        vBox.getChildren().addAll(countField, button);
+        stage.setScene(new Scene(vBox));
+        stage.setWidth(300);
+        stage.setHeight(100);
+        stage.showAndWait();
     }
 }

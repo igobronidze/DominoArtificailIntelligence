@@ -13,6 +13,5 @@
 
     <modules>
         <module>ui</module>
-        <module>transfer</module>
     </modules>
 </project>

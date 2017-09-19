@@ -1,4 +1,4 @@
-package ge.ai.domino.server.processor.sysparam;
+package ge.ai.domino.server.manager.sysparam;
 
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.sysparam.CachedSystemParameter;
@@ -7,7 +7,7 @@ import ge.ai.domino.util.string.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SystemParameterProcessor {
+public class SystemParameterManager {
 
     public String getStringParameterValue(SysParam parameter) {
         return CachedSystemParameter.getStringParameterValue(parameter);

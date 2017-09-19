@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>ge.ai.domino</groupId>
-            <artifactId>processor</artifactId>
+            <artifactId>manager</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

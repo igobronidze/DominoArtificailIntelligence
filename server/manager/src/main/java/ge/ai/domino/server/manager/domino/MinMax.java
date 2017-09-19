@@ -1,4 +1,4 @@
-package ge.ai.domino.server.processor.domino;
+package ge.ai.domino.server.manager.domino;
 
 import ge.ai.domino.domain.ai.PossibleTurn;
 import ge.ai.domino.domain.domino.AIPrediction;
@@ -8,8 +8,8 @@ import ge.ai.domino.domain.domino.PlayedTile;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.server.processor.sysparam.SystemParameterProcessor;
-import ge.ai.domino.server.processor.util.CloneUtil;
+import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
+import ge.ai.domino.server.manager.util.CloneUtil;
 import ge.ai.domino.util.tile.TileUtil;
 import org.apache.log4j.Logger;
 
@@ -21,18 +21,18 @@ import java.util.Set;
 
 public class MinMax {
 
-    private static Logger logger = Logger.getLogger(DominoProcessor.class);
+    private static Logger logger = Logger.getLogger(DominoManager.class);
 
-    private static final SystemParameterProcessor systemParameterProcessor = new SystemParameterProcessor();
+    private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
     private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "6");
 
-    private static final DominoProcessor dominoProcessor = new DominoProcessor();
+    private static final DominoManager dominoManager = new DominoManager();
 
     private static int treeHeight;
 
     public static AIPrediction minMax(Hand hand) {
-        treeHeight = systemParameterProcessor.getIntegerParameterValue(minMaxTreeHeight);
+        treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
         Set<PossibleTurn> possibleTurns = getPossibleTurns(hand);
         PossibleTurn bestTurn = null;
         double bestHeuristic = Integer.MIN_VALUE;
@@ -58,15 +58,15 @@ public class MinMax {
 
     private static void updateHeuristicValue(Hand hand, int height) {
         if (hand.getTableInfo().getHimTilesCount() == 0) {
-            hand.getAiExtraInfo().setHeuristicValue(dominoProcessor.countLeftTiles(hand.getTiles(), true));
+            hand.getAiExtraInfo().setHeuristicValue(DominoHelper.countLeftTiles(hand, true));
             return;
         }
         if (hand.getTableInfo().getMyTilesCount() == 0) {
-            hand.getAiExtraInfo().setHeuristicValue(-1 * dominoProcessor.countLeftTiles(hand.getTiles(), false));
+            hand.getAiExtraInfo().setHeuristicValue(-1 * DominoHelper.countLeftTiles(hand, false));
             return;
         }
         if (height == treeHeight) {
-            int count = dominoProcessor.countScore(hand);
+            int count = DominoHelper.countScore(hand);
             hand.getAiExtraInfo().setHeuristicValue(hand.getTableInfo().isMyTurn() ? -1 * count : count);
             return;
         }
@@ -100,18 +100,18 @@ public class MinMax {
                 remainingProbability -= prob;
             }
         }
-        int count = dominoProcessor.countScore(hand);
+        int count = DominoHelper.countScore(hand);
         hand.getAiExtraInfo().setHeuristicValue((hand.getTableInfo().isMyTurn() ? -1 * count : count) + heuristic + remainingProbability * (hand.getTableInfo().isMyTurn() ? -20 : 20));
     }
 
     private static Hand play(Hand hand, PossibleTurn possibleTurn) {
         Hand nextHand = CloneUtil.getClone(hand);
-        dominoProcessor.makeTileAsPlayed(nextHand.getTiles().get(TileUtil.getTileUID(possibleTurn.getX(), possibleTurn.getY())));
-        dominoProcessor.playTile(nextHand.getTableInfo(), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection());
+        DominoHelper.makeTileAsPlayed(nextHand.getTiles().get(TileUtil.getTileUID(possibleTurn.getX(), possibleTurn.getY())));
+        DominoHelper.playTile(nextHand.getTableInfo(), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection());
         if (nextHand.getTableInfo().isMyTurn()) {
-            dominoProcessor.updateTileCountBeforePlayMe(nextHand);
+            DominoHelper.updateTileCountBeforePlayMe(nextHand);
         } else {
-            dominoProcessor.updateTileCountBeforePlayHim(nextHand);
+            DominoHelper.updateTileCountBeforePlayHim(nextHand);
         }
         nextHand.getTableInfo().setMyTurn(!nextHand.getTableInfo().isMyTurn());
         return nextHand;

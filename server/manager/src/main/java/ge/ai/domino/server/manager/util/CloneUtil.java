@@ -1,4 +1,4 @@
-package ge.ai.domino.server.processor.util;
+package ge.ai.domino.server.manager.util;
 
 import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.domino.AIPrediction;

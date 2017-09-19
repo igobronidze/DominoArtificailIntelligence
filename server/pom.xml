@@ -14,7 +14,7 @@
     <modules>
         <module>dao</module>
         <module>caching</module>
-        <module>processor</module>
+        <module>manager</module>
         <module>service</module>
     </modules>
 

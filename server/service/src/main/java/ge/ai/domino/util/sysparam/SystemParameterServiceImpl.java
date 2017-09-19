@@ -7,7 +7,7 @@ import ge.ai.domino.domain.sysparam.SystemParameterType;
 import ge.ai.domino.server.caching.sysparam.CachedSystemParameter;
 import ge.ai.domino.server.dao.sysparam.SystemParameterDAO;
 import ge.ai.domino.server.dao.sysparam.SystemParameterDAOImpl;
-import ge.ai.domino.server.processor.sysparam.SystemParameterProcessor;
+import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class SystemParameterServiceImpl implements SystemParameterService {
 
     private SystemParameterDAO systemParameterDAO = new SystemParameterDAOImpl();
 
-    private SystemParameterProcessor systemParameterProcessor = new SystemParameterProcessor();
+    private SystemParameterManager systemParameterManager = new SystemParameterManager();
 
     @Override
     public void addSystemParameter(SystemParameter systemParameter) throws DAIException {
@@ -42,31 +42,31 @@ public class SystemParameterServiceImpl implements SystemParameterService {
 
     @Override
     public String getStringParameterValue(SysParam parameter) {
-        return systemParameterProcessor.getStringParameterValue(parameter);
+        return systemParameterManager.getStringParameterValue(parameter);
     }
 
     @Override
     public Integer getIntegerParameterValue(SysParam parameter) {
-        return systemParameterProcessor.getIntegerParameterValue(parameter);
+        return systemParameterManager.getIntegerParameterValue(parameter);
     }
 
     @Override
     public Float getFloatParameterValue(SysParam parameter) {
-        return systemParameterProcessor.getFloatParameterValue(parameter);
+        return systemParameterManager.getFloatParameterValue(parameter);
     }
 
     @Override
     public Long getLongParameterValue(SysParam parameter) {
-        return systemParameterProcessor.getLongParameterValue(parameter);
+        return systemParameterManager.getLongParameterValue(parameter);
     }
 
     @Override
     public List<Integer> getIntegerListParameterValue(SysParam parameter) {
-        return systemParameterProcessor.getIntegerListParameterValue(parameter);
+        return systemParameterManager.getIntegerListParameterValue(parameter);
     }
 
     @Override
     public boolean getBooleanParameterValue(SysParam parameter) {
-        return systemParameterProcessor.getBooleanParameterValue(parameter);
+        return systemParameterManager.getBooleanParameterValue(parameter);
     }
 }

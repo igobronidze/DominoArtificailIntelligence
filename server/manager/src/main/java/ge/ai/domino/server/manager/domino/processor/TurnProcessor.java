@@ -12,9 +12,9 @@ import java.util.Set;
 
 public abstract class TurnProcessor {
 
-    public abstract Hand addTile(Hand hand, int x, int y);
+    public abstract Hand addTile(Hand hand, int x, int y, boolean virtual);
 
-    public abstract Hand play(Hand hand, int x, int y, PlayDirection direction);
+    public abstract Hand play(Hand hand, int x, int y, PlayDirection direction, boolean virtual);
 
     @SuppressWarnings("Duplicates")
     protected void makeDoubleTilesAsInBazaar(Hand hand, int a) {

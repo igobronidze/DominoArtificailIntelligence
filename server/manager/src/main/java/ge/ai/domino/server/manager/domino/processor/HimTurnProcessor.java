@@ -9,11 +9,10 @@ import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.domino.TileOwner;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
 import ge.ai.domino.server.manager.domino.DominoHelper;
-import ge.ai.domino.server.manager.domino.MinMax;
 import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;
+import ge.ai.domino.server.manager.domino.minmax.MinMax;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import ge.ai.domino.util.tile.TileUtil;
-import org.apache.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -21,59 +20,64 @@ import java.util.Set;
 
 public class HimTurnProcessor extends TurnProcessor {
 
-    private static final Logger logger = Logger.getLogger(HimTurnProcessor.class);
-
     @Override
-    public Hand addTile(Hand hand, int x, int y) {
+    public Hand addTile(Hand hand, int x, int y, boolean virtual) {
         int gameId = hand.getGameInfo().getGameId();
-        logger.info("Start add tile for him method, gameId[" + gameId + "]");
+        DominoLoggingProcessor.logInfoOnTurn("Start add tile for him method, gameId[" + gameId + "]", virtual);
+        TableInfo tableInfo = hand.getTableInfo();
         // ისტორაიში დამატება
-        CachedDominoGames.getGame(hand.getGameInfo().getGameId()).getHistory().push(CloneUtil.getClone(hand));
+        if (!virtual) {
+            CachedDominoGames.getGame(hand.getGameInfo().getGameId()).getHistory().push(CloneUtil.getClone(hand));
+        }
         // თუ პირველად გადის ბაზარში, ყველა შესაძლო ჩამოსვლადი ქვა არის ბაზარში და ნაწილდება მათი ალბათობები სხვებზე
-        if (CachedDominoGames.getTileFromBazaar(gameId) == null || CachedDominoGames.getTileFromBazaar(gameId) == 0) {
+        if (tableInfo.getTileFromBazaar() == 0) {
             makeTilesAsInBazaarAndUpdateProbabilitiesForOther(hand);
         }
         // თუ გაიარა
-        if (hand.getTableInfo().getBazaarTilesCount() == 2) {
+        if (tableInfo.getBazaarTilesCount() == 2) {
             // თუ მე უკვე გავლილი მაქვს ვითხოვთ მოწინააღმდეგის დარჩენილი ქულების დათვლას
-            if (TileOwner.ME.equals(CachedDominoGames.getOmittedValue(hand.getGameInfo().getGameId()))) {
+            if (tableInfo.isOmittedMe()) {
                 hand.getTableInfo().setNeedToAddLeftTiles(true);
                 return hand;
             }
-            // ბოლოს აღებულიქ ვების რაოდენობის მიხედვით ნაწილდება ალბათობები
-            if (CachedDominoGames.getTileFromBazaar(gameId) != null && CachedDominoGames.getTileFromBazaar(gameId) > 0) {
-                updateProbabilitiesForLastPickedTiles(hand, gameId);
+            // ბოლოს აღებული ქვების რაოდენობის მიხედვით ნაწილდება ალბათობები
+            if (tableInfo.getTileFromBazaar() > 0) {
+                updateProbabilitiesForLastPickedTiles(hand);
             }
             // გავლის დაფიქსირება
-            CachedDominoGames.addOmitted(hand.getGameInfo().getGameId(), TileOwner.HIM);
+            tableInfo.setOmittedHim(true);
             hand.getTableInfo().setMyTurn(true);
-            AIPrediction aiPrediction = MinMax.minMax(CloneUtil.getClone(hand));
-            hand.setAiPrediction(aiPrediction);
+            if (!virtual) {
+                AIPrediction aiPrediction = MinMax.minMax(hand);
+                hand.setAiPrediction(aiPrediction);
+            }
             return hand;
         }
         // ქვის აღების დაფიქსირება
-        CachedDominoGames.addTileFromBazaar(gameId, CachedDominoGames.getTileFromBazaar(gameId) == null ? 1 : CachedDominoGames.getTileFromBazaar(gameId) + 1);
+        tableInfo.setTileFromBazaar(tableInfo.getTileFromBazaar() + 1);
         updateTileCountBeforeAddHim(hand);
 
-        logger.info("Added tile for him, gameId[" + gameId + "]");
-        DominoLoggingProcessor.logTilesFullInfo(hand);
+        DominoLoggingProcessor.logInfoOnTurn("Added tile for him, gameId[" + gameId + "]", virtual);
+        DominoLoggingProcessor.logTilesFullInfo(hand, virtual);
         return hand;
     }
 
     @Override
-    public Hand play(Hand hand, int x, int y, PlayDirection direction) {
+    public Hand play(Hand hand, int x, int y, PlayDirection direction, boolean virtual) {
         int gameId = hand.getGameInfo().getGameId();
-        logger.info("Start play for him method for tile [" + x + "-" + y + "] direction [" + direction.name() + "], gameId[" + gameId + "]");
+        DominoLoggingProcessor.logInfoOnTurn("Start play for him method for tile [" + x + "-" + y + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
         // ისტორიაში დამატება
         Game game = CachedDominoGames.getGame(gameId);
-        game.getHistory().push(CloneUtil.getClone(hand));
+        if (!virtual) {
+            game.getHistory().push(CloneUtil.getClone(hand));
+        }
         // თუ პირველი ხელის პირველი სვლაა, ანალიზდება არ ჩამოსული წყვილები
         if (game.getGameProperties().isFirstHand() && hand.getTableInfo().getLeft() == null) {
             makeDoubleTilesAsInBazaar(hand, (x == y ? x : -1));
         }
         // თუ წინა სვლაზე იყო ბაზარში, აღებული ქვების რაოდენობით ნაწილდება ალბათობები
-        if (CachedDominoGames.getTileFromBazaar(gameId) != null && CachedDominoGames.getTileFromBazaar(gameId) > 0) {
-            updateProbabilitiesForLastPickedTiles(hand, gameId);
+        if (hand.getTableInfo().getTileFromBazaar() > 0) {
+            updateProbabilitiesForLastPickedTiles(hand);
         } else {
             // წინააღმდეგ შემთხვევაში, ჩამოსული ქვის ალბათობები ნაწილდბეა სხვებზე
             Map<String, Tile> tiles = hand.getTiles();
@@ -91,14 +95,17 @@ public class HimTurnProcessor extends TurnProcessor {
         hand.getTableInfo().setMyTurn(true);
         // თუ ქვები აღარ აქვს, ვამთავრებთ ხელს
         if (hand.getTableInfo().getHimTilesCount() == 0) {
-            return DominoHelper.finishedLastAndGetNewHand(hand, false, true);
+            hand.getTableInfo().setNeedToAddLeftTiles(true);
+            return hand;
         }
-        // რჩევის მიღებაs
-        AIPrediction aiPrediction = MinMax.minMax(CloneUtil.getClone(hand));
-        hand.setAiPrediction(aiPrediction);
+        // რჩევის მიღება
+        if (!virtual) {
+            AIPrediction aiPrediction = MinMax.minMax(hand);
+            hand.setAiPrediction(aiPrediction);
+        }
 
-        logger.info("Played tile for him, gameId[" + gameId + "]");
-        DominoLoggingProcessor.logTilesFullInfo(hand);
+        DominoLoggingProcessor.logInfoOnTurn("Played tile for him, gameId[" + gameId + "]", virtual);
+        DominoLoggingProcessor.logTilesFullInfo(hand, virtual);
         return hand;
     }
 
@@ -143,7 +150,7 @@ public class HimTurnProcessor extends TurnProcessor {
         return notUsedNumbers;
     }
 
-    private void updateProbabilitiesForLastPickedTiles(Hand hand, int gameId) {
+    private void updateProbabilitiesForLastPickedTiles(Hand hand) {
         Set<Integer> notUsedNumbers = getNotUsedNumbers(hand);
         Set<String> usefulUIDs = new HashSet<>();
         for (Tile tile : hand.getTiles().values()) {
@@ -151,10 +158,10 @@ public class HimTurnProcessor extends TurnProcessor {
                 usefulUIDs.add(TileUtil.getTileUID(tile.getX(), tile.getY()));
             }
         }
-        double bazaarTilesCount = CachedDominoGames.getTileFromBazaar(gameId);
+        double bazaarTilesCount = hand.getTableInfo().getTileFromBazaar();
         DominoHelper.addProbabilitiesProportional(hand.getTiles(), usefulUIDs, bazaarTilesCount, TileOwner.HIM);
         DominoHelper.addProbabilitiesProportional(hand.getTiles(), usefulUIDs, -1 * bazaarTilesCount, TileOwner.BAZAAR);
-        CachedDominoGames.addTileFromBazaar(gameId, 0);
+        hand.getTableInfo().setTileFromBazaar(0);
     }
 
     private void updateTileCountBeforeAddHim(Hand hand) {

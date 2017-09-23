@@ -16,22 +16,22 @@ public class DominoServiceImpl implements DominoService {
 
     @Override
     public Hand addTileForMe(Hand hand, int x, int y) {
-        return dominoManager.addTileForMe(hand, x, y);
+        return dominoManager.addTileForMe(hand, x, y, false);
     }
 
     @Override
     public Hand addTileForHim(Hand hand) {
-        return dominoManager.addTileForHim(hand);
+        return dominoManager.addTileForHim(hand, false);
     }
 
     @Override
     public Hand playForMe(Hand hand, int x, int y, PlayDirection direction) {
-        return dominoManager.playForMe(hand, x, y, direction);
+        return dominoManager.playForMe(hand, x, y, direction, false);
     }
 
     @Override
     public Hand playForHim(Hand hand, int x, int y, PlayDirection direction) {
-        return dominoManager.playForHim(hand, x, y, direction);
+        return dominoManager.playForHim(hand, x, y, direction, false);
     }
 
     @Override

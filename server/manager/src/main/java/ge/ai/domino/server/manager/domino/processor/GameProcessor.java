@@ -18,7 +18,7 @@ public class GameProcessor {
         Game game = InitialUtil.getInitialGame(gameProperties);
         CachedDominoGames.addGame(game);
         logger.info("Started new game[" + game.getId() + "]");
-        DominoLoggingProcessor.logTilesFullInfo(game.getCurrHand());
+        DominoLoggingProcessor.logTilesFullInfo(game.getCurrHand(), false);
         return game.getCurrHand();
     }
 
@@ -40,6 +40,6 @@ public class GameProcessor {
         hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + count);
         hand.getTableInfo().setNeedToAddLeftTiles(false);
         logger.info("Added lef tiles for him, gameId[" + gameId + "]");
-        return DominoHelper.finishedLastAndGetNewHand(hand, false, false);
+        return DominoHelper.finishedLastAndGetNewHand(hand, false);
     }
 }

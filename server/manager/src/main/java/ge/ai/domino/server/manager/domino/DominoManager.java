@@ -20,20 +20,20 @@ public class DominoManager {
         return gameProcessor.startGame(gameProperties);
     }
 
-    public Hand addTileForMe(Hand hand, int x, int y) {
-        return myTurnProcessor.addTile(hand, x, y);
+    public Hand addTileForMe(Hand hand, int x, int y, boolean virtual) {
+        return myTurnProcessor.addTile(hand, x, y, virtual);
     }
 
-    public Hand addTileForHim(Hand hand) {
-        return himTurnProcessor.addTile(hand, 0, 0);
+    public Hand addTileForHim(Hand hand, boolean virtual) {
+        return himTurnProcessor.addTile(hand, 0, 0, virtual);
     }
 
-    public Hand playForMe(Hand hand, int x, int y, PlayDirection direction) {
-        return myTurnProcessor.play(hand, x, y, direction);
+    public Hand playForMe(Hand hand, int x, int y, PlayDirection direction, boolean virtual) {
+        return myTurnProcessor.play(hand, x, y, direction, virtual);
     }
 
-    public Hand playForHim(Hand hand, int x, int y, PlayDirection direction) {
-        return himTurnProcessor.play(hand, x, y, direction);
+    public Hand playForHim(Hand hand, int x, int y, PlayDirection direction, boolean virtual) {
+        return himTurnProcessor.play(hand, x, y, direction, virtual);
     }
 
     public Hand getLastPlayedHand(Hand hand) {

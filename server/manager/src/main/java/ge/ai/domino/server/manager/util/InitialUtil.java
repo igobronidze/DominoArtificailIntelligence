@@ -1,6 +1,5 @@
 package ge.ai.domino.server.manager.util;
 
-import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.domino.Game;
 import ge.ai.domino.domain.domino.GameInfo;
 import ge.ai.domino.domain.domino.GameProperties;
@@ -40,7 +39,6 @@ public class InitialUtil {
         Hand hand = new Hand();
         hand.setTiles(getInitialTiles());
         hand.setTableInfo(tableInfo);
-        hand.setAiExtraInfo(new AIExtraInfo());
         hand.setGameInfo(new GameInfo());
         return hand;
     }

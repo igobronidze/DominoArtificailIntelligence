@@ -24,6 +24,12 @@ public class TableInfo {
 
     private boolean needToAddLeftTiles;
 
+    private int tileFromBazaar;
+
+    private boolean omittedMe;
+
+    private boolean omittedHim;
+
     public boolean isWithCenter() {
         return withCenter;
     }
@@ -110,5 +116,29 @@ public class TableInfo {
 
     public void setNeedToAddLeftTiles(boolean needToAddLeftTiles) {
         this.needToAddLeftTiles = needToAddLeftTiles;
+    }
+
+    public int getTileFromBazaar() {
+        return tileFromBazaar;
+    }
+
+    public void setTileFromBazaar(int tileFromBazaar) {
+        this.tileFromBazaar = tileFromBazaar;
+    }
+
+    public boolean isOmittedMe() {
+        return omittedMe;
+    }
+
+    public void setOmittedMe(boolean omittedMe) {
+        this.omittedMe = omittedMe;
+    }
+
+    public boolean isOmittedHim() {
+        return omittedHim;
+    }
+
+    public void setOmittedHim(boolean omittedHim) {
+        this.omittedHim = omittedHim;
     }
 }

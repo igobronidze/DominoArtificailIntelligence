@@ -1,6 +1,5 @@
 package ge.ai.domino.server.manager.util;
 
-import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.domino.AIPrediction;
 import ge.ai.domino.domain.domino.GameInfo;
 import ge.ai.domino.domain.domino.Hand;
@@ -15,7 +14,6 @@ public class CloneUtil {
 
     public static Hand getClone(Hand hand) {
         Hand clone = new Hand();
-        clone.setAiExtraInfo(getClone(hand.getAiExtraInfo()));
         clone.setAiPrediction(getClone(hand.getAiPrediction()));
         clone.setTableInfo(getClone(hand.getTableInfo()));
         clone.setGameInfo(getClone(hand.getGameInfo()));
@@ -47,6 +45,9 @@ public class CloneUtil {
         clone.setWithCenter(tableInfo.isWithCenter());
         clone.setLastPlayedUID(tableInfo.getLastPlayedUID());
         clone.setNeedToAddLeftTiles(tableInfo.isNeedToAddLeftTiles());
+        clone.setTileFromBazaar(tableInfo.getTileFromBazaar());
+        clone.setOmittedMe(tableInfo.isOmittedMe());
+        clone.setOmittedHim(tableInfo.isOmittedHim());
         return clone;
     }
 
@@ -78,15 +79,6 @@ public class CloneUtil {
         for (String key : tiles.keySet()) {
             clone.put(key, getClone(tiles.get(key)));
         }
-        return clone;
-    }
-
-    private static AIExtraInfo getClone(AIExtraInfo aiExtraInfo) {
-        if (aiExtraInfo == null) {
-            return null;
-        }
-        AIExtraInfo clone = new AIExtraInfo();
-        clone.setHeuristicValue(aiExtraInfo.getHeuristicValue());
         return clone;
     }
 

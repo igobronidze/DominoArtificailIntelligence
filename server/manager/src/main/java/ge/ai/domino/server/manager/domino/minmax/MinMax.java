@@ -1,4 +1,4 @@
-package ge.ai.domino.server.manager.domino;
+package ge.ai.domino.server.manager.domino.minmax;
 
 import ge.ai.domino.domain.ai.PossibleTurn;
 import ge.ai.domino.domain.domino.AIPrediction;
@@ -8,6 +8,13 @@ import ge.ai.domino.domain.domino.PlayedTile;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.server.manager.domino.DominoHelper;
+import ge.ai.domino.server.manager.domino.DominoManager;
+import ge.ai.domino.server.manager.domino.heuristic.HandHeuristic;
+import ge.ai.domino.server.manager.domino.heuristic.SimpleHandHeuristic;
+import ge.ai.domino.server.manager.domino.processor.HimTurnProcessor;
+import ge.ai.domino.server.manager.domino.processor.MyTurnProcessor;
+import ge.ai.domino.server.manager.domino.processor.TurnProcessor;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import ge.ai.domino.util.tile.TileUtil;
@@ -25,9 +32,13 @@ public class MinMax {
 
     private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
+    private static final HandHeuristic handHeuristic = new SimpleHandHeuristic();
+
     private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "6");
 
-    private static final DominoManager dominoManager = new DominoManager();
+    private static final TurnProcessor myTurnProcessor = new MyTurnProcessor();
+
+    private static final TurnProcessor himTurnProcessor = new HimTurnProcessor();
 
     private static int treeHeight;
 
@@ -37,84 +48,78 @@ public class MinMax {
         PossibleTurn bestTurn = null;
         double bestHeuristic = Integer.MIN_VALUE;
         for (PossibleTurn possibleTurn : possibleTurns) {
-            Hand nextHand = play(hand, possibleTurn);
-            updateHeuristicValue(nextHand, 1);
-            if (bestTurn == null || nextHand.getAiExtraInfo().getHeuristicValue() > bestHeuristic) {
+            Hand nextHand = himTurnProcessor.play(CloneUtil.getClone(hand), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection(), true);
+            double heuristic = getHeuristicValue(nextHand, 1);
+            if (bestTurn == null || heuristic > bestHeuristic) {
                 bestTurn = possibleTurn;
-                bestHeuristic = nextHand.getAiExtraInfo().getHeuristicValue();
+                bestHeuristic = heuristic;
             }
         }
         if (bestTurn == null) {
             logger.info("No AIPrediction");
             return null;
         }
-        logger.info("AIPrediction is [" + bestTurn.getX() + "-" + bestTurn.getY() + " " + bestTurn.getDirection().name() + "], " + "heuristic - " + bestHeuristic);
         AIPrediction aiPrediction = new AIPrediction();
         aiPrediction.setX(bestTurn.getX());
         aiPrediction.setY(bestTurn.getY());
         aiPrediction.setDirection(bestTurn.getDirection());
+        logger.info("AIPrediction is [" + bestTurn.getX() + "-" + bestTurn.getY() + " " + bestTurn.getDirection().name() + "], " + "heuristic - " + bestHeuristic);
         return aiPrediction;
     }
 
-    private static void updateHeuristicValue(Hand hand, int height) {
-        if (hand.getTableInfo().getHimTilesCount() == 0) {
-            hand.getAiExtraInfo().setHeuristicValue(DominoHelper.countLeftTiles(hand, true));
-            return;
+    private static double getHeuristicValue(Hand hand, int height) {
+        TableInfo tableInfo = hand.getTableInfo();
+        if (tableInfo.isNeedToAddLeftTiles()) {
+            hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + DominoHelper.countLeftTiles(hand, false));
+            return handHeuristic.getHeuristic(hand);
         }
-        if (hand.getTableInfo().getMyTilesCount() == 0) {
-            hand.getAiExtraInfo().setHeuristicValue(-1 * DominoHelper.countLeftTiles(hand, false));
-            return;
+        if (tableInfo.getMyTilesCount() == 0 && tableInfo.getHimTilesCount() == 7 && tableInfo.getBazaarTilesCount() == 21) {
+            return handHeuristic.getHeuristic(hand);
         }
         if (height == treeHeight) {
-            int count = DominoHelper.countScore(hand);
-            hand.getAiExtraInfo().setHeuristicValue(hand.getTableInfo().isMyTurn() ? -1 * count : count);
-            return;
+            return handHeuristic.getHeuristic(hand);
         }
         Set<PossibleTurn> possibleTurns = getPossibleTurns(hand);
         Queue<Hand> possibleHands = new PriorityQueue<>(new Comparator<Hand>() {
             @Override
             public int compare(Hand o1, Hand o2) {
                 if (hand.getTableInfo().isMyTurn()) {
-                    return Double.compare(o2.getAiExtraInfo().getHeuristicValue(), o1.getAiExtraInfo().getHeuristicValue());
+                    return Double.compare(handHeuristic.getHeuristic(o2), handHeuristic.getHeuristic(o1));
                 } else {
-                    return Double.compare(o1.getAiExtraInfo().getHeuristicValue(), o2.getAiExtraInfo().getHeuristicValue());
+                    return Double.compare(handHeuristic.getHeuristic(o1), handHeuristic.getHeuristic(o2));
                 }
             }
         });
         for (PossibleTurn possibleTurn : possibleTurns) {
-            Hand nextHand = play(hand, possibleTurn);
-            updateHeuristicValue(nextHand, height + 1);
+            Hand nextHand;
+            if (tableInfo.isMyTurn()) {
+                nextHand = myTurnProcessor.play(CloneUtil.getClone(hand), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection(), true);
+            } else {
+                nextHand = himTurnProcessor.play(CloneUtil.getClone(hand), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection(), true);
+            }
             possibleHands.add(nextHand);
         }
         double heuristic = 0.0;
         double remainingProbability = 1.0;
         for (Hand nextHand : possibleHands) {
             Tile lastPlayedTile = hand.getTiles().get(nextHand.getTableInfo().getLastPlayedUID());
+            double prob;
             if (hand.getTableInfo().isMyTurn()) {
-                double prob = remainingProbability * lastPlayedTile.getMe();
-                heuristic -= nextHand.getAiExtraInfo().getHeuristicValue() * prob;
-                remainingProbability -= prob;
+                prob = remainingProbability * lastPlayedTile.getMe();
             } else {
-                double prob = remainingProbability * lastPlayedTile.getHim();
-                heuristic += nextHand.getAiExtraInfo().getHeuristicValue() * prob;
-                remainingProbability -= prob;
+                prob = remainingProbability * lastPlayedTile.getHim();
+            }
+            heuristic += getHeuristicValue(nextHand, height + 1) * prob;
+            remainingProbability -= prob;
+        }
+        if (remainingProbability > 0.0) {
+            if (hand.getTableInfo().isMyTurn()) {
+                heuristic += -20 * remainingProbability;   // TODO[IG] აქ მაგარი მიიქარება
+            } else {
+                heuristic += handHeuristic.getHeuristic(himTurnProcessor.addTile(CloneUtil.getClone(hand), 0, 0, true)) * remainingProbability;
             }
         }
-        int count = DominoHelper.countScore(hand);
-        hand.getAiExtraInfo().setHeuristicValue((hand.getTableInfo().isMyTurn() ? -1 * count : count) + heuristic + remainingProbability * (hand.getTableInfo().isMyTurn() ? -20 : 20));
-    }
-
-    private static Hand play(Hand hand, PossibleTurn possibleTurn) {
-        Hand nextHand = CloneUtil.getClone(hand);
-        DominoHelper.makeTileAsPlayed(nextHand.getTiles().get(TileUtil.getTileUID(possibleTurn.getX(), possibleTurn.getY())));
-        DominoHelper.playTile(nextHand.getTableInfo(), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection());
-        if (nextHand.getTableInfo().isMyTurn()) {
-            DominoHelper.updateTileCountBeforePlayMe(nextHand);
-        } else {
-            DominoHelper.updateTileCountBeforePlayHim(nextHand);
-        }
-        nextHand.getTableInfo().setMyTurn(!nextHand.getTableInfo().isMyTurn());
-        return nextHand;
+        return heuristic;
     }
 
     private static Set<PossibleTurn> getPossibleTurns(Hand hand) {

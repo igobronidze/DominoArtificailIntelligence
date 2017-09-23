@@ -21,17 +21,15 @@ public class DominoHelper {
 
     private static final Logger logger = Logger.getLogger(DominoHelper.class);
 
-    public static Hand finishedLastAndGetNewHand(Hand hand, boolean me, boolean countLeft) {
+    public static Hand finishedLastAndGetNewHand(Hand hand, boolean me) {
         GameInfo gameInfo = hand.getGameInfo();
         int gameId = gameInfo.getGameId();
         Game game = CachedDominoGames.getGame(gameId);
-        CachedDominoGames.clearOmittedAndTiles(gameId);
-        if (countLeft) {
-            if (me) {
-                gameInfo.setMyPoints(gameInfo.getMyPoints() + countLeftTiles(hand, true));
-            } else {
-                gameInfo.setHimPoints(gameInfo.getHimPoints() + countLeftTiles(hand, false));
-            }
+        hand.getTableInfo().setTileFromBazaar(0);
+        hand.getTableInfo().setOmittedMe(false);
+        hand.getTableInfo().setOmittedHim(false);
+        if (me) {
+            gameInfo.setMyPoints(gameInfo.getMyPoints() + countLeftTiles(hand, true));
         }
         int scoreForWin = game.getGameProperties().getPointsForWin();
         if (gameInfo.getMyPoints() >= scoreForWin && gameInfo.getMyPoints() >= gameInfo.getHimPoints()) {

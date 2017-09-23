@@ -9,31 +9,31 @@ import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.domino.TileOwner;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
 import ge.ai.domino.server.manager.domino.DominoHelper;
-import ge.ai.domino.server.manager.domino.MinMax;
 import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;
+import ge.ai.domino.server.manager.domino.minmax.MinMax;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import ge.ai.domino.util.tile.TileUtil;
-import org.apache.log4j.Logger;
 
 import java.util.Map;
 
 public class MyTurnProcessor extends TurnProcessor {
 
-    private static final Logger logger = Logger.getLogger(MyTurnProcessor.class);
-
     @Override
-    public Hand addTile(Hand hand, int x, int y) {
+    public Hand addTile(Hand hand, int x, int y, boolean virtual) {
         int gameId = hand.getGameInfo().getGameId();
-        logger.info("Start add tile for me method for tile [" + x + "-" + y + "], gameId[" + gameId + "]");
+        DominoLoggingProcessor.logInfoOnTurn("Start add tile for me method for tile [" + x + "-" + y + "], gameId[" + gameId + "]", virtual);
+        TableInfo tableInfo = hand.getTableInfo();
         // ისტორიაში დამატება
         Game game = CachedDominoGames.getGame(gameId);
-        game.getHistory().push(CloneUtil.getClone(hand));
+        if (!virtual) {
+            game.getHistory().push(CloneUtil.getClone(hand));
+        }
         // თუ გავიარე -> ა) უკვე გავლილი აქვს მოწინააღმდეგეს და ვამთავრებთ  ბ) გადაეცა სვლა მოწინააღმდეგეს
-        if (hand.getTableInfo().getBazaarTilesCount() == 2) {
-            if (TileOwner.HIM.equals(CachedDominoGames.getOmittedValue(hand.getGameInfo().getGameId()))) {
-                return DominoHelper.finishedLastAndGetNewHand(hand, true, true);
+        if (tableInfo.getBazaarTilesCount() == 2) {
+            if (tableInfo.isOmittedHim()) {
+                return DominoHelper.finishedLastAndGetNewHand(hand, true);
             } else {
-                CachedDominoGames.addOmitted(hand.getGameInfo().getGameId(), TileOwner.ME);
+                tableInfo.setOmittedMe(true);
                 hand.getTableInfo().setMyTurn(false);
                 return hand;
             }
@@ -50,29 +50,31 @@ public class MyTurnProcessor extends TurnProcessor {
         // თუ ეხლა დავამთავრე საწყისი 7 ქვის აღება ვითხოვთ რჩევას პროგრამისგან
         if (hand.getTableInfo().getLeft() == null && hand.getTableInfo().getMyTilesCount() == 7) {
             hand.getTableInfo().setMyTurn(game.getGameProperties().isStart());
-            if (!game.getGameProperties().isFirstHand() && hand.getTableInfo().isMyTurn()) {
-                AIPrediction aiPrediction = MinMax.minMax(CloneUtil.getClone(hand));
+            if (!game.getGameProperties().isFirstHand() && hand.getTableInfo().isMyTurn() && !virtual) {
+                AIPrediction aiPrediction = MinMax.minMax(hand);
                 hand.setAiPrediction(aiPrediction);
             }
         }
         // თუ უკვე ჩამოსულია ქვა, ვითხოვთ რჩევას პროგრამისგან
-        if (hand.getTableInfo().getLeft() != null) {
-            AIPrediction aiPrediction = MinMax.minMax(CloneUtil.getClone(hand));
+        if (hand.getTableInfo().getLeft() != null && !virtual) {
+            AIPrediction aiPrediction = MinMax.minMax(hand);
             hand.setAiPrediction(aiPrediction);
         }
 
-        logger.info("Added tile for me, gameId[" + gameId + "]");
-        DominoLoggingProcessor.logTilesFullInfo(hand);
+        DominoLoggingProcessor.logInfoOnTurn("Added tile for me, gameId[" + gameId + "]", virtual);
+        DominoLoggingProcessor.logTilesFullInfo(hand, virtual);
         return hand;
     }
 
     @Override
-    public Hand play(Hand hand, int x, int y, PlayDirection direction) {
+    public Hand play(Hand hand, int x, int y, PlayDirection direction, boolean virtual) {
         int gameId = hand.getGameInfo().getGameId();
-        logger.info("Start play for me method for tile [" + x + "-" + y + "] direction [" + direction.name() + "], gameId[" + gameId + "]");
+        DominoLoggingProcessor.logInfoOnTurn("Start play for me method for tile [" + x + "-" + y + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
         // ისტორიაში დამატება
         Game game = CachedDominoGames.getGame(gameId);
-        game.getHistory().push(CloneUtil.getClone(hand));
+        if (!virtual) {
+            game.getHistory().push(CloneUtil.getClone(hand));
+        }
         // თუ პირველი ხელის პირველი ჩამოსვლაა, ვაანალიზებთ არ ჩამოსულ მაღალ წყვილებს
         if (game.getGameProperties().isFirstHand() && hand.getTableInfo().getLeft() == null) {
             makeDoubleTilesAsInBazaar(hand, (x == y ? x : -1));
@@ -85,11 +87,11 @@ public class MyTurnProcessor extends TurnProcessor {
         hand.getTableInfo().setMyTurn(false);
         // თუ ქვები აღარ მაქვს ვამთავრებთ
         if (hand.getTableInfo().getMyTilesCount() == 0) {
-            return DominoHelper.finishedLastAndGetNewHand(hand, true, true);
+            return DominoHelper.finishedLastAndGetNewHand(hand, true);
         }
 
-        logger.info("Played tile for me, gameId[" + gameId + "]");
-        DominoLoggingProcessor.logTilesFullInfo(hand);
+        DominoLoggingProcessor.logInfoOnTurn("Played tile for me, gameId[" + gameId + "]", virtual);
+        DominoLoggingProcessor.logTilesFullInfo(hand, virtual);
         return hand;
     }
 

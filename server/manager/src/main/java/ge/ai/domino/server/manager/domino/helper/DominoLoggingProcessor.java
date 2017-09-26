@@ -1,4 +1,4 @@
-package ge.ai.domino.server.manager.domino.logging;
+package ge.ai.domino.server.manager.domino.helper;
 
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.Tile;
@@ -27,13 +27,13 @@ public class DominoLoggingProcessor {
                 NumberFormat formatter = new DecimalFormat("#0.0000");
                 Map<String, Tile> tiles = hand.getTiles();
                 int k = 0;
-                StringBuilder log = new StringBuilder("Tiles info(format - HIM  ME  BAZAAR  IS_PLAYED)" + System.lineSeparator());
+                StringBuilder log = new StringBuilder("Tiles info(format - HIM  IS_MINE  IS_PLAYED)" + System.lineSeparator());
                 for (int i = 6; i >= 0; i--) {
                     for (int j = i; j >= 0; j--) {
                         String uid = TileUtil.getTileUID(i, j);
                         Tile tile = tiles.get(uid);
-                        log.append(uid).append("  ").append(formatter.format(tile.getHim())).append("  ").append(formatter.format(tile.getBazaar()))
-                                .append("  ").append(formatter.format(tile.getMe())).append("  ").append(tile.isPlayed());
+                        log.append(uid).append("  ").append(formatter.format(tile.getHim())).append("  ").append("  ").append(tile.isMine() ? "1" : "0").append("  ").
+                                append(tile.isPlayed()? "1" : "0");
                         k++;
                         if (k % 2 == 0) {
                             log.append(System.lineSeparator());

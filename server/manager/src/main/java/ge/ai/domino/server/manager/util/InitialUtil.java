@@ -1,5 +1,6 @@
 package ge.ai.domino.server.manager.util;
 
+import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.domino.Game;
 import ge.ai.domino.domain.domino.GameInfo;
 import ge.ai.domino.domain.domino.GameProperties;
@@ -15,8 +16,6 @@ import java.util.Random;
 public class InitialUtil {
 
     private static final double INITIAL_PROBABILITY_FOR_HIM = 1.0/ 4;
-
-    private static final double INITIAL_PROBABILITY_FOT_BAZAAR = 3.0 / 4;
 
     private static final int INITIAL_COUNT_TILES_IN_BAZAAR = 21;
 
@@ -40,6 +39,7 @@ public class InitialUtil {
         hand.setTiles(getInitialTiles());
         hand.setTableInfo(tableInfo);
         hand.setGameInfo(new GameInfo());
+        hand.setAiExtraInfo(new AIExtraInfo());
         return hand;
     }
 
@@ -51,7 +51,6 @@ public class InitialUtil {
                 tile.setX(i);
                 tile.setY(j);
                 tile.setHim(INITIAL_PROBABILITY_FOR_HIM);
-                tile.setBazaar(INITIAL_PROBABILITY_FOT_BAZAAR);
                 tiles.put(TileUtil.getTileUID(i, j), tile);
             }
         }

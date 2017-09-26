@@ -13,6 +13,7 @@ import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.util.domino.DominoService;
 import ge.ai.domino.util.domino.DominoServiceImpl;
 import ge.ai.domino.util.tile.TileUtil;
@@ -84,19 +85,27 @@ public class DominoPane extends BorderPane {
                     showIncorrectTurnMessage();
                     reload();
                 } else {
-                    if (DominoPane.this.hand.getTableInfo().isMyTurn()) {
-                        DominoPane.this.hand = dominoService.addTileForMe(DominoPane.this.hand, tile.getX(), tile.getY());
-                        reload();
-                    } else {
-                        DominoPane.this.hand = dominoService.playForHim(DominoPane.this.hand, tile.getX(), tile.getY(), direction);
-                        reload();
+                    try {
+                        if (DominoPane.this.hand.getTableInfo().isMyTurn()) {
+                            DominoPane.this.hand = dominoService.addTileForMe(DominoPane.this.hand, tile.getX(), tile.getY());
+                            reload();
+                        } else {
+                            DominoPane.this.hand = dominoService.playForHim(DominoPane.this.hand, tile.getX(), tile.getY(), direction);
+                            reload();
+                        }
+                    } catch (DAIException ex) {
+                        WarnDialog.showWarnDialog(ex);
                     }
                 }
             }
 
             @Override
             public void onAddTileEntered() {
-                DominoPane.this.hand = dominoService.addTileForHim(DominoPane.this.hand);
+                try {
+                    DominoPane.this.hand = dominoService.addTileForHim(DominoPane.this.hand);
+                } catch (DAIException ex) {
+                    WarnDialog.showWarnDialog(ex);
+                }
                 reload();
             }
         };
@@ -111,7 +120,12 @@ public class DominoPane extends BorderPane {
                     showIncorrectTurnMessage();
                     reload();
                 } else {
-                    DominoPane.this.hand = dominoService.playForMe(DominoPane.this.hand, tile.getX(), tile.getY(), direction);
+                    try {
+                        DominoPane.this.hand = dominoService.playForMe(DominoPane.this.hand, tile.getX(), tile.getY(), direction);
+                        DominoPane.this.hand.setAiPrediction(null);
+                    } catch (DAIException ex) {
+                        WarnDialog.showWarnDialog(ex);
+                    }
                     reload();
                 }
             }
@@ -190,7 +204,11 @@ public class DominoPane extends BorderPane {
     }
 
     private void onUndo() {
-        hand = dominoService.getLastPlayedHand(hand);
+        try {
+            hand = dominoService.getLastPlayedHand(hand);
+        } catch (DAIException ex) {
+            WarnDialog.showWarnDialog(ex);
+        }
         reload();
     }
 
@@ -206,7 +224,11 @@ public class DominoPane extends BorderPane {
         TCHNumberTextField countField = new TCHNumberTextField(TCHComponentSize.MEDIUM);
         TCHButton button = new TCHButton(Messages.get("add"));
         button.setOnAction(event -> {
-            hand = dominoService.addLeftTilesForHim(hand, countField.getNumber().intValue());
+            try {
+                hand = dominoService.addLeftTilesForMe(hand, countField.getNumber().intValue());
+            } catch (DAIException ex) {
+                WarnDialog.showWarnDialog(ex);
+            }
             stage.close();
             reload();
         });

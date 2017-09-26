@@ -7,8 +7,10 @@ import ge.ai.domino.console.ui.TCHcomponents.TCHFieldLabel;
 import ge.ai.domino.console.ui.TCHcomponents.TCHTextField;
 import ge.ai.domino.console.ui.domino.DominoPane;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.domain.domino.GameProperties;
 import ge.ai.domino.domain.domino.Hand;
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.util.domino.DominoService;
 import ge.ai.domino.util.domino.DominoServiceImpl;
@@ -62,9 +64,13 @@ public class GamePropertiesPane extends VBox {
             gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
             gameProperties.setWebsite(websiteField.getText());
             gameProperties.setOpponentName(nameField.getText());
-            gameProperties.setFirstHand(false);
-            Hand hand = dominoService.startGame(gameProperties);
-            ControlPanel.getRoot().setCenter(new DominoPane(hand));
+            gameProperties.setFirstHand(true);
+            try {
+                Hand hand = dominoService.startGame(gameProperties);
+                ControlPanel.getRoot().setCenter(new DominoPane(hand));
+            } catch (DAIException ex) {
+                WarnDialog.showWarnDialog(ex);
+            }
         });
         this.getChildren().addAll(websiteFieldLabel, nameFieldLabel, pointFieldLabel, startFieldLabel, startButton);
     }

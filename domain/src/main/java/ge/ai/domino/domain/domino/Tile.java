@@ -8,11 +8,9 @@ public class Tile {
 
     private boolean played;
 
-    private double me;
+    private boolean mine;
 
     private double him;
-
-    private double bazaar;
 
     public int getX() {
         return x;
@@ -38,12 +36,12 @@ public class Tile {
         this.played = played;
     }
 
-    public double getMe() {
-        return me;
+    public boolean isMine() {
+        return mine;
     }
 
-    public void setMe(double me) {
-        this.me = me;
+    public void setMine(boolean mine) {
+        this.mine = mine;
     }
 
     public double getHim() {
@@ -52,14 +50,6 @@ public class Tile {
 
     public void setHim(double him) {
         this.him = him;
-    }
-
-    public double getBazaar() {
-        return bazaar;
-    }
-
-    public void setBazaar(double bazaar) {
-        this.bazaar = bazaar;
     }
 
     @Override

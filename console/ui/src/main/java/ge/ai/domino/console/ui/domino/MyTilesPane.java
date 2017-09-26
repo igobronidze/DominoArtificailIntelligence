@@ -1,5 +1,6 @@
 package ge.ai.domino.console.ui.domino;
 
+import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.domino.AIPrediction;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
@@ -10,6 +11,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 abstract class MyTilesPane extends TilesPane {
 
@@ -39,7 +43,9 @@ abstract class MyTilesPane extends TilesPane {
                     int bestX = aiPrediction.getX();
                     int bestY = aiPrediction.getY();
                     if (tile.getX() == bestX && tile.getY() == bestY) {
-                        Label label = new Label(aiPrediction.getDirection().name());
+                        NumberFormat formatter = new DecimalFormat("#0.0000");
+                        AIExtraInfo aiExtraInfo = hand.getAiExtraInfo();
+                        Label label = new Label(aiPrediction.getDirection().name() + "(" + formatter.format(aiExtraInfo.getHeuristicValue()) + ")");
                         vBox.getChildren().add(label);
                     }
                 }
@@ -68,6 +74,6 @@ abstract class MyTilesPane extends TilesPane {
     @Override
     public boolean showTile(String uid) {
         Tile tile = tiles.get(uid);
-        return !tile.isPlayed() && tile.getMe() == 1.0;
+        return !tile.isPlayed() && tile.isMine();
     }
 }

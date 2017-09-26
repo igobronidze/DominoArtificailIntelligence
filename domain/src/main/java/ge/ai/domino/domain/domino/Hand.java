@@ -1,5 +1,7 @@
 package ge.ai.domino.domain.domino;
 
+import ge.ai.domino.domain.ai.AIExtraInfo;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +14,8 @@ public class Hand {
     private TableInfo tableInfo;
 
     private GameInfo gameInfo;
+
+    private AIExtraInfo aiExtraInfo;
 
     public Map<String, Tile> getTiles() {
         return tiles;
@@ -43,5 +47,13 @@ public class Hand {
 
     public void setGameInfo(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
+    }
+
+    public AIExtraInfo getAiExtraInfo() {
+        return aiExtraInfo;
+    }
+
+    public void setAiExtraInfo(AIExtraInfo aiExtraInfo) {
+        this.aiExtraInfo = aiExtraInfo;
     }
 }

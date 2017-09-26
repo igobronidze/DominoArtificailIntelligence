@@ -6,10 +6,10 @@ import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
-import ge.ai.domino.domain.domino.TileOwner;
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
-import ge.ai.domino.server.manager.domino.DominoHelper;
-import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;
+import ge.ai.domino.server.manager.domino.helper.DominoHelper;
+import ge.ai.domino.server.manager.domino.helper.DominoLoggingProcessor;
 import ge.ai.domino.server.manager.domino.minmax.MinMax;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import ge.ai.domino.util.tile.TileUtil;
@@ -21,7 +21,12 @@ import java.util.Set;
 public class HimTurnProcessor extends TurnProcessor {
 
     @Override
-    public Hand addTile(Hand hand, int x, int y, boolean virtual) {
+    public Hand addTile(Hand hand, int x, int y, boolean virtual) throws DAIException {
+        if (virtual) {
+            DominoLoggingProcessor.logInfoOnTurn("<<<Virtual Mode>>>", true);
+        } else {
+            DominoLoggingProcessor.logInfoOnTurn("<<<<<<<<<<<<<<<<<<<<<<<<<<<Real Mode<<<<<<<<<<<<<<<<<<<<<<<<<<<", false);
+        }
         int gameId = hand.getGameInfo().getGameId();
         DominoLoggingProcessor.logInfoOnTurn("Start add tile for him method, gameId[" + gameId + "]", virtual);
         TableInfo tableInfo = hand.getTableInfo();
@@ -42,7 +47,7 @@ public class HimTurnProcessor extends TurnProcessor {
             }
             // ბოლოს აღებული ქვების რაოდენობის მიხედვით ნაწილდება ალბათობები
             if (tableInfo.getTileFromBazaar() > 0) {
-                updateProbabilitiesForLastPickedTiles(hand);
+                updateProbabilitiesForLastPickedTiles(hand, false);
             }
             // გავლის დაფიქსირება
             tableInfo.setOmittedHim(true);
@@ -63,7 +68,12 @@ public class HimTurnProcessor extends TurnProcessor {
     }
 
     @Override
-    public Hand play(Hand hand, int x, int y, PlayDirection direction, boolean virtual) {
+    public Hand play(Hand hand, int x, int y, PlayDirection direction, boolean virtual) throws DAIException {
+        if (virtual) {
+            DominoLoggingProcessor.logInfoOnTurn("<<<Virtual Mode>>>", true);
+        } else {
+            DominoLoggingProcessor.logInfoOnTurn("<<<<<<<<<<<<<<<<<<<<<<<<<<<Real Mode<<<<<<<<<<<<<<<<<<<<<<<<<<<", false);
+        }
         int gameId = hand.getGameInfo().getGameId();
         DominoLoggingProcessor.logInfoOnTurn("Start play for him method for tile [" + x + "-" + y + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
         // ისტორიაში დამატება
@@ -77,26 +87,23 @@ public class HimTurnProcessor extends TurnProcessor {
         }
         // თუ წინა სვლაზე იყო ბაზარში, აღებული ქვების რაოდენობით ნაწილდება ალბათობები
         if (hand.getTableInfo().getTileFromBazaar() > 0) {
-            updateProbabilitiesForLastPickedTiles(hand);
+            updateProbabilitiesForLastPickedTiles(hand, true);
         } else {
             // წინააღმდეგ შემთხვევაში, ჩამოსული ქვის ალბათობები ნაწილდბეა სხვებზე
             Map<String, Tile> tiles = hand.getTiles();
             Tile playedTile = tiles.get(TileUtil.getTileUID(x, y));
             double him = playedTile.getHim();
-            double bazaar = playedTile.getBazaar();
-            DominoHelper.makeTileAsPlayed(playedTile);
-            DominoHelper.addProbabilitiesProportional(tiles, DominoHelper.getNotPlayedMineOrBazaarTiles(tiles), him - 1, TileOwner.HIM);
-            DominoHelper.addProbabilitiesProportional(tiles, DominoHelper.getNotPlayedMineOrBazaarTiles(tiles), bazaar, TileOwner.BAZAAR);
+            makeTileAsPlayed(playedTile);
+            addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him - 1);
         }
         // ქვის ჩამოსვლა
-        DominoHelper.playTile(hand.getTableInfo(), x, y, direction);
-        DominoHelper.updateTileCountBeforePlayHim(hand);
-        hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + DominoHelper.countScore(hand));
+        playTile(hand.getTableInfo(), x, y, direction);
+        updateTileCountBeforePlayHim(hand);
+        hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + countScore(hand));
         hand.getTableInfo().setMyTurn(true);
         // თუ ქვები აღარ აქვს, ვამთავრებთ ხელს
         if (hand.getTableInfo().getHimTilesCount() == 0) {
-            hand.getTableInfo().setNeedToAddLeftTiles(true);
-            return hand;
+            return DominoHelper.finishedLastAndGetNewHand(hand, false, virtual);
         }
         // რჩევის მიღება
         if (!virtual) {
@@ -109,64 +116,85 @@ public class HimTurnProcessor extends TurnProcessor {
         return hand;
     }
 
-    @SuppressWarnings("Duplicates")
+    /**
+     * ყველა ქვა, რომლის ჩამოსვლაც შესაძლებელია კონკრეტულ მომენტში, ცხადდება როგორც ბაზარში არსებული და მისი ალბათობები უნაწილდება სხვებს
+     * @param hand კონკრეტული ხელი
+     */
     private void makeTilesAsInBazaarAndUpdateProbabilitiesForOther(Hand hand) {
-        Set<Integer> notUsedNumbers = getNotUsedNumbers(hand);
+        Set<Integer> possiblePlayNumbers = getPossiblePlayNumbers(hand);
         double himSum = 0.0;
-        double bazaarSum = 0.0;
         Set<String> mayHaveTiles = new HashSet<>();
         for (Tile tile : hand.getTiles().values()) {
-            if (!tile.isPlayed() && tile.getMe() != 1.0) {
-                if (notUsedNumbers.contains(tile.getX()) || notUsedNumbers.contains(tile.getY())) {
+            if (!tile.isPlayed() && !tile.isMine()) {
+                if (possiblePlayNumbers.contains(tile.getX()) || possiblePlayNumbers.contains(tile.getY())) {
                     himSum += tile.getHim();
-                    bazaarSum += (1.0 - tile.getBazaar());
                     tile.setHim(0);
-                    tile.setMe(0);
-                    tile.setBazaar(1.0);
+                    tile.setMine(false);
                 } else {
                     mayHaveTiles.add(TileUtil.getTileUID(tile.getX(), tile.getY()));
                 }
             }
         }
-        DominoHelper.addProbabilitiesProportional(hand.getTiles(), mayHaveTiles, himSum, TileOwner.HIM);
-        DominoHelper.addProbabilitiesProportional(hand.getTiles(), mayHaveTiles, -1 * bazaarSum, TileOwner.BAZAAR);
+        addProbabilitiesProportional(hand.getTiles(), mayHaveTiles, himSum);
     }
 
-    private Set<Integer> getNotUsedNumbers(Hand hand) {
-        TableInfo tableInfo = hand.getTableInfo();
-        Set<Integer> notUsedNumbers = new HashSet<>();
-        if (tableInfo.getTop() != null) {
-            notUsedNumbers.add(tableInfo.getTop().getOpenSide());
-        }
-        if (tableInfo.getRight() != null) {
-            notUsedNumbers.add(tableInfo.getRight().getOpenSide());
-        }
-        if (tableInfo.getBottom() != null) {
-            notUsedNumbers.add(tableInfo.getBottom().getOpenSide());
-        }
-        if (tableInfo.getLeft() != null) {
-            notUsedNumbers.add(tableInfo.getLeft().getOpenSide());
-        }
-        return notUsedNumbers;
-    }
-
-    private void updateProbabilitiesForLastPickedTiles(Hand hand) {
-        Set<Integer> notUsedNumbers = getNotUsedNumbers(hand);
+    /**
+     * ბოლოს აღებული ქვების რაოდენობით ალბათობა უნაწილდება ყველა იმ ქვას, რომელიც შეიძლება ქონოდა მოწინააღმდეგეს
+     * @param hand კონკრეტული ხელი
+     * @param played აღნიშნავს მოწინააღმდეგემ ითამაშა თუ არა(გამოძახება შეიძლება მომხდარიყო თამაშის ან გავლის შემდეგ)
+     */
+    private void updateProbabilitiesForLastPickedTiles(Hand hand, boolean played) {
+        Set<Integer> notUsedNumbers = getPossiblePlayNumbers(hand);
         Set<String> usefulUIDs = new HashSet<>();
         for (Tile tile : hand.getTiles().values()) {
-            if (!notUsedNumbers.contains(tile.getX()) && !notUsedNumbers.contains(tile.getY()) && !tile.isPlayed() && tile.getMe() != 1.0) {
+            if (!notUsedNumbers.contains(tile.getX()) && !notUsedNumbers.contains(tile.getY()) && !tile.isPlayed() && !tile.isMine()) {
                 usefulUIDs.add(TileUtil.getTileUID(tile.getX(), tile.getY()));
             }
         }
         double bazaarTilesCount = hand.getTableInfo().getTileFromBazaar();
-        DominoHelper.addProbabilitiesProportional(hand.getTiles(), usefulUIDs, bazaarTilesCount, TileOwner.HIM);
-        DominoHelper.addProbabilitiesProportional(hand.getTiles(), usefulUIDs, -1 * bazaarTilesCount, TileOwner.BAZAAR);
+        addProbabilitiesProportional(hand.getTiles(), usefulUIDs, played ? bazaarTilesCount - 1 : bazaarTilesCount);
         hand.getTableInfo().setTileFromBazaar(0);
     }
 
+    /**
+     * ითვლება ის რიცხვები, რომელიც არის მაგიდის რომელიმე კუთხეში
+     * @param hand კონკრეტული ხელი
+     * @return მაგიდის კუთხის ქვების ბოლო ნაწილების სეტი
+     */
+    private Set<Integer> getPossiblePlayNumbers(Hand hand) {
+        TableInfo tableInfo = hand.getTableInfo();
+        Set<Integer> possiblePlayNumbers = new HashSet<>();
+        if (tableInfo.getTop() != null) {
+            possiblePlayNumbers.add(tableInfo.getTop().getOpenSide());
+        }
+        if (tableInfo.getRight() != null) {
+            possiblePlayNumbers.add(tableInfo.getRight().getOpenSide());
+        }
+        if (tableInfo.getBottom() != null) {
+            possiblePlayNumbers.add(tableInfo.getBottom().getOpenSide());
+        }
+        if (tableInfo.getLeft() != null) {
+            possiblePlayNumbers.add(tableInfo.getLeft().getOpenSide());
+        }
+        return possiblePlayNumbers;
+    }
+
+    /**
+     * მოწინააღმდეგის ბაზარში გასვლის შემდეგ ქვების რაოდენობის გადათვლა
+     * @param hand კონკრეტული ხელი
+     */
     private void updateTileCountBeforeAddHim(Hand hand) {
         TableInfo tableInfo = hand.getTableInfo();
         tableInfo.setHimTilesCount(tableInfo.getHimTilesCount() + 1);
         tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
+    }
+
+    /**
+     * მოწინააღმდეგის თამაშის შემდეგ ქვების რაოდენობის გადათვლა
+     * @param hand კონკრეტული ხელი
+     */
+    private void updateTileCountBeforePlayHim(Hand hand) {
+        TableInfo tableInfo = hand.getTableInfo();
+        tableInfo.setHimTilesCount(tableInfo.getHimTilesCount() - 1);
     }
 }

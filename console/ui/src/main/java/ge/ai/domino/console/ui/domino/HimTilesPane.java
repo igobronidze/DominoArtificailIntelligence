@@ -38,11 +38,9 @@ abstract class HimTilesPane extends TilesPane {
                     ImageView imageView = getImageView(uid, true);
                     Label himLabel = new Label("" + formatter.format(tile.getHim()));
                     himLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red; -fx-font-weight: bold");
-                    Label bazaarLabel = new Label("" + formatter.format(tile.getBazaar()));
-                    bazaarLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red; -fx-font-weight: bold");
                     VBox vBox = new VBox(5);
                     vBox.setAlignment(Pos.TOP_CENTER);
-                    vBox.getChildren().addAll(himLabel, imageView, bazaarLabel);
+                    vBox.getChildren().addAll(himLabel, imageView);
                     hBox.getChildren().add(vBox);
                     imageViews.put(uid, imageView);
                     imageView.setOnMouseClicked(e -> onTilePressed(uid));
@@ -84,7 +82,7 @@ abstract class HimTilesPane extends TilesPane {
     @Override
     public boolean showTile(String uid) {
         Tile tile = tiles.get(uid);
-        return !tile.isPlayed() && tile.getMe() != 1.0;
+        return !tile.isPlayed() && !tile.isMine();
     }
 
     public abstract void onAddTileEntered();

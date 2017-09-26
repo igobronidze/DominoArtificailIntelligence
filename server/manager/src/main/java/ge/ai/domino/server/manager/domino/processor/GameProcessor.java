@@ -4,8 +4,8 @@ import ge.ai.domino.domain.domino.Game;
 import ge.ai.domino.domain.domino.GameProperties;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
-import ge.ai.domino.server.manager.domino.DominoHelper;
-import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;
+import ge.ai.domino.server.manager.domino.helper.DominoHelper;
+import ge.ai.domino.server.manager.domino.helper.DominoLoggingProcessor;
 import ge.ai.domino.server.manager.util.InitialUtil;
 import org.apache.log4j.Logger;
 
@@ -13,15 +13,25 @@ public class GameProcessor {
 
     private static final Logger logger = Logger.getLogger(GameProcessor.class);
 
+    /**
+     * ახალი თამაშის დაწყება
+     * @param gameProperties თამაშის პარამეტრები
+     * @return ახალი თამაში
+     */
     public Hand startGame(GameProperties gameProperties) {
         logger.info("Started prepare new game");
         Game game = InitialUtil.getInitialGame(gameProperties);
         CachedDominoGames.addGame(game);
-        logger.info("Started new game[" + game.getId() + "]");
+        logger.info("-------------------------Started new game[" + game.getId() + "]-------------------------");
         DominoLoggingProcessor.logTilesFullInfo(game.getCurrHand(), false);
         return game.getCurrHand();
     }
 
+    /**
+     * წინა ხელი(Ctrl+Z)
+     * @param hand არსებული ხელი
+     * @return ერთი სვლით წინა ხელი
+     */
     public Hand getLastPlayedHand(Hand hand) {
         int gameId = hand.getGameInfo().getGameId();
         logger.info("Start get last played hand method, gameId[" + gameId + "]");
@@ -34,12 +44,18 @@ public class GameProcessor {
         return game.getHistory().poll();
     }
 
-    public Hand addLeftTilesForHim(Hand hand, int count) {
+    /**
+     *
+     * @param hand
+     * @param count
+     * @return
+     */
+    public Hand addLeftTilesForMe(Hand hand, int count) {
         int gameId = hand.getGameInfo().getGameId();
-        logger.info("Start add left tile for him method, gameId[" + gameId + "]");
-        hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + count);
+        logger.info("Start add left tile for me method, gameId[" + gameId + "]");
+        hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + count);
         hand.getTableInfo().setNeedToAddLeftTiles(false);
-        logger.info("Added lef tiles for him, gameId[" + gameId + "]");
-        return DominoHelper.finishedLastAndGetNewHand(hand, false);
+        logger.info("Added lef tiles for me, gameId[" + gameId + "]");
+        return DominoHelper.finishedLastAndGetNewHand(hand, false, false);
     }
 }

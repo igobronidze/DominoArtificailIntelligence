@@ -35,10 +35,11 @@ public class MyTurnProcessor extends TurnProcessor {
         }
         // თუ გავიარე -> ა) უკვე გავლილი აქვს მოწინააღმდეგეს და ვამთავრებთ  ბ) გადაეცა სვლა მოწინააღმდეგეს
         if (tableInfo.getBazaarTilesCount() == 2) {
+            tableInfo.setOmittedMe(true);
             if (tableInfo.isOmittedHim()) {
-                return DominoHelper.finishedLastAndGetNewHand(hand, false, virtual);
+                hand.getTableInfo().setNeedToAddLeftTiles(true);
+                return hand;
             } else {
-                tableInfo.setOmittedMe(true);
                 hand.getTableInfo().setMyTurn(false);
                 return hand;
             }
@@ -65,7 +66,7 @@ public class MyTurnProcessor extends TurnProcessor {
         }
 
         DominoLoggingProcessor.logInfoOnTurn("Added tile for me, gameId[" + gameId + "]", virtual);
-        DominoLoggingProcessor.logTilesFullInfo(hand, virtual);
+        DominoLoggingProcessor.logHandFullInfo(hand, virtual);
         return hand;
     }
 
@@ -76,6 +77,7 @@ public class MyTurnProcessor extends TurnProcessor {
         } else {
             DominoLoggingProcessor.logInfoOnTurn("<<<<<<<<<<<<<<<<<<<<<<<<<<<Real Mode<<<<<<<<<<<<<<<<<<<<<<<<<<<", false);
         }
+        hand.getTableInfo().setOmittedMe(false);
         int gameId = hand.getGameInfo().getGameId();
         DominoLoggingProcessor.logInfoOnTurn("Start play for me method for tile [" + x + "-" + y + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
         // ისტორიაში დამატება
@@ -100,7 +102,7 @@ public class MyTurnProcessor extends TurnProcessor {
         }
 
         DominoLoggingProcessor.logInfoOnTurn("Played tile for me, gameId[" + gameId + "]", virtual);
-        DominoLoggingProcessor.logTilesFullInfo(hand, virtual);
+        DominoLoggingProcessor.logHandFullInfo(hand, virtual);
         return hand;
     }
 

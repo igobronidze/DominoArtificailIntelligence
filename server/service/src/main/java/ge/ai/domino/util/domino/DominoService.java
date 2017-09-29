@@ -7,7 +7,7 @@ import ge.ai.domino.domain.exception.DAIException;
 
 public interface DominoService {
 
-    Hand startGame(GameProperties gameProperties) throws DAIException;
+    Hand startGame(GameProperties gameProperties, int gameId) throws DAIException;
 
     Hand addTileForMe(Hand hand, int x, int y) throws DAIException;
 
@@ -19,5 +19,5 @@ public interface DominoService {
 
     Hand getLastPlayedHand(Hand hand) throws DAIException;
 
-    Hand addLeftTilesForMe(Hand hand, int count) throws DAIException;
+    Hand addLeftTiles(Hand hand, int himTilesCount) throws DAIException;
 }

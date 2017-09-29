@@ -5,6 +5,7 @@ import ge.ai.domino.console.ui.TCHcomponents.TCHComponentSize;
 import ge.ai.domino.console.ui.TCHcomponents.TCHLabel;
 import ge.ai.domino.console.ui.TCHcomponents.TCHNumberTextField;
 import ge.ai.domino.console.ui.control_panel.ControlPanel;
+import ge.ai.domino.console.ui.control_panel.GamePropertiesPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
@@ -25,6 +26,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -54,7 +56,9 @@ public class DominoPane extends BorderPane {
         initCenterPane();
         initBottomPane();
         initKeyboardListener();
-        if (hand.getTableInfo().isNeedToAddLeftTiles()) {
+        if (hand.getGameInfo().isFinished()) {
+            showNextGameWindow();
+        } else if (hand.getTableInfo().isNeedToAddLeftTiles()) {
             showAddLeftTilesCount();
         }
     }
@@ -192,7 +196,6 @@ public class DominoPane extends BorderPane {
             }
             if (pressedOnCtrl && e.getCode() == KeyCode.Z) {
                 onUndo();
-                return;
             }
         });
         ControlPanel.getScene().setOnKeyReleased(e -> {
@@ -225,7 +228,7 @@ public class DominoPane extends BorderPane {
         TCHButton button = new TCHButton(Messages.get("add"));
         button.setOnAction(event -> {
             try {
-                hand = dominoService.addLeftTilesForMe(hand, countField.getNumber().intValue());
+                hand = dominoService.addLeftTiles(hand, countField.getNumber().intValue());
             } catch (DAIException ex) {
                 WarnDialog.showWarnDialog(ex);
             }
@@ -239,6 +242,39 @@ public class DominoPane extends BorderPane {
         stage.setScene(new Scene(vBox));
         stage.setWidth(300);
         stage.setHeight(100);
+        stage.showAndWait();
+    }
+
+    private void showNextGameWindow() {
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.setTitle(Messages.get("newGame"));
+        TCHLabel label = new TCHLabel(Messages.get("startNewHand"));
+        TCHButton yesButton = new TCHButton(Messages.get("yes"));
+        yesButton.setOnAction(event -> {
+            try {
+                hand = dominoService.startGame(null, hand.getGameInfo().getGameId());
+                reload();
+            } catch (DAIException ex) {
+                WarnDialog.showWarnDialog(ex);
+            }
+            stage.close();
+        });
+        TCHButton noButton = new TCHButton(Messages.get("no"));
+        noButton.setOnAction(event -> {
+            ControlPanel.getRoot().setCenter(new GamePropertiesPane());
+            stage.close();
+        });
+        HBox hBox = new HBox(25);
+        hBox.setAlignment(Pos.TOP_CENTER);
+        hBox.getChildren().addAll(yesButton, noButton);
+        VBox vBox = new VBox(30);
+        vBox.setPadding(new Insets(20));
+        vBox.setAlignment(Pos.TOP_CENTER);
+        vBox.getChildren().addAll(label, hBox);
+        stage.setScene(new Scene(vBox));
+        stage.setWidth(400);
+        stage.setHeight(140);
         stage.showAndWait();
     }
 }

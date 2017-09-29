@@ -28,8 +28,8 @@ public class DominoManager {
 
     private static final SysParam checkHimProbabilities = new SysParam("checkHimProbabilities", "false");
 
-    public Hand startGame(GameProperties gameProperties) throws DAIException {
-        Hand newHand = gameProcessor.startGame(gameProperties);
+    public Hand startGame(GameProperties gameProperties, int gameId) throws DAIException {
+        Hand newHand = gameProcessor.startGame(gameProperties, gameId);
         checkHimProbabilities(newHand, 0);
         return newHand;
     }
@@ -65,7 +65,7 @@ public class DominoManager {
     }
 
     public Hand addLeftTilesForMe(Hand hand, int count) throws DAIException {
-        Hand newHand = gameProcessor.addLeftTilesForMe(hand, count);
+        Hand newHand = gameProcessor.addLeftTiles(hand, count);
         checkHimProbabilities(newHand, 0);
         return newHand;
     }
@@ -85,7 +85,7 @@ public class DominoManager {
             }
             if (Math.abs(sum - hand.getTableInfo().getHimTilesCount() + addProb) > 0.001) {
                 logger.warn("Him tile count and probabilities sum is not same... count:" + hand.getTableInfo().getHimTilesCount() + "  sum:" + sum + "  addProb:" + addProb);
-                DominoLoggingProcessor.logTilesFullInfo(hand, false);   // შეიძლება ვირტუალური იყოს, მაგრამ აუციელებელია რომ დაიბეჭდოს
+                DominoLoggingProcessor.logHandFullInfo(hand, false);   // შეიძლება ვირტუალური იყოს, მაგრამ აუციელებელია რომ დაიბეჭდოს
                 throw new DAIException("somethingWrongInHimProbabilities");
             }
         }

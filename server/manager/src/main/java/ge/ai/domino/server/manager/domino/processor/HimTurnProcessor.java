@@ -40,6 +40,7 @@ public class HimTurnProcessor extends TurnProcessor {
         }
         // თუ გაიარა
         if (tableInfo.getBazaarTilesCount() == 2) {
+            tableInfo.setOmittedHim(true);
             // თუ მე უკვე გავლილი მაქვს ვითხოვთ მოწინააღმდეგის დარჩენილი ქულების დათვლას
             if (tableInfo.isOmittedMe()) {
                 hand.getTableInfo().setNeedToAddLeftTiles(true);
@@ -50,7 +51,6 @@ public class HimTurnProcessor extends TurnProcessor {
                 updateProbabilitiesForLastPickedTiles(hand, false);
             }
             // გავლის დაფიქსირება
-            tableInfo.setOmittedHim(true);
             hand.getTableInfo().setMyTurn(true);
             if (!virtual) {
                 AIPrediction aiPrediction = MinMax.minMax(hand);
@@ -63,7 +63,7 @@ public class HimTurnProcessor extends TurnProcessor {
         updateTileCountBeforeAddHim(hand);
 
         DominoLoggingProcessor.logInfoOnTurn("Added tile for him, gameId[" + gameId + "]", virtual);
-        DominoLoggingProcessor.logTilesFullInfo(hand, virtual);
+        DominoLoggingProcessor.logHandFullInfo(hand, virtual);
         return hand;
     }
 
@@ -74,6 +74,7 @@ public class HimTurnProcessor extends TurnProcessor {
         } else {
             DominoLoggingProcessor.logInfoOnTurn("<<<<<<<<<<<<<<<<<<<<<<<<<<<Real Mode<<<<<<<<<<<<<<<<<<<<<<<<<<<", false);
         }
+        hand.getTableInfo().setOmittedHim(false);
         int gameId = hand.getGameInfo().getGameId();
         DominoLoggingProcessor.logInfoOnTurn("Start play for him method for tile [" + x + "-" + y + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
         // ისტორიაში დამატება
@@ -86,12 +87,13 @@ public class HimTurnProcessor extends TurnProcessor {
             makeDoubleTilesAsInBazaar(hand, (x == y ? x : -1));
         }
         // თუ წინა სვლაზე იყო ბაზარში, აღებული ქვების რაოდენობით ნაწილდება ალბათობები
+        Map<String, Tile> tiles = hand.getTiles();
+        Tile playedTile = tiles.get(TileUtil.getTileUID(x, y));
         if (hand.getTableInfo().getTileFromBazaar() > 0) {
             updateProbabilitiesForLastPickedTiles(hand, true);
+            makeTileAsPlayed(playedTile);
         } else {
             // წინააღმდეგ შემთხვევაში, ჩამოსული ქვის ალბათობები ნაწილდბეა სხვებზე
-            Map<String, Tile> tiles = hand.getTiles();
-            Tile playedTile = tiles.get(TileUtil.getTileUID(x, y));
             double him = playedTile.getHim();
             makeTileAsPlayed(playedTile);
             addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him - 1);
@@ -103,7 +105,7 @@ public class HimTurnProcessor extends TurnProcessor {
         hand.getTableInfo().setMyTurn(true);
         // თუ ქვები აღარ აქვს, ვამთავრებთ ხელს
         if (hand.getTableInfo().getHimTilesCount() == 0) {
-            return DominoHelper.finishedLastAndGetNewHand(hand, false, virtual);
+            return DominoHelper.finishedLastAndGetNewHand(hand, false, true, virtual);
         }
         // რჩევის მიღება
         if (!virtual) {
@@ -112,7 +114,7 @@ public class HimTurnProcessor extends TurnProcessor {
         }
 
         DominoLoggingProcessor.logInfoOnTurn("Played tile for him, gameId[" + gameId + "]", virtual);
-        DominoLoggingProcessor.logTilesFullInfo(hand, virtual);
+        DominoLoggingProcessor.logHandFullInfo(hand, virtual);
         return hand;
     }
 

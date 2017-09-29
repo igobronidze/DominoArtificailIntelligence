@@ -21,13 +21,14 @@ public class DominoLoggingProcessor {
 
     private final static SysParam logOnVirtualMode = new SysParam("logOnVirtualMode", "false");
 
-    public static void logTilesFullInfo(Hand hand, boolean virtualMode) {
+    public static void logHandFullInfo(Hand hand, boolean virtualMode) {
         if (systemParameterManager.getBooleanParameterValue(logTilesAfterMethod)) {
             if (!virtualMode || systemParameterManager.getBooleanParameterValue(logOnVirtualMode)) {
                 NumberFormat formatter = new DecimalFormat("#0.0000");
                 Map<String, Tile> tiles = hand.getTiles();
                 int k = 0;
-                StringBuilder log = new StringBuilder("Tiles info(format - HIM  IS_MINE  IS_PLAYED)" + System.lineSeparator());
+                StringBuilder log = new StringBuilder("Me:" + hand.getGameInfo().getMyPoints() + ", HIM:" + hand.getGameInfo().getHimPoints() + System.lineSeparator());
+                log.append("Tiles info(format - HIM  IS_MINE  IS_PLAYED)").append(System.lineSeparator());
                 for (int i = 6; i >= 0; i--) {
                     for (int j = i; j >= 0; j--) {
                         String uid = TileUtil.getTileUID(i, j);

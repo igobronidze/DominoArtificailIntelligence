@@ -9,8 +9,10 @@ import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.server.manager.domino.helper.DominoHelper;
 import ge.ai.domino.server.manager.domino.DominoManager;
+import ge.ai.domino.server.manager.domino.helper.DominoHelper;
+import ge.ai.domino.server.manager.domino.heuristic.ComplexHandHeuristic;
+import ge.ai.domino.server.manager.domino.heuristic.HandHeuristicUtil;
 import ge.ai.domino.server.manager.domino.heuristic.HandHeuristic;
 import ge.ai.domino.server.manager.domino.heuristic.SimpleHandHeuristic;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
@@ -29,7 +31,7 @@ public class MinMax {
 
     private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
-    private static final HandHeuristic handHeuristic = new SimpleHandHeuristic();
+    private static final HandHeuristic handHeuristic = new ComplexHandHeuristic();
 
     private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "6");
 
@@ -49,6 +51,7 @@ public class MinMax {
                 bestTurn = possibleTurn;
                 bestHeuristic = heuristic;
             }
+            logger.info("Turn- " + possibleTurn.getX() + ":" + possibleTurn.getY() + " " + possibleTurn.getDirection() + ", heuristic: " + heuristic);
         }
         if (bestTurn == null) {
             logger.info("No AIPrediction");
@@ -65,15 +68,28 @@ public class MinMax {
 
     private static double getHeuristicValue(Hand hand, int height) throws DAIException {
         TableInfo tableInfo = hand.getTableInfo();
+        if (hand.getGameInfo().isFinished()) {
+            return HandHeuristicUtil.getFinishedGameHeuristic(tableInfo);
+        }
         // თუ მოწინააღმდეგემ გაიარა, ვიმატებთ მის სავარაუდო დარჩენილ ქვებს და ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
         if (tableInfo.isNeedToAddLeftTiles()) {
-            hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + DominoHelper.countLeftTiles(hand, false, true));
-            hand.getAiExtraInfo().setHeuristicValue(handHeuristic.getHeuristic(hand));
+            int himTilesCount = DominoHelper.countLeftTiles(hand, false, true);
+            if (tableInfo.isOmittedMe() && tableInfo.isOmittedHim()) {
+                int myTilesCount = DominoHelper.countLeftTiles(hand, true, false);
+                if (myTilesCount < himTilesCount) {
+                    hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + himTilesCount);
+                } else {
+                    hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + himTilesCount);
+                }
+            } else {
+                hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + himTilesCount);
+            }
+            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicUtil.getFinishedHandHeuristic(hand.getTableInfo()));
             return hand.getAiExtraInfo().getHeuristicValue();
         }
         // თუ ახალი ხელი დაიწყო ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
-        if (tableInfo.getMyTilesCount() == 0 && tableInfo.getHimTilesCount() == 7 && tableInfo.getBazaarTilesCount() == 21) {
-            hand.getAiExtraInfo().setHeuristicValue(handHeuristic.getHeuristic(hand));
+        if (DominoHelper.isNewHand(hand.getTableInfo())) {
+            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicUtil.getFinishedHandHeuristic(hand.getTableInfo()));
             return hand.getAiExtraInfo().getHeuristicValue();
         }
         // თუ ჩავედით ხის ფოთოლში, ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
@@ -123,6 +139,7 @@ public class MinMax {
                 possibleHands.add(nextHand);
             }
 
+            int notPlayedTilesCount = 0;   // ქვების რაოდენობა რომელიც არ ითამაშა მოწინააღმდეგემ
             double heuristic = 0.0;
             double remainingProbability = 1.0;
             // მივყვებით მოწინააღმდეგისთვის საუკეთესო სვლებს
@@ -131,9 +148,15 @@ public class MinMax {
                 double prob = remainingProbability * lastPlayedTile.getHim();  // ალბათობა ბოლოს ნათამაშებიქ ვის ქონის, იმის გათვალისწინებით, რომ უკვე სხვა აქამდე არჩეული ქვები არ ქონია
                 heuristic += nextHand.getAiExtraInfo().getHeuristicValue() * prob;
                 remainingProbability -= prob;   // remainingProbability ინახავს ალბათობას, რომ აქამდე გგავლილი ქვები არ ქონდა
+
+                // იმაზე მეტჯერ, ვერ "არ ჩამოვა" ქვას ვიდრე ბაზარშია
+                notPlayedTilesCount++;
+                if (notPlayedTilesCount > tableInfo.getBazaarTilesCount()) {
+                    break;
+                }
             }
             // ბაზარში წასვლი შემთხვევა
-            if (remainingProbability > 0.0001) {
+            if (remainingProbability > 0.0001 && notPlayedTilesCount <= tableInfo.getBazaarTilesCount()) {
                 heuristic += getHeuristicValue(dominoManager.addTileForHim(CloneUtil.getClone(hand), true), height + 1) * remainingProbability;
             }
             hand.getAiExtraInfo().setHeuristicValue(heuristic);

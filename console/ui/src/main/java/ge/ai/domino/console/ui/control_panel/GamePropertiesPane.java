@@ -66,7 +66,7 @@ public class GamePropertiesPane extends VBox {
             gameProperties.setOpponentName(nameField.getText());
             gameProperties.setFirstHand(true);
             try {
-                Hand hand = dominoService.startGame(gameProperties);
+                Hand hand = dominoService.startGame(gameProperties, 0);
                 ControlPanel.getRoot().setCenter(new DominoPane(hand));
             } catch (DAIException ex) {
                 WarnDialog.showWarnDialog(ex);

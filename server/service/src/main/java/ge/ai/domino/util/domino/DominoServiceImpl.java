@@ -11,8 +11,8 @@ public class DominoServiceImpl implements DominoService {
     private static final DominoManager dominoManager = new DominoManager();
 
     @Override
-    public Hand startGame(GameProperties gameProperties) throws DAIException {
-        return dominoManager.startGame(gameProperties);
+    public Hand startGame(GameProperties gameProperties, int gameId) throws DAIException {
+        return dominoManager.startGame(gameProperties, gameId);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class DominoServiceImpl implements DominoService {
     }
 
     @Override
-    public Hand addLeftTilesForMe(Hand hand, int count) throws DAIException {
-        return dominoManager.addLeftTilesForMe(hand, count);
+    public Hand addLeftTiles(Hand hand, int himTilesCount) throws DAIException {
+        return dominoManager.addLeftTilesForMe(hand, himTilesCount);
     }
 }

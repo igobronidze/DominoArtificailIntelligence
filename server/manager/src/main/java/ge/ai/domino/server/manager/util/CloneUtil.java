@@ -88,6 +88,7 @@ public class CloneUtil {
         clone.setGameId(gameInfo.getGameId());
         clone.setMyPoints(gameInfo.getMyPoints());
         clone.setHimPoints(gameInfo.getHimPoints());
+        clone.setFinished(gameInfo.isFinished());
         return clone;
     }
 

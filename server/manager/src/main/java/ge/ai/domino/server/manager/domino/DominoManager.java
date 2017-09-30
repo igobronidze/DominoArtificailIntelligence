@@ -81,12 +81,17 @@ public class DominoManager {
         if (systemParameterManager.getBooleanParameterValue(checkHimProbabilities)) {
             double sum = 0.0;
             for (Tile tile : hand.getTiles().values()) {
+                if (tile.getHim() > 1.0) {
+                    logger.warn("Him tile probability is more than one, tile[" + tile.getX() + "-" + tile.getY() + "]");
+                    DominoLoggingProcessor.logHandFullInfo(hand, false);   // შეიძლება ვირტუალური იყოს, მაგრამ აუციელებელია რომ დაიბეჭდოს
+                    throw new DAIException("HimTileProbabilityIsMoreThanOne");
+                }
                 sum += tile.getHim();
             }
             if (Math.abs(sum - hand.getTableInfo().getHimTilesCount() + addProb) > 0.001) {
                 logger.warn("Him tile count and probabilities sum is not same... count:" + hand.getTableInfo().getHimTilesCount() + "  sum:" + sum + "  addProb:" + addProb);
                 DominoLoggingProcessor.logHandFullInfo(hand, false);   // შეიძლება ვირტუალური იყოს, მაგრამ აუციელებელია რომ დაიბეჭდოს
-                throw new DAIException("somethingWrongInHimProbabilities");
+                throw new DAIException("probabilitiesSumIsNoEqualToHimTilesCount");
             }
         }
     }

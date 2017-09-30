@@ -2,6 +2,7 @@ package ge.ai.domino.server.manager.domino.minmax;
 
 import ge.ai.domino.domain.ai.PossibleTurn;
 import ge.ai.domino.domain.domino.AIPrediction;
+import ge.ai.domino.domain.domino.GameInfo;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.PlayDirection;
 import ge.ai.domino.domain.domino.PlayedTile;
@@ -9,16 +10,17 @@ import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.server.caching.domino.CachedDominoGames;
 import ge.ai.domino.server.manager.domino.DominoManager;
 import ge.ai.domino.server.manager.domino.helper.DominoHelper;
 import ge.ai.domino.server.manager.domino.heuristic.ComplexHandHeuristic;
-import ge.ai.domino.server.manager.domino.heuristic.HandHeuristicUtil;
 import ge.ai.domino.server.manager.domino.heuristic.HandHeuristic;
-import ge.ai.domino.server.manager.domino.heuristic.SimpleHandHeuristic;
+import ge.ai.domino.server.manager.domino.heuristic.HandHeuristicUtil;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import org.apache.log4j.Logger;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.PriorityQueue;
@@ -33,13 +35,16 @@ public class MinMax {
 
     private static final HandHeuristic handHeuristic = new ComplexHandHeuristic();
 
-    private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "6");
+    private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "7");
 
     private static final DominoManager dominoManager = new DominoManager();
 
-    private static int treeHeight;
+    private int treeHeight;
 
-    public static AIPrediction minMax(Hand hand) throws DAIException {
+    private int recursionCount;
+
+    public AIPrediction minMax(Hand hand) throws DAIException {
+        long ms = System.currentTimeMillis();
         treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
         Set<PossibleTurn> possibleTurns = getPossibleTurns(hand);
         PossibleTurn bestTurn = null;
@@ -53,6 +58,9 @@ public class MinMax {
             }
             logger.info("Turn- " + possibleTurn.getX() + ":" + possibleTurn.getY() + " " + possibleTurn.getDirection() + ", heuristic: " + heuristic);
         }
+        double tookMs = System.currentTimeMillis() - ms;
+        logger.info("MinMax took " + tookMs + "ms, recursion count " + recursionCount + ", average " + (tookMs / recursionCount));
+        recursionCount = 0;
         if (bestTurn == null) {
             logger.info("No AIPrediction");
             return null;
@@ -66,10 +74,13 @@ public class MinMax {
         return aiPrediction;
     }
 
-    private static double getHeuristicValue(Hand hand, int height) throws DAIException {
+    private double getHeuristicValue(Hand hand, int height) throws DAIException {
+        recursionCount++;
         TableInfo tableInfo = hand.getTableInfo();
-        if (hand.getGameInfo().isFinished()) {
-            return HandHeuristicUtil.getFinishedGameHeuristic(tableInfo);
+        GameInfo gameInfo = hand.getGameInfo();
+        // თუ მთლიანად დამთავრდა თამაში
+        if (gameInfo.isFinished()) {
+            return HandHeuristicUtil.getFinishedGameHeuristic(gameInfo, CachedDominoGames.getGame(gameInfo.getGameId()).getGameProperties().getPointsForWin());
         }
         // თუ მოწინააღმდეგემ გაიარა, ვიმატებთ მის სავარაუდო დარჩენილ ქვებს და ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
         if (tableInfo.isNeedToAddLeftTiles()) {
@@ -77,19 +88,19 @@ public class MinMax {
             if (tableInfo.isOmittedMe() && tableInfo.isOmittedHim()) {
                 int myTilesCount = DominoHelper.countLeftTiles(hand, true, false);
                 if (myTilesCount < himTilesCount) {
-                    hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + himTilesCount);
+                    gameInfo.setMyPoints(gameInfo.getMyPoints() + himTilesCount);
                 } else {
-                    hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + himTilesCount);
+                    gameInfo.setHimPoints(gameInfo.getHimPoints() + himTilesCount);
                 }
             } else {
-                hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + himTilesCount);
+                gameInfo.setMyPoints(gameInfo.getMyPoints() + himTilesCount);
             }
-            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicUtil.getFinishedHandHeuristic(hand.getTableInfo()));
+            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicUtil.getFinishedHandHeuristic(gameInfo, tableInfo.isMyTurn()));
             return hand.getAiExtraInfo().getHeuristicValue();
         }
         // თუ ახალი ხელი დაიწყო ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
         if (DominoHelper.isNewHand(hand.getTableInfo())) {
-            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicUtil.getFinishedHandHeuristic(hand.getTableInfo()));
+            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicUtil.getFinishedHandHeuristic(gameInfo, tableInfo.isMyTurn()));
             return hand.getAiExtraInfo().getHeuristicValue();
         }
         // თუ ჩავედით ხის ფოთოლში, ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
@@ -164,7 +175,7 @@ public class MinMax {
         }
     }
 
-    private static Set<PossibleTurn> getPossibleTurns(Hand hand) {
+    private Set<PossibleTurn> getPossibleTurns(Hand hand) {
         boolean me = hand.getTableInfo().isMyTurn();
         Set<PossibleTurn> possibleTurns = new HashSet<>();
         TableInfo tableInfo = hand.getTableInfo();
@@ -172,14 +183,15 @@ public class MinMax {
         PlayedTile right = tableInfo.getRight();
         PlayedTile top = tableInfo.getTop();
         PlayedTile bottom = tableInfo.getBottom();
+        Collection<Tile> tiles = hand.getTiles().values();
         if (me && tableInfo.getLeft() == null) {
-            for (Tile tile : hand.getTiles().values()) {
+            for (Tile tile : tiles) {
                 if (tile.isMine()) {
                     possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.LEFT));
                 }
             }
         } else {
-            for (Tile tile : hand.getTiles().values()) {
+            for (Tile tile : tiles) {
                 if (!tile.isPlayed()) {
                     Set<Integer> played = new HashSet<>();
                     if ((me && tile.isMine()) || (!me && tile.getHim() > 0)) {
@@ -215,7 +227,7 @@ public class MinMax {
         return possibleTurns;
     }
 
-    private static int hashForPlayedTile(PlayedTile playedTile) {
+    private int hashForPlayedTile(PlayedTile playedTile) {
         int p = 10;
         return (playedTile.getOpenSide() + 1) * (playedTile.isDouble() ? p : 1);
     }

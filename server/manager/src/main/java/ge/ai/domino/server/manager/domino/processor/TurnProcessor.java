@@ -6,6 +6,7 @@ import ge.ai.domino.domain.domino.PlayedTile;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.server.manager.domino.minmax.MinMax;
 import ge.ai.domino.util.tile.TileUtil;
 
 import java.util.HashSet;
@@ -13,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class TurnProcessor {
+
+    protected static final MinMax minMax = new MinMax();
 
     /**
      * ქვის დამატება
@@ -54,7 +57,7 @@ public abstract class TurnProcessor {
                 mayHaveTiles.add(TileUtil.getTileUID(tile.getX(), tile.getY()));
             }
         }
-        addProbabilitiesProportional(hand.getTiles(), mayHaveTiles, himSum);
+        addProbabilitiesForHimProportional(hand.getTiles(), mayHaveTiles, himSum);
     }
 
     /**
@@ -142,7 +145,7 @@ public abstract class TurnProcessor {
         }
     }
 
-    void addProbabilitiesProportional(Map<String, Tile> tiles, Set<String> possibleTiles, double probability) {
+    void addProbabilitiesForHimProportional(Map<String, Tile> tiles, Set<String> possibleTiles, double probability) {
         double sum = 0.0;
         for (String key : possibleTiles) {
             sum += tiles.get(key).getHim();
@@ -153,6 +156,18 @@ public abstract class TurnProcessor {
             tile.setHim(tile.getHim() + add);
         }
     }
+    void addProbabilitiesForBazaarProportional(Map<String, Tile> tiles, Set<String> possibleTiles, double probability) {
+        double sum = 0.0;
+        for (String key : possibleTiles) {
+            sum += (1 - tiles.get(key).getHim());
+        }
+        for (String key : possibleTiles) {
+            Tile tile = tiles.get(key);
+            double add = probability * (1 - tile.getHim()) / sum;
+            tile.setHim(tile.getHim() + add);
+        }
+    }
+
 
     Set<String> getNotPlayedMineOrBazaarTiles(Map<String, Tile> tiles) {
         Set<String> keys = new HashSet<>();

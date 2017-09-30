@@ -53,7 +53,7 @@ public class HimTurnProcessor extends TurnProcessor {
             // გავლის დაფიქსირება
             hand.getTableInfo().setMyTurn(true);
             if (!virtual) {
-                AIPrediction aiPrediction = MinMax.minMax(hand);
+                AIPrediction aiPrediction = minMax.minMax(hand);
                 hand.setAiPrediction(aiPrediction);
             }
             return hand;
@@ -96,7 +96,7 @@ public class HimTurnProcessor extends TurnProcessor {
             // წინააღმდეგ შემთხვევაში, ჩამოსული ქვის ალბათობები ნაწილდბეა სხვებზე
             double him = playedTile.getHim();
             makeTileAsPlayed(playedTile);
-            addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him - 1);
+            addProbabilitiesForHimProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him - 1);
         }
         // ქვის ჩამოსვლა
         playTile(hand.getTableInfo(), x, y, direction);
@@ -109,7 +109,7 @@ public class HimTurnProcessor extends TurnProcessor {
         }
         // რჩევის მიღება
         if (!virtual) {
-            AIPrediction aiPrediction = MinMax.minMax(hand);
+            AIPrediction aiPrediction = minMax.minMax(hand);
             hand.setAiPrediction(aiPrediction);
         }
 
@@ -137,7 +137,7 @@ public class HimTurnProcessor extends TurnProcessor {
                 }
             }
         }
-        addProbabilitiesProportional(hand.getTiles(), mayHaveTiles, himSum);
+        addProbabilitiesForHimProportional(hand.getTiles(), mayHaveTiles, himSum);
     }
 
     /**
@@ -154,7 +154,7 @@ public class HimTurnProcessor extends TurnProcessor {
             }
         }
         double bazaarTilesCount = hand.getTableInfo().getTileFromBazaar();
-        addProbabilitiesProportional(hand.getTiles(), usefulUIDs, played ? bazaarTilesCount - 1 : bazaarTilesCount);
+        addProbabilitiesForBazaarProportional(hand.getTiles(), usefulUIDs, played ? bazaarTilesCount - 1 : bazaarTilesCount);
         hand.getTableInfo().setTileFromBazaar(0);
     }
 

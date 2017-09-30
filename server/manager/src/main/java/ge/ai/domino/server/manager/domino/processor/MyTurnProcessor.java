@@ -49,19 +49,19 @@ public class MyTurnProcessor extends TurnProcessor {
         Tile tile = tiles.get(TileUtil.getTileUID(x, y));
         double him = tile.getHim();
         makeTileAsMine(tile);
-        addProbabilitiesProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him);
+        addProbabilitiesForHimProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him);
         updateTileCountBeforeAddMe(hand);
         // თუ ეხლა დავამთავრე საწყისი 7 ქვის აღება ვითხოვთ რჩევას პროგრამისგან
         if (hand.getTableInfo().getLeft() == null && hand.getTableInfo().getMyTilesCount() == 7) {
             hand.getTableInfo().setMyTurn(game.getGameProperties().isStart());
             if (!game.getGameProperties().isFirstHand() && hand.getTableInfo().isMyTurn() && !virtual) {
-                AIPrediction aiPrediction = MinMax.minMax(hand);
+                AIPrediction aiPrediction = minMax.minMax(hand);
                 hand.setAiPrediction(aiPrediction);
             }
         }
         // თუ უკვე ჩამოსულია ქვა, ვითხოვთ რჩევას პროგრამისგან
         if (hand.getTableInfo().getLeft() != null && !virtual) {
-            AIPrediction aiPrediction = MinMax.minMax(hand);
+            AIPrediction aiPrediction = minMax.minMax(hand);
             hand.setAiPrediction(aiPrediction);
         }
 

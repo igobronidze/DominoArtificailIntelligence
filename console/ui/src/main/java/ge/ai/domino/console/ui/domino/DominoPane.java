@@ -91,8 +91,49 @@ public class DominoPane extends BorderPane {
                 } else {
                     try {
                         if (DominoPane.this.hand.getTableInfo().isMyTurn()) {
-                            DominoPane.this.hand = dominoService.addTileForMe(DominoPane.this.hand, tile.getX(), tile.getY());
-                            reload();
+                            TableInfo tableInfo = DominoPane.this.hand.getTableInfo();
+                            if (tableInfo.getLeft() == null && tableInfo.isFirstHand() && tableInfo.getMyTilesCount() == 6) {
+                                Stage stage = new Stage();
+                                stage.setResizable(false);
+                                stage.setTitle(Messages.get("gameStarter"));
+                                TCHLabel label = new TCHLabel(Messages.get("whoStartGame"));
+                                TCHButton meButton = new TCHButton(Messages.get("me"));
+                                meButton.setOnAction(event -> {
+                                    try {
+                                        DominoPane.this.hand.getTableInfo().setMyTurn(true);
+                                        DominoPane.this.hand = dominoService.addTileForMe(DominoPane.this.hand, tile.getX(), tile.getY());
+                                        reload();
+                                        stage.close();
+                                    } catch (DAIException ex) {
+                                        WarnDialog.showWarnDialog(ex);
+                                    }
+                                });
+                                TCHButton himButton = new TCHButton(Messages.get("he"));
+                                himButton.setOnAction(event -> {
+                                     try {
+                                        DominoPane.this.hand.getTableInfo().setMyTurn(false);
+                                        DominoPane.this.hand = dominoService.addTileForMe(DominoPane.this.hand, tile.getX(), tile.getY());
+                                        reload();
+                                        stage.close();
+                                    } catch (DAIException ex) {
+                                        WarnDialog.showWarnDialog(ex);
+                                    }
+                                });
+                                HBox hBox = new HBox(25);
+                                hBox.setAlignment(Pos.TOP_CENTER);
+                                hBox.getChildren().addAll(meButton, himButton);
+                                VBox vBox = new VBox(30);
+                                vBox.setPadding(new Insets(20));
+                                vBox.setAlignment(Pos.TOP_CENTER);
+                                vBox.getChildren().addAll(label, hBox);
+                                stage.setScene(new Scene(vBox));
+                                stage.setWidth(350);
+                                stage.setHeight(140);
+                                stage.showAndWait();
+                            } else {
+                                DominoPane.this.hand = dominoService.addTileForMe(DominoPane.this.hand, tile.getX(), tile.getY());
+                                reload();
+                            }
                         } else {
                             DominoPane.this.hand = dominoService.playForHim(DominoPane.this.hand, tile.getX(), tile.getY(), direction);
                             reload();

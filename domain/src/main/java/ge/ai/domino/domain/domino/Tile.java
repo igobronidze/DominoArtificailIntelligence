@@ -59,9 +59,7 @@ public class Tile {
 
         Tile tile = (Tile) o;
 
-        if (x != tile.x) return false;
-        return y == tile.y;
-
+        return x == tile.x && y == tile.y;
     }
 
     @Override

@@ -30,6 +30,8 @@ public class TableInfo {
 
     private boolean omittedHim;
 
+    private boolean firstHand;
+
     public boolean isWithCenter() {
         return withCenter;
     }
@@ -140,5 +142,13 @@ public class TableInfo {
 
     public void setOmittedHim(boolean omittedHim) {
         this.omittedHim = omittedHim;
+    }
+
+    public boolean isFirstHand() {
+        return firstHand;
+    }
+
+    public void setFirstHand(boolean firstHand) {
+        this.firstHand = firstHand;
     }
 }

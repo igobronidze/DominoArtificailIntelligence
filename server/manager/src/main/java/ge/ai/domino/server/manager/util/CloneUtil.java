@@ -50,6 +50,7 @@ public class CloneUtil {
         clone.setTileFromBazaar(tableInfo.getTileFromBazaar());
         clone.setOmittedMe(tableInfo.isOmittedMe());
         clone.setOmittedHim(tableInfo.isOmittedHim());
+        clone.setFirstHand(tableInfo.isFirstHand());
         return clone;
     }
 

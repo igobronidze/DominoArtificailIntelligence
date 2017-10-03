@@ -1,7 +1,6 @@
 package ge.ai.domino.domain.ai;
 
 import ge.ai.domino.domain.domino.PlayDirection;
-import ge.ai.domino.domain.domino.Tile;
 
 public class PossibleTurn {
 
@@ -50,9 +49,7 @@ public class PossibleTurn {
 
         PossibleTurn that = (PossibleTurn) o;
 
-        if (x != that.x) return false;
-        if (y != that.y) return false;
-        return direction == that.direction;
+        return x == that.x && y == that.y && direction == that.direction;
 
     }
 

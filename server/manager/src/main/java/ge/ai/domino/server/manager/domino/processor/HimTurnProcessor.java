@@ -8,9 +8,8 @@ import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
-import ge.ai.domino.server.manager.domino.helper.DominoHelper;
-import ge.ai.domino.server.manager.domino.helper.DominoLoggingProcessor;
-import ge.ai.domino.server.manager.domino.minmax.MinMax;
+import ge.ai.domino.server.manager.domino.DominoHelper;
+import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import ge.ai.domino.util.tile.TileUtil;
 
@@ -23,9 +22,9 @@ public class HimTurnProcessor extends TurnProcessor {
     @Override
     public Hand addTile(Hand hand, int x, int y, boolean virtual) throws DAIException {
         if (virtual) {
-            DominoLoggingProcessor.logInfoOnTurn("<<<Virtual Mode>>>", true);
+            DominoLoggingProcessor.logInfoOnTurn("<<<<<<<Virtual Mode>>>>>>>", true);
         } else {
-            DominoLoggingProcessor.logInfoOnTurn("<<<<<<<<<<<<<<<<<<<<<<<<<<<Real Mode<<<<<<<<<<<<<<<<<<<<<<<<<<<", false);
+            DominoLoggingProcessor.logInfoOnTurn("<<<<<<<Real Mode<<<<<<<", false);
         }
         int gameId = hand.getGameInfo().getGameId();
         DominoLoggingProcessor.logInfoOnTurn("Start add tile for him method, gameId[" + gameId + "]", virtual);
@@ -70,9 +69,9 @@ public class HimTurnProcessor extends TurnProcessor {
     @Override
     public Hand play(Hand hand, int x, int y, PlayDirection direction, boolean virtual) throws DAIException {
         if (virtual) {
-            DominoLoggingProcessor.logInfoOnTurn("<<<Virtual Mode>>>", true);
+            DominoLoggingProcessor.logInfoOnTurn("<<<<<<<Virtual Mode>>>>>>>", true);
         } else {
-            DominoLoggingProcessor.logInfoOnTurn("<<<<<<<<<<<<<<<<<<<<<<<<<<<Real Mode<<<<<<<<<<<<<<<<<<<<<<<<<<<", false);
+            DominoLoggingProcessor.logInfoOnTurn("<<<<<<<Real Mode<<<<<<<", false);
         }
         hand.getTableInfo().setOmittedHim(false);
         int gameId = hand.getGameInfo().getGameId();
@@ -83,7 +82,7 @@ public class HimTurnProcessor extends TurnProcessor {
             game.getHistory().push(CloneUtil.getClone(hand));
         }
         // თუ პირველი ხელის პირველი სვლაა, ანალიზდება არ ჩამოსული წყვილები
-        if (game.getGameProperties().isFirstHand() && hand.getTableInfo().getLeft() == null) {
+        if (hand.getTableInfo().isFirstHand() && hand.getTableInfo().getLeft() == null) {
             makeDoubleTilesAsInBazaar(hand, (x == y ? x : -1));
         }
         // თუ წინა სვლაზე იყო ბაზარში, აღებული ქვების რაოდენობით ნაწილდება ალბათობები
@@ -96,12 +95,12 @@ public class HimTurnProcessor extends TurnProcessor {
             // წინააღმდეგ შემთხვევაში, ჩამოსული ქვის ალბათობები ნაწილდბეა სხვებზე
             double him = playedTile.getHim();
             makeTileAsPlayed(playedTile);
-            addProbabilitiesForHimProportional(tiles, getNotPlayedMineOrBazaarTiles(tiles), him - 1);
+            addProbabilitiesForHimProportional(tiles, tileSelection(tiles, true, true, true, true), him - 1);
         }
         // ქვის ჩამოსვლა
         playTile(hand.getTableInfo(), x, y, direction);
         updateTileCountBeforePlayHim(hand);
-        hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + countScore(hand));
+        DominoHelper.addLeftTiles(hand.getGameInfo(), countScore(hand), false, gameId, virtual);
         hand.getTableInfo().setMyTurn(true);
         // თუ ქვები აღარ აქვს, ვამთავრებთ ხელს
         if (hand.getTableInfo().getHimTilesCount() == 0) {

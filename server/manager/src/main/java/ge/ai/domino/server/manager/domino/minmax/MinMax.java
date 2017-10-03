@@ -12,10 +12,10 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
 import ge.ai.domino.server.manager.domino.DominoManager;
-import ge.ai.domino.server.manager.domino.helper.DominoHelper;
+import ge.ai.domino.server.manager.domino.DominoHelper;
 import ge.ai.domino.server.manager.domino.heuristic.ComplexHandHeuristic;
 import ge.ai.domino.server.manager.domino.heuristic.HandHeuristic;
-import ge.ai.domino.server.manager.domino.heuristic.HandHeuristicUtil;
+import ge.ai.domino.server.manager.domino.heuristic.HandHeuristicHelper;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import org.apache.log4j.Logger;
@@ -80,27 +80,30 @@ public class MinMax {
         GameInfo gameInfo = hand.getGameInfo();
         // თუ მთლიანად დამთავრდა თამაში
         if (gameInfo.isFinished()) {
-            return HandHeuristicUtil.getFinishedGameHeuristic(gameInfo, CachedDominoGames.getGame(gameInfo.getGameId()).getGameProperties().getPointsForWin());
+            return HandHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedDominoGames.getGame(gameInfo.getGameId()).getGameProperties().getPointsForWin());
+        }
+        // თუ გაიჭედა თამაში
+        if (tableInfo.isOmittedMe() && tableInfo.isOmittedHim()) {
+            int himTilesCount = DominoHelper.countLeftTiles(hand, false, true);
+            int myTilesCount = DominoHelper.countLeftTiles(hand, true, false);
+            if (myTilesCount < himTilesCount) {
+                DominoHelper.addLeftTiles(gameInfo, himTilesCount, true, gameInfo.getGameId(), true);
+            } else if (myTilesCount > himTilesCount) {
+                DominoHelper.addLeftTiles(gameInfo, myTilesCount, false, gameInfo.getGameId(), true);
+            }
+            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicHelper.getFinishedHandHeuristic(gameInfo, tableInfo.isMyTurn()));
+            return hand.getAiExtraInfo().getHeuristicValue();
         }
         // თუ მოწინააღმდეგემ გაიარა, ვიმატებთ მის სავარაუდო დარჩენილ ქვებს და ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
         if (tableInfo.isNeedToAddLeftTiles()) {
             int himTilesCount = DominoHelper.countLeftTiles(hand, false, true);
-            if (tableInfo.isOmittedMe() && tableInfo.isOmittedHim()) {
-                int myTilesCount = DominoHelper.countLeftTiles(hand, true, false);
-                if (myTilesCount < himTilesCount) {
-                    gameInfo.setMyPoints(gameInfo.getMyPoints() + himTilesCount);
-                } else {
-                    gameInfo.setHimPoints(gameInfo.getHimPoints() + himTilesCount);
-                }
-            } else {
-                gameInfo.setMyPoints(gameInfo.getMyPoints() + himTilesCount);
-            }
-            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicUtil.getFinishedHandHeuristic(gameInfo, tableInfo.isMyTurn()));
+            DominoHelper.addLeftTiles(gameInfo, himTilesCount, true, gameInfo.getGameId(), true);
+            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicHelper.getFinishedHandHeuristic(gameInfo, !tableInfo.isMyTurn()));
             return hand.getAiExtraInfo().getHeuristicValue();
         }
         // თუ ახალი ხელი დაიწყო ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
-        if (DominoHelper.isNewHand(hand.getTableInfo())) {
-            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicUtil.getFinishedHandHeuristic(gameInfo, tableInfo.isMyTurn()));
+        if (DominoHelper.isNewHand(tableInfo)) {
+            hand.getAiExtraInfo().setHeuristicValue(HandHeuristicHelper.getFinishedHandHeuristic(gameInfo, !tableInfo.isMyTurn()));
             return hand.getAiExtraInfo().getHeuristicValue();
         }
         // თუ ჩავედით ხის ფოთოლში, ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
@@ -124,7 +127,7 @@ public class MinMax {
                 double heuristic = 0.0;
                 double bazaarProbSum = hand.getTableInfo().getBazaarTilesCount();
                 for (Tile tile : hand.getTiles().values()) {
-                    if (!tile.isPlayed() && !tile.isMine() && bazaarProbSum != 0.0) {
+                    if (!tile.isPlayed() && !tile.isMine()  && tile.getHim() != 1.0) {
                         double probForPickTile = (1 - tile.getHim()) / bazaarProbSum; // ალბათობა, რომ კონკრეტულად ეს tile შემხვდება
                         heuristic += getHeuristicValue(dominoManager.addTileForMe(CloneUtil.getClone(hand), tile.getX(), tile.getY(), true), height + 1) * probForPickTile;
                     }
@@ -150,7 +153,7 @@ public class MinMax {
                 possibleHands.add(nextHand);
             }
 
-            int notPlayedTilesCount = 0;   // ქვების რაოდენობა რომელიც არ ითამაშა მოწინააღმდეგემ
+            int notPlayedTilesCount = getBazaarTileCountForSure(hand.getTiles().values());   // ქვების რაოდენობა რომელიც არ/ვერ ითამაშა მოწინააღმდეგემ
             double heuristic = 0.0;
             double remainingProbability = 1.0;
             // მივყვებით მოწინააღმდეგისთვის საუკეთესო სვლებს
@@ -173,6 +176,16 @@ public class MinMax {
             hand.getAiExtraInfo().setHeuristicValue(heuristic);
             return heuristic;
         }
+    }
+
+    private int getBazaarTileCountForSure(Collection<Tile> tiles) {
+        int count = 0;
+        for (Tile tile : tiles) {
+            if (!tile.isMine() && !tile.isPlayed() && tile.getHim() == 0) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private Set<PossibleTurn> getPossibleTurns(Hand hand) {

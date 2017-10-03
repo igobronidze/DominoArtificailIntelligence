@@ -24,17 +24,18 @@ public class InitialUtil {
     public static Game getInitialGame(GameProperties gameProperties) {
         Game game = new Game();
         game.setGameProperties(gameProperties);
-        game.setCurrHand(getInitialHand(true));
+        game.setCurrHand(getInitialHand());
         game.setId(new Random().nextInt());  // TODO[IG] it temporary, id may set by database
         game.getCurrHand().getGameInfo().setGameId(game.getId());
         return game;
     }
 
-    public static Hand getInitialHand(boolean startMe) {
+    public static Hand getInitialHand() {
         TableInfo tableInfo = new TableInfo();
-        tableInfo.setMyTurn(startMe);
+        tableInfo.setMyTurn(true);
         tableInfo.setBazaarTilesCount(INITIAL_COUNT_TILES_IN_BAZAAR);
         tableInfo.setHimTilesCount(INITIAL_COUNT_TILES_FOR_HIM);
+        tableInfo.setFirstHand(true);
         Hand hand = new Hand();
         hand.setTiles(getInitialTiles());
         hand.setTableInfo(tableInfo);

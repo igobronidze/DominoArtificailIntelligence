@@ -1,12 +1,13 @@
 package ge.ai.domino.server.manager.domino.processor;
 
 import ge.ai.domino.domain.domino.Game;
+import ge.ai.domino.domain.domino.GameInfo;
 import ge.ai.domino.domain.domino.GameProperties;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
-import ge.ai.domino.server.manager.domino.helper.DominoHelper;
-import ge.ai.domino.server.manager.domino.helper.DominoLoggingProcessor;
+import ge.ai.domino.server.manager.domino.DominoHelper;
+import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;
 import ge.ai.domino.server.manager.util.InitialUtil;
 import org.apache.log4j.Logger;
 
@@ -27,7 +28,7 @@ public class GameProcessor {
         }
         Game game = InitialUtil.getInitialGame(gameProperties);
         CachedDominoGames.addGame(game);
-        logger.info("-------------------------Started new game[" + game.getId() + "]-------------------------");
+        logger.info("------------Started new game[" + game.getId() + "]------------");
         DominoLoggingProcessor.logHandFullInfo(game.getCurrHand(), false);
         return game.getCurrHand();
     }
@@ -50,22 +51,26 @@ public class GameProcessor {
     }
 
     public Hand addLeftTiles(Hand hand, int himTilesCount) {
-        int gameId = hand.getGameInfo().getGameId();
+        GameInfo gameInfo = hand.getGameInfo();
+        int gameId = gameInfo.getGameId();
         logger.info("Start add left tile method, gameId[" + gameId + "]");
         hand.getTableInfo().setNeedToAddLeftTiles(false);
         TableInfo tableInfo = hand.getTableInfo();
         if (tableInfo.isOmittedMe() && tableInfo.isOmittedHim()) {
             int myTilesCount = DominoHelper.countLeftTiles(hand, true, false);
             if (myTilesCount < himTilesCount) {
-                hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + himTilesCount);
+                DominoHelper.addLeftTiles(gameInfo, himTilesCount, true, gameId, false);
                 logger.info("Added lef tiles for me, gameId[" + gameId + "], count[" + himTilesCount + "]");
-            } else {
-                hand.getGameInfo().setHimPoints(hand.getGameInfo().getHimPoints() + himTilesCount);
+            } else if (myTilesCount > himTilesCount) {
+                DominoHelper.addLeftTiles(gameInfo, myTilesCount, false, gameId, false);
                 logger.info("Added lef tiles for him, gameId[" + gameId + "], count[" + myTilesCount + "]");
+            } else {
+                CachedDominoGames.addPointFromLastHand(gameId, myTilesCount);
+                logger.info("Added last hand tiles count in cach, gameId[" + gameId + "], count[" + myTilesCount + "]");
             }
             return DominoHelper.finishedLastAndGetNewHand(hand, hand.getTableInfo().isMyTurn(), false, false);
         } else {
-            hand.getGameInfo().setMyPoints(hand.getGameInfo().getMyPoints() + himTilesCount);
+            DominoHelper.addLeftTiles(gameInfo, himTilesCount, true, gameId, false);
             logger.info("Added lef tiles for me, gameId[" + gameId + "], count[" + himTilesCount + "]");
             return DominoHelper.finishedLastAndGetNewHand(hand, true, false, false);
         }

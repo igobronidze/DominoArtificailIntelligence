@@ -15,6 +15,8 @@ import java.util.Set;
 
 public abstract class TurnProcessor {
 
+    private static final double EPSILON_FOR_PROBABILITY = 0.00001;
+
     protected static final MinMax minMax = new MinMax();
 
     /**
@@ -145,38 +147,72 @@ public abstract class TurnProcessor {
         }
     }
 
+    /**
+     * possibleTiles ქვებისთვის ნაწილდება probability ალბათობა. ქვას რაც მეტი აქვს შანსი, რომ ქონდეს მოწინააღმდეგე მით მეტი წილი ხვდება probability-დან
+     * @param tiles ყველა ქვა
+     * @param possibleTiles ქვები რომლებსაც უნდა გადაუნაწილდეს ალბათობები
+     * @param probability ალბათობა რომელიც უნდა გადაუნაწილდეს სხვებს
+     */
     void addProbabilitiesForHimProportional(Map<String, Tile> tiles, Set<String> possibleTiles, double probability) {
         double sum = 0.0;
         for (String key : possibleTiles) {
             sum += tiles.get(key).getHim();
         }
-        for (String key : possibleTiles) {
-            Tile tile = tiles.get(key);
-            double add = probability * tile.getHim() / sum;
-            tile.setHim(tile.getHim() + add);
+        if (sum + probability + EPSILON_FOR_PROBABILITY >= possibleTiles.size()) {
+            for (String key : possibleTiles) {
+                tiles.get(key).setHim(1.0);
+            }
+        } else {
+            for (String key : possibleTiles) {
+                Tile tile = tiles.get(key);
+                double add = probability * tile.getHim() / sum;
+                tile.setHim(tile.getHim() + add);
+            }
         }
     }
+
+    /**
+     * possibleTiles ქვებისთვის ნაწილდება probability ალბათობა. ქვას რაც მეტი აქვს შანსი, რომ იყოს ბაზარში მით მეტი წილი ხვდება probability-დან
+     * @param tiles ყველა ქვა
+     * @param possibleTiles ქვები რომლებსაც უნდა გადაუნაწილდეს ალბათობები
+     * @param probability ალბათობა რომელიც უნდა გადაუნაწილდეს სხვებს
+     */
     void addProbabilitiesForBazaarProportional(Map<String, Tile> tiles, Set<String> possibleTiles, double probability) {
         double sum = 0.0;
         for (String key : possibleTiles) {
             sum += (1 - tiles.get(key).getHim());
         }
-        for (String key : possibleTiles) {
-            Tile tile = tiles.get(key);
-            double add = probability * (1 - tile.getHim()) / sum;
-            tile.setHim(tile.getHim() + add);
+        if ((possibleTiles.size() - sum) + probability + EPSILON_FOR_PROBABILITY >= possibleTiles.size()) {
+            for (String key : possibleTiles) {
+                tiles.get(key).setHim(1.0);
+            }
+        } else {
+            for (String key : possibleTiles) {
+                Tile tile = tiles.get(key);
+                double add = probability * (1 - tile.getHim()) / sum;
+                tile.setHim(tile.getHim() + add);
+            }
         }
     }
 
-
-    Set<String> getNotPlayedMineOrBazaarTiles(Map<String, Tile> tiles) {
-        Set<String> keys = new HashSet<>();
+    Set<String> tileSelection(Map<String, Tile> tiles, boolean notPlayed, boolean notMine, boolean notHim, boolean notBazaar) {
+        Set<String> result = new HashSet<>();
         for (String key : tiles.keySet()) {
             Tile tile = tiles.get(key);
-            if (!tile.isPlayed() && !tile.isMine() && tile.getHim() != 0.0) {
-                keys.add(key);
+            if (notPlayed && tile.isPlayed()) {
+                continue;
             }
+            if (notMine && tile.isMine()) {
+                continue;
+            }
+            if (notHim && tile.getHim() == 1.0) {
+                continue;
+            }
+            if (notBazaar && tile.getHim() == 0.0) {
+                continue;
+            }
+            result.add(key);
         }
-        return keys;
+        return result;
     }
 }

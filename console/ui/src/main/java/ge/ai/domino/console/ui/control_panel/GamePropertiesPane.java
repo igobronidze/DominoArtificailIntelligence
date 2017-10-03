@@ -18,7 +18,6 @@ import ge.ai.domino.util.sysparam.SystemParameterService;
 import ge.ai.domino.util.sysparam.SystemParameterServiceImpl;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -50,21 +49,15 @@ public class GamePropertiesPane extends VBox {
         TCHFieldLabel nameFieldLabel = new TCHFieldLabel(Messages.get("name"), nameField);
         List<Integer> points = systemParameterService.getIntegerListParameterValue(possiblePoints);
         List<Object> objPoints = new ArrayList<>();
-        for (Integer point : points) {
-            objPoints.add(point);
-        }
+        objPoints.addAll(points);
         TCHComboBox pointComboBox = new TCHComboBox(objPoints);
         TCHFieldLabel pointFieldLabel = new TCHFieldLabel(Messages.get("point"), pointComboBox);
-        CheckBox startCheckBox = new CheckBox();
-        TCHFieldLabel startFieldLabel = new TCHFieldLabel(Messages.get("start"), startCheckBox);
         TCHButton startButton = new TCHButton(Messages.get("start"));
         startButton.setOnAction(e -> {
             GameProperties gameProperties = new GameProperties();
-            gameProperties.setStart(startCheckBox.isSelected());
             gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
             gameProperties.setWebsite(websiteField.getText());
             gameProperties.setOpponentName(nameField.getText());
-            gameProperties.setFirstHand(true);
             try {
                 Hand hand = dominoService.startGame(gameProperties, 0);
                 ControlPanel.getRoot().setCenter(new DominoPane(hand));
@@ -72,6 +65,6 @@ public class GamePropertiesPane extends VBox {
                 WarnDialog.showWarnDialog(ex);
             }
         });
-        this.getChildren().addAll(websiteFieldLabel, nameFieldLabel, pointFieldLabel, startFieldLabel, startButton);
+        this.getChildren().addAll(websiteFieldLabel, nameFieldLabel, pointFieldLabel, startButton);
     }
 }

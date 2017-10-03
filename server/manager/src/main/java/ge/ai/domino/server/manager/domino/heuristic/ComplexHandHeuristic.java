@@ -9,7 +9,9 @@ public class ComplexHandHeuristic implements HandHeuristic {
     @Override
     public double getHeuristic(Hand hand) {
         double heuristic = hand.getGameInfo().getMyPoints() - hand.getGameInfo().getHimPoints();
-        heuristic += 2 * (getPossibleTurnCount(hand, true) / hand.getTableInfo().getMyTilesCount() - getPossibleTurnCount(hand, false) / hand.getTableInfo().getHimTilesCount());
+        heuristic += 8 * (getPossibleTurnCount(hand, true) / hand.getTableInfo().getMyTilesCount() / hand.getTableInfo().getMyTilesCount() -
+                getPossibleTurnCount(hand, false) / hand.getTableInfo().getHimTilesCount() / hand.getTableInfo().getHimTilesCount());
+//        heuristic += 2 * (getPossibleTurnCount(hand, true) / hand.getTableInfo().getMyTilesCount() - getPossibleTurnCount(hand, false) / hand.getTableInfo().getHimTilesCount());
         return heuristic;
     }
 

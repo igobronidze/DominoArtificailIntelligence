@@ -2,9 +2,9 @@ package ge.ai.domino.server.manager.domino.heuristic;
 
 import ge.ai.domino.domain.domino.GameInfo;
 
-public class HandHeuristicUtil {
+public class HandHeuristicHelper {
 
-    private static final int POINT_FOR_START_NEXT_HAND = 15;
+    private static final int POINT_FOR_START_NEXT_HAND = 10;
 
     public static double getFinishedGameHeuristic(GameInfo gameInfo, int pointForWin) {
         if (gameInfo.getMyPoints() > gameInfo.getHimPoints()) {

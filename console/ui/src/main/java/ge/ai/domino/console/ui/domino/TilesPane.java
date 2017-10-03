@@ -39,8 +39,8 @@ abstract class TilesPane extends FlowPane {
     Map<String, ImageView> imageViews = new HashMap<>();
 
     TilesPane(Hand hand) {
-        this.tiles = hand.getTiles();
-        this.hand = hand;
+        tiles = hand.getTiles();
+        TilesPane.hand = hand;
         initBasicUI();
     }
 
@@ -49,23 +49,15 @@ abstract class TilesPane extends FlowPane {
         this.setVgap(10);
         upArrow = new ImageView(ImageFactory.getImage("arrows/up.png"));
         setImageStyle(upArrow);
-        upArrow.setOnMouseClicked(e -> {
-            onUpArrowPressed();
-        });
+        upArrow.setOnMouseClicked(e -> onUpArrowPressed());
         rightArrow = new ImageView(ImageFactory.getImage("arrows/right.png"));
         setImageStyle(rightArrow);
-        rightArrow.setOnMouseClicked(e -> {
-            onRightArrowPressed();
-        });
+        rightArrow.setOnMouseClicked(e -> onRightArrowPressed());
         downArrow = new ImageView(ImageFactory.getImage("arrows/down.png"));
         setImageStyle(downArrow);
-        downArrow.setOnMouseClicked(e -> {
-            onDownArrowPressed();
-        });
+        downArrow.setOnMouseClicked(e -> onDownArrowPressed());
         leftArrow = new ImageView(ImageFactory.getImage("arrows/left.png"));
-        leftArrow.setOnMouseClicked(e -> {
-            onLeftArrowPressed();
-        });
+        leftArrow.setOnMouseClicked(e -> onLeftArrowPressed());
         setImageStyle(leftArrow);
         setImageVisibility(false);
     }

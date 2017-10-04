@@ -50,7 +50,7 @@ public class MinMax {
         PossibleTurn bestTurn = null;
         double bestHeuristic = Integer.MIN_VALUE;
         for (PossibleTurn possibleTurn : possibleTurns) {
-            Hand nextHand = dominoManager.playForMe(CloneUtil.getClone(hand), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection(), true);
+            Hand nextHand = dominoManager.playForMe(CloneUtil.getCloneForMinMax(hand), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection(), true);
             double heuristic = getHeuristicValue(nextHand, 1);
             if (bestTurn == null || heuristic > bestHeuristic) {
                 bestTurn = possibleTurn;
@@ -116,7 +116,7 @@ public class MinMax {
             // ჩემთვის საუკეთესო სვლის დადგენა
             Hand bestHand = null;
             for (PossibleTurn possibleTurn : possibleTurns) {
-                Hand nextHand = dominoManager.playForMe(CloneUtil.getClone(hand), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection(), true);
+                Hand nextHand = dominoManager.playForMe(CloneUtil.getCloneForMinMax(hand), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection(), true);
                 getHeuristicValue(nextHand, height + 1);
                 if (bestHand == null || nextHand.getAiExtraInfo().getHeuristicValue() > bestHand.getAiExtraInfo().getHeuristicValue()) {
                     bestHand = nextHand;
@@ -127,9 +127,9 @@ public class MinMax {
                 double heuristic = 0.0;
                 double bazaarProbSum = hand.getTableInfo().getBazaarTilesCount();
                 for (Tile tile : hand.getTiles().values()) {
-                    if (!tile.isPlayed() && !tile.isMine()  && tile.getHim() != 1.0) {
+                    if (!tile.isMine() && tile.getHim() != 1.0) {
                         double probForPickTile = (1 - tile.getHim()) / bazaarProbSum; // ალბათობა, რომ კონკრეტულად ეს tile შემხვდება
-                        heuristic += getHeuristicValue(dominoManager.addTileForMe(CloneUtil.getClone(hand), tile.getX(), tile.getY(), true), height + 1) * probForPickTile;
+                        heuristic += getHeuristicValue(dominoManager.addTileForMe(CloneUtil.getCloneForMinMax(hand), tile.getX(), tile.getY(), true), height + 1) * probForPickTile;
                     }
                 }
                 hand.getAiExtraInfo().setHeuristicValue(heuristic);
@@ -148,7 +148,7 @@ public class MinMax {
             });
             // ყველა შესძლო სვლის გათამაშება და რიგში ჩამატება
             for (PossibleTurn possibleTurn : possibleTurns) {
-                Hand nextHand = dominoManager.playForHim(CloneUtil.getClone(hand), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection(), true);
+                Hand nextHand = dominoManager.playForHim(CloneUtil.getCloneForMinMax(hand), possibleTurn.getX(), possibleTurn.getY(), possibleTurn.getDirection(), true);
                 getHeuristicValue(nextHand, height + 1);
                 possibleHands.add(nextHand);
             }
@@ -171,7 +171,7 @@ public class MinMax {
             }
             // ბაზარში წასვლი შემთხვევა
             if (remainingProbability > 0.0001 && notPlayedTilesCount <= tableInfo.getBazaarTilesCount()) {
-                heuristic += getHeuristicValue(dominoManager.addTileForHim(CloneUtil.getClone(hand), true), height + 1) * remainingProbability;
+                heuristic += getHeuristicValue(dominoManager.addTileForHim(CloneUtil.getCloneForMinMax(hand), true), height + 1) * remainingProbability;
             }
             hand.getAiExtraInfo().setHeuristicValue(heuristic);
             return heuristic;
@@ -181,7 +181,7 @@ public class MinMax {
     private int getBazaarTileCountForSure(Collection<Tile> tiles) {
         int count = 0;
         for (Tile tile : tiles) {
-            if (!tile.isMine() && !tile.isPlayed() && tile.getHim() == 0) {
+            if (!tile.isMine() && tile.getHim() == 0) {
                 count++;
             }
         }
@@ -205,33 +205,31 @@ public class MinMax {
             }
         } else {
             for (Tile tile : tiles) {
-                if (!tile.isPlayed()) {
-                    Set<Integer> played = new HashSet<>();
-                    if ((me && tile.isMine()) || (!me && tile.getHim() > 0)) {
-                        // LEFT RIGHT TOP BOTTOM მიმდევრობა მნიშვნელოვანია
-                        if (!played.contains(hashForPlayedTile(left))) {
-                            if (left.getOpenSide() == tile.getX() || left.getOpenSide() == tile.getY()) {
-                                possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.LEFT));
-                                played.add(hashForPlayedTile(left));
-                            }
+                Set<Integer> played = new HashSet<>();
+                if ((me && tile.isMine()) || (!me && tile.getHim() > 0)) {
+                    // LEFT RIGHT TOP BOTTOM მიმდევრობა მნიშვნელოვანია
+                    if (!played.contains(hashForPlayedTile(left))) {
+                        if (left.getOpenSide() == tile.getX() || left.getOpenSide() == tile.getY()) {
+                            possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.LEFT));
+                            played.add(hashForPlayedTile(left));
                         }
-                        if (!played.contains(hashForPlayedTile(right))) {
-                            if (right.getOpenSide() == tile.getX() || right.getOpenSide() == tile.getY()) {
-                                possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.RIGHT));
-                                played.add(hashForPlayedTile(right));
-                            }
+                    }
+                    if (!played.contains(hashForPlayedTile(right))) {
+                        if (right.getOpenSide() == tile.getX() || right.getOpenSide() == tile.getY()) {
+                            possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.RIGHT));
+                            played.add(hashForPlayedTile(right));
                         }
-                        if (top != null && !played.contains(hashForPlayedTile(top))) {
-                            if ((top.getOpenSide() == tile.getX() || top.getOpenSide() == tile.getY()) && !left.isCenter() && !right.isCenter()) {
-                                possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.TOP));
-                                played.add(hashForPlayedTile(top));
-                            }
+                    }
+                    if (top != null && !played.contains(hashForPlayedTile(top))) {
+                        if ((top.getOpenSide() == tile.getX() || top.getOpenSide() == tile.getY()) && !left.isCenter() && !right.isCenter()) {
+                            possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.TOP));
+                            played.add(hashForPlayedTile(top));
                         }
-                        if (bottom != null && !played.contains(hashForPlayedTile(bottom))) {
-                            if ((bottom.getOpenSide() == tile.getX() || bottom.getOpenSide() == tile.getY()) && !left.isCenter() && !right.isCenter()) {
-                                possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.BOTTOM));
-                                played.add(hashForPlayedTile(bottom));
-                            }
+                    }
+                    if (bottom != null && !played.contains(hashForPlayedTile(bottom))) {
+                        if ((bottom.getOpenSide() == tile.getX() || bottom.getOpenSide() == tile.getY()) && !left.isCenter() && !right.isCenter()) {
+                            possibleTurns.add(new PossibleTurn(tile.getX(), tile.getY(), PlayDirection.BOTTOM));
+                            played.add(hashForPlayedTile(bottom));
                         }
                     }
                 }

@@ -23,6 +23,15 @@ public class CloneUtil {
         return clone;
     }
 
+    public static Hand getCloneForMinMax(Hand hand) {
+        Hand clone = new Hand();
+        clone.setTableInfo(getClone(hand.getTableInfo()));
+        clone.setGameInfo(getClone(hand.getGameInfo()));
+        clone.setTiles(getClone(hand.getTiles()));
+        clone.setAiExtraInfo(getClone(hand.getAiExtraInfo()));
+        return clone;
+    }
+
     private static AIPrediction getClone(AIPrediction aiPrediction) {
         if (aiPrediction == null) {
             return null;
@@ -70,7 +79,6 @@ public class CloneUtil {
         Tile clone = new Tile();
         clone.setX(tile.getX());
         clone.setY(tile.getY());
-        clone.setPlayed(tile.isPlayed());
         clone.setHim(tile.getHim());
         clone.setMine(tile.isMine());
         return clone;

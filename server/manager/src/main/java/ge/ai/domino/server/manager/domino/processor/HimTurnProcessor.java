@@ -87,15 +87,16 @@ public class HimTurnProcessor extends TurnProcessor {
         }
         // თუ წინა სვლაზე იყო ბაზარში, აღებული ქვების რაოდენობით ნაწილდება ალბათობები
         Map<String, Tile> tiles = hand.getTiles();
-        Tile playedTile = tiles.get(TileUtil.getTileUID(x, y));
+        String uid = TileUtil.getTileUID(x, y);
+        Tile playedTile = tiles.get(uid);
         if (hand.getTableInfo().getTileFromBazaar() > 0) {
             updateProbabilitiesForLastPickedTiles(hand, true);
-            makeTileAsPlayed(playedTile);
+            makeTileAsPlayed(tiles, uid);
         } else {
             // წინააღმდეგ შემთხვევაში, ჩამოსული ქვის ალბათობები ნაწილდბეა სხვებზე
             double him = playedTile.getHim();
-            makeTileAsPlayed(playedTile);
-            addProbabilitiesForHimProportional(tiles, tileSelection(tiles, true, true, true, true), him - 1);
+            makeTileAsPlayed(tiles, uid);
+            addProbabilitiesForHimProportional(tiles, tileSelection(tiles, true, true, true), him - 1);
         }
         // ქვის ჩამოსვლა
         playTile(hand.getTableInfo(), x, y, direction);
@@ -126,7 +127,7 @@ public class HimTurnProcessor extends TurnProcessor {
         double himSum = 0.0;
         Set<String> mayHaveTiles = new HashSet<>();
         for (Tile tile : hand.getTiles().values()) {
-            if (!tile.isPlayed() && !tile.isMine()) {
+            if (!tile.isMine()) {
                 if (possiblePlayNumbers.contains(tile.getX()) || possiblePlayNumbers.contains(tile.getY())) {
                     himSum += tile.getHim();
                     tile.setHim(0);
@@ -148,7 +149,7 @@ public class HimTurnProcessor extends TurnProcessor {
         Set<Integer> notUsedNumbers = getPossiblePlayNumbers(hand);
         Set<String> usefulUIDs = new HashSet<>();
         for (Tile tile : hand.getTiles().values()) {
-            if (!notUsedNumbers.contains(tile.getX()) && !notUsedNumbers.contains(tile.getY()) && !tile.isPlayed() && !tile.isMine()) {
+            if (!notUsedNumbers.contains(tile.getX()) && !notUsedNumbers.contains(tile.getY()) && !tile.isMine()) {
                 usefulUIDs.add(TileUtil.getTileUID(tile.getX(), tile.getY()));
             }
         }

@@ -54,7 +54,7 @@ public class MyTurnProcessor extends TurnProcessor {
         Tile tile = tiles.get(TileUtil.getTileUID(x, y));
         double him = tile.getHim();
         makeTileAsMine(tile);
-        addProbabilitiesForHimProportional(tiles, tileSelection(tiles, true, true, true, true), him);
+        addProbabilitiesForHimProportional(tiles, tileSelection(tiles, true, true, true), him);
         updateTileCountBeforeAddMe(hand);
         // თუ ეხლა დავამთავრე საწყისი 7 ქვის აღება ვითხოვთ რჩევას პროგრამისგან
         if (hand.getTableInfo().getLeft() == null && hand.getTableInfo().getMyTilesCount() == 7) {
@@ -97,7 +97,7 @@ public class MyTurnProcessor extends TurnProcessor {
             makeDoubleTilesAsInBazaar(hand, (x == y ? x : -1));
         }
         // ქვის ჩამოსვლა
-        makeTileAsPlayed(hand.getTiles().get(TileUtil.getTileUID(x, y)));
+        makeTileAsPlayed(hand.getTiles(), TileUtil.getTileUID(x, y));
         playTile(hand.getTableInfo(), x, y, direction);
         updateTileCountBeforePlayMe(hand);
         DominoHelper.addLeftTiles(hand.getGameInfo(), countScore(hand), true, gameId, virtual);

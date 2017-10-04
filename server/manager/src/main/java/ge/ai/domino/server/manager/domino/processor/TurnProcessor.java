@@ -116,10 +116,8 @@ public abstract class TurnProcessor {
         tableInfo.setLastPlayedUID(TileUtil.getTileUID(x, y));
     }
 
-    void makeTileAsPlayed(Tile tile) {
-        tile.setMine(false);
-        tile.setHim(0);
-        tile.setPlayed(true);
+    void makeTileAsPlayed(Map<String, Tile> tiles, String uid) {
+        tiles.remove(uid);
     }
 
     int countScore(Hand hand) {
@@ -195,13 +193,10 @@ public abstract class TurnProcessor {
         }
     }
 
-    Set<String> tileSelection(Map<String, Tile> tiles, boolean notPlayed, boolean notMine, boolean notHim, boolean notBazaar) {
+    Set<String> tileSelection(Map<String, Tile> tiles, boolean notMine, boolean notHim, boolean notBazaar) {
         Set<String> result = new HashSet<>();
         for (String key : tiles.keySet()) {
             Tile tile = tiles.get(key);
-            if (notPlayed && tile.isPlayed()) {
-                continue;
-            }
             if (notMine && tile.isMine()) {
                 continue;
             }

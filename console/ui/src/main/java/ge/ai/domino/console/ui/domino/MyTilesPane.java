@@ -74,6 +74,6 @@ abstract class MyTilesPane extends TilesPane {
     @Override
     public boolean showTile(String uid) {
         Tile tile = tiles.get(uid);
-        return !tile.isPlayed() && tile.isMine();
+        return tile != null && tile.isMine();
     }
 }

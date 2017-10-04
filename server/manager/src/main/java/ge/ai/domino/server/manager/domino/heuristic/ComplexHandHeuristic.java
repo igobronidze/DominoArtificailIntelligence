@@ -19,15 +19,13 @@ public class ComplexHandHeuristic implements HandHeuristic {
         double count = 0.0;
         TableInfo tableInfo = hand.getTableInfo();
         for (Tile tile : hand.getTiles().values()) {
-            if (!tile.isPlayed()) {
-                if (me) {
-                    if (tile.isMine()) {
-                        count += countPlay(tile, tableInfo);
-                    }
-                } else {
-                    if (tile.getHim() > 0.0) {
-                        count += tile.getHim() * countPlay(tile, tableInfo);
-                    }
+            if (me) {
+                if (tile.isMine()) {
+                    count += countPlay(tile, tableInfo);
+                }
+            } else {
+                if (tile.getHim() > 0.0) {
+                    count += tile.getHim() * countPlay(tile, tableInfo);
                 }
             }
         }

@@ -6,8 +6,6 @@ public class Tile {
 
     private int y;
 
-    private boolean played;
-
     private boolean mine;
 
     private double him;
@@ -26,14 +24,6 @@ public class Tile {
 
     public void setY(int y) {
         this.y = y;
-    }
-
-    public boolean isPlayed() {
-        return played;
-    }
-
-    public void setPlayed(boolean played) {
-        this.played = played;
     }
 
     public boolean isMine() {

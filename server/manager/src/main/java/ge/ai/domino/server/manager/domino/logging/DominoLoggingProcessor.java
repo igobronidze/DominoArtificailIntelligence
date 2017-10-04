@@ -62,21 +62,24 @@ public class DominoLoggingProcessor {
 
     private static StringBuilder tileToString(Map<String, Tile> tiles) {
         StringBuilder info = new StringBuilder();
-        info.append("Tiles info:").append(System.lineSeparator()).append("format - HIM  IS_MINE  IS_PLAYED").append(System.lineSeparator());
+        info.append("Tiles info:").append(System.lineSeparator()).append("format - HIM  IS_MINE").append(System.lineSeparator());
         int counter = 0;
         NumberFormat formatter = new DecimalFormat("#0.0000");
         for (int i = 6; i >= 0; i--) {
             for (int j = i; j >= 0; j--) {
                 String uid = TileUtil.getTileUID(i, j);
                 Tile tile = tiles.get(uid);
-                info.append(uid).append("  ").append(formatter.format(tile.getHim())).append("  ").append("  ").append(tile.isMine() ? "1" : "0").append("  ").
-                        append(tile.isPlayed()? "1" : "0");
+                if (tile == null ){
+                    info.append(uid).append("  played   ");
+                } else {
+                    info.append(uid).append("  ").append(formatter.format(tile.getHim())).append("  ").append(tile.isMine() ? "1" : "0");
+                }
                 counter++;
-                if (counter % 2 == 0) {
+                if (counter % 4 == 0) {
                     info.append(System.lineSeparator());
                     counter = 0;
                 } else {
-                    info.append("        ");
+                    info.append("      ");
                 }
             }
         }

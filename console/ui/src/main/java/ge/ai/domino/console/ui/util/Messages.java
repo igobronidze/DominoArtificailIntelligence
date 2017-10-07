@@ -16,7 +16,7 @@ public class Messages {
 
     private static SystemParameterService systemParameterService = new SystemParameterServiceImpl();
 
-    private static SysParam systemLanguageCode = new SysParam("systemLanguageCode", "KA");
+    private static SysParam systemLanguageCode = new SysParam("systemLanguageCode", "ka");
 
     private static Map<String, Properties> messages = new HashMap<>();
 

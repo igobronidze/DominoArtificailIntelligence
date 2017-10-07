@@ -10,7 +10,7 @@ public class DAIPropertiesUtil {
 
     private static final Logger logger = Logger.getLogger(DAIPropertiesUtil.class);
 
-    static String daiPropertyPath = "properties/dai.properties";
+    static String daiPropertyPath = "C:/dai/properties/dai.properties";
 
     private static Properties properties;
 

@@ -16,8 +16,6 @@ import org.apache.log4j.Logger;
 
 public class DominoManager {
 
-    private static final double EPSILON_FOR_PROBABILITY = 0.00001;
-
     private static final Logger logger = Logger.getLogger(DominoManager.class);
 
     private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
@@ -29,6 +27,8 @@ public class DominoManager {
     private static final TurnProcessor himTurnProcessor = new HimTurnProcessor();
 
     private static final SysParam checkHimProbabilities = new SysParam("checkHimProbabilities", "false");
+
+    private static final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
 
     public Hand startGame(GameProperties gameProperties, int gameId) throws DAIException {
         Hand newHand = gameProcessor.startGame(gameProperties, gameId);
@@ -81,20 +81,21 @@ public class DominoManager {
      */
     private void checkHimProbabilities(Hand hand, double addProb, String method) throws DAIException {
         if (systemParameterManager.getBooleanParameterValue(checkHimProbabilities)) {
+            double epsilon = systemParameterManager.getFloatParameterValue(epsilonForProbabilities);
             double sum = 0.0;
             for (Tile tile : hand.getTiles().values()) {
-                if (tile.getHim() > 1.0 + EPSILON_FOR_PROBABILITY) {
+                if (tile.getHim() > 1.0 + epsilon) {
                     logger.warn("Him tile probability is more than one, tile[" + tile.getX() + "-" + tile.getY() + "] method[" + method + "]");
                     DominoLoggingProcessor.logHandFullInfo(hand, false);   // შეიძლება ვირტუალური იყოს, მაგრამ აუციელებელია რომ დაიბეჭდოს
                     throw new DAIException("HimTileProbabilityIsMoreThanOne");
-                } else if (tile.getHim() < 0.0 - EPSILON_FOR_PROBABILITY) {
+                } else if (tile.getHim() < 0.0 - epsilon) {
                     logger.warn("Him tile probability is less than zero, tile[" + tile.getX() + "-" + tile.getY() + "] method[" + method + "]");
                     DominoLoggingProcessor.logHandFullInfo(hand, false);   // შეიძლება ვირტუალური იყოს, მაგრამ აუციელებელია რომ დაიბეჭდოს
                     throw new DAIException("HimTileProbabilityIsLessThanZero");
                 }
                 sum += tile.getHim();
             }
-            if (Math.abs(sum - hand.getTableInfo().getHimTilesCount() + addProb) > EPSILON_FOR_PROBABILITY) {
+            if (Math.abs(sum - hand.getTableInfo().getHimTilesCount() + addProb) > epsilon) {
                 logger.warn("Him tile count and probabilities sum is not same... count:" + hand.getTableInfo().getHimTilesCount() + "  sum:" + sum + "  addProb:" + addProb + ", method[" + method + "]");
                 DominoLoggingProcessor.logHandFullInfo(hand, false);   // შეიძლება ვირტუალური იყოს, მაგრამ აუციელებელია რომ დაიბეჭდოს
                 throw new DAIException("probabilitiesSumIsNoEqualToHimTilesCount");

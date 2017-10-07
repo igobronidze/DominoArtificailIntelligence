@@ -6,7 +6,9 @@ import ge.ai.domino.domain.domino.PlayedTile;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.manager.domino.minmax.MinMax;
+import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.util.tile.TileUtil;
 
 import java.util.HashSet;
@@ -15,7 +17,9 @@ import java.util.Set;
 
 public abstract class TurnProcessor {
 
-    private static final double EPSILON_FOR_PROBABILITY = 0.00001;
+    private static final SystemParameterManager sysParamManager = new SystemParameterManager();
+
+    private static final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
 
     protected static final MinMax minMax = new MinMax();
 
@@ -156,7 +160,8 @@ public abstract class TurnProcessor {
         for (String key : possibleTiles) {
             sum += tiles.get(key).getHim();
         }
-        if (sum + probability + EPSILON_FOR_PROBABILITY >= possibleTiles.size()) {
+        double epsilon = sysParamManager.getFloatParameterValue(epsilonForProbabilities);
+        if (sum + probability + epsilon >= possibleTiles.size()) {
             for (String key : possibleTiles) {
                 tiles.get(key).setHim(1.0);
             }
@@ -180,7 +185,8 @@ public abstract class TurnProcessor {
         for (String key : possibleTiles) {
             sum += (1 - tiles.get(key).getHim());
         }
-        if ((possibleTiles.size() - sum) + probability + EPSILON_FOR_PROBABILITY >= possibleTiles.size()) {
+        double epsilon = sysParamManager.getFloatParameterValue(epsilonForProbabilities);
+        if ((possibleTiles.size() - sum) + probability + epsilon >= possibleTiles.size()) {
             for (String key : possibleTiles) {
                 tiles.get(key).setHim(1.0);
             }

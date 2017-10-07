@@ -24,14 +24,16 @@ public class DominoHelper {
             }
         }
         int scoreForWin = game.getGameProperties().getPointsForWin();
-        if (gameInfo.getMyPoints() >= scoreForWin && gameInfo.getMyPoints() >= gameInfo.getHimPoints()) {
-            hand.getGameInfo().setFinished(true);
-            DominoLoggingProcessor.logInfoOnTurn("I win the game", virtual);
-            return hand;
-        } else if (gameInfo.getHimPoints() >= scoreForWin) {
-            hand.getGameInfo().setFinished(true);
-            DominoLoggingProcessor.logInfoOnTurn("He win the game", virtual);
-            return hand;
+        if (!hand.getTableInfo().isOmittedHim() || !hand.getTableInfo().isOmittedMe()) {
+            if (gameInfo.getMyPoints() >= scoreForWin && gameInfo.getMyPoints() >= gameInfo.getHimPoints()) {
+                hand.getGameInfo().setFinished(true);
+                DominoLoggingProcessor.logInfoOnTurn("I win the game", virtual);
+                return hand;
+            } else if (gameInfo.getHimPoints() >= scoreForWin) {
+                hand.getGameInfo().setFinished(true);
+                DominoLoggingProcessor.logInfoOnTurn("He win the game", virtual);
+                return hand;
+            }
         }
         game.getHistory().add(hand);
         game.setCurrHand(InitialUtil.getInitialHand());

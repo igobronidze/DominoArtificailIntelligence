@@ -35,9 +35,11 @@ public class MinMax {
 
     private static final HandHeuristic handHeuristic = new ComplexHandHeuristic();
 
+    private static final DominoManager dominoManager = new DominoManager();
+
     private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "7");
 
-    private static final DominoManager dominoManager = new DominoManager();
+    private static final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
 
     private int treeHeight;
 
@@ -78,10 +80,6 @@ public class MinMax {
         recursionCount++;
         TableInfo tableInfo = hand.getTableInfo();
         GameInfo gameInfo = hand.getGameInfo();
-        // თუ მთლიანად დამთავრდა თამაში
-        if (gameInfo.isFinished()) {
-            return HandHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedDominoGames.getGame(gameInfo.getGameId()).getGameProperties().getPointsForWin());
-        }
         // თუ გაიჭედა თამაში
         if (tableInfo.isOmittedMe() && tableInfo.isOmittedHim()) {
             int himTilesCount = DominoHelper.countLeftTiles(hand, false, true);
@@ -93,6 +91,10 @@ public class MinMax {
             }
             hand.getAiExtraInfo().setHeuristicValue(HandHeuristicHelper.getFinishedHandHeuristic(gameInfo, tableInfo.isMyTurn()));
             return hand.getAiExtraInfo().getHeuristicValue();
+        }
+        // თუ მთლიანად დამთავრდა თამაში
+        if (gameInfo.isFinished()) {
+            return HandHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedDominoGames.getGame(gameInfo.getGameId()).getGameProperties().getPointsForWin());
         }
         // თუ მოწინააღმდეგემ გაიარა, ვიმატებთ მის სავარაუდო დარჩენილ ქვებს და ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
         if (tableInfo.isNeedToAddLeftTiles()) {
@@ -170,7 +172,8 @@ public class MinMax {
                 }
             }
             // ბაზარში წასვლი შემთხვევა
-            if (remainingProbability > 0.0001 && notPlayedTilesCount <= tableInfo.getBazaarTilesCount()) {
+            double epsilon = systemParameterManager.getFloatParameterValue(epsilonForProbabilities);
+            if (remainingProbability > epsilon && notPlayedTilesCount <= tableInfo.getBazaarTilesCount()) {
                 heuristic += getHeuristicValue(dominoManager.addTileForHim(CloneUtil.getCloneForMinMax(hand), true), height + 1) * remainingProbability;
             }
             hand.getAiExtraInfo().setHeuristicValue(heuristic);

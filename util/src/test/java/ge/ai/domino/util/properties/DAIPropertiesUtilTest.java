@@ -12,7 +12,7 @@ public class DAIPropertiesUtilTest {
 
     @BeforeClass
     public static void init() {
-        DAIPropertiesUtil.daiPropertyPath = "../properties/dai.properties";
+        DAIPropertiesUtil.daiPropertyPath = "C:/dai/properties/dai.properties";
     }
 
     @Test

@@ -1,4 +1,4 @@
-package ge.ai.domino.util.sysparam;
+package ge.ai.domino.service.sysparam;
 
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;

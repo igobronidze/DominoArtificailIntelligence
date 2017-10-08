@@ -50,7 +50,6 @@ public class PossibleTurn {
         PossibleTurn that = (PossibleTurn) o;
 
         return x == that.x && y == that.y && direction == that.direction;
-
     }
 
     @Override

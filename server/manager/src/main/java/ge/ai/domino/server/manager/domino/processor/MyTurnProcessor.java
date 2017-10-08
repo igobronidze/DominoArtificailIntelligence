@@ -19,9 +19,9 @@ import java.util.Map;
 
 public class MyTurnProcessor extends TurnProcessor {
 
-    private static final SystemParameterManager sysParamManager = new SystemParameterManager();
+    private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-    private static final SysParam minMaxOnFirstTile = new SysParam("minMaxOnFirstTile", "false");
+    private final SysParam minMaxOnFirstTile = new SysParam("minMaxOnFirstTile", "false");
 
     @Override
     public Hand addTile(Hand hand, int x, int y, boolean virtual) throws DAIException {

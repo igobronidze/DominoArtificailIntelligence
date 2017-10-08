@@ -1,4 +1,4 @@
-package ge.ai.domino.console.ui.control_panel;
+package ge.ai.domino.console.ui.controlpanel;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;

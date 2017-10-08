@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: ge.ai.domino.console.ui.control_panel.ControlPanel
+Main-Class: ge.ai.domino.console.ui.controlpanel.ControlPanel
 

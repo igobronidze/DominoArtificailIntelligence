@@ -29,9 +29,10 @@ public class HimTurnProcessor extends TurnProcessor {
         int gameId = hand.getGameInfo().getGameId();
         DominoLoggingProcessor.logInfoOnTurn("Start add tile for him method, gameId[" + gameId + "]", virtual);
         TableInfo tableInfo = hand.getTableInfo();
+        Game game = CachedDominoGames.getGame(gameId);
         // ისტორაიში დამატება
         if (!virtual) {
-            CachedDominoGames.getGame(hand.getGameInfo().getGameId()).getHistory().push(CloneUtil.getClone(hand));
+            game.getHistory().push(CloneUtil.getClone(hand));
         }
         // თუ პირველად გადის ბაზარში, ყველა შესაძლო ჩამოსვლადი ქვა არის ბაზარში და ნაწილდება მათი ალბათობები სხვებზე
         if (tableInfo.getTileFromBazaar() == 0) {
@@ -76,8 +77,8 @@ public class HimTurnProcessor extends TurnProcessor {
         hand.getTableInfo().setOmittedHim(false);
         int gameId = hand.getGameInfo().getGameId();
         DominoLoggingProcessor.logInfoOnTurn("Start play for him method for tile [" + x + "-" + y + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
-        // ისტორიაში დამატება
         Game game = CachedDominoGames.getGame(gameId);
+        // ისტორიაში დამატება
         if (!virtual) {
             game.getHistory().push(CloneUtil.getClone(hand));
         }

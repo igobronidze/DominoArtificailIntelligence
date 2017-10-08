@@ -1,4 +1,4 @@
-package ge.ai.domino.util.domino;
+package ge.ai.domino.service.domino;
 
 import ge.ai.domino.domain.domino.GameProperties;
 import ge.ai.domino.domain.domino.Hand;

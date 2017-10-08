@@ -17,9 +17,9 @@ import java.util.Set;
 
 public abstract class TurnProcessor {
 
-    private static final SystemParameterManager sysParamManager = new SystemParameterManager();
+    private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-    private static final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
+    private final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
 
     protected static final MinMax minMax = new MinMax();
 

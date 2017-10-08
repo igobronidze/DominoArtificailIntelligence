@@ -22,7 +22,7 @@ public class DominoLoggingProcessor {
 
     private static final SysParam logTilesAfterMethod = new SysParam("logTilesAfterMethod", "true");
 
-    private final static SysParam logOnVirtualMode = new SysParam("logOnVirtualMode", "false");
+    private static final SysParam logOnVirtualMode = new SysParam("logOnVirtualMode", "false");
 
     public static void logHandFullInfo(Hand hand, boolean virtualMode) {
         if (systemParameterManager.getBooleanParameterValue(logTilesAfterMethod)) {

@@ -3,13 +3,19 @@ package ge.ai.domino.server.manager.domino.heuristic;
 import ge.ai.domino.domain.domino.Hand;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
+import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 
 public class ComplexHandHeuristic implements HandHeuristic {
+
+    private final SystemParameterManager sysParamManager = new SystemParameterManager();
+
+    private final SysParam coefficientForComplexHeuristic = new SysParam("coefficientForComplexHeuristic", "12");
 
     @Override
     public double getHeuristic(Hand hand) {
         double heuristic = hand.getGameInfo().getMyPoints() - hand.getGameInfo().getHimPoints();
-        heuristic += 12 * (getPossibleTurnCount(hand, true) / hand.getTableInfo().getMyTilesCount() / hand.getTableInfo().getMyTilesCount() -
+        heuristic += sysParamManager.getIntegerParameterValue(coefficientForComplexHeuristic) * (getPossibleTurnCount(hand, true) / hand.getTableInfo().getMyTilesCount() / hand.getTableInfo().getMyTilesCount() -
                 getPossibleTurnCount(hand, false) / hand.getTableInfo().getHimTilesCount() / hand.getTableInfo().getHimTilesCount());
         return heuristic;
     }

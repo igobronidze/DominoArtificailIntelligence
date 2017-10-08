@@ -14,7 +14,7 @@ public class CachedSystemParameter {
 
     private static final Logger logger = Logger.getLogger(CachedSystemParameter.class);
 
-    private static SystemParameterDAO systemParameterDAO = new SystemParameterDAOImpl();
+    private static final SystemParameterDAO systemParameterDAO = new SystemParameterDAOImpl();
 
     private static Map<String,String> cachedParameters;
 

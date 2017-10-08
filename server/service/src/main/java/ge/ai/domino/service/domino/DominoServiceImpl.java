@@ -1,4 +1,4 @@
-package ge.ai.domino.util.domino;
+package ge.ai.domino.service.domino;
 
 import ge.ai.domino.domain.domino.GameProperties;
 import ge.ai.domino.domain.domino.Hand;
@@ -8,7 +8,7 @@ import ge.ai.domino.server.manager.domino.DominoManager;
 
 public class DominoServiceImpl implements DominoService {
 
-    private static final DominoManager dominoManager = new DominoManager();
+    private final DominoManager dominoManager = new DominoManager();
 
     @Override
     public Hand startGame(GameProperties gameProperties, int gameId) throws DAIException {

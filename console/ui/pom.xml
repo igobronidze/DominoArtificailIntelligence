@@ -30,7 +30,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ge.ai.domino.console.ui.control_panel.ControlPanel</mainClass>
+                            <mainClass>ge.ai.domino.console.ui.controlpanel.ControlPanel</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

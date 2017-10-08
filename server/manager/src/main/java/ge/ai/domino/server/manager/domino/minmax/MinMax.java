@@ -31,15 +31,15 @@ public class MinMax {
 
     private static Logger logger = Logger.getLogger(DominoManager.class);
 
-    private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
+    private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
-    private static final HandHeuristic handHeuristic = new ComplexHandHeuristic();
+    private final HandHeuristic handHeuristic = new ComplexHandHeuristic();
 
-    private static final DominoManager dominoManager = new DominoManager();
+    private final DominoManager dominoManager = new DominoManager();
 
-    private static final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "7");
+    private final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "7");
 
-    private static final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
+    private final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
 
     private int treeHeight;
 

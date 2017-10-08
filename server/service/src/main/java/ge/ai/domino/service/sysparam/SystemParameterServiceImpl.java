@@ -1,4 +1,4 @@
-package ge.ai.domino.util.sysparam;
+package ge.ai.domino.service.sysparam;
 
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;
@@ -13,9 +13,9 @@ import java.util.List;
 
 public class SystemParameterServiceImpl implements SystemParameterService {
 
-    private SystemParameterDAO systemParameterDAO = new SystemParameterDAOImpl();
+    private final SystemParameterDAO systemParameterDAO = new SystemParameterDAOImpl();
 
-    private SystemParameterManager systemParameterManager = new SystemParameterManager();
+    private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
     @Override
     public void addSystemParameter(SystemParameter systemParameter) throws DAIException {

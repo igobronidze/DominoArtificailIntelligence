@@ -1,4 +1,4 @@
-package ge.ai.domino.console.ui.TCHcomponents;
+package ge.ai.domino.console.ui.tchcomponents;
 
 import javafx.scene.control.RadioButton;
 

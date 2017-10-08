@@ -18,17 +18,17 @@ public class DominoManager {
 
     private static final Logger logger = Logger.getLogger(DominoManager.class);
 
-    private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
+    private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
-    private static final GameProcessor gameProcessor = new GameProcessor();
+    private final GameProcessor gameProcessor = new GameProcessor();
 
-    private static final TurnProcessor myTurnProcessor = new MyTurnProcessor();
+    private final TurnProcessor myTurnProcessor = new MyTurnProcessor();
 
-    private static final TurnProcessor himTurnProcessor = new HimTurnProcessor();
+    private final TurnProcessor himTurnProcessor = new HimTurnProcessor();
 
-    private static final SysParam checkHimProbabilities = new SysParam("checkHimProbabilities", "false");
+    private final SysParam checkHimProbabilities = new SysParam("checkHimProbabilities", "false");
 
-    private static final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
+    private final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
 
     public Hand startGame(GameProperties gameProperties, int gameId) throws DAIException {
         Hand newHand = gameProcessor.startGame(gameProperties, gameId);
@@ -62,7 +62,7 @@ public class DominoManager {
 
     public Hand getLastPlayedHand(Hand hand) throws DAIException {
         Hand newHand = gameProcessor.getLastPlayedHand(hand);
-        checkHimProbabilities(newHand, 0, "getLastPlayedHand");
+        checkHimProbabilities(newHand, newHand.getTableInfo().getTileFromBazaar(), "getLastPlayedHand");
         return newHand;
     }
 

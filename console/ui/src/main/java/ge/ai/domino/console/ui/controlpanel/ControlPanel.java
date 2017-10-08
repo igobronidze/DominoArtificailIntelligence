@@ -1,4 +1,4 @@
-package ge.ai.domino.console.ui.control_panel;
+package ge.ai.domino.console.ui.controlpanel;
 
 import ge.ai.domino.console.ui.util.Messages;
 import javafx.application.Application;
@@ -26,13 +26,13 @@ public class ControlPanel extends Application {
         primaryStage.show();
     }
 
-    public static void initComponents() {
+    static void initComponents() {
         root.setCenter(new GamePropertiesPane());
         root.setTop(new ControlPanelMenuBar());
         root.setBottom(new ControlPanelFooter());
     }
 
-    public static Stage getStage() {
+    static Stage getStage() {
         return stage;
     }
 

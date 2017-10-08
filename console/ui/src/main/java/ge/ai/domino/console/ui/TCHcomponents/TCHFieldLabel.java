@@ -1,4 +1,4 @@
-package ge.ai.domino.console.ui.TCHcomponents;
+package ge.ai.domino.console.ui.tchcomponents;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Control;

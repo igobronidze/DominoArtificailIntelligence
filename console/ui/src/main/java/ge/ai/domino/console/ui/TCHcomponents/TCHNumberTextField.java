@@ -1,4 +1,4 @@
-package ge.ai.domino.console.ui.TCHcomponents;
+package ge.ai.domino.console.ui.tchcomponents;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,7 +14,8 @@ import java.text.ParseException;
 public class TCHNumberTextField extends TCHTextField {
 
     private final NumberFormat nf;
-    private ObjectProperty<BigDecimal> number = new SimpleObjectProperty<>();
+
+    private final ObjectProperty<BigDecimal> number = new SimpleObjectProperty<>();
 
     public final BigDecimal getNumber() {
         return number.get();
@@ -45,28 +46,14 @@ public class TCHNumberTextField extends TCHTextField {
     }
 
     private void initHandlers() {
-        setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent arg0) {
+        setOnAction(arg0 -> parseAndFormatInput());
+        focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
                 parseAndFormatInput();
             }
         });
-        focusedProperty().addListener(new ChangeListener<Boolean>() {
-
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue.booleanValue()) {
-                    parseAndFormatInput();
-                }
-            }
-        });
-        numberProperty().addListener(new ChangeListener<BigDecimal>() {
-
-            @Override
-            public void changed(ObservableValue<? extends BigDecimal> obserable, BigDecimal oldValue, BigDecimal newValue) {
-                setText(nf.format(newValue));
-            }
+        numberProperty().addListener((obserable, oldValue, newValue) -> {
+            setText(nf.format(newValue));
         });
     }
 

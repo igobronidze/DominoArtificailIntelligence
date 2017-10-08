@@ -1,8 +1,8 @@
 package ge.ai.domino.console.ui.util;
 
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.util.sysparam.SystemParameterService;
-import ge.ai.domino.util.sysparam.SystemParameterServiceImpl;
+import ge.ai.domino.service.sysparam.SystemParameterService;
+import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
 
 import java.io.IOException;
 import java.io.InputStream;

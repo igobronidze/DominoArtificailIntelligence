@@ -1,6 +1,5 @@
-package ge.ai.domino.console.ui.control_panel;
+package ge.ai.domino.console.ui.controlpanel;
 
-import ge.ai.domino.console.ui.domino.DominoPane;
 import ge.ai.domino.console.ui.shortcut.ShortcutPane;
 import ge.ai.domino.console.ui.sysparam.SystemParametersPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
@@ -14,7 +13,7 @@ import javafx.stage.Stage;
 
 public class ControlPanelMenuBar extends MenuBar {
 
-    public ControlPanelMenuBar() {
+    ControlPanelMenuBar() {
         initUI();
         initMenu();
     }
@@ -86,13 +85,9 @@ public class ControlPanelMenuBar extends MenuBar {
     private Menu getFileMenu() {
         Menu fileMenu = new Menu(Messages.get("file"));
         MenuItem newItem = new MenuItem(Messages.get("new"));
-        newItem.setOnAction(e -> {
-            ControlPanel.initComponents();
-        });
+        newItem.setOnAction(e -> ControlPanel.initComponents());
         MenuItem closeItem = new MenuItem(Messages.get("close"));
-        closeItem.setOnAction(e -> {
-            ControlPanel.getStage().close();
-        });
+        closeItem.setOnAction(e -> ControlPanel.getStage().close());
         fileMenu.getItems().addAll(newItem, closeItem);
         return fileMenu;
     }

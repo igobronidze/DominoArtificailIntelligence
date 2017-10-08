@@ -1,11 +1,11 @@
 package ge.ai.domino.console.ui.domino;
 
-import ge.ai.domino.console.ui.TCHcomponents.TCHButton;
-import ge.ai.domino.console.ui.TCHcomponents.TCHComponentSize;
-import ge.ai.domino.console.ui.TCHcomponents.TCHLabel;
-import ge.ai.domino.console.ui.TCHcomponents.TCHNumberTextField;
-import ge.ai.domino.console.ui.control_panel.ControlPanel;
-import ge.ai.domino.console.ui.control_panel.GamePropertiesPane;
+import ge.ai.domino.console.ui.tchcomponents.TCHButton;
+import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
+import ge.ai.domino.console.ui.tchcomponents.TCHLabel;
+import ge.ai.domino.console.ui.tchcomponents.TCHNumberTextField;
+import ge.ai.domino.console.ui.controlpanel.ControlPanel;
+import ge.ai.domino.console.ui.controlpanel.GamePropertiesPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
@@ -15,8 +15,8 @@ import ge.ai.domino.domain.domino.PlayDirection;
 import ge.ai.domino.domain.domino.TableInfo;
 import ge.ai.domino.domain.domino.Tile;
 import ge.ai.domino.domain.exception.DAIException;
-import ge.ai.domino.util.domino.DominoService;
-import ge.ai.domino.util.domino.DominoServiceImpl;
+import ge.ai.domino.service.domino.DominoService;
+import ge.ai.domino.service.domino.DominoServiceImpl;
 import ge.ai.domino.util.tile.TileUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -33,7 +33,7 @@ import javafx.stage.StageStyle;
 
 public class DominoPane extends BorderPane {
 
-    private static final DominoService dominoService = new DominoServiceImpl();
+    private final DominoService dominoService = new DominoServiceImpl();
 
     private Hand hand;
 

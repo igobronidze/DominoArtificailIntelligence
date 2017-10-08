@@ -1,18 +1,18 @@
 package ge.ai.domino.console.ui.sysparam;
 
-import ge.ai.domino.console.ui.TCHcomponents.TCHButton;
-import ge.ai.domino.console.ui.TCHcomponents.TCHComboBox;
-import ge.ai.domino.console.ui.TCHcomponents.TCHComponentSize;
-import ge.ai.domino.console.ui.TCHcomponents.TCHFieldLabel;
-import ge.ai.domino.console.ui.TCHcomponents.TCHTextField;
+import ge.ai.domino.console.ui.tchcomponents.TCHButton;
+import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
+import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
+import ge.ai.domino.console.ui.tchcomponents.TCHFieldLabel;
+import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.DAIExceptionHandling;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SystemParameter;
 import ge.ai.domino.domain.sysparam.SystemParameterType;
-import ge.ai.domino.util.sysparam.SystemParameterService;
-import ge.ai.domino.util.sysparam.SystemParameterServiceImpl;
+import ge.ai.domino.service.sysparam.SystemParameterService;
+import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -37,7 +37,7 @@ import java.util.List;
 
 public class SystemParametersPane extends HBox {
 
-    private SystemParameterService systemParameterService = new SystemParameterServiceImpl();
+    private final SystemParameterService systemParameterService = new SystemParameterServiceImpl();
 
     private TableView<SystemParameterProperty> tableView;
 

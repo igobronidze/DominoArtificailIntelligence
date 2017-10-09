@@ -1,9 +1,9 @@
 package ge.ai.domino.server.manager.domino;
 
-import ge.ai.domino.domain.domino.GameProperties;
-import ge.ai.domino.domain.domino.Hand;
-import ge.ai.domino.domain.domino.PlayDirection;
-import ge.ai.domino.domain.domino.Tile;
+import ge.ai.domino.domain.domino.game.GameProperties;
+import ge.ai.domino.domain.domino.game.Hand;
+import ge.ai.domino.domain.domino.game.PlayDirection;
+import ge.ai.domino.domain.domino.game.Tile;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;

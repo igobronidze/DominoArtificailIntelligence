@@ -1,10 +1,10 @@
 package ge.ai.domino.console.ui.domino;
 
 import ge.ai.domino.console.ui.util.ImageFactory;
-import ge.ai.domino.domain.domino.Hand;
-import ge.ai.domino.domain.domino.PlayDirection;
-import ge.ai.domino.domain.domino.TableInfo;
-import ge.ai.domino.domain.domino.Tile;
+import ge.ai.domino.domain.domino.game.Hand;
+import ge.ai.domino.domain.domino.game.PlayDirection;
+import ge.ai.domino.domain.domino.game.TableInfo;
+import ge.ai.domino.domain.domino.game.Tile;
 import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;

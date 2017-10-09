@@ -1,8 +1,8 @@
 package ge.ai.domino.service.domino;
 
-import ge.ai.domino.domain.domino.GameProperties;
-import ge.ai.domino.domain.domino.Hand;
-import ge.ai.domino.domain.domino.PlayDirection;
+import ge.ai.domino.domain.domino.game.GameProperties;
+import ge.ai.domino.domain.domino.game.Hand;
+import ge.ai.domino.domain.domino.game.PlayDirection;
 import ge.ai.domino.domain.exception.DAIException;
 
 public interface DominoService {

@@ -1,4 +1,4 @@
-package ge.ai.domino.domain.domino;
+package ge.ai.domino.domain.domino.game;
 
 public enum PlayDirection {
 

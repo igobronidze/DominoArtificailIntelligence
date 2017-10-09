@@ -1,13 +1,13 @@
 package ge.ai.domino.server.manager.domino.minmax;
 
 import ge.ai.domino.domain.ai.PossibleTurn;
-import ge.ai.domino.domain.domino.AIPrediction;
-import ge.ai.domino.domain.domino.GameInfo;
-import ge.ai.domino.domain.domino.Hand;
-import ge.ai.domino.domain.domino.PlayDirection;
-import ge.ai.domino.domain.domino.PlayedTile;
-import ge.ai.domino.domain.domino.TableInfo;
-import ge.ai.domino.domain.domino.Tile;
+import ge.ai.domino.domain.ai.AIPrediction;
+import ge.ai.domino.domain.domino.game.GameInfo;
+import ge.ai.domino.domain.domino.game.Hand;
+import ge.ai.domino.domain.domino.game.PlayDirection;
+import ge.ai.domino.domain.domino.game.PlayedTile;
+import ge.ai.domino.domain.domino.game.TableInfo;
+import ge.ai.domino.domain.domino.game.Tile;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;

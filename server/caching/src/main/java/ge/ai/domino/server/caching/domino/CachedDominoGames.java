@@ -1,6 +1,6 @@
 package ge.ai.domino.server.caching.domino;
 
-import ge.ai.domino.domain.domino.Game;
+import ge.ai.domino.domain.domino.game.Game;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -1,6 +1,6 @@
 package ge.ai.domino.server.manager.domino.heuristic;
 
-import ge.ai.domino.domain.domino.Hand;
+import ge.ai.domino.domain.domino.game.Hand;
 
 public class SimpleHandHeuristic implements HandHeuristic {
 

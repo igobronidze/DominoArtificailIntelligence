@@ -1,6 +1,6 @@
 package ge.ai.domino.domain.ai;
 
-import ge.ai.domino.domain.domino.PlayDirection;
+import ge.ai.domino.domain.domino.game.PlayDirection;
 
 public class PossibleTurn {
 

@@ -1,6 +1,6 @@
 package ge.ai.domino.server.manager.domino.heuristic;
 
-import ge.ai.domino.domain.domino.GameInfo;
+import ge.ai.domino.domain.domino.game.GameInfo;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 

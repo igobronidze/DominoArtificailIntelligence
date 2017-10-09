@@ -1,10 +1,10 @@
 package ge.ai.domino.server.manager.domino;
 
-import ge.ai.domino.domain.domino.Game;
-import ge.ai.domino.domain.domino.GameInfo;
-import ge.ai.domino.domain.domino.Hand;
-import ge.ai.domino.domain.domino.TableInfo;
-import ge.ai.domino.domain.domino.Tile;
+import ge.ai.domino.domain.domino.game.Game;
+import ge.ai.domino.domain.domino.game.GameInfo;
+import ge.ai.domino.domain.domino.game.Hand;
+import ge.ai.domino.domain.domino.game.TableInfo;
+import ge.ai.domino.domain.domino.game.Tile;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
 import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;
 import ge.ai.domino.server.manager.util.InitialUtil;

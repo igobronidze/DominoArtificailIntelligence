@@ -1,9 +1,9 @@
 package ge.ai.domino.console.ui.domino;
 
 import ge.ai.domino.console.ui.util.ImageFactory;
-import ge.ai.domino.domain.domino.Hand;
-import ge.ai.domino.domain.domino.PlayDirection;
-import ge.ai.domino.domain.domino.Tile;
+import ge.ai.domino.domain.domino.game.Hand;
+import ge.ai.domino.domain.domino.game.PlayDirection;
+import ge.ai.domino.domain.domino.game.Tile;
 import ge.ai.domino.util.tile.TileUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

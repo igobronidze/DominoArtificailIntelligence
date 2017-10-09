@@ -1,4 +1,6 @@
-package ge.ai.domino.domain.domino;
+package ge.ai.domino.domain.ai;
+
+import ge.ai.domino.domain.domino.game.PlayDirection;
 
 public class AIPrediction {
 

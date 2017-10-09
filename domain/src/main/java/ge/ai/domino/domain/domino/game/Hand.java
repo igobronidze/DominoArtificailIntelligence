@@ -1,6 +1,7 @@
-package ge.ai.domino.domain.domino;
+package ge.ai.domino.domain.domino.game;
 
 import ge.ai.domino.domain.ai.AIExtraInfo;
+import ge.ai.domino.domain.ai.AIPrediction;
 
 import java.util.HashMap;
 import java.util.Map;

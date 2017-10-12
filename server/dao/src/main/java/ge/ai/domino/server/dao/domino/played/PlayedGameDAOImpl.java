@@ -22,52 +22,66 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     private PreparedStatement pstmt;
 
     @Override
-    public void addPlayedGame(PlayedGame game) {
+    public int addPlayedGame(PlayedGame game) {
         try {
             logger.info("Start add played game method");
-            String sql = "INSERT INTO played_game (version, result, date, time, myPoint, himPoint, pointForWin, opponentName," +
-                    "website, gameHistory) VALUES (?,?,?,?,?,?,?,?,?,?);";
+            String sql = "INSERT INTO played_game (version, point_for_win, opponent_name, website, result) VALUES (?,?,?,?,?);";
             pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, game.getVersion());
-            pstmt.setString(2, game.getResult().name());
-            pstmt.setDate(3, new Date(game.getDate().getTime()));
-            pstmt.setTime(4, new Time(game.getDate().getTime()));
-            pstmt.setInt(5, game.getMyPoint());
-            pstmt.setInt(6, game.getHimPoint());
-            pstmt.setInt(7, game.getPointForWin());
-            pstmt.setString(8, game.getOpponentName());
-            pstmt.setString(9, game.getWebsite());
-            pstmt.setString(10, game.getGameHistory().toString());
+            pstmt.setInt(2, game.getPointForWin());
+            pstmt.setString(3, game.getOpponentName());
+            pstmt.setString(4, game.getWebsite());
+            pstmt.setString(5, game.getResult().name());
             pstmt.executeUpdate();
-            logger.info("Added played game with id [" + game.getId() + "]");
+            String idSql = "SELECT MAX(id) AS max_id FROM played_game";
+            pstmt = DatabaseUtil.getConnection().prepareStatement(idSql);
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+            int id = rs.getInt("max_id");
+            logger.info("Added played game with id [" + id + "]");
+            return id;
         } catch (SQLException ex) {
             logger.error("Error occurred while add played game", ex);
+        } finally {
+            DatabaseUtil.closeConnection();
+        }
+        return 0;
+    }
+
+    @Override
+    public void updatePlayedGame(PlayedGame game) {
+        try {
+            logger.info("Start edit played game method id[" + game.getId() + "]");
+            String sql = "UPDATE played_game SET result = ?, date = ?, time = ?, my_point = ?, him_point = ? WHERE id = ?";
+            pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
+            pstmt.setString(1, game.getResult().name());
+            pstmt.setDate(2, new Date(game.getDate().getTime()));
+            pstmt.setTime(3, new Time(game.getDate().getTime()));
+            pstmt.setInt(4, game.getMyPoint());
+            pstmt.setInt(5, game.getHimPoint());
+            pstmt.setInt(6, game.getId());
+            pstmt.executeUpdate();
+            logger.info("Updated played game id[" + game.getId() + "]");
+        } catch (SQLException ex) {
+            logger.error("Error occurred while edit played game", ex);
         } finally {
             DatabaseUtil.closeConnection();
         }
     }
 
     @Override
-    public List<PlayedGame> getPlayedGames(Integer id, String version, PlayedGameResult result, Integer pointForWin, String opponentName,
-                                           String website) {
+    public List<PlayedGame> getPlayedGames(String version, PlayedGameResult result, String opponentName, String website) {
         List<PlayedGame> games = new ArrayList<>();
         try {
-            String sql = "SELECT (id, version, result, date, time, myPoint, himPoint, pointForWin, opponentName," +
-                    "website) FROM played_game WHERE 1 = 1 ";
-            if (id != null) {
-                sql += "AND id = " + id + " ";
-            }
+            String sql = "SELECT id, version, result, date, time, my_point, him_point, point_for_win, opponent_name, website FROM played_game WHERE 1 = 1 ";
             if (!StringUtil.isEmpty(version)) {
                 sql += "AND version = '" + version + "' ";
             }
             if (result != null) {
                 sql += "AND result = '" + result.name() + "' ";
             }
-            if (pointForWin != null) {
-                sql += "AND pointForWin = " + pointForWin + " ";
-            }
             if (!StringUtil.isEmpty(opponentName)) {
-                sql += "AND opponentName = '" + opponentName + "' ";
+                sql += "AND opponent_name = '" + opponentName + "' ";
             }
             if (!StringUtil.isEmpty(website)) {
                 sql += "AND website = '" + website + "' ";
@@ -79,11 +93,15 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 game.setId(rs.getInt("id"));
                 game.setVersion(rs.getString("version"));
                 game.setResult(PlayedGameResult.valueOf(rs.getString("result")));
-                game.setDate(new java.util.Date(rs.getDate("date").getTime() + rs.getTime("time").getTime()));
-                game.setMyPoint(rs.getInt("myPoint"));
-                game.setHimPoint(rs.getInt("himPoint"));
-                game.setPointForWin(rs.getInt("pointForWin"));
-                game.setOpponentName(rs.getString("opponentName"));
+                Date dateFromDB = rs.getDate("date");
+                Time timeFromDB = rs.getTime("time");
+                if (dateFromDB != null && timeFromDB != null) {
+                    game.setDate(new java.util.Date(dateFromDB.getTime() + timeFromDB.getTime()));
+                }
+                game.setMyPoint(rs.getInt("my_point"));
+                game.setHimPoint(rs.getInt("him_point"));
+                game.setPointForWin(rs.getInt("point_for_win"));
+                game.setOpponentName(rs.getString("opponent_name"));
                 game.setWebsite(rs.getString("website"));
                 games.add(game);
             }
@@ -98,7 +116,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     @Override
     public GameHistory getGameHistory(int gameId) {
         try {
-            String sql = "SELECT (gameHistory) FROM played_game WHERE id = " + gameId;
+            String sql = "SELECT (game_history) FROM played_game WHERE id = " + gameId;
             pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {

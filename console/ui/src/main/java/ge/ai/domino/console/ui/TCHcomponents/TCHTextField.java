@@ -17,8 +17,8 @@ public class TCHTextField extends TextField {
 		this.setStyle("-fx-font-family: sylfaen; -fx-font-size: 14px;");
 		switch (size) {
 			case SMALL:
-				this.setPrefWidth(150);
-				this.setMaxWidth(150);
+				this.setPrefWidth(180);
+				this.setMaxWidth(180);
 				break;
 			case MEDIUM:
 				this.setPrefWidth(300);

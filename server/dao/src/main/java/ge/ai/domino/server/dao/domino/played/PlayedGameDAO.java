@@ -8,10 +8,11 @@ import java.util.List;
 
 public interface PlayedGameDAO {
 
-    void addPlayedGame(PlayedGame game);
+    int addPlayedGame(PlayedGame game);
 
-    List<PlayedGame> getPlayedGames(Integer id, String version, PlayedGameResult result, Integer pointForWin, String opponentName,
-                                    String website);
+    void updatePlayedGame(PlayedGame game);
+
+    List<PlayedGame> getPlayedGames(String version, PlayedGameResult result, String opponentName, String website);
 
     GameHistory getGameHistory(int gameId);
 }

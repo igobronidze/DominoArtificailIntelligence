@@ -1,21 +1,23 @@
-package ge.ai.domino.console.ui.controlpanel;
+package ge.ai.domino.console.ui.gameproperties;
 
+import ge.ai.domino.console.ui.controlpanel.AppController;
+import ge.ai.domino.console.ui.controlpanel.ControlPanel;
+import ge.ai.domino.console.ui.domino.DominoPane;
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
 import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
 import ge.ai.domino.console.ui.tchcomponents.TCHFieldLabel;
 import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
-import ge.ai.domino.console.ui.domino.DominoPane;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.domain.domino.game.GameProperties;
-import ge.ai.domino.domain.domino.game.Hand;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.service.domino.DominoService;
 import ge.ai.domino.service.domino.DominoServiceImpl;
 import ge.ai.domino.service.sysparam.SystemParameterService;
 import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
+import ge.ai.domino.util.string.StringUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
@@ -31,7 +33,10 @@ public class GamePropertiesPane extends VBox {
 
     private static final SysParam possiblePoints = new SysParam("possiblePoints", "75,155,255");
 
-    public GamePropertiesPane() {
+    private final ControlPanel controlPanel;
+
+    public GamePropertiesPane(ControlPanel controlPanel) {
+        this.controlPanel = controlPanel;
         initComponents();
         initUI();
     }
@@ -54,15 +59,20 @@ public class GamePropertiesPane extends VBox {
         TCHFieldLabel pointFieldLabel = new TCHFieldLabel(Messages.get("point"), pointComboBox);
         TCHButton startButton = new TCHButton(Messages.get("start"));
         startButton.setOnAction(e -> {
-            GameProperties gameProperties = new GameProperties();
-            gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
-            gameProperties.setWebsite(websiteField.getText());
-            gameProperties.setOpponentName(nameField.getText());
-            try {
-                Hand hand = dominoService.startGame(gameProperties, 0);
-                ControlPanel.getRoot().setCenter(new DominoPane(hand));
-            } catch (DAIException ex) {
-                WarnDialog.showWarnDialog(ex);
+            if (StringUtil.isEmpty(websiteField.getText()) || StringUtil.isEmpty(nameField.getText())) {
+                WarnDialog.showWarnDialog(Messages.get("pleaseFillAllField"));
+            } else {
+                GameProperties gameProperties = new GameProperties();
+                gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
+                gameProperties.setWebsite(websiteField.getText());
+                gameProperties.setOpponentName(nameField.getText());
+                try {
+                    AppController.hand = dominoService.startGame(gameProperties, 0);
+                    controlPanel.getRoot().setCenter(new DominoPane(controlPanel));
+                    AppController.startedGame = true;
+                } catch (DAIException ex) {
+                    WarnDialog.showWarnDialog(ex);
+                }
             }
         });
         this.getChildren().addAll(websiteFieldLabel, nameFieldLabel, pointFieldLabel, startButton);

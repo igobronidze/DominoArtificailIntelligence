@@ -7,13 +7,15 @@ import ge.ai.domino.domain.domino.game.GameProperties;
 import ge.ai.domino.domain.domino.game.Hand;
 import ge.ai.domino.domain.domino.game.TableInfo;
 import ge.ai.domino.domain.domino.game.Tile;
+import ge.ai.domino.server.manager.playedgame.PlayedGameManager;
 import ge.ai.domino.util.tile.TileUtil;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class InitialUtil {
+
+    private static final PlayedGameManager playedGameManager = new PlayedGameManager();
 
     private static final double INITIAL_PROBABILITY_FOR_HIM = 1.0/ 4;
 
@@ -25,7 +27,7 @@ public class InitialUtil {
         Game game = new Game();
         game.setGameProperties(gameProperties);
         game.setCurrHand(getInitialHand());
-        game.setId(new Random().nextInt());  // TODO[IG] it temporary, id may set by database
+        game.setId(playedGameManager.addPlayedGame(gameProperties));
         game.getCurrHand().getGameInfo().setGameId(game.getId());
         return game;
     }

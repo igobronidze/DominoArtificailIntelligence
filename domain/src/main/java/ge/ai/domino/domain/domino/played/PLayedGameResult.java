@@ -4,5 +4,6 @@ public enum PlayedGameResult {
 
     WIN_ME,
     WIN_HIM,
-    STOPPED
+    STOPPED,
+    NOT_FINISHED
 }

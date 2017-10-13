@@ -1,5 +1,6 @@
 package ge.ai.domino.service.playedgame;
 
+import ge.ai.domino.domain.domino.played.GroupedPlayedGame;
 import ge.ai.domino.domain.domino.played.PlayedGame;
 import ge.ai.domino.domain.domino.played.PlayedGameResult;
 import ge.ai.domino.server.manager.playedgame.PlayedGameManager;
@@ -18,5 +19,10 @@ public class PlayedGameServiceImpl implements PlayedGameService {
     @Override
     public void updatePlayedGame(PlayedGame playedGame) {
         playedGameManager.updatePlayedGame(playedGame);
+    }
+
+    @Override
+    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin) {
+        return playedGameManager.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByWebsite, groupedByPointForWin);
     }
 }

@@ -1,6 +1,7 @@
 package ge.ai.domino.console.ui.controlpanel;
 
 import ge.ai.domino.console.ui.domino.SaveGameWindow;
+import ge.ai.domino.console.ui.playedgame.GroupedPlayedGamePane;
 import ge.ai.domino.console.ui.playedgame.PlayedGamePane;
 import ge.ai.domino.console.ui.shortcut.ShortcutPane;
 import ge.ai.domino.console.ui.sysparam.SystemParametersPane;
@@ -91,7 +92,15 @@ public class ControlPanelMenuBar extends MenuBar {
             stage.setTitle(Messages.get("playedGame"));
             stage.show();
         });
-        controlPanelMenu.getItems().addAll(sysParamsItem, playedGameItem);
+        MenuItem groupedPlayedGameItem = new MenuItem(Messages.get("groupedPlayedGame"));
+        groupedPlayedGameItem.setOnAction(e -> {
+            Stage stage = new Stage();
+            stage.setScene(new Scene(new GroupedPlayedGamePane(stage.widthProperty().subtract(20))));
+            stage.setMaximized(true);
+            stage.setTitle(Messages.get("groupedPlayedGame"));
+            stage.show();
+        });
+        controlPanelMenu.getItems().addAll(sysParamsItem, playedGameItem, groupedPlayedGameItem);
         return controlPanelMenu;
     }
 

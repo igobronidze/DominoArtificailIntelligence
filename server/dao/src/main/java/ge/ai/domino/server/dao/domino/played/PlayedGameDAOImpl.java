@@ -1,6 +1,7 @@
 package ge.ai.domino.server.dao.domino.played;
 
 import ge.ai.domino.domain.domino.played.GameHistory;
+import ge.ai.domino.domain.domino.played.GroupedPlayedGame;
 import ge.ai.domino.domain.domino.played.PlayedGame;
 import ge.ai.domino.domain.domino.played.PlayedGameResult;
 import ge.ai.domino.server.dao.DatabaseUtil;
@@ -132,5 +133,101 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             DatabaseUtil.closeConnection();
         }
         return null;
+    }
+
+    @Override
+    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin) {
+        List<GroupedPlayedGame> games = new ArrayList<>();
+        try {
+            StringBuilder sb = new StringBuilder("SELECT ");
+            boolean first = true;
+            if (groupByVersion) {
+                sb.append("version");
+                first = false;
+            }
+            if (groupByOpponentName) {
+                if (first) {
+                    sb.append("opponent_name");
+                } else {
+                    sb.append(", opponent_name");
+                }
+                first = false;
+            }
+            if (groupByWebsite) {
+                if (first) {
+                    sb.append("website");
+                } else {
+                    sb.append(", website");
+                }
+                first = false;
+            }
+            if (groupedByPointForWin) {
+                if (first) {
+                    sb.append("point_for_win");
+                } else {
+                    sb.append(", point_for_win");
+                }
+                first = false;
+            }
+            if (!first) {
+                sb.append(", ");
+            }
+            sb.append(" sum(case when result = '").append(PlayedGameResult.WIN_ME).append("' then 1 else 0 end) as win_me, sum(case when result = '").append(PlayedGameResult.WIN_HIM)
+                    .append("' then 1 else 0 end) as win_him, sum(case when result = '").append(PlayedGameResult.STOPPED).append("' then 1 else 0 end) as stopped FROM played_game ");
+            first = true;
+            if (groupByVersion) {
+                sb.append("GROUP BY version");
+                first = false;
+            }
+            if (groupByOpponentName) {
+                if (!first) {
+                    sb.append(", opponent_name");
+                } else {
+                    sb.append("GROUP BY opponent_name");
+                }
+                first = false;
+            }
+            if (groupByWebsite) {
+                if (!first) {
+                    sb.append(", website");
+                } else {
+                    sb.append("GROUP BY website");
+                }
+                first = false;
+            }
+            if (groupedByPointForWin) {
+                if (!first) {
+                    sb.append(", point_for_win");
+                } else {
+                    sb.append("GROUP BY point_for_win");
+                }
+            }
+            pstmt = DatabaseUtil.getConnection().prepareStatement(sb.toString());
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                GroupedPlayedGame game = new GroupedPlayedGame();
+                if (groupByVersion) {
+                    game.setVersion(rs.getString("version"));
+                }
+                if (groupByOpponentName) {
+                    game.setOpponentName(rs.getString("opponent_name"));
+                }
+                if (groupByWebsite) {
+                    game.setWebsite(rs.getString("website"));
+                }
+                if (groupedByPointForWin) {
+                    game.setPointForWin(rs.getInt("point_for_win"));
+                }
+                game.setWin(rs.getInt("win_me"));
+                game.setLose(rs.getInt("win_him"));
+                game.setStopped(rs.getInt("stopped"));
+                games.add(game);
+            }
+        } catch (SQLException ex) {
+            logger.error("Error occurred while getting grouped played games", ex);
+        } finally {
+            DatabaseUtil.closeConnection();
+        }
+        return games;
     }
 }

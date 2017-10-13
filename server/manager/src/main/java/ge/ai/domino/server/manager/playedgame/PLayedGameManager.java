@@ -2,6 +2,7 @@ package ge.ai.domino.server.manager.playedgame;
 
 import ge.ai.domino.domain.domino.game.GameProperties;
 import ge.ai.domino.domain.domino.played.GameHistory;
+import ge.ai.domino.domain.domino.played.GroupedPlayedGame;
 import ge.ai.domino.domain.domino.played.PlayedGame;
 import ge.ai.domino.domain.domino.played.PlayedGameResult;
 import ge.ai.domino.server.dao.domino.played.PlayedGameDAO;
@@ -41,7 +42,11 @@ public class PlayedGameManager {
         playedGameDAO.updatePlayedGame(playedGame);
     }
 
-    public String getVersion() {
+    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin) {
+        return playedGameDAO.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByWebsite, groupedByPointForWin);
+    }
+
+    private String getVersion() {
         try {
             final Properties properties = new Properties();
             properties.load(PlayedGameManager.class.getResourceAsStream("/project.properties"));

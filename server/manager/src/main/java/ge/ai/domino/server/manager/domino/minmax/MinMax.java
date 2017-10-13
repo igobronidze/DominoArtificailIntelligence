@@ -161,7 +161,12 @@ public class MinMax {
             // მივყვებით მოწინააღმდეგისთვის საუკეთესო სვლებს
             for (Hand nextHand : possibleHands) {
                 Tile lastPlayedTile = hand.getTiles().get(nextHand.getTableInfo().getLastPlayedUID()); // ბოლოს ნათამაშები ქვა
-                double prob = remainingProbability * lastPlayedTile.getHim();  // ალბათობა ბოლოს ნათამაშებიქ ვის ქონის, იმის გათვალისწინებით, რომ უკვე სხვა აქამდე არჩეული ქვები არ ქონია
+                double prob;
+                if (notPlayedTilesCount == tableInfo.getBazaarTilesCount()) {
+                    prob = remainingProbability;   // ბოლო შანსია ჩამოსვლის შესაბამისად უეჭველი ჩამოდის
+                } else {
+                    prob = remainingProbability * lastPlayedTile.getHim();  // ალბათობა ბოლოს ნათამაშებიქ ვის ქონის, იმის გათვალისწინებით, რომ უკვე სხვა აქამდე არჩეული ქვები არ ქონია
+                }
                 heuristic += nextHand.getAiExtraInfo().getHeuristicValue() * prob;
                 remainingProbability -= prob;   // remainingProbability ინახავს ალბათობას, რომ აქამდე გგავლილი ქვები არ ქონდა
 
@@ -173,7 +178,7 @@ public class MinMax {
             }
             // ბაზარში წასვლი შემთხვევა
             double epsilon = systemParameterManager.getFloatParameterValue(epsilonForProbabilities);
-            if (remainingProbability > epsilon && notPlayedTilesCount <= tableInfo.getBazaarTilesCount()) {
+            if (remainingProbability > epsilon) {
                 heuristic += getHeuristicValue(dominoManager.addTileForHim(CloneUtil.getCloneForMinMax(hand), true), height + 1) * remainingProbability;
             }
             hand.getAiExtraInfo().setHeuristicValue(heuristic);

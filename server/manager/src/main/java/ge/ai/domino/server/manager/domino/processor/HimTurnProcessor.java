@@ -10,6 +10,7 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
 import ge.ai.domino.server.manager.domino.DominoHelper;
 import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;
+import ge.ai.domino.server.manager.playedgame.TurnHelper;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import ge.ai.domino.util.tile.TileUtil;
 
@@ -41,6 +42,9 @@ public class HimTurnProcessor extends TurnProcessor {
         // თუ გაიარა
         if (tableInfo.getBazaarTilesCount() == 2) {
             tableInfo.setOmittedHim(true);
+            if (!virtual) {
+                CachedDominoGames.addTurn(gameId, TurnHelper.getOmittedHimTurn(), false);
+            }
             // თუ მე უკვე გავლილი მაქვს ვითხოვთ მოწინააღმდეგის დარჩენილი ქულების დათვლას
             if (tableInfo.isOmittedMe()) {
                 hand.getTableInfo().setNeedToAddLeftTiles(true);
@@ -61,6 +65,10 @@ public class HimTurnProcessor extends TurnProcessor {
         // ქვის აღების დაფიქსირება
         tableInfo.setTileFromBazaar(tableInfo.getTileFromBazaar() + 1);
         updateTileCountBeforeAddHim(hand);
+
+        if (!virtual) {
+            CachedDominoGames.addTurn(gameId, TurnHelper.getAddTileForHimTurn(), false);
+        }
 
         DominoLoggingProcessor.logInfoOnTurn("Added tile for him, gameId[" + gameId + "]", virtual);
         DominoLoggingProcessor.logHandFullInfo(hand, virtual);
@@ -104,6 +112,11 @@ public class HimTurnProcessor extends TurnProcessor {
         updateTileCountBeforePlayHim(hand);
         DominoHelper.addLeftTiles(hand.getGameInfo(), countScore(hand), false, gameId, virtual);
         hand.getTableInfo().setMyTurn(true);
+
+        if (!virtual) {
+            CachedDominoGames.addTurn(gameId, TurnHelper.getPlayForHimTurn(x, y, direction), false);
+        }
+
         // თუ ქვები აღარ აქვს, ვამთავრებთ ხელს
         if (hand.getTableInfo().getHimTilesCount() == 0) {
             return DominoHelper.finishedLastAndGetNewHand(hand, false, true, virtual);

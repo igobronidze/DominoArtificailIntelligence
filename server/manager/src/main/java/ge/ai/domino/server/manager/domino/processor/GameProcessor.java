@@ -28,6 +28,7 @@ public class GameProcessor {
         }
         Game game = InitialUtil.getInitialGame(gameProperties);
         CachedDominoGames.addGame(game);
+        CachedDominoGames.addGameHistory(game.getId());
         logger.info("------------Started new game[" + game.getId() + "]------------");
         DominoLoggingProcessor.logHandFullInfo(game.getCurrHand(), false);
         return game.getCurrHand();
@@ -46,6 +47,7 @@ public class GameProcessor {
             logger.warn("There is not any hand in history, gameId[" + gameId + "]");
             return hand;
         }
+        CachedDominoGames.removeLastTurn(gameId);
         logger.info("Undo last played hand, gameId[" + gameId + "]");
         return game.getHistory().poll();
     }

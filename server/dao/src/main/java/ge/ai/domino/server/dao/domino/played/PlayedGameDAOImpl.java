@@ -53,14 +53,15 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     public void updatePlayedGame(PlayedGame game) {
         try {
             logger.info("Start edit played game method id[" + game.getId() + "]");
-            String sql = "UPDATE played_game SET result = ?, date = ?, time = ?, my_point = ?, him_point = ? WHERE id = ?";
+            String sql = "UPDATE played_game SET result = ?, date = ?, time = ?, my_point = ?, him_point = ?, game_history = ? WHERE id = ?";
             pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, game.getResult().name());
             pstmt.setDate(2, new Date(game.getDate().getTime()));
             pstmt.setTime(3, new Time(game.getDate().getTime()));
             pstmt.setInt(4, game.getMyPoint());
             pstmt.setInt(5, game.getHimPoint());
-            pstmt.setInt(6, game.getId());
+            pstmt.setString(6, GameHistoryMarshaller.getMarshalledHistory(game.getGameHistory()));
+            pstmt.setInt(7, game.getId());
             pstmt.executeUpdate();
             logger.info("Updated played game id[" + game.getId() + "]");
         } catch (SQLException ex) {
@@ -117,13 +118,12 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     @Override
     public GameHistory getGameHistory(int gameId) {
         try {
-            String sql = "SELECT (game_history) FROM played_game WHERE id = " + gameId;
+            String sql = "SELECT game_history FROM played_game WHERE id = " + gameId;
             pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                GameHistory gameHistory = new GameHistory();
-                String history = rs.getString("gameHistory");
-                return gameHistory;
+                String history = rs.getString("game_history");
+                return GameHistoryMarshaller.unmarshallGameHistory(history);
             } else {
                 return null;
             }

@@ -1,8 +1,15 @@
 package ge.ai.domino.domain.domino.played;
 
+import ge.ai.domino.domain.domino.game.PlayDirection;
+
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(name = "Turn")
 public class Turn {
 
     private TurnType type;
+
+    private PlayDirection direction;
 
     private int x;
 
@@ -14,6 +21,14 @@ public class Turn {
 
     public void setType(TurnType type) {
         this.type = type;
+    }
+
+    public PlayDirection getDirection() {
+        return direction;
+    }
+
+    public void setDirection(PlayDirection direction) {
+        this.direction = direction;
     }
 
     public int getX() {

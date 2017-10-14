@@ -165,7 +165,7 @@ public class MinMax {
                 if (notPlayedTilesCount == tableInfo.getBazaarTilesCount()) {
                     prob = remainingProbability;   // ბოლო შანსია ჩამოსვლის შესაბამისად უეჭველი ჩამოდის
                 } else {
-                    prob = remainingProbability * lastPlayedTile.getHim();  // ალბათობა ბოლოს ნათამაშებიქ ვის ქონის, იმის გათვალისწინებით, რომ უკვე სხვა აქამდე არჩეული ქვები არ ქონია
+                    prob = remainingProbability * lastPlayedTile.getHim();  // ალბათობა ბოლოს ნათამაშები ქვის ქონის, იმის გათვალისწინებით, რომ უკვე სხვა აქამდე არჩეული ქვები არ ქონია
                 }
                 heuristic += nextHand.getAiExtraInfo().getHeuristicValue() * prob;
                 remainingProbability -= prob;   // remainingProbability ინახავს ალბათობას, რომ აქამდე გგავლილი ქვები არ ქონდა

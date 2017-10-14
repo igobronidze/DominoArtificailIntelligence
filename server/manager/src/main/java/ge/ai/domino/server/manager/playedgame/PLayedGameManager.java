@@ -5,6 +5,7 @@ import ge.ai.domino.domain.domino.played.GameHistory;
 import ge.ai.domino.domain.domino.played.GroupedPlayedGame;
 import ge.ai.domino.domain.domino.played.PlayedGame;
 import ge.ai.domino.domain.domino.played.PlayedGameResult;
+import ge.ai.domino.server.caching.domino.CachedDominoGames;
 import ge.ai.domino.server.dao.domino.played.PlayedGameDAO;
 import ge.ai.domino.server.dao.domino.played.PlayedGameDAOImpl;
 import org.apache.log4j.Logger;
@@ -39,6 +40,7 @@ public class PlayedGameManager {
 
     public void updatePlayedGame(PlayedGame playedGame) {
         playedGame.setDate(new Date());
+        playedGame.setGameHistory(CachedDominoGames.getGameHistory(playedGame.getId()));
         playedGameDAO.updatePlayedGame(playedGame);
     }
 

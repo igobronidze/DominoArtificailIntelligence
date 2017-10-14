@@ -1,17 +1,19 @@
 package ge.ai.domino.domain.domino.played;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
+@XmlType(name = "HandHistory")
 public class HandHistory {
 
-    private List<Turn> turns = new ArrayList<>();
+    private Deque<Turn> turns = new ArrayDeque<>();
 
-    public List<Turn> getTurns() {
+    public Deque<Turn> getTurns() {
         return turns;
     }
 
-    public void setTurns(List<Turn> turns) {
+    public void setTurns(Deque<Turn> turns) {
         this.turns = turns;
     }
 }

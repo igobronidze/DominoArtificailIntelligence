@@ -11,6 +11,7 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.domino.CachedDominoGames;
 import ge.ai.domino.server.manager.domino.DominoHelper;
 import ge.ai.domino.server.manager.domino.logging.DominoLoggingProcessor;
+import ge.ai.domino.server.manager.playedgame.TurnHelper;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import ge.ai.domino.util.tile.TileUtil;
@@ -41,6 +42,9 @@ public class MyTurnProcessor extends TurnProcessor {
         // თუ გავიარე -> ა) უკვე გავლილი აქვს მოწინააღმდეგეს და ვამთავრებთ  ბ) გადაეცა სვლა მოწინააღმდეგეს
         if (tableInfo.getBazaarTilesCount() == 2) {
             tableInfo.setOmittedMe(true);
+            if (!virtual) {
+                CachedDominoGames.addTurn(gameId, TurnHelper.getOmittedMeTurn(), false);
+            }
             if (tableInfo.isOmittedHim()) {
                 hand.getTableInfo().setNeedToAddLeftTiles(true);
                 return hand;
@@ -57,7 +61,7 @@ public class MyTurnProcessor extends TurnProcessor {
         addProbabilitiesForHimProportional(tiles, tileSelection(tiles, true, true, true), him);
         updateTileCountBeforeAddMe(hand);
         // თუ ეხლა დავამთავრე საწყისი 7 ქვის აღება ვითხოვთ რჩევას პროგრამისგან
-        if (hand.getTableInfo().getLeft() == null && hand.getTableInfo().getMyTilesCount() == 7) {
+        if (tableInfo.getLeft() == null && hand.getTableInfo().getMyTilesCount() == 7) {
             if (CachedDominoGames.startHim(gameId) && !virtual) {
                 hand.getTableInfo().setMyTurn(false);
             }
@@ -70,6 +74,14 @@ public class MyTurnProcessor extends TurnProcessor {
         if (hand.getTableInfo().getLeft() != null && !virtual) {
             AIPrediction aiPrediction = minMax.minMax(hand);
             hand.setAiPrediction(aiPrediction);
+        }
+
+        if (!virtual) {
+            if (tableInfo.getLeft() == null) {
+                CachedDominoGames.addTurn(gameId, TurnHelper.getAddInitialTileForMeTurn(x, y), tableInfo.getMyTilesCount() == 1);
+            } else {
+                CachedDominoGames.addTurn(gameId, TurnHelper.getAddTileForMeTurn(x, y), false);
+            }
         }
 
         DominoLoggingProcessor.logInfoOnTurn("Added tile for me, gameId[" + gameId + "]", virtual);
@@ -102,6 +114,11 @@ public class MyTurnProcessor extends TurnProcessor {
         updateTileCountBeforePlayMe(hand);
         DominoHelper.addLeftTiles(hand.getGameInfo(), countScore(hand), true, gameId, virtual);
         hand.getTableInfo().setMyTurn(false);
+
+        if (!virtual) {
+            CachedDominoGames.addTurn(gameId, TurnHelper.getPlayForMeTurn(x, y, direction),false);
+        }
+
         // თუ ქვები აღარ მაქვს ვამთავრებთ
         if (hand.getTableInfo().getMyTilesCount() == 0) {
             hand.getTableInfo().setNeedToAddLeftTiles(true);

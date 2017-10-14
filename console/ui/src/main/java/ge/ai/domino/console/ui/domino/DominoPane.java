@@ -56,7 +56,7 @@ public class DominoPane extends BorderPane {
         initCenterPane();
         initBottomPane();
         initKeyboardListener();
-        if (AppController.hand.getGameInfo().isFinished()) {
+        if (AppController.hand != null && AppController.hand.getGameInfo().isFinished()) {
             new SaveGameWindow() {
                 @Override
                 public void onYes() {
@@ -73,7 +73,6 @@ public class DominoPane extends BorderPane {
                     showNextGameWindow();
                 }
             }.showWindow();
-
         } else if (AppController.hand.getTableInfo().isNeedToAddLeftTiles()) {
             showAddLeftTilesCount();
         }

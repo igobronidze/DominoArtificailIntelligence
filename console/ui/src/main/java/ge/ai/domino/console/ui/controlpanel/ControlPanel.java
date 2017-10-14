@@ -27,18 +27,24 @@ public class ControlPanel extends Application {
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.show();
-        stage.setOnCloseRequest(we -> new SaveGameWindow() {
-            @Override
-            public void onYes() {}
+        stage.setOnCloseRequest(we -> {
+            if (AppController.hand != null) {
+                new SaveGameWindow() {
+                    @Override
+                    public void onYes() {
+                    }
 
-            @Override
-            public void onNo() {}
+                    @Override
+                    public void onNo() {
+                    }
 
-            @Override
-            public void onCancel() {
-                we.consume();
+                    @Override
+                    public void onCancel() {
+                        we.consume();
+                    }
+                }.showWindow();
             }
-        }.showWindow());
+        });
     }
 
     void initComponents() {

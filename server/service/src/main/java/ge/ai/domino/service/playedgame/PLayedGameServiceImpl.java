@@ -25,4 +25,9 @@ public class PlayedGameServiceImpl implements PlayedGameService {
     public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin) {
         return playedGameManager.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByWebsite, groupedByPointForWin);
     }
+
+    @Override
+    public void deletePlayedGame(int gameId) {
+        playedGameManager.deletePlayedGame(gameId);
+    }
 }

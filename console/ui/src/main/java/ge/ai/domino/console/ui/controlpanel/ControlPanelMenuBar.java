@@ -53,7 +53,7 @@ public class ControlPanelMenuBar extends MenuBar {
 
     private Menu getLangMenu() {
         Menu langMenu = new Menu(Messages.get("language"));
-        ImageView geoImageView =  new ImageView(ImageFactory.getImage("geo.png"));
+        ImageView geoImageView = new ImageView(ImageFactory.getImage("geo.png"));
         geoImageView.setFitWidth(25);
         geoImageView.setFitHeight(20);
         MenuItem geoMenuItem = new MenuItem(Messages.get("geo"), geoImageView);
@@ -61,7 +61,7 @@ public class ControlPanelMenuBar extends MenuBar {
             Messages.setLanguageCode("KA");
             controlPanel.initComponents();
         });
-        ImageView engImageView =  new ImageView(ImageFactory.getImage("eng.png"));
+        ImageView engImageView = new ImageView(ImageFactory.getImage("eng.png"));
         engImageView.setFitWidth(25);
         engImageView.setFitHeight(20);
         MenuItem engMenuItem = new MenuItem(Messages.get("eng"), engImageView);
@@ -107,24 +107,51 @@ public class ControlPanelMenuBar extends MenuBar {
     private Menu getFileMenu() {
         Menu fileMenu = new Menu(Messages.get("file"));
         MenuItem newItem = new MenuItem(Messages.get("new"));
-        newItem.setOnAction(e -> controlPanel.initComponents());
+        newItem.setOnAction(e -> {
+            if (AppController.hand != null) {
+                new SaveGameWindow() {
+                    @Override
+                    public void onYes() {
+                        AppController.hand = null;
+                        controlPanel.initComponents();
+                    }
+
+                    @Override
+                    public void onNo() {
+                        AppController.hand = null;
+                        controlPanel.initComponents();
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                }.showWindow();
+            } else {
+                controlPanel.initComponents();
+            }
+        });
         MenuItem closeItem = new MenuItem(Messages.get("close"));
-        closeItem.setOnAction(e -> new SaveGameWindow() {
-            @Override
-            public void onYes() {
-                controlPanel.getStage().close();
-            }
+        closeItem.setOnAction(e -> {
+            if (AppController.hand != null) {
+                new SaveGameWindow() {
+                    @Override
+                    public void onYes() {
+                        controlPanel.getStage().close();
+                    }
 
-            @Override
-            public void onNo() {
-                controlPanel.getStage().close();
-            }
+                    @Override
+                    public void onNo() {
+                        controlPanel.getStage().close();
+                    }
 
-            @Override
-            public void onCancel() {
-                e.consume();
+                    @Override
+                    public void onCancel() {
+                        e.consume();
+                    }
+                }.showWindow();
             }
-        }.showWindow());
+        });
         fileMenu.getItems().addAll(newItem, closeItem);
         return fileMenu;
     }

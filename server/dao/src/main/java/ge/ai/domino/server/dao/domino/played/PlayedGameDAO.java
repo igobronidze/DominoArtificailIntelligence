@@ -17,5 +17,7 @@ public interface PlayedGameDAO {
 
     GameHistory getGameHistory(int gameId);
 
+    void deletePlayedGame(int gameId);
+
     List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin);
 }

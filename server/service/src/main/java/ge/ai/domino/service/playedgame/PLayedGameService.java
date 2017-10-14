@@ -13,4 +13,6 @@ public interface PlayedGameService {
     void updatePlayedGame(PlayedGame playedGame);
 
     List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin);
+
+    void deletePlayedGame(int gameId);
 }

@@ -48,6 +48,10 @@ public class PlayedGameManager {
         return playedGameDAO.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByWebsite, groupedByPointForWin);
     }
 
+    public void deletePlayedGame(int gameId) {
+        playedGameDAO.deletePlayedGame(gameId);
+    }
+
     private String getVersion() {
         try {
             final Properties properties = new Properties();

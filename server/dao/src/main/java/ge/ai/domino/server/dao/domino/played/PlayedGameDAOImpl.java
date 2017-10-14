@@ -136,6 +136,22 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     }
 
     @Override
+    public void deletePlayedGame(int gameId) {
+        try {
+            logger.info("Start delete played game method id[" + gameId + "]");
+            String sql = "DELETE FROM played_game WHERE id = ?";
+            pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
+            pstmt.setInt(1, gameId);
+            pstmt.executeUpdate();
+            logger.info("Deleted played game id[" + gameId + "]");
+        } catch (SQLException ex) {
+            logger.error("Error occurred while delete played game", ex);
+        } finally {
+            DatabaseUtil.closeConnection();
+        }
+    }
+
+    @Override
     public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin) {
         List<GroupedPlayedGame> games = new ArrayList<>();
         try {

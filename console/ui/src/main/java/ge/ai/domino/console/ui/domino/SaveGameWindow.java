@@ -42,11 +42,12 @@ public abstract class SaveGameWindow extends Stage {
                 playedGame.setHimPoint(gameInfo.getHimPoints());
                 playedGame.setId(gameInfo.getGameId());
                 playedGameService.updatePlayedGame(playedGame);
-                this.close();
                 onYes();
+                this.close();
             });
             TCHButton noButton = new TCHButton(Messages.get("no"));
-            noButton.setOnAction(event ->  {
+            noButton.setOnAction(event -> {
+                playedGameService.deletePlayedGame(AppController.hand.getGameInfo().getGameId());
                 onNo();
                 this.close();
             });

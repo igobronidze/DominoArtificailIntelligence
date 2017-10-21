@@ -1,10 +1,9 @@
 package ge.ai.domino.console.ui.controlpanel;
 
-import ge.ai.domino.console.ui.domino.SaveGameWindow;
+import ge.ai.domino.console.ui.game.SaveGameWindow;
 import ge.ai.domino.console.ui.gameproperties.GamePropertiesPane;
 import ge.ai.domino.console.ui.util.Messages;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -28,7 +27,7 @@ public class ControlPanel extends Application {
         primaryStage.setMaximized(true);
         primaryStage.show();
         stage.setOnCloseRequest(we -> {
-            if (AppController.hand != null) {
+            if (AppController.round != null) {
                 new SaveGameWindow() {
                     @Override
                     public void onYes() {

@@ -1,14 +1,13 @@
 package ge.ai.domino.server.manager.util;
 
-import ge.ai.domino.domain.ai.AIExtraInfo;
-import ge.ai.domino.domain.domino.game.Game;
-import ge.ai.domino.domain.domino.game.GameInfo;
-import ge.ai.domino.domain.domino.game.GameProperties;
-import ge.ai.domino.domain.domino.game.Hand;
-import ge.ai.domino.domain.domino.game.TableInfo;
-import ge.ai.domino.domain.domino.game.Tile;
-import ge.ai.domino.server.manager.playedgame.PlayedGameManager;
-import ge.ai.domino.util.tile.TileUtil;
+import ge.ai.domino.domain.ai.HeuristicInfo;
+import ge.ai.domino.domain.game.Game;
+import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.game.GameProperties;
+import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.tile.OpponentTile;
+import ge.ai.domino.server.manager.played.PlayedGameManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,44 +16,41 @@ public class InitialUtil {
 
     private static final PlayedGameManager playedGameManager = new PlayedGameManager();
 
-    private static final double INITIAL_PROBABILITY_FOR_HIM = 1.0/ 4;
+    private static final double INITIAL_PROBABILITY_FOR_OPPONENT = 1.0/ 4;
 
     private static final int INITIAL_COUNT_TILES_IN_BAZAAR = 21;
 
-    private static final int INITIAL_COUNT_TILES_FOR_HIM = 7;
+    private static final int INITIAL_COUNT_TILES_FOR_OPPONENT = 7;
 
     public static Game getInitialGame(GameProperties gameProperties) {
         Game game = new Game();
-        game.setGameProperties(gameProperties);
-        game.setCurrHand(getInitialHand());
+        game.setProperties(gameProperties);
+        game.setCurrRound(getInitialRound());
         game.setId(playedGameManager.addPlayedGame(gameProperties));
-        game.getCurrHand().getGameInfo().setGameId(game.getId());
+        game.getCurrRound().getGameInfo().setGameId(game.getId());
         return game;
     }
 
-    public static Hand getInitialHand() {
+    public static Round getInitialRound() {
         TableInfo tableInfo = new TableInfo();
-        tableInfo.setMyTurn(true);
+        tableInfo.setMyMove(true);
         tableInfo.setBazaarTilesCount(INITIAL_COUNT_TILES_IN_BAZAAR);
-        tableInfo.setHimTilesCount(INITIAL_COUNT_TILES_FOR_HIM);
-        tableInfo.setFirstHand(true);
-        Hand hand = new Hand();
-        hand.setTiles(getInitialTiles());
-        hand.setTableInfo(tableInfo);
-        hand.setGameInfo(new GameInfo());
-        hand.setAiExtraInfo(new AIExtraInfo());
-        return hand;
+        tableInfo.setOpponentTilesCount(INITIAL_COUNT_TILES_FOR_OPPONENT);
+        tableInfo.setFirstRound(true);
+        Round round = new Round();
+        round.setOpponentTiles(getInitialTiles());
+        round.setTableInfo(tableInfo);
+        round.setGameInfo(new GameInfo());
+        round.setHeuristicInfo(new HeuristicInfo());
+        return round;
     }
 
-    private static Map<String, Tile> getInitialTiles() {
-        Map<String, Tile> tiles = new HashMap<>();
+    private static Map<Integer, OpponentTile> getInitialTiles() {
+        Map<Integer, OpponentTile> tiles = new HashMap<>();
         for (int i = 6; i >= 0; i--) {
             for (int j = i; j >= 0; j--) {
-                Tile tile = new Tile();
-                tile.setX(i);
-                tile.setY(j);
-                tile.setHim(INITIAL_PROBABILITY_FOR_HIM);
-                tiles.put(TileUtil.getTileUID(i, j), tile);
+                OpponentTile tile = new OpponentTile(i, j, INITIAL_PROBABILITY_FOR_OPPONENT);
+                tiles.put(tile.hashCode(), tile);
             }
         }
         return tiles;

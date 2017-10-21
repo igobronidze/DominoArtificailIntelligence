@@ -1,34 +1,45 @@
 package ge.ai.domino.server.manager.util;
 
-import ge.ai.domino.domain.ai.AIExtraInfo;
 import ge.ai.domino.domain.ai.AIPrediction;
-import ge.ai.domino.domain.domino.game.GameInfo;
-import ge.ai.domino.domain.domino.game.Hand;
-import ge.ai.domino.domain.domino.game.PlayedTile;
-import ge.ai.domino.domain.domino.game.TableInfo;
-import ge.ai.domino.domain.domino.game.Tile;
+import ge.ai.domino.domain.ai.HeuristicInfo;
+import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.tile.OpponentTile;
+import ge.ai.domino.domain.tile.PlayedTile;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class CloneUtil {
 
-    public static Hand getClone(Hand hand) {
-        Hand clone = new Hand();
-        clone.setAiPrediction(getClone(hand.getAiPrediction()));
-        clone.setTableInfo(getClone(hand.getTableInfo()));
-        clone.setGameInfo(getClone(hand.getGameInfo()));
-        clone.setTiles(getClone(hand.getTiles()));
-        clone.setAiExtraInfo(getClone(hand.getAiExtraInfo()));
+    public static Round getClone(Round round) {
+        Round clone = new Round();
+        clone.setAiPrediction(getClone(round.getAiPrediction()));
+        clone.setTableInfo(getClone(round.getTableInfo()));
+        clone.setGameInfo(getClone(round.getGameInfo()));
+        clone.setOpponentTiles(getClone((round.getOpponentTiles())));
+        clone.setMyTiles(new HashSet<>(round.getMyTiles()));
+        clone.setHeuristicInfo(getClone(round.getHeuristicInfo()));
         return clone;
     }
 
-    public static Hand getCloneForMinMax(Hand hand) {
-        Hand clone = new Hand();
-        clone.setTableInfo(getClone(hand.getTableInfo()));
-        clone.setGameInfo(getClone(hand.getGameInfo()));
-        clone.setTiles(getClone(hand.getTiles()));
-        clone.setAiExtraInfo(getClone(hand.getAiExtraInfo()));
+    public static Round getCloneForMinMax(Round round) {
+        Round clone = new Round();
+        clone.setTableInfo(getClone(round.getTableInfo()));
+        clone.setGameInfo(getClone(round.getGameInfo()));
+        clone.setOpponentTiles(getClone(round.getOpponentTiles()));
+        clone.setMyTiles(new HashSet<>(round.getMyTiles()));
+        clone.setHeuristicInfo(getClone(round.getHeuristicInfo()));
+        return clone;
+    }
+
+    private static Map<Integer, OpponentTile> getClone(Map<Integer, OpponentTile> tiles) {
+        Map<Integer, OpponentTile> clone = new HashMap<>();
+        for (OpponentTile tile : tiles.values()) {
+            clone.put(tile.hashCode(), new OpponentTile(tile.getLeft(), tile.getRight(), tile.getProb()));
+        }
         return clone;
     }
 
@@ -37,8 +48,8 @@ public class CloneUtil {
             return null;
         }
         AIPrediction clone = new AIPrediction();
-        clone.setX(aiPrediction.getX());
-        clone.setY(aiPrediction.getY());
+        clone.setLeft(aiPrediction.getLeft());
+        clone.setRight(aiPrediction.getRight());
         clone.setDirection(aiPrediction.getDirection());
         return clone;
     }
@@ -49,17 +60,17 @@ public class CloneUtil {
         clone.setRight(getClone(tableInfo.getRight()));
         clone.setBottom(getClone(tableInfo.getBottom()));
         clone.setLeft(getClone(tableInfo.getLeft()));
-        clone.setHimTilesCount(tableInfo.getHimTilesCount());
+        clone.setOpponentTilesCount(tableInfo.getOpponentTilesCount());
         clone.setMyTilesCount(tableInfo.getMyTilesCount());
         clone.setBazaarTilesCount(tableInfo.getBazaarTilesCount());
-        clone.setMyTurn(tableInfo.isMyTurn());
+        clone.setMyMove(tableInfo.isMyMove());
         clone.setWithCenter(tableInfo.isWithCenter());
-        clone.setLastPlayedUID(tableInfo.getLastPlayedUID());
+        clone.setLastPlayedProb(tableInfo.getLastPlayedProb());
         clone.setNeedToAddLeftTiles(tableInfo.isNeedToAddLeftTiles());
-        clone.setTileFromBazaar(tableInfo.getTileFromBazaar());
+        clone.setTilesFromBazaar(tableInfo.getTilesFromBazaar());
         clone.setOmittedMe(tableInfo.isOmittedMe());
-        clone.setOmittedHim(tableInfo.isOmittedHim());
-        clone.setFirstHand(tableInfo.isFirstHand());
+        clone.setOmittedOpponent(tableInfo.isOmittedOpponent());
+        clone.setFirstRound(tableInfo.isFirstRound());
         return clone;
     }
 
@@ -68,42 +79,25 @@ public class CloneUtil {
             return null;
         }
         PlayedTile clone = new PlayedTile();
-        clone.setCountInSum(playedTile.isCountInSum());
-        clone.setDouble(playedTile.isDouble());
+        clone.setConsiderInSum(playedTile.isConsiderInSum());
+        clone.setTwin(playedTile.isTwin());
         clone.setCenter(playedTile.isCenter());
         clone.setOpenSide(playedTile.getOpenSide());
-        return clone;
-    }
-
-    private static Tile getClone(Tile tile) {
-        Tile clone = new Tile();
-        clone.setX(tile.getX());
-        clone.setY(tile.getY());
-        clone.setHim(tile.getHim());
-        clone.setMine(tile.isMine());
-        return clone;
-    }
-
-    private static HashMap<String, Tile> getClone(Map<String, Tile> tiles) {
-        HashMap<String, Tile> clone = new HashMap<>();
-        for (String key : tiles.keySet()) {
-            clone.put(key, getClone(tiles.get(key)));
-        }
         return clone;
     }
 
     private static GameInfo getClone(GameInfo gameInfo) {
         GameInfo clone = new GameInfo();
         clone.setGameId(gameInfo.getGameId());
-        clone.setMyPoints(gameInfo.getMyPoints());
-        clone.setHimPoints(gameInfo.getHimPoints());
+        clone.setMyPoint(gameInfo.getMyPoint());
+        clone.setOpponentPoint(gameInfo.getOpponentPoint());
         clone.setFinished(gameInfo.isFinished());
         return clone;
     }
 
-    private static AIExtraInfo getClone(AIExtraInfo aiExtraInfo) {
-        AIExtraInfo clone = new AIExtraInfo();
-        clone.setHeuristicValue(aiExtraInfo.getHeuristicValue());
+    private static HeuristicInfo getClone(HeuristicInfo heuristicInfo) {
+        HeuristicInfo clone = new HeuristicInfo();
+        clone.setValue(heuristicInfo.getValue());
         return clone;
     }
 }

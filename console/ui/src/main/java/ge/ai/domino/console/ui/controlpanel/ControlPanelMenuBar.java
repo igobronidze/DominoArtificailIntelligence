@@ -1,8 +1,8 @@
 package ge.ai.domino.console.ui.controlpanel;
 
-import ge.ai.domino.console.ui.domino.SaveGameWindow;
-import ge.ai.domino.console.ui.playedgame.GroupedPlayedGamePane;
-import ge.ai.domino.console.ui.playedgame.PlayedGamePane;
+import ge.ai.domino.console.ui.game.SaveGameWindow;
+import ge.ai.domino.console.ui.played.GroupedPlayedGamePane;
+import ge.ai.domino.console.ui.played.PlayedGamePane;
 import ge.ai.domino.console.ui.shortcut.ShortcutPane;
 import ge.ai.domino.console.ui.sysparam.SystemParametersPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
@@ -108,17 +108,17 @@ public class ControlPanelMenuBar extends MenuBar {
         Menu fileMenu = new Menu(Messages.get("file"));
         MenuItem newItem = new MenuItem(Messages.get("new"));
         newItem.setOnAction(e -> {
-            if (AppController.hand != null) {
+            if (AppController.round != null) {
                 new SaveGameWindow() {
                     @Override
                     public void onYes() {
-                        AppController.hand = null;
+                        AppController.round = null;
                         controlPanel.initComponents();
                     }
 
                     @Override
                     public void onNo() {
-                        AppController.hand = null;
+                        AppController.round = null;
                         controlPanel.initComponents();
                     }
 
@@ -133,7 +133,7 @@ public class ControlPanelMenuBar extends MenuBar {
         });
         MenuItem closeItem = new MenuItem(Messages.get("close"));
         closeItem.setOnAction(e -> {
-            if (AppController.hand != null) {
+            if (AppController.round != null) {
                 new SaveGameWindow() {
                     @Override
                     public void onYes() {

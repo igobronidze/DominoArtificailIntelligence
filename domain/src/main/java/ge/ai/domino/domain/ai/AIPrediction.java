@@ -1,36 +1,36 @@
 package ge.ai.domino.domain.ai;
 
-import ge.ai.domino.domain.domino.game.PlayDirection;
+import ge.ai.domino.domain.move.MoveDirection;
 
 public class AIPrediction {
 
-    private int x;
+    private int left;
 
-    private int y;
+    private int right;
 
-    private PlayDirection direction;
+    private MoveDirection direction;
 
-    public int getX() {
-        return x;
+    public int getLeft() {
+        return left;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setLeft(int left) {
+        this.left = left;
     }
 
-    public int getY() {
-        return y;
+    public int getRight() {
+        return right;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public void setRight(int right) {
+        this.right = right;
     }
 
-    public PlayDirection getDirection() {
+    public MoveDirection getDirection() {
         return direction;
     }
 
-    public void setDirection(PlayDirection direction) {
+    public void setDirection(MoveDirection direction) {
         this.direction = direction;
     }
 }

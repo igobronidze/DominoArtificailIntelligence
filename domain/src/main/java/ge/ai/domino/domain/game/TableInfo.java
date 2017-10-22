@@ -18,8 +18,6 @@ public class TableInfo {
 
     private double opponentTilesCount;
 
-    private double myTilesCount;
-
     private double bazaarTilesCount;
 
     private double lastPlayedProb;
@@ -88,14 +86,6 @@ public class TableInfo {
 
     public void setOpponentTilesCount(double opponentTilesCount) {
         this.opponentTilesCount = opponentTilesCount;
-    }
-
-    public double getMyTilesCount() {
-        return myTilesCount;
-    }
-
-    public void setMyTilesCount(double myTilesCount) {
-        this.myTilesCount = myTilesCount;
     }
 
     public double getBazaarTilesCount() {

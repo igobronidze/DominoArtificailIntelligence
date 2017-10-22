@@ -85,7 +85,7 @@ public class GamePane extends BorderPane {
     private void initTopPane() {
         TableInfo tableInfo = AppController.round.getTableInfo();
         GameInfo gameInfo = AppController.round.getGameInfo();
-        Label myPointsLabel = new TCHLabel(Messages.get("me") + " - " + gameInfo.getMyPoint() + " (" + (int)tableInfo.getMyTilesCount() + ")");
+        Label myPointsLabel = new TCHLabel(Messages.get("me") + " - " + gameInfo.getMyPoint() + " (" + AppController.round.getMyTiles().size() + ")");
         Label opponentPointLabel = new TCHLabel(Messages.get("opponent") + " - " + gameInfo.getOpponentPoint() + " (" + (int)tableInfo.getOpponentTilesCount() + ")");
         Label bazaarCountLabel = new TCHLabel(Messages.get("bazaar") + " (" + (int)tableInfo.getBazaarTilesCount() + ")");
         ImageView undoImage = new ImageView(ImageFactory.getImage("undo.png"));
@@ -107,7 +107,7 @@ public class GamePane extends BorderPane {
                     try {
                         if (AppController.round.getTableInfo().isMyMove()) {
                             TableInfo tableInfo = AppController.round.getTableInfo();
-                            if (tableInfo.getLeft() == null && tableInfo.isFirstRound() && tableInfo.getMyTilesCount() == 6) {
+                            if (tableInfo.getLeft() == null && tableInfo.isFirstRound() && AppController.round.getMyTiles().size() == 6) {
                                 Stage stage = new Stage();
                                 stage.setResizable(false);
                                 stage.setTitle(Messages.get("gameStarter"));

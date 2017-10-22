@@ -69,8 +69,8 @@ public class GameHelper {
         return (int)count;
     }
 
-    public static boolean isNewRound(TableInfo tableInfo) {
-        return tableInfo.getMyTilesCount() == 0 && tableInfo.getOpponentTilesCount() == 7 && tableInfo.getBazaarTilesCount() == 21;
+    public static boolean isNewRound(Round round) {
+        return round.getMyTiles().size() == 0 && round.getTableInfo().getOpponentTilesCount() == 7 && round.getTableInfo().getBazaarTilesCount() == 21;
     }
 
     public static void addLeftTiles(GameInfo gameInfo, int count, boolean forMe, int gameId, boolean virtual) {

@@ -61,7 +61,6 @@ public class CloneUtil {
         clone.setBottom(getClone(tableInfo.getBottom()));
         clone.setLeft(getClone(tableInfo.getLeft()));
         clone.setOpponentTilesCount(tableInfo.getOpponentTilesCount());
-        clone.setMyTilesCount(tableInfo.getMyTilesCount());
         clone.setBazaarTilesCount(tableInfo.getBazaarTilesCount());
         clone.setMyMove(tableInfo.isMyMove());
         clone.setWithCenter(tableInfo.isWithCenter());

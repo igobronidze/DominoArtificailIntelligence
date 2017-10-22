@@ -16,8 +16,8 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Round addTileForMe(Round round, int x, int y) throws DAIException {
-        return gameManager.addTileForMe(round, x, y, false);
+    public Round addTileForMe(Round round, int left, int right) throws DAIException {
+        return gameManager.addTileForMe(round, left, right, false);
     }
 
     @Override

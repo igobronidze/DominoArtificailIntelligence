@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -107,7 +108,7 @@ public class MinMax {
             return round.getHeuristicInfo().getValue();
         }
         // თუ ახალი ხელი დაიწყო ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
-        if (GameHelper.isNewRound(tableInfo)) {
+        if (GameHelper.isNewRound(round)) {
             round.getHeuristicInfo().setValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, !tableInfo.isMyMove()));
             return round.getHeuristicInfo().getValue();
         }
@@ -167,7 +168,7 @@ public class MinMax {
                 if (notPlayedTilesCount == tableInfo.getBazaarTilesCount()) {
                     prob = remainingProbability;   // ბოლო შანსია ჩამოსვლის შესაბამისად უეჭველი ჩამოდის
                 } else {
-                    prob = remainingProbability * tableInfo.getLastPlayedProb();  // ალბათობა ბოლოს ნათამაშები ქვის ქონის, იმის გათვალისწინებით, რომ უკვე სხვა აქამდე არჩეული ქვები არ ქონია
+                    prob = remainingProbability * nextRound.getTableInfo().getLastPlayedProb();  // ალბათობა ბოლოს ნათამაშები ქვის ქონის, იმის გათვალისწინებით, რომ უკვე სხვა აქამდე არჩეული ქვები არ ქონია
                 }
                 heuristic += nextRound.getHeuristicInfo().getValue() * prob;
                 remainingProbability -= prob;   // remainingProbability ინახავს ალბათობას, რომ აქამდე გგავლილი ქვები არ ქონდა
@@ -176,12 +177,37 @@ public class MinMax {
                 notPlayedTilesCount++;
                 if (notPlayedTilesCount > tableInfo.getBazaarTilesCount()) {
                     break;
+
                 }
             }
             // ბაზარში წასვლი შემთხვევა
             double epsilon = systemParameterManager.getFloatParameterValue(epsilonForProbabilities);
             if (remainingProbability > epsilon) {
-                heuristic += getHeuristicValue(gameManager.addTileForOpponent(CloneUtil.getCloneForMinMax(round), true), height + 1) * remainingProbability;
+                Round addedRound = gameManager.addTileForOpponent(CloneUtil.getCloneForMinMax(round), true);
+                if (tableInfo.getBazaarTilesCount() > 2) {
+                    double bazaarSum = tableInfo.getBazaarTilesCount();
+                    double usedProb = 0.0;
+                    PlayedTile left = tableInfo.getLeft();
+                    PlayedTile right = tableInfo.getRight();
+                    PlayedTile top = tableInfo.getTop();
+                    PlayedTile bottom = tableInfo.getBottom();
+                    for (OpponentTile tile : addedRound.getOpponentTiles().values()) {
+                        if ((left != null && (left.getOpenSide() == tile.getLeft() || left.getOpenSide() == tile.getRight())) ||
+                                (right != null && (right.getOpenSide() == tile.getLeft() || right.getOpenSide() == tile.getRight())) ||
+                                (top != null && (top.getOpenSide() == tile.getLeft() || top.getOpenSide() == tile.getRight())) ||
+                                (bottom != null && (bottom.getOpenSide() == tile.getLeft() || bottom.getOpenSide() == tile.getRight()))) {
+                            Round cloneRound = CloneUtil.getClone(addedRound);
+                            double prob = remainingProbability * 1 / bazaarSum;
+                            usedProb += prob;
+                            cloneRound.getOpponentTiles().get(tile.hashCode()).setProb(1.0);
+                            heuristic += getHeuristicValue(cloneRound, height + 1) * prob;
+                        }
+                    }
+                    remainingProbability -= usedProb;
+                }
+                if (remainingProbability > epsilon) {
+                    heuristic += getHeuristicValue(addedRound, height + 1) * remainingProbability;
+                }
             }
             round.getHeuristicInfo().setValue(heuristic);
             return heuristic;

@@ -62,7 +62,7 @@ public class MyMoveProcessor extends MoveProcessor {
         addProbabilitiesForOpponentProbsProportional(tileSelection(tiles.values(), true, true), prob);
         updateTileCountBeforeAddMe(round);
         // თუ ეხლა დავამთავრე საწყისი 7 ქვის აღება ვითხოვთ რჩევას პროგრამისგან
-        if (tableInfo.getLeft() == null && round.getTableInfo().getMyTilesCount() == 7) {
+        if (tableInfo.getLeft() == null && round.getMyTiles().size() == 7) {
             if (CachedGames.startOpponent(gameId) && !virtual) {
                 round.getTableInfo().setMyMove(false);
             }
@@ -79,7 +79,7 @@ public class MyMoveProcessor extends MoveProcessor {
 
         if (!virtual) {
             if (tableInfo.getLeft() == null) {
-                CachedGames.addMove(gameId, MoveHelper.getAddInitialTileForMeMove(left, right), tableInfo.getMyTilesCount() == 1);
+                CachedGames.addMove(gameId, MoveHelper.getAddInitialTileForMeMove(left, right), round.getMyTiles().size() == 1);
             } else {
                 CachedGames.addMove(gameId, MoveHelper.getAddTileForMeMove(left, right), false);
             }
@@ -125,7 +125,7 @@ public class MyMoveProcessor extends MoveProcessor {
         }
 
         // თუ ქვები აღარ მაქვს ვამთავრებთ
-        if (round.getTableInfo().getMyTilesCount() == 0) {
+        if (round.getMyTiles().size() == 0) {
             round.getTableInfo().setNeedToAddLeftTiles(true);
             return round;
         }
@@ -141,7 +141,6 @@ public class MyMoveProcessor extends MoveProcessor {
      */
     private void updateTileCountBeforeAddMe(Round round) {
         TableInfo tableInfo = round.getTableInfo();
-        tableInfo.setMyTilesCount(tableInfo.getMyTilesCount() + 1);
         tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
     }
 
@@ -151,6 +150,5 @@ public class MyMoveProcessor extends MoveProcessor {
      */
     private void updateTileCountBeforePlayMe(Round round) {
         TableInfo tableInfo = round.getTableInfo();
-        tableInfo.setMyTilesCount(tableInfo.getMyTilesCount() - 1);
     }
 }

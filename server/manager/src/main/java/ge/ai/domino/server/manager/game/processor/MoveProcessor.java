@@ -25,13 +25,13 @@ public abstract class MoveProcessor {
     /**
      * ქვის დამატება
      * @param round კონკრეტული ხელი
-     * @param x დასამატებელი ქვის პირველი ელემენტი
-     * @param y დასამატებელი ქვის მეორე ელემენტი
+     * @param left დასამატებელი ქვის პირველი ელემენტი
+     * @param right დასამატებელი ქვის მეორე ელემენტი
      * @param virtual გამოიძახებს კლიენტი(real) თუ რომელიმე ალგორითმი(virtual)
      * @return ხელს გათამაშების შემდეგ
      * @throws DAIException გაუთვალისწინებელი შეცდომა
      */
-    public abstract Round addTile(Round round, int x, int y, boolean virtual) throws DAIException;
+    public abstract Round addTile(Round round, int left, int right, boolean virtual) throws DAIException;
 
     /**
      * ქვის გათამაშება
@@ -117,7 +117,7 @@ public abstract class MoveProcessor {
         TableInfo tableInfo = round.getTableInfo();
         if (tableInfo.getLeft().getOpenSide() == tableInfo.getRight().getOpenSide() && tableInfo.getLeft().isTwin() && tableInfo.getRight().isTwin()) {
             count = tableInfo.getLeft().getOpenSide() * 2;  // პირველი ჩამოსვლა, 5X5 შემთხვევა
-        } else if (tableInfo.getMyTilesCount() + tableInfo.getOpponentTilesCount() == 13 && tableInfo.getBazaarTilesCount() == 14) {
+        } else if (round.getMyTiles().size() + tableInfo.getOpponentTilesCount() == 13 && tableInfo.getBazaarTilesCount() == 14) {
             return 0;   // პირველი ჩამოსვლა გარდა 5X5-სა
         } else {
             count += tableInfo.getLeft().isTwin() ? (tableInfo.getLeft().getOpenSide() * 2) : tableInfo.getLeft().getOpenSide();

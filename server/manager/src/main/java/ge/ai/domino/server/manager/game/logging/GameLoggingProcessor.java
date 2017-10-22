@@ -52,14 +52,14 @@ public class GameLoggingProcessor {
                 append(",   Top:").append(playedTileToString(tableInfo.getTop())).append(",   Bottom:").append(playedTileToString(tableInfo.getBottom())).append(System.lineSeparator());
         info.append("My move:").append(tableInfo.isMyMove()).append(",   With Center:").append(tableInfo.isWithCenter()).append(",   Need Tiles:").append(tableInfo.isNeedToAddLeftTiles())
                 .append(",   Omitted Me:").append(tableInfo.isOmittedMe()).append(",   Omitted Opponent:").append(tableInfo.isOmittedOpponent()).append(System.lineSeparator());
-        info.append("My Tiles:").append(tableInfo.getMyTilesCount()).append(",   Opponent Tiles:").append(tableInfo.getOpponentTilesCount()).append(",   Bazaar Tiles:").append(tableInfo.getBazaarTilesCount()).
+        info.append("Opponent Tiles:").append(tableInfo.getOpponentTilesCount()).append(",   Bazaar Tiles:").append(tableInfo.getBazaarTilesCount()).
                 append(",   Tiles From Bazaar:").append(tableInfo.getTilesFromBazaar()).append(System.lineSeparator());
         return info;
     }
 
     private static String playedTileToString(PlayedTile playedTile) {
         if (playedTile == null) {
-            return "X";
+            return "N";
         }
         return String.valueOf(playedTile.getOpenSide());
     }

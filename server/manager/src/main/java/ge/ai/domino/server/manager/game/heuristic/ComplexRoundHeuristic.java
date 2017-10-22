@@ -16,7 +16,8 @@ public class ComplexRoundHeuristic implements RoundHeuristic {
     @Override
     public double getHeuristic(Round round) {
         double heuristic = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
-        heuristic += sysParamManager.getIntegerParameterValue(coefficientForComplexHeuristic) * (countPossibleMoves(round, true) / round.getTableInfo().getMyTilesCount() / round.getTableInfo().getMyTilesCount() -
+        int myTilesCount = round.getMyTiles().size();
+        heuristic += sysParamManager.getIntegerParameterValue(coefficientForComplexHeuristic) * (countPossibleMoves(round, true) / myTilesCount / myTilesCount -
                 countPossibleMoves(round, false) / round.getTableInfo().getOpponentTilesCount() / round.getTableInfo().getOpponentTilesCount());
         return heuristic;
     }

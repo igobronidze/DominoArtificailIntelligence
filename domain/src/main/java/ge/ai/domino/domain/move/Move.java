@@ -42,4 +42,9 @@ public class Move {
         result = 31 * result + direction.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return left + "-" + right + " " + direction;
+    }
 }

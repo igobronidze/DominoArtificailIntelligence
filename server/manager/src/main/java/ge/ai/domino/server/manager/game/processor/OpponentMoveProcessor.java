@@ -24,7 +24,7 @@ import java.util.Set;
 public class OpponentMoveProcessor extends MoveProcessor {
 
     @Override
-    public Round addTile(Round round, int x, int y, boolean virtual) throws DAIException {
+    public Round addTile(Round round, int left, int right, boolean virtual) throws DAIException {
         if (virtual) {
             GameLoggingProcessor.logInfoAboutMove("<<<<<<<Virtual Mode>>>>>>>", true);
         } else {
@@ -111,7 +111,9 @@ public class OpponentMoveProcessor extends MoveProcessor {
         } else {
             // წინააღმდეგ შემთხვევაში, ჩამოსული ქვის ალბათობები ნაწილდბეა სხვებზე
             double prob = playedTile.getProb();
-            addProbabilitiesForOpponentProbsProportional(tileSelection(tiles.values(), true, true), prob - 1);
+            if (prob != 1.0) {
+                addProbabilitiesForOpponentProbsProportional(tileSelection(tiles.values(), true, true), prob - 1);
+            }
         }
         // ქვის ჩამოსვლა
         playTile(round, move);

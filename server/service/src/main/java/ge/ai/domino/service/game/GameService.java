@@ -9,7 +9,7 @@ public interface GameService {
 
     Round startGame(GameProperties gameProperties, int gameId) throws DAIException;
 
-    Round addTileForMe(Round round, int x, int y) throws DAIException;
+    Round addTileForMe(Round round, int left, int right) throws DAIException;
 
     Round addTileForOpponent(Round round) throws DAIException;
 

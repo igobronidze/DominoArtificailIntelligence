@@ -32,13 +32,13 @@ public class GameManager {
 
     public Round startGame(GameProperties gameProperties, int gameId) throws DAIException {
         Round newRound = gameProcessor.startGame(gameProperties, gameId);
-        checkOpponentProbabilities(newRound, 0, "startGame");
+        checkOpponentProbabilities(newRound, 0, "startGame, gameId[" + gameId + "]");
         return newRound;
     }
 
-    public Round addTileForMe(Round round, int x, int y, boolean virtual) throws DAIException {
-        Round newRound = myMoveProcessor.addTile(round, x, y, virtual);
-        checkOpponentProbabilities(newRound, 0, "addTileForMe");
+    public Round addTileForMe(Round round, int left, int right, boolean virtual) throws DAIException {
+        Round newRound = myMoveProcessor.addTile(round, left, right, virtual);
+        checkOpponentProbabilities(newRound, 0, "addTileForMe [" + left + "-" + right + "]");
         return newRound;
     }
 
@@ -50,13 +50,13 @@ public class GameManager {
 
     public Round playForMe(Round round, Move move, boolean virtual) throws DAIException {
         Round newRound = myMoveProcessor.play(round, move, virtual);
-        checkOpponentProbabilities(newRound, 0, "playForMe");
+        checkOpponentProbabilities(newRound, 0, "playForMe " + move);
         return newRound;
     }
 
     public Round playForOpponent(Round round, Move move, boolean virtual) throws DAIException {
         Round newRound = opponentMoveProcessor.play(round, move, virtual);
-        checkOpponentProbabilities(newRound, 0, "playForOpponent");
+        checkOpponentProbabilities(newRound, 0, "playForOpponent " + move);
         return newRound;
     }
 

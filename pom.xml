@@ -4,7 +4,7 @@
 
     <artifactId>dai</artifactId>
     <groupId>ge.ai.domino</groupId>
-    <version>0.3</version>
+    <version>0.4</version>
     <packaging>pom</packaging>
 
     <name>Domino Artificial Intelligence</name>

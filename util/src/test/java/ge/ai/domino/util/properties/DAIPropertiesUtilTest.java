@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
+
 public class DAIPropertiesUtilTest {
 
     private static final String PROPERTY_KEY = "testProperty";
@@ -12,7 +14,8 @@ public class DAIPropertiesUtilTest {
 
     @BeforeClass
     public static void init() {
-        DAIPropertiesUtil.daiPropertyPath = "C:/dai/properties/dai.properties";
+        String path = DAIPropertiesUtilTest.class.getClassLoader().getResource("properties/daiTest.properties").getFile();
+        DAIPropertiesUtil.daiPropertiesFile = new File(path);
     }
 
     @Test

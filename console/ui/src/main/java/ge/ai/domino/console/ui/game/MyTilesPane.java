@@ -1,8 +1,8 @@
 package ge.ai.domino.console.ui.game;
 
-import ge.ai.domino.domain.ai.AIPrediction;
-import ge.ai.domino.domain.ai.HeuristicInfo;
+import ge.ai.domino.domain.game.HeuristicInfo;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.tile.Tile;
 import javafx.geometry.Insets;
@@ -35,7 +35,7 @@ abstract class MyTilesPane extends TilesPane {
                 vBox.setAlignment(Pos.TOP_CENTER);
                 ImageView imageView = getImageView(tile, round.getTableInfo().isMyMove());
                 imageViews.put(tile.hashCode(), imageView);
-                AIPrediction aiPrediction = round.getAiPrediction();
+                Move aiPrediction = round.getAiPrediction();
                 if (aiPrediction != null) {
                     int bestX = aiPrediction.getLeft();
                     int bestY = aiPrediction.getRight();

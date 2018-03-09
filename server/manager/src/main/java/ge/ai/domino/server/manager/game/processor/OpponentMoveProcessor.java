@@ -1,6 +1,5 @@
 package ge.ai.domino.server.manager.game.processor;
 
-import ge.ai.domino.domain.ai.AIPrediction;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.Round;
@@ -15,11 +14,7 @@ import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.played.MoveHelper;
 import ge.ai.domino.server.manager.util.CloneUtil;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class OpponentMoveProcessor extends MoveProcessor {
 
@@ -60,7 +55,7 @@ public class OpponentMoveProcessor extends MoveProcessor {
             // გავლის დაფიქსირება
             round.getTableInfo().setMyMove(true);
             if (!virtual) {
-                AIPrediction aiPrediction = minMax.minMax(round);
+                Move aiPrediction = minMax.minMax(round);
                 round.setAiPrediction(aiPrediction);
             }
             return round;
@@ -131,7 +126,7 @@ public class OpponentMoveProcessor extends MoveProcessor {
         }
         // რჩევის მიღება
         if (!virtual) {
-            AIPrediction aiPrediction = minMax.minMax(round);
+            Move aiPrediction = minMax.minMax(round);
             round.setAiPrediction(aiPrediction);
         }
 

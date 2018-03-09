@@ -1,7 +1,6 @@
 package ge.ai.domino.domain.game;
 
-import ge.ai.domino.domain.ai.AIPrediction;
-import ge.ai.domino.domain.ai.HeuristicInfo;
+import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.tile.OpponentTile;
 import ge.ai.domino.domain.tile.Tile;
 
@@ -16,7 +15,7 @@ public class Round {
 
     private Map<Integer, OpponentTile> opponentTiles = new HashMap<>();
 
-    private AIPrediction aiPrediction;
+    private Move aiPrediction;
 
     private TableInfo tableInfo;
 
@@ -40,11 +39,11 @@ public class Round {
         this.opponentTiles = opponentTiles;
     }
 
-    public AIPrediction getAiPrediction() {
+    public Move getAiPrediction() {
         return aiPrediction;
     }
 
-    public void setAiPrediction(AIPrediction aiPrediction) {
+    public void setAiPrediction(Move aiPrediction) {
         this.aiPrediction = aiPrediction;
     }
 

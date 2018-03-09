@@ -1,6 +1,5 @@
 package ge.ai.domino.server.manager.game.minmax;
 
-import ge.ai.domino.domain.ai.AIPrediction;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
@@ -21,15 +20,7 @@ import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.server.manager.util.CloneUtil;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class MinMax {
 
@@ -49,7 +40,7 @@ public class MinMax {
 
     private int recursionCount;
 
-    public AIPrediction minMax(Round round) throws DAIException {
+    public Move minMax(Round round) throws DAIException {
         long ms = System.currentTimeMillis();
         treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
         List<Move> moves = getPossibleMoves(round);
@@ -72,10 +63,7 @@ public class MinMax {
             return null;
         }
         round.getHeuristicInfo().setValue(bestHeuristic);
-        AIPrediction aiPrediction = new AIPrediction();
-        aiPrediction.setLeft(bestMove.getLeft());
-        aiPrediction.setRight(bestMove.getRight());
-        aiPrediction.setDirection(bestMove.getDirection());
+        Move aiPrediction = new Move(bestMove.getLeft(), bestMove.getRight(), bestMove.getDirection());
         logger.info("AIPrediction is [" + bestMove.getLeft() + "-" + bestMove.getRight() + " " + bestMove.getDirection().name() + "], " + "heuristic: " + bestHeuristic);
         return aiPrediction;
     }

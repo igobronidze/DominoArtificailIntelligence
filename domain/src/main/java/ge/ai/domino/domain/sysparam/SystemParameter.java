@@ -12,20 +12,6 @@ public class SystemParameter implements Serializable {
 
     private SystemParameterType type;
 
-    public SystemParameter() {
-    }
-
-    public SystemParameter(String key, String value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public SystemParameter(int id, String key, String value) {
-        this.id = id;
-        this.key = key;
-        this.value = value;
-    }
-
     public SystemParameter(int id, String key, String value, SystemParameterType type) {
         this.id = id;
         this.key = key;

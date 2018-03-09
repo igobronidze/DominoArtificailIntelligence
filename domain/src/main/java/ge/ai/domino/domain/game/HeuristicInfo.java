@@ -1,4 +1,4 @@
-package ge.ai.domino.domain.ai;
+package ge.ai.domino.domain.game;
 
 public class HeuristicInfo {
 

@@ -1,6 +1,5 @@
 package ge.ai.domino.server.manager.game.processor;
 
-import ge.ai.domino.domain.ai.AIPrediction;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.Round;
@@ -67,13 +66,13 @@ public class MyMoveProcessor extends MoveProcessor {
                 round.getTableInfo().setMyMove(false);
             }
             if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove() && !virtual) {
-                AIPrediction aiPrediction = minMax.minMax(round);
+                Move aiPrediction = minMax.minMax(round);
                 round.setAiPrediction(aiPrediction);
             }
         }
         // თუ უკვე ჩამოსულია ქვა, ვითხოვთ რჩევას პროგრამისგან
         if (round.getTableInfo().getLeft() != null && !virtual) {
-            AIPrediction aiPrediction = minMax.minMax(round);
+            Move aiPrediction = minMax.minMax(round);
             round.setAiPrediction(aiPrediction);
         }
 

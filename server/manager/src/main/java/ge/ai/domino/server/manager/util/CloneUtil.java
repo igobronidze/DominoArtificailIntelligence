@@ -1,10 +1,10 @@
 package ge.ai.domino.server.manager.util;
 
-import ge.ai.domino.domain.ai.AIPrediction;
-import ge.ai.domino.domain.ai.HeuristicInfo;
 import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.game.HeuristicInfo;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.tile.OpponentTile;
 import ge.ai.domino.domain.tile.PlayedTile;
 
@@ -43,15 +43,11 @@ public class CloneUtil {
         return clone;
     }
 
-    private static AIPrediction getClone(AIPrediction aiPrediction) {
+    private static Move getClone(Move aiPrediction) {
         if (aiPrediction == null) {
             return null;
         }
-        AIPrediction clone = new AIPrediction();
-        clone.setLeft(aiPrediction.getLeft());
-        clone.setRight(aiPrediction.getRight());
-        clone.setDirection(aiPrediction.getDirection());
-        return clone;
+        return new Move(aiPrediction.getLeft(), aiPrediction.getRight(), aiPrediction.getDirection());
     }
 
     private static TableInfo getClone(TableInfo tableInfo) {

@@ -1,4 +1,4 @@
-package ge.ai.domino.domain.tile;
+package ge.ai.domino.domain.played;
 
 public class PlayedTile {
 

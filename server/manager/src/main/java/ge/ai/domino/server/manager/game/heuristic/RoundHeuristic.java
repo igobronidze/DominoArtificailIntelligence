@@ -4,5 +4,5 @@ import ge.ai.domino.domain.game.Round;
 
 public interface RoundHeuristic {
 
-    double getHeuristic(Round round);
+    float getHeuristic(Round round);
 }

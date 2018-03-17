@@ -10,7 +10,7 @@ public class RoundHeuristicHelper {
 
     private static final SysParam heuristicValueForStartNextRound = new SysParam("heuristicValueForStartNextRound", "15");
 
-    public static double getFinishedGameHeuristic(GameInfo gameInfo, int pointForWin) {
+    public static float getFinishedGameHeuristic(GameInfo gameInfo, int pointForWin) {
         if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
             return pointForWin;
         } else {
@@ -18,7 +18,7 @@ public class RoundHeuristicHelper {
         }
     }
 
-    public static double getFinishedRoundHeuristic(GameInfo gameInfo, boolean startMe) {
+    public static float getFinishedRoundHeuristic(GameInfo gameInfo, boolean startMe) {
         int value = sysParamManager.getIntegerParameterValue(heuristicValueForStartNextRound);
         return gameInfo.getMyPoint() - gameInfo.getOpponentPoint() + (startMe ? value : -1 * value);
     }

@@ -1,6 +1,6 @@
-package ge.ai.domino.server.manager.played;
+package ge.ai.domino.server.manager.game.helper;
 
-import ge.ai.domino.domain.move.MoveDirection;
+import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.PlayedMove;
 
@@ -18,19 +18,19 @@ public class MoveHelper {
         return playedMove;
     }
 
-    public static PlayedMove getAddInitialTileForMeMove(int left, int right) {
+    public static PlayedMove getAddInitialTileForMeMove(Move move) {
         PlayedMove playedMove = new PlayedMove();
         playedMove.setType(MoveType.ADD_INIT_TILE_FOR_ME);
-        playedMove.setLeft(left);
-        playedMove.setRight(right);
+        playedMove.setLeft(move.getLeft());
+        playedMove.setRight(move.getRight());
         return playedMove;
     }
 
-    public static PlayedMove getAddTileForMeMove(int left, int right) {
+    public static PlayedMove getAddTileForMeMove(Move move) {
         PlayedMove playedMove = new PlayedMove();
         playedMove.setType(MoveType.ADD_FOR_ME);
-        playedMove.setLeft(left);
-        playedMove.setRight(right);
+        playedMove.setLeft(move.getLeft());
+        playedMove.setRight(move.getRight());
         return playedMove;
     }
 
@@ -40,21 +40,21 @@ public class MoveHelper {
         return playedMove;
     }
 
-    public static PlayedMove getPlayForMeMove(int left, int right, MoveDirection direction) {
+    public static PlayedMove getPlayForMeMove(Move move) {
         PlayedMove playedMove = new PlayedMove();
         playedMove.setType(MoveType.PLAY_FOR_ME);
-        playedMove.setLeft(left);
-        playedMove.setRight(right);
-        playedMove.setDirection(direction);
+        playedMove.setLeft(move.getLeft());
+        playedMove.setRight(move.getRight());
+        playedMove.setDirection(move.getDirection());
         return playedMove;
     }
 
-    public static PlayedMove getPlayForOpponentMove(int left, int right, MoveDirection direction) {
+    public static PlayedMove getPlayForOpponentMove(Move move) {
         PlayedMove playedMove = new PlayedMove();
         playedMove.setType(MoveType.PLAY_FOR_OPPONENT);
-        playedMove.setLeft(left);
-        playedMove.setRight(right);
-        playedMove.setDirection(direction);
+        playedMove.setLeft(move.getLeft());
+        playedMove.setRight(move.getRight());
+        playedMove.setDirection(move.getDirection());
         return playedMove;
     }
 }

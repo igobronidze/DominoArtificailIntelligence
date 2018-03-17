@@ -1,26 +1,22 @@
 package ge.ai.domino.server.caching.game;
 
 import ge.ai.domino.domain.game.Game;
+import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.played.GameHistory;
-import ge.ai.domino.domain.played.RoundHistory;
 import ge.ai.domino.domain.played.PlayedMove;
+import ge.ai.domino.domain.played.RoundHistory;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class CachedGames {
 
     private static final Map<Integer, Game> cachedGames = new HashMap<>();
 
-    private static final Set<Integer> cachedOpponentStart = new HashSet<>();
-
-    private static final Map<Integer, Integer> pointFromLastRound = new HashMap<>();
-
-    private static final Map<Integer, GameHistory> gameHistories = new HashMap<>();
-
-    public static void addGame(Game game) {
+    public static void addGame(Game game, int gameId) {
+        if (gameId != 0 && game.getProperties() == null) {
+            game.setProperties(cachedGames.get(gameId).getProperties());
+        }
         cachedGames.put(game.getId(), game);
     }
 
@@ -28,33 +24,32 @@ public class CachedGames {
         return cachedGames.get(gameId);
     }
 
-    public static void addOpponentStart(int id) {
-        cachedOpponentStart.add(id);
+    public static Round getCurrentRound(int gameId) {
+        return cachedGames.get(gameId).getRounds().peek();
     }
 
-    public static boolean startOpponent(int id) {
-        boolean result = cachedOpponentStart.contains(id);
-        cachedOpponentStart.remove(id);
-        return result;
+    public static void addRound(int gameId, Round round) {
+        cachedGames.get(gameId).getRounds().push(round);
     }
 
-    public static void addPointFromLastRound(int gameId, int point) {
-        pointFromLastRound.put(gameId, getPointFromLastRound(gameId) + point);
+    public static void makeOpponentNextRoundBeginner(int gameId) {
+        cachedGames.get(gameId).setOpponentNextRoundBeginner(true);
     }
 
-    public static int getPointFromLastRound(int gameId) {
-        if (pointFromLastRound.get(gameId) != null) {
-            return pointFromLastRound.get(gameId);
-        }
-        return 0;
+    public static boolean isOpponentNextRoundBeginner(int gameId) {
+        return cachedGames.get(gameId).isOpponentNextRoundBeginner();
     }
 
-    public static void addGameHistory(int gameId) {
-        gameHistories.put(gameId, new GameHistory());
+    public static void addLeftTilesCountFromLastRound(int gameId, int point) {
+        cachedGames.get(gameId).setLeftTilesCountFromLastRound(point);
+    }
+
+    public static int getLeftTilesCountFromLastRound(int gameId) {
+        return cachedGames.get(gameId).getLeftTilesCountFromLastRound();
     }
 
     public static void addMove(int gameId, PlayedMove playedMove, boolean firstMove) {
-        GameHistory gameHistory = gameHistories.get(gameId);
+        GameHistory gameHistory = cachedGames.get(gameId).getGameHistory();
         if (firstMove) {
             RoundHistory roundHistory = new RoundHistory();
             roundHistory.getPlayedMoves().add(playedMove);
@@ -65,7 +60,7 @@ public class CachedGames {
     }
 
     public static void removeLastMove(int gameId) {
-        GameHistory gameHistory = gameHistories.get(gameId);
+        GameHistory gameHistory = cachedGames.get(gameId).getGameHistory();
         RoundHistory roundHistory = gameHistory.getRoundHistories().getLast();
         roundHistory.getPlayedMoves().removeLast();
         if (roundHistory.getPlayedMoves().isEmpty()) {
@@ -74,6 +69,6 @@ public class CachedGames {
     }
 
     public static GameHistory getGameHistory(int gameId) {
-        return gameHistories.get(gameId);
+        return cachedGames.get(gameId).getGameHistory();
     }
 }

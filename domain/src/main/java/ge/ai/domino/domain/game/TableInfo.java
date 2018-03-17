@@ -1,6 +1,6 @@
 package ge.ai.domino.domain.game;
 
-import ge.ai.domino.domain.tile.PlayedTile;
+import ge.ai.domino.domain.played.PlayedTile;
 
 public class TableInfo {
 
@@ -16,11 +16,11 @@ public class TableInfo {
 
     private boolean myMove;
 
-    private double opponentTilesCount;
+    private float opponentTilesCount;
 
-    private double bazaarTilesCount;
+    private float bazaarTilesCount;
 
-    private double lastPlayedProb;
+    private float lastPlayedProb;
 
     private boolean needToAddLeftTiles;
 
@@ -80,27 +80,27 @@ public class TableInfo {
         this.myMove = myMove;
     }
 
-    public double getOpponentTilesCount() {
+    public float getOpponentTilesCount() {
         return opponentTilesCount;
     }
 
-    public void setOpponentTilesCount(double opponentTilesCount) {
+    public void setOpponentTilesCount(float opponentTilesCount) {
         this.opponentTilesCount = opponentTilesCount;
     }
 
-    public double getBazaarTilesCount() {
+    public float getBazaarTilesCount() {
         return bazaarTilesCount;
     }
 
-    public void setBazaarTilesCount(double bazaarTilesCount) {
+    public void setBazaarTilesCount(float bazaarTilesCount) {
         this.bazaarTilesCount = bazaarTilesCount;
     }
 
-    public double getLastPlayedProb() {
+    public float getLastPlayedProb() {
         return lastPlayedProb;
     }
 
-    public void setLastPlayedProb(double lastPlayedProb) {
+    public void setLastPlayedProb(float lastPlayedProb) {
         this.lastPlayedProb = lastPlayedProb;
     }
 

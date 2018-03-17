@@ -4,212 +4,217 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
+import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.domain.tile.OpponentTile;
-import ge.ai.domino.domain.tile.PlayedTile;
-import ge.ai.domino.domain.tile.Tile;
 import ge.ai.domino.server.caching.game.CachedGames;
-import ge.ai.domino.server.manager.game.GameHelper;
-import ge.ai.domino.server.manager.game.GameManager;
+import ge.ai.domino.server.manager.game.helper.CloneUtil;
+import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
+import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.heuristic.ComplexRoundHeuristic;
 import ge.ai.domino.server.manager.game.heuristic.RoundHeuristic;
 import ge.ai.domino.server.manager.game.heuristic.RoundHeuristicHelper;
+import ge.ai.domino.server.manager.game.move.AddForMeProcessor;
+import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
+import ge.ai.domino.server.manager.game.move.MoveProcessor;
+import ge.ai.domino.server.manager.game.move.PlayForMeProcessor;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
-import ge.ai.domino.server.manager.util.CloneUtil;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MinMax {
 
-    private static Logger logger = Logger.getLogger(GameManager.class);
+    private static Logger logger = Logger.getLogger(MinMax.class);
 
     private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
     private final RoundHeuristic roundHeuristic = new ComplexRoundHeuristic();
 
-    private final GameManager gameManager = new GameManager();
-
     private final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "7");
 
-    private final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.000001");
+    private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
+
+    private final MoveProcessor playForOpponentProcessor = new PlayForMeProcessor();
+
+    private final MoveProcessor addForMeProcessor = new AddForMeProcessor();
+
+    private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
 
     private int treeHeight;
 
     private int recursionCount;
 
+    private int gameId;
+
     public Move minMax(Round round) throws DAIException {
         long ms = System.currentTimeMillis();
+        this.gameId = round.getGameInfo().getGameId();
         treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
         List<Move> moves = getPossibleMoves(round);
         Move bestMove = null;
-        double bestHeuristic = Integer.MIN_VALUE;
+        float bestHeuristic = Integer.MIN_VALUE;
         for (Move move : moves) {
-            Round nextRound = gameManager.playForMe(CloneUtil.getCloneForMinMax(round), move, true);
-            double heuristic = getHeuristicValue(nextRound, 1);
+            Round nextRound = addForMeProcessor.move(CloneUtil.getClone(round), move, true);
+            float heuristic = getHeuristicValue(nextRound, 1);
             if (bestMove == null || heuristic > bestHeuristic) {
                 bestMove = move;
                 bestHeuristic = heuristic;
             }
             logger.info("PlayedMove- " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + heuristic);
         }
-        double tookMs = System.currentTimeMillis() - ms;
+        float tookMs = System.currentTimeMillis() - ms;
         logger.info("MinMax took " + tookMs + "ms, recursion count " + recursionCount + ", average " + (tookMs / recursionCount));
         recursionCount = 0;
         if (bestMove == null) {
             logger.info("No AIPrediction");
             return null;
         }
-        round.getHeuristicInfo().setValue(bestHeuristic);
+        round.setHeuristicValue(bestHeuristic);
         Move aiPrediction = new Move(bestMove.getLeft(), bestMove.getRight(), bestMove.getDirection());
         logger.info("AIPrediction is [" + bestMove.getLeft() + "-" + bestMove.getRight() + " " + bestMove.getDirection().name() + "], " + "heuristic: " + bestHeuristic);
         return aiPrediction;
     }
 
-    private double getHeuristicValue(Round round, int height) throws DAIException {
+    private float getHeuristicValue(Round round, int height) throws DAIException {
         recursionCount++;
         TableInfo tableInfo = round.getTableInfo();
         GameInfo gameInfo = round.getGameInfo();
-        // თუ გაიჭედა თამაში
+        // If game is blocked
         if (tableInfo.isOmittedMe() && tableInfo.isOmittedOpponent()) {
-            int opponentTilesCount = GameHelper.countLeftTiles(round, false, true);
-            int myTilesCount = GameHelper.countLeftTiles(round, true, false);
+            int opponentTilesCount = GameOperations.countLeftTiles(round, false, true);
+            int myTilesCount = GameOperations.countLeftTiles(round, true, false);
             if (myTilesCount < opponentTilesCount) {
-                GameHelper.addLeftTiles(gameInfo, opponentTilesCount, true, gameInfo.getGameId(), true);
+                GameOperations.addLeftTiles(gameInfo, opponentTilesCount, true, 0, true);
             } else if (myTilesCount > opponentTilesCount) {
-                GameHelper.addLeftTiles(gameInfo, myTilesCount, false, gameInfo.getGameId(), true);
+                GameOperations.addLeftTiles(gameInfo, myTilesCount, false, 0, true);
             }
-            round.getHeuristicInfo().setValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, tableInfo.isMyMove()));
-            return round.getHeuristicInfo().getValue();
+            round.setHeuristicValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, tableInfo.isMyMove()));
+            return round.getHeuristicValue();
         }
-        // თუ მთლიანად დამთავრდა თამაში
         if (gameInfo.isFinished()) {
-            return RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGame(gameInfo.getGameId()).getProperties().getPointsForWin());
+            return RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGame(gameId).getProperties().getPointsForWin());
         }
-        // თუ მოწინააღმდეგემ გაიარა, ვიმატებთ მის სავარაუდო დარჩენილ ქვებს და ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
+        // If opponent omit, add him left tiles and return pure heuristic value
         if (tableInfo.isNeedToAddLeftTiles()) {
-            int opponentTilesCount = GameHelper.countLeftTiles(round, false, true);
-            GameHelper.addLeftTiles(gameInfo, opponentTilesCount, true, gameInfo.getGameId(), true);
-            round.getHeuristicInfo().setValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, !tableInfo.isMyMove()));
-            return round.getHeuristicInfo().getValue();
+            int opponentTilesCount = GameOperations.countLeftTiles(round, false, true);
+            GameOperations.addLeftTiles(gameInfo, opponentTilesCount, true, 0, true);
+            round.setHeuristicValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, !tableInfo.isMyMove()));
+            return round.getHeuristicValue();
         }
-        // თუ ახალი ხელი დაიწყო ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
-        if (GameHelper.isNewRound(round)) {
-            round.getHeuristicInfo().setValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, !tableInfo.isMyMove()));
-            return round.getHeuristicInfo().getValue();
+        if (isNewRound(round)) {
+            round.setHeuristicValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, !tableInfo.isMyMove()));
+            return round.getHeuristicValue();
         }
-        // თუ ჩავედით ხის ფოთოლში, ვაბრუნებთ სუფთა ევრისტიკულ მნიშვნელობას
         if (height == treeHeight) {
-            round.getHeuristicInfo().setValue(roundHeuristic.getHeuristic(round));
-            return round.getHeuristicInfo().getValue();
+            round.setHeuristicValue(roundHeuristic.getHeuristic(round));
+            return round.getHeuristicValue();
         }
         List<Move> moves = getPossibleMoves(round);
         if (round.getTableInfo().isMyMove()) {
-            // ჩემთვის საუკეთესო სვლის დადგენა
+            // Best move for me
             Round bestRound = null;
             for (Move move : moves) {
-                Round nextRound = gameManager.playForMe(CloneUtil.getCloneForMinMax(round), move, true);
+                Round nextRound = playForMeProcessor.move(CloneUtil.getClone(round), move, true);
                 getHeuristicValue(nextRound, height + 1);
-                if (bestRound == null || nextRound.getHeuristicInfo().getValue() > bestRound.getHeuristicInfo().getValue()) {
+                if (bestRound == null || nextRound.getHeuristicValue() > bestRound.getHeuristicValue()) {
                     bestRound = nextRound;
                 }
             }
-            // თუ სვლა არ მქონდა გასაკეთებელი ვიხილავთ ბაზარში არსებული ქვების აღების ვარიანტებს
+            // If there are no available move, use bazaar tiles
             if (bestRound == null) {
-                double heuristic = 0.0;
-                double bazaarProbSum = round.getTableInfo().getBazaarTilesCount();
-                for (OpponentTile tile : round.getOpponentTiles().values()) {
-                    if (tile.getProb() != 1.0) {
-                        double probForPickTile = (1 - tile.getProb()) / bazaarProbSum; // ალბათობა, რომ კონკრეტულად ეს tile შემხვდება
-                        heuristic += getHeuristicValue(gameManager.addTileForMe(CloneUtil.getCloneForMinMax(round), tile.getLeft(), tile.getRight(), true), height + 1) * probForPickTile;
+                float heuristic = 0.0F;
+                float bazaarProbSum = round.getTableInfo().getBazaarTilesCount();
+                for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
+                    Tile tile = entry.getKey();
+                    float prob = entry.getValue();
+                    if (prob != 1.0) {
+                        float probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
+                        heuristic += getHeuristicValue(addForMeProcessor.move(CloneUtil.getClone(round), new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT), true), height + 1) * probForPickTile;
                     }
                 }
-                round.getHeuristicInfo().setValue(heuristic);
+                round.setHeuristicValue(heuristic);
                 return heuristic;
             } else {
-                round.getHeuristicInfo().setValue(bestRound.getHeuristicInfo().getValue());
-                return round.getHeuristicInfo().getValue();
+                round.setHeuristicValue(bestRound.getHeuristicValue());
+                return round.getHeuristicValue();
             }
         } else {
-            // შესაძლო გაგრძელებები დალაგებული ზრდადობით
+            // Possible moves sorted ASC
             Queue<Round> possibleRounds = new PriorityQueue<>(new Comparator<Round>() {
                 @Override
                 public int compare(Round o1, Round o2) {
-                    return Double.compare(o1.getHeuristicInfo().getValue(), o2.getHeuristicInfo().getValue());
+                    return Float.compare(o1.getHeuristicValue(), o2.getHeuristicValue());
                 }
             });
-            // ყველა შესძლო სვლის გათამაშება და რიგში ჩამატება
+            // Play all possible move and add in queue
             for (Move move : moves) {
-                Round nextRound = gameManager.playForOpponent(CloneUtil.getCloneForMinMax(round), move, true);
+                Round nextRound = playForOpponentProcessor.move(CloneUtil.getClone(round), move, true);
                 getHeuristicValue(nextRound, height + 1);
                 possibleRounds.add(nextRound);
             }
 
-            int notPlayedTilesCount = getBazaarTileCountForSure(round.getOpponentTiles().values());   // ქვების რაოდენობა რომელიც არ/ვერ ითამაშა მოწინააღმდეგემ
-            double heuristic = 0.0;
-            double remainingProbability = 1.0;
-            // მივყვებით მოწინააღმდეგისთვის საუკეთესო სვლებს
+            int notPlayedTilesCount = (int)round.getOpponentTiles().values().stream().filter(prob -> prob == 0).count();   // Tile count which opponent didn't play
+            float heuristic = 0.0F;
+            float remainingProbability = 1.0F;
             for (Round nextRound : possibleRounds) {
-                double prob;
+                float prob;
                 if (notPlayedTilesCount == tableInfo.getBazaarTilesCount()) {
-                    prob = remainingProbability;   // ბოლო შანსია ჩამოსვლის შესაბამისად უეჭველი ჩამოდის
+                    prob = remainingProbability;   // Last chance to play
                 } else {
-                    prob = remainingProbability * nextRound.getTableInfo().getLastPlayedProb();  // ალბათობა ბოლოს ნათამაშები ქვის ქონის, იმის გათვალისწინებით, რომ უკვე სხვა აქამდე არჩეული ქვები არ ქონია
+                    prob = remainingProbability * nextRound.getTableInfo().getLastPlayedProb();
                 }
-                heuristic += nextRound.getHeuristicInfo().getValue() * prob;
-                remainingProbability -= prob;   // remainingProbability ინახავს ალბათობას, რომ აქამდე გგავლილი ქვები არ ქონდა
+                heuristic += nextRound.getHeuristicValue() * prob;
+                remainingProbability -= prob;
 
-                // იმაზე მეტჯერ, ვერ "არ ჩამოვა" ქვას ვიდრე ბაზარშია
+                // Can't move more tile than there are in bazaar
                 notPlayedTilesCount++;
                 if (notPlayedTilesCount > tableInfo.getBazaarTilesCount()) {
                     break;
 
                 }
             }
-            // ბაზარში წასვლი შემთხვევა
-            double epsilon = systemParameterManager.getFloatParameterValue(epsilonForProbabilities);
-            if (remainingProbability > epsilon) {
-                Round addedRound = gameManager.addTileForOpponent(CloneUtil.getCloneForMinMax(round), true);
+            // Bazaar case
+            if (!ComparisonHelper.equal(remainingProbability, 0)) {
+                Round addedRound = addForOpponentProcessor.move(CloneUtil.getClone(round), null, true);
                 if (tableInfo.getBazaarTilesCount() > 2) {
-                    double bazaarSum = tableInfo.getBazaarTilesCount();
-                    double usedProb = 0.0;
+                    float bazaarSum = tableInfo.getBazaarTilesCount();
+                    float usedProb = 0.0F;
                     PlayedTile left = tableInfo.getLeft();
                     PlayedTile right = tableInfo.getRight();
                     PlayedTile top = tableInfo.getTop();
                     PlayedTile bottom = tableInfo.getBottom();
-                    for (OpponentTile tile : addedRound.getOpponentTiles().values()) {
+                    for (Tile tile : addedRound.getOpponentTiles().keySet()) {
                         if ((left != null && (left.getOpenSide() == tile.getLeft() || left.getOpenSide() == tile.getRight())) ||
                                 (right != null && (right.getOpenSide() == tile.getLeft() || right.getOpenSide() == tile.getRight())) ||
                                 (top != null && (top.getOpenSide() == tile.getLeft() || top.getOpenSide() == tile.getRight())) ||
                                 (bottom != null && (bottom.getOpenSide() == tile.getLeft() || bottom.getOpenSide() == tile.getRight()))) {
                             Round cloneRound = CloneUtil.getClone(addedRound);
-                            double prob = remainingProbability * 1 / bazaarSum;
+                            float prob = remainingProbability * 1 / bazaarSum;
                             usedProb += prob;
-                            cloneRound.getOpponentTiles().get(tile.hashCode()).setProb(1.0);
+                            cloneRound.getOpponentTiles().put(tile, 1.0F);
                             heuristic += getHeuristicValue(cloneRound, height + 1) * prob;
                         }
                     }
                     remainingProbability -= usedProb;
                 }
-                if (remainingProbability > epsilon) {
+                if (!ComparisonHelper.equal(remainingProbability, 0)) {
                     heuristic += getHeuristicValue(addedRound, height + 1) * remainingProbability;
                 }
             }
-            round.getHeuristicInfo().setValue(heuristic);
+            round.setHeuristicValue(heuristic);
             return heuristic;
         }
-    }
-
-    private int getBazaarTileCountForSure(Collection<OpponentTile> tiles) {
-        int count = 0;
-        for (OpponentTile tile : tiles) {
-            if (tile.getProb() == 0) {
-                count++;
-            }
-        }
-        return count;
     }
 
     private List<Move> getPossibleMoves(Round round) {
@@ -219,22 +224,18 @@ public class MinMax {
         PlayedTile right = tableInfo.getRight();
         PlayedTile top = tableInfo.getTop();
         PlayedTile bottom = tableInfo.getBottom();
-        // პირველი ქვის ჩამოსვლა
+        // First move
         if (tableInfo.getLeft() == null) {
-            for (Tile tile : round.getMyTiles()) {
-                moves.add(new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT));
-            }
+            moves.addAll(round.getMyTiles().stream().map(tile -> new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT)).collect(Collectors.toList()));
         } else {
             if (round.getTableInfo().isMyMove()) {
                 for (Tile tile : round.getMyTiles()) {
                     addPossibleMovesForTile(tile, left, right, top, bottom, moves);
                 }
             } else {
-                for (OpponentTile tile : round.getOpponentTiles().values()) {
-                    if (tile.getProb() > 0.0) {
-                        addPossibleMovesForTile(tile, left, right, top, bottom, moves);
-                    }
-                }
+                round.getOpponentTiles().entrySet().stream().filter(entry -> entry.getValue() > 0.0).forEach(entry -> {
+                    addPossibleMovesForTile(entry.getKey(), left, right, top, bottom, moves);
+                });
             }
         }
         return moves;
@@ -242,7 +243,7 @@ public class MinMax {
 
     private void addPossibleMovesForTile(Tile tile, PlayedTile left, PlayedTile right, PlayedTile top, PlayedTile bottom, List<Move> moves) {
         Set<Integer> played = new HashSet<>();
-        // LEFT RIGHT TOP BOTTOM მიმდევრობა მნიშვნელოვანია
+        // LEFT RIGHT TOP BOTTOM sequence is important
         if (!played.contains(hashForPlayedTile(left))) {
             if (left.getOpenSide() == tile.getLeft() || left.getOpenSide() == tile.getRight()) {
                 moves.add(new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT));
@@ -272,5 +273,9 @@ public class MinMax {
     private int hashForPlayedTile(PlayedTile playedTile) {
         int p = 10;
         return (playedTile.getOpenSide() + 1) * (playedTile.isTwin() ? p : 1);
+    }
+
+    private boolean isNewRound(Round round) {
+        return round.getMyTiles().size() == 0 && round.getTableInfo().getOpponentTilesCount() == 7 && round.getTableInfo().getBazaarTilesCount() == 21;
     }
 }

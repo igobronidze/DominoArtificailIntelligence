@@ -1,16 +1,16 @@
-package ge.ai.domino.server.manager.util;
+package ge.ai.domino.server.manager.game.helper;
 
 import ge.ai.domino.domain.game.GameInfo;
-import ge.ai.domino.domain.game.HeuristicInfo;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
-import ge.ai.domino.domain.tile.OpponentTile;
-import ge.ai.domino.domain.tile.PlayedTile;
+import ge.ai.domino.domain.played.PlayedTile;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class CloneUtil {
 
@@ -20,25 +20,21 @@ public class CloneUtil {
         clone.setTableInfo(getClone(round.getTableInfo()));
         clone.setGameInfo(getClone(round.getGameInfo()));
         clone.setOpponentTiles(getClone((round.getOpponentTiles())));
-        clone.setMyTiles(new HashSet<>(round.getMyTiles()));
-        clone.setHeuristicInfo(getClone(round.getHeuristicInfo()));
+        clone.setMyTiles(getClone(round.getMyTiles()));
+        clone.setHeuristicValue(round.getHeuristicValue());
         return clone;
     }
 
-    public static Round getCloneForMinMax(Round round) {
-        Round clone = new Round();
-        clone.setTableInfo(getClone(round.getTableInfo()));
-        clone.setGameInfo(getClone(round.getGameInfo()));
-        clone.setOpponentTiles(getClone(round.getOpponentTiles()));
-        clone.setMyTiles(new HashSet<>(round.getMyTiles()));
-        clone.setHeuristicInfo(getClone(round.getHeuristicInfo()));
+    private static Set<Tile> getClone(Set<Tile> myTiles) {
+        Set<Tile> clone = new HashSet<>();
+        clone.addAll(myTiles);
         return clone;
     }
 
-    private static Map<Integer, OpponentTile> getClone(Map<Integer, OpponentTile> tiles) {
-        Map<Integer, OpponentTile> clone = new HashMap<>();
-        for (OpponentTile tile : tiles.values()) {
-            clone.put(tile.hashCode(), new OpponentTile(tile.getLeft(), tile.getRight(), tile.getProb()));
+    private static Map<Tile, Float> getClone(Map<Tile, Float> opponentTiles) {
+        Map<Tile, Float> clone = new HashMap<>();
+        for (Map.Entry<Tile, Float> entry : opponentTiles.entrySet()) {
+            clone.put(entry.getKey(), entry.getValue());
         }
         return clone;
     }
@@ -87,12 +83,6 @@ public class CloneUtil {
         clone.setMyPoint(gameInfo.getMyPoint());
         clone.setOpponentPoint(gameInfo.getOpponentPoint());
         clone.setFinished(gameInfo.isFinished());
-        return clone;
-    }
-
-    private static HeuristicInfo getClone(HeuristicInfo heuristicInfo) {
-        HeuristicInfo clone = new HeuristicInfo();
-        clone.setValue(heuristicInfo.getValue());
         return clone;
     }
 }

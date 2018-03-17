@@ -1,8 +1,6 @@
 package ge.ai.domino.domain.game;
 
 import ge.ai.domino.domain.move.Move;
-import ge.ai.domino.domain.tile.OpponentTile;
-import ge.ai.domino.domain.tile.Tile;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,7 +11,7 @@ public class Round {
 
     private Set<Tile> myTiles = new HashSet<>();
 
-    private Map<Integer, OpponentTile> opponentTiles = new HashMap<>();
+    private Map<Tile, Float> opponentTiles = new HashMap<>();
 
     private Move aiPrediction;
 
@@ -21,7 +19,7 @@ public class Round {
 
     private GameInfo gameInfo;
 
-    private HeuristicInfo heuristicInfo;
+    private float heuristicValue;
 
     public Set<Tile> getMyTiles() {
         return myTiles;
@@ -31,11 +29,11 @@ public class Round {
         this.myTiles = myTiles;
     }
 
-    public Map<Integer, OpponentTile> getOpponentTiles() {
+    public Map<Tile, Float> getOpponentTiles() {
         return opponentTiles;
     }
 
-    public void setOpponentTiles(Map<Integer, OpponentTile> opponentTiles) {
+    public void setOpponentTiles(Map<Tile, Float> opponentTiles) {
         this.opponentTiles = opponentTiles;
     }
 
@@ -63,11 +61,11 @@ public class Round {
         this.gameInfo = gameInfo;
     }
 
-    public HeuristicInfo getHeuristicInfo() {
-        return heuristicInfo;
+    public float getHeuristicValue() {
+        return heuristicValue;
     }
 
-    public void setHeuristicInfo(HeuristicInfo heuristicInfo) {
-        this.heuristicInfo = heuristicInfo;
+    public void setHeuristicValue(float heuristicValue) {
+        this.heuristicValue = heuristicValue;
     }
 }

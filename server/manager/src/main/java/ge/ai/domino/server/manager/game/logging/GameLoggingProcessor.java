@@ -3,16 +3,16 @@ package ge.ai.domino.server.manager.game.logging;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.game.Tile;
+import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.domain.tile.OpponentTile;
-import ge.ai.domino.domain.tile.PlayedTile;
-import ge.ai.domino.domain.tile.Tile;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.Map;
 
 public class GameLoggingProcessor {
 
@@ -32,7 +32,7 @@ public class GameLoggingProcessor {
                 log.append(gameInfoToString(round.getGameInfo()));
                 log.append(tableInfoToString(round.getTableInfo()));
                 log.append(myTileToString(round.getMyTiles()));
-                log.append(opponentTileToString(round.getOpponentTiles().values()));
+                log.append(opponentTileToString(round.getOpponentTiles()));
                 log.append("___________________________________________________________________________________");
                 logger.info(log);
             }
@@ -85,16 +85,16 @@ public class GameLoggingProcessor {
         return info;
     }
 
-    private static StringBuilder opponentTileToString(Collection<OpponentTile> tiles) {
+    private static StringBuilder opponentTileToString(Map<Tile, Float> tiles) {
         StringBuilder info = new StringBuilder();
         info.append("          Opponent Tiles").append(System.lineSeparator());
         int counter = 0;
         NumberFormat formatter = new DecimalFormat("#0.0000");
-        for (OpponentTile tile : tiles) {
+        for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
             if (counter != 0) {
                 info.append("     ");
             }
-            info.append(tile).append(" ").append(formatter.format(tile.getProb()));
+            info.append(entry.getKey()).append(" ").append(formatter.format(entry.getValue()));
             counter++;
             if (counter == 5) {
                 info.append(System.lineSeparator());

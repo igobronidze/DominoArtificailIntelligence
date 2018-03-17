@@ -13,7 +13,7 @@ import ge.ai.domino.domain.sysparam.SystemParameter;
 import ge.ai.domino.domain.sysparam.SystemParameterType;
 import ge.ai.domino.service.sysparam.SystemParameterService;
 import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
-import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.FloatBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -47,10 +47,10 @@ public class SystemParametersPane extends HBox {
 
     private TCHComboBox typeComboBox;
 
-    private DoubleBinding doubleBinding;
+    private FloatBinding floatBinding;
 
-    public SystemParametersPane(DoubleBinding doubleBinding) {
-        this.doubleBinding = doubleBinding;
+    public SystemParametersPane(FloatBinding floatBinding) {
+        this.floatBinding = floatBinding;
         initUI();
     }
 
@@ -63,20 +63,20 @@ public class SystemParametersPane extends HBox {
 
     @SuppressWarnings("unchecked")
     private void initTable() {
-        doubleBinding = doubleBinding.subtract(250 + 90 + 60 + 50);
+        floatBinding = floatBinding.subtract(250 + 90 + 60 + 50);
         tableView = new TableView<>();
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
         TableColumn<SystemParameterProperty, Boolean> idColumn = new TableColumn<>(Messages.get("id"));
         idColumn.setPrefWidth(60);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         TableColumn<SystemParameterProperty, Boolean> keyColumn = new TableColumn<>(Messages.get("key"));
-        keyColumn.prefWidthProperty().bind(doubleBinding.divide(3));
+        keyColumn.prefWidthProperty().bind(floatBinding.divide(3));
         keyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
         TableColumn<SystemParameterProperty, Boolean> valueColumn = new TableColumn<>(Messages.get("value"));
-        valueColumn.prefWidthProperty().bind(doubleBinding.divide(3));
+        valueColumn.prefWidthProperty().bind(floatBinding.divide(3));
         valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
         TableColumn<SystemParameterProperty, Boolean> typeColumn = new TableColumn<>(Messages.get("type"));
-        typeColumn.prefWidthProperty().bind(doubleBinding.divide(3));
+        typeColumn.prefWidthProperty().bind(floatBinding.divide(3));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         TableColumn deleteColumn = new TableColumn<>("");
         deleteColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SystemParameterProperty, Boolean>, ObservableValue<Boolean>>() {

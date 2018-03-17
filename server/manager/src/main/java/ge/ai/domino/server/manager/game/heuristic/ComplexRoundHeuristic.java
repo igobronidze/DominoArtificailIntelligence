@@ -2,10 +2,11 @@ package ge.ai.domino.server.manager.game.heuristic;
 
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.domain.tile.OpponentTile;
-import ge.ai.domino.domain.tile.Tile;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
+
+import java.util.Map;
 
 public class ComplexRoundHeuristic implements RoundHeuristic {
 
@@ -14,24 +15,24 @@ public class ComplexRoundHeuristic implements RoundHeuristic {
     private final SysParam coefficientForComplexHeuristic = new SysParam("coefficientForComplexHeuristic", "12");
 
     @Override
-    public double getHeuristic(Round round) {
-        double heuristic = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
+    public float getHeuristic(Round round) {
+        float heuristic = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
         int myTilesCount = round.getMyTiles().size();
         heuristic += sysParamManager.getIntegerParameterValue(coefficientForComplexHeuristic) * (countPossibleMoves(round, true) / myTilesCount / myTilesCount -
                 countPossibleMoves(round, false) / round.getTableInfo().getOpponentTilesCount() / round.getTableInfo().getOpponentTilesCount());
         return heuristic;
     }
 
-    private double countPossibleMoves(Round round, boolean me) {
-        double count = 0.0;
+    private float countPossibleMoves(Round round, boolean me) {
+        float count = 0.0F;
         TableInfo tableInfo = round.getTableInfo();
         if (me) {
             for (Tile tile : round.getMyTiles()) {
                 count += countMove(tile, tableInfo);
             }
         } else {
-            for (OpponentTile tile : round.getOpponentTiles().values()) {
-                count += tile.getProb() * countMove(tile, tableInfo);
+            for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
+                count += entry.getValue() * countMove(entry.getKey(), tableInfo);
             }
         }
         return count;

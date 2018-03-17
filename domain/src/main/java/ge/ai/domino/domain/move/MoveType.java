@@ -1,7 +1,6 @@
 package ge.ai.domino.domain.move;
 
 public enum MoveType {
-
     ADD_INIT_TILE_FOR_ME,
     ADD_FOR_ME,
     ADD_FOR_OPPONENT,

@@ -1,5 +1,7 @@
 package ge.ai.domino.domain.game;
 
+import ge.ai.domino.domain.played.GameHistory;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -9,9 +11,13 @@ public class Game {
 
     private GameProperties properties;
 
-    private Round currRound;
+    private Deque<Round> rounds = new ArrayDeque<>();
 
-    private Deque<Round> history = new ArrayDeque<>();
+    private GameHistory gameHistory;
+
+    private int leftTilesCountFromLastRound;
+
+    private boolean opponentNextRoundBeginner;
 
     public int getId() {
         return id;
@@ -29,19 +35,35 @@ public class Game {
         this.properties = properties;
     }
 
-    public Round getCurrRound() {
-        return currRound;
+    public Deque<Round> getRounds() {
+        return rounds;
     }
 
-    public void setCurrRound(Round currRound) {
-        this.currRound = currRound;
+    public void setRounds(Deque<Round> rounds) {
+        this.rounds = rounds;
     }
 
-    public Deque<Round> getHistory() {
-        return history;
+    public GameHistory getGameHistory() {
+        return gameHistory;
     }
 
-    public void setHistory(Deque<Round> history) {
-        this.history = history;
+    public void setGameHistory(GameHistory gameHistory) {
+        this.gameHistory = gameHistory;
+    }
+
+    public int getLeftTilesCountFromLastRound() {
+        return leftTilesCountFromLastRound;
+    }
+
+    public void setLeftTilesCountFromLastRound(int leftTilesCountFromLastRound) {
+        this.leftTilesCountFromLastRound = leftTilesCountFromLastRound;
+    }
+
+    public boolean isOpponentNextRoundBeginner() {
+        return opponentNextRoundBeginner;
+    }
+
+    public void setOpponentNextRoundBeginner(boolean opponentNextRoundBeginner) {
+        this.opponentNextRoundBeginner = opponentNextRoundBeginner;
     }
 }

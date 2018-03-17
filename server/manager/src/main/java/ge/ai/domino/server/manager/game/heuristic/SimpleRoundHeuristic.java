@@ -5,7 +5,7 @@ import ge.ai.domino.domain.game.Round;
 public class SimpleRoundHeuristic implements RoundHeuristic {
 
     @Override
-    public double getHeuristic(Round round) {
-        return (double) (round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint());
+    public float getHeuristic(Round round) {
+        return (float) (round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint());
     }
 }

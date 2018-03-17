@@ -1,7 +1,7 @@
 package ge.ai.domino.console.ui.shortcut;
 
 import ge.ai.domino.console.ui.util.Messages;
-import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.FloatBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -17,10 +17,10 @@ public class ShortcutPane extends HBox {
 
     private TableView<ShortcutProperty> tableView;
 
-    private DoubleBinding doubleBinding;
+    private FloatBinding floatBinding;
 
-    public ShortcutPane(DoubleBinding doubleBinding) {
-        this.doubleBinding = doubleBinding;
+    public ShortcutPane(FloatBinding floatBinding) {
+        this.floatBinding = floatBinding;
         initUI();
     }
 
@@ -32,14 +32,14 @@ public class ShortcutPane extends HBox {
 
     @SuppressWarnings("unchecked")
     private void initTable() {
-        doubleBinding = doubleBinding.subtract(20);
+        floatBinding = floatBinding.subtract(20);
         tableView = new TableView<>();
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
         TableColumn<ShortcutProperty, Boolean> keyColumn = new TableColumn<>(Messages.get("key"));
-        keyColumn.prefWidthProperty().bind(doubleBinding.divide(5));
+        keyColumn.prefWidthProperty().bind(floatBinding.divide(5));
         keyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
         TableColumn<ShortcutProperty, Boolean> valueColumn = new TableColumn<>(Messages.get("value"));
-        valueColumn.prefWidthProperty().bind(doubleBinding.divide(5).multiply(4));
+        valueColumn.prefWidthProperty().bind(floatBinding.divide(5).multiply(4));
         valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
         tableView.getColumns().addAll(keyColumn, valueColumn);
         loadShortcuts();

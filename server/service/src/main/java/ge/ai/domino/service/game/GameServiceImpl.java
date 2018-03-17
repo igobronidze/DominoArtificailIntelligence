@@ -16,32 +16,32 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Round addTileForMe(Round round, int left, int right) throws DAIException {
-        return gameManager.addTileForMe(round, left, right, false);
+    public Round addTileForMe(int gameId, int left, int right) throws DAIException {
+        return gameManager.addTileForMe(gameId, left, right);
     }
 
     @Override
-    public Round addTileForOpponent(Round round) throws DAIException {
-        return gameManager.addTileForOpponent(round, false);
+    public Round addTileForOpponent(int gameId) throws DAIException {
+        return gameManager.addTileForOpponent(gameId);
     }
 
     @Override
-    public Round playForMe(Round round, Move move) throws DAIException {
-        return gameManager.playForMe(round, move, false);
+    public Round playForMe(int gameId, Move move) throws DAIException {
+        return gameManager.playForMe(gameId, move);
     }
 
     @Override
-    public Round playForOpponent(Round round, Move move) throws DAIException {
-        return gameManager.playForOpponent(round, move, false);
+    public Round playForOpponent(int gameId, Move move) throws DAIException {
+        return gameManager.playForOpponent(gameId, move);
     }
 
     @Override
-    public Round getLastPlayedRound(Round round) throws DAIException {
-        return gameManager.getLastPlayedRound(round);
+    public Round getLastPlayedRound(int gameId) throws DAIException {
+        return gameManager.getLastPlayedRound(gameId);
     }
 
     @Override
-    public Round addLeftTiles(Round round, int opponentTilesCount) throws DAIException {
-        return gameManager.addLeftTilesForMe(round, opponentTilesCount);
+    public Round addLeftTiles(int gameId, int opponentTilesCount) throws DAIException {
+        return gameManager.addLeftTilesForMe(gameId, opponentTilesCount);
     }
 }

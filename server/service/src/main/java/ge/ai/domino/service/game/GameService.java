@@ -9,15 +9,15 @@ public interface GameService {
 
     Round startGame(GameProperties gameProperties, int gameId) throws DAIException;
 
-    Round addTileForMe(Round round, int left, int right) throws DAIException;
+    Round addTileForMe(int gameId, int left, int right) throws DAIException;
 
-    Round addTileForOpponent(Round round) throws DAIException;
+    Round addTileForOpponent(int gameId) throws DAIException;
 
-    Round playForMe(Round round, Move move) throws DAIException;
+    Round playForMe(int gameId, Move move) throws DAIException;
 
-    Round playForOpponent(Round round, Move move) throws DAIException;
+    Round playForOpponent(int gameId, Move move) throws DAIException;
 
-    Round getLastPlayedRound(Round round) throws DAIException;
+    Round getLastPlayedRound(int gameId) throws DAIException;
 
-    Round addLeftTiles(Round round, int opponentTilesCount) throws DAIException;
+    Round addLeftTiles(int gameId, int opponentTilesCount) throws DAIException;
 }

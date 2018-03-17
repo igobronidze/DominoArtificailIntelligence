@@ -9,6 +9,7 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.server.manager.game.minmax.MinMax;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 
@@ -61,6 +62,7 @@ public class AddForMeProcessor extends MoveProcessor {
 		tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
 
 		// Execute MinMax
+		MinMax minMax = new MinMax();
 		if (tableInfo.getLeft() == null && round.getMyTiles().size() == 7) {
 			if (CachedGames.isOpponentNextRoundBeginner(gameId) && !virtual) {
 				round.getTableInfo().setMyMove(false);

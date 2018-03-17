@@ -13,10 +13,7 @@ public class CachedGames {
 
     private static final Map<Integer, Game> cachedGames = new HashMap<>();
 
-    public static void addGame(Game game, int gameId) {
-        if (gameId != 0 && game.getProperties() == null) {
-            game.setProperties(cachedGames.get(gameId).getProperties());
-        }
+    public static void addGame(Game game) {
         cachedGames.put(game.getId(), game);
     }
 

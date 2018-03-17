@@ -3,9 +3,8 @@ package ge.ai.domino.console.ui.game;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.MoveDirection;
-import ge.ai.domino.domain.tile.OpponentTile;
-import ge.ai.domino.domain.tile.Tile;
 import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
@@ -20,7 +19,7 @@ abstract class TilesPane extends FlowPane {
 
     static final int IMAGE_HEIGHT = 110;
 
-    static Map<Integer, OpponentTile> opponentTiles;
+    static Map<Tile, Float> opponentTiles;
 
     static Set<Tile> myTiles;
 
@@ -40,7 +39,7 @@ abstract class TilesPane extends FlowPane {
 
     static private boolean arrowsVisible;
 
-    Map<Integer, ImageView> imageViews = new HashMap<>();
+    Map<Tile, ImageView> imageViews = new HashMap<>();
 
     TilesPane(Round round) {
         opponentTiles = round.getOpponentTiles();

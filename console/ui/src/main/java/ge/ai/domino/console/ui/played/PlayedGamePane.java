@@ -5,12 +5,12 @@ import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
 import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
-import ge.ai.domino.domain.played.PlayedGame;
 import ge.ai.domino.domain.played.GameResult;
+import ge.ai.domino.domain.played.PlayedGame;
 import ge.ai.domino.service.played.PlayedGameService;
 import ge.ai.domino.service.played.PlayedGameServiceImpl;
 import ge.ai.domino.util.string.StringUtil;
-import javafx.beans.binding.FloatBinding;
+import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -41,10 +41,10 @@ public class PlayedGamePane extends BorderPane {
 
     private TCHTextField websiteField;
 
-    private FloatBinding floatBinding;
+    private DoubleBinding doubleBinding;
 
-    public PlayedGamePane(FloatBinding floatBinding) {
-        this.floatBinding = floatBinding;
+    public PlayedGamePane(DoubleBinding doubleBinding) {
+        this.doubleBinding = doubleBinding;
         initUI();
     }
 
@@ -98,31 +98,31 @@ public class PlayedGamePane extends BorderPane {
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
         TableColumn<PlayedGameProperty, Boolean> idColumn = new TableColumn<>(Messages.get("id"));
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        idColumn.prefWidthProperty().bind(floatBinding.divide(9));
+        idColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         TableColumn<PlayedGameProperty, Boolean> versionColumn = new TableColumn<>(Messages.get("version"));
         versionColumn.setCellValueFactory(new PropertyValueFactory<>("version"));
-        versionColumn.prefWidthProperty().bind(floatBinding.divide(9));
+        versionColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         TableColumn<PlayedGameProperty, Boolean> resultColumn = new TableColumn<>(Messages.get("result"));
         resultColumn.setCellValueFactory(new PropertyValueFactory<>("result"));
-        resultColumn.prefWidthProperty().bind(floatBinding.divide(9));
+        resultColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         TableColumn<PlayedGameProperty, Boolean> dateColumn = new TableColumn<>(Messages.get("date"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        dateColumn.prefWidthProperty().bind(floatBinding.divide(9));
+        dateColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         TableColumn<PlayedGameProperty, Boolean> myPointColumn = new TableColumn<>(Messages.get("myPoint"));
         myPointColumn.setCellValueFactory(new PropertyValueFactory<>("myPoint"));
-        myPointColumn.prefWidthProperty().bind(floatBinding.divide(9));
+        myPointColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         TableColumn<PlayedGameProperty, Boolean> opponentPointColumn = new TableColumn<>(Messages.get("opponentPoint"));
         opponentPointColumn.setCellValueFactory(new PropertyValueFactory<>("opponentPoint"));
-        opponentPointColumn.prefWidthProperty().bind(floatBinding.divide(9));
+        opponentPointColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         TableColumn<PlayedGameProperty, Boolean> pointForWinColumn = new TableColumn<>(Messages.get("pointForWin"));
         pointForWinColumn.setCellValueFactory(new PropertyValueFactory<>("pointForWin"));
-        pointForWinColumn.prefWidthProperty().bind(floatBinding.divide(9));
+        pointForWinColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         TableColumn<PlayedGameProperty, Boolean> opponentNameColumn = new TableColumn<>(Messages.get("opponentName"));
         opponentNameColumn.setCellValueFactory(new PropertyValueFactory<>("opponentName"));
-        opponentNameColumn.prefWidthProperty().bind(floatBinding.divide(9));
+        opponentNameColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         TableColumn<PlayedGameProperty, Boolean> websiteColumn = new TableColumn<>(Messages.get("website"));
         websiteColumn.setCellValueFactory(new PropertyValueFactory<>("website"));
-        websiteColumn.prefWidthProperty().bind(floatBinding.divide(9));
+        websiteColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         tableView.getColumns().addAll(idColumn, versionColumn, resultColumn, dateColumn, myPointColumn, opponentPointColumn,
                 pointForWinColumn, opponentNameColumn, websiteColumn);
         this.setCenter(tableView);

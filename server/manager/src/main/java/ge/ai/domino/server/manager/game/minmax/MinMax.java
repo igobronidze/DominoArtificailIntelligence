@@ -20,6 +20,7 @@ import ge.ai.domino.server.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.server.manager.game.move.MoveProcessor;
 import ge.ai.domino.server.manager.game.move.PlayForMeProcessor;
+import ge.ai.domino.server.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
@@ -45,7 +46,7 @@ public class MinMax {
 
     private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
 
-    private final MoveProcessor playForOpponentProcessor = new PlayForMeProcessor();
+    private final MoveProcessor playForOpponentProcessor = new PlayForOpponentProcessor();
 
     private final MoveProcessor addForMeProcessor = new AddForMeProcessor();
 

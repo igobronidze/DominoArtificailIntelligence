@@ -2,9 +2,8 @@ package ge.ai.domino.console.ui.game;
 
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.MoveDirection;
-import ge.ai.domino.domain.tile.OpponentTile;
-import ge.ai.domino.domain.tile.Tile;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -32,16 +31,17 @@ abstract class OpponentTilesPane extends TilesPane {
             hBox.setSpacing(10);
             hBox.setPadding(new Insets(8));
             for (int j = i; j >= 0; j--) {
-                OpponentTile tile = opponentTiles.get(new Tile(i, j).hashCode());
+                Tile tile = new Tile(i, j);
+                float prob = opponentTiles.get(tile);
                 if (showTile(tile)) {
                     ImageView imageView = getImageView(tile, true);
-                    Label opponentLabel = new Label("" + formatter.format(tile.getProb()));
+                    Label opponentLabel = new Label("" + formatter.format(prob));
                     opponentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red; -fx-font-weight: bold");
                     VBox vBox = new VBox(5);
                     vBox.setAlignment(Pos.TOP_CENTER);
                     vBox.getChildren().addAll(opponentLabel, imageView);
                     hBox.getChildren().add(vBox);
-                    imageViews.put(tile.hashCode(), imageView);
+                    imageViews.put(tile, imageView);
                     imageView.setOnMouseClicked(e -> onTilePressed(tile));
                 } else {
                     VBox vBox = new VBox();

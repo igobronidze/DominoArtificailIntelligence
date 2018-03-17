@@ -7,6 +7,7 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.played.GameHistory;
+import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.played.PlayedGameManager;
 
 import java.util.HashMap;
@@ -22,12 +23,15 @@ public class InitialUtil {
 
     private static final int INITIAL_COUNT_TILES_FOR_OPPONENT = 7;
 
-    public static Game getInitialGame(GameProperties gameProperties) {
+    public static Game getInitialGame(GameProperties gameProperties, int gameId) {
         Game game = new Game();
         game.setProperties(gameProperties);
         game.setId(playedGameManager.addPlayedGame(gameProperties));
         game.getRounds().add(getInitialRound(game.getId()));
         game.setGameHistory(new GameHistory());
+        if (gameId != 0 && game.getProperties() == null) {
+            game.setProperties(CachedGames.getGame(gameId).getProperties());
+        }
         return game;
     }
 

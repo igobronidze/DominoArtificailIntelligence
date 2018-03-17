@@ -13,9 +13,9 @@ import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
-import ge.ai.domino.domain.tile.Tile;
 import ge.ai.domino.service.game.GameService;
 import ge.ai.domino.service.game.GameServiceImpl;
 import javafx.geometry.Insets;
@@ -116,7 +116,7 @@ public class GamePane extends BorderPane {
                                 meButton.setOnAction(event -> {
                                     try {
                                         AppController.round.getTableInfo().setMyMove(true);
-                                        AppController.round = gameService.addTileForMe(AppController.round, tile.getLeft(), tile.getRight());
+                                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                                         reload();
                                         stage.close();
                                     } catch (DAIException ex) {
@@ -127,7 +127,7 @@ public class GamePane extends BorderPane {
                                 opponentButton.setOnAction(event -> {
                                      try {
                                         AppController.round.getTableInfo().setMyMove(false);
-                                        AppController.round = gameService.addTileForMe(AppController.round, tile.getLeft(), tile.getRight());
+                                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                                         reload();
                                         stage.close();
                                     } catch (DAIException ex) {
@@ -146,11 +146,11 @@ public class GamePane extends BorderPane {
                                 stage.setHeight(140);
                                 stage.showAndWait();
                             } else {
-                                AppController.round = gameService.addTileForMe(AppController.round, tile.getLeft(), tile.getRight());
+                                AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                                 reload();
                             }
                         } else {
-                            AppController.round = gameService.playForOpponent(AppController.round, new Move(tile.getLeft(), tile.getRight(), direction));
+                            AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), new Move(tile.getLeft(), tile.getRight(), direction));
                             reload();
                         }
                     } catch (DAIException ex) {
@@ -162,7 +162,7 @@ public class GamePane extends BorderPane {
             @Override
             public void onAddTileEntered() {
                 try {
-                    AppController.round = gameService.addTileForOpponent(AppController.round);
+                    AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
                 } catch (DAIException ex) {
                     WarnDialog.showWarnDialog(ex);
                 }
@@ -181,7 +181,7 @@ public class GamePane extends BorderPane {
                     reload();
                 } else {
                     try {
-                        AppController.round = gameService.playForMe(AppController.round, new Move(tile.getLeft(), tile.getRight(), direction));
+                        AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(tile.getLeft(), tile.getRight(), direction));
                         AppController.round.setAiPrediction(null);
                     } catch (DAIException ex) {
                         WarnDialog.showWarnDialog(ex);
@@ -264,7 +264,7 @@ public class GamePane extends BorderPane {
 
     private void onUndo() {
         try {
-            AppController.round = gameService.getLastPlayedRound(AppController.round);
+            AppController.round = gameService.getLastPlayedRound(AppController.round.getGameInfo().getGameId());
         } catch (DAIException ex) {
             WarnDialog.showWarnDialog(ex);
         }
@@ -284,7 +284,7 @@ public class GamePane extends BorderPane {
         TCHButton button = new TCHButton(Messages.get("add"));
         button.setOnAction(event -> {
             try {
-                AppController.round = gameService.addLeftTiles(AppController.round, countField.getNumber().intValue());
+                AppController.round = gameService.addLeftTiles(AppController.round.getGameInfo().getGameId(), countField.getNumber().intValue());
             } catch (DAIException ex) {
                 WarnDialog.showWarnDialog(ex);
             }

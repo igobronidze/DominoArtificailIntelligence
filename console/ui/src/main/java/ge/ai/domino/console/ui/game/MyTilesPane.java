@@ -1,10 +1,9 @@
 package ge.ai.domino.console.ui.game;
 
-import ge.ai.domino.domain.game.HeuristicInfo;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
-import ge.ai.domino.domain.tile.Tile;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -34,15 +33,14 @@ abstract class MyTilesPane extends TilesPane {
                 VBox vBox = new VBox();
                 vBox.setAlignment(Pos.TOP_CENTER);
                 ImageView imageView = getImageView(tile, round.getTableInfo().isMyMove());
-                imageViews.put(tile.hashCode(), imageView);
+                imageViews.put(tile, imageView);
                 Move aiPrediction = round.getAiPrediction();
                 if (aiPrediction != null) {
                     int bestX = aiPrediction.getLeft();
                     int bestY = aiPrediction.getRight();
                     if (tile.getLeft() == bestX && tile.getRight() == bestY) {
                         NumberFormat formatter = new DecimalFormat("#0.0000");
-                        HeuristicInfo heuristicInfo = round.getHeuristicInfo();
-                        Label label = new Label(aiPrediction.getDirection().name() + "(" + formatter.format(heuristicInfo.getValue()) + ")");
+                        Label label = new Label(aiPrediction.getDirection().name() + "(" + formatter.format(round.getHeuristicValue()) + ")");
                         vBox.getChildren().add(label);
                     }
                 }

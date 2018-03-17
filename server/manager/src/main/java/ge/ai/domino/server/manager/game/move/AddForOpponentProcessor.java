@@ -6,6 +6,7 @@ import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.server.manager.game.minmax.MinMax;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 
 public class AddForOpponentProcessor extends MoveProcessor {
@@ -40,6 +41,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 
 			round.getTableInfo().setMyMove(true);
 			if (!virtual) {
+				MinMax minMax = new MinMax();
 				Move aiPrediction = minMax.minMax(round);
 				round.setAiPrediction(aiPrediction);
 			}

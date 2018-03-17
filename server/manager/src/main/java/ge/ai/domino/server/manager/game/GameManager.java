@@ -18,6 +18,7 @@ import ge.ai.domino.server.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.server.manager.game.move.MoveProcessor;
 import ge.ai.domino.server.manager.game.move.PlayForMeProcessor;
+import ge.ai.domino.server.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 import org.apache.log4j.Logger;
 
@@ -27,7 +28,7 @@ public class GameManager {
 
     private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
 
-    private final MoveProcessor playForOpponentProcessor = new PlayForMeProcessor();
+    private final MoveProcessor playForOpponentProcessor = new PlayForOpponentProcessor();
 
     private final MoveProcessor addForMeProcessor = new AddForMeProcessor();
 
@@ -35,10 +36,10 @@ public class GameManager {
 
     public Round startGame(GameProperties gameProperties, int gameId) throws DAIException {
         logger.info("Started prepare new game");
-        Game game = InitialUtil.getInitialGame(gameProperties);
-        CachedGames.addGame(game, gameId);
+        Game game = InitialUtil.getInitialGame(gameProperties, gameId);
+        CachedGames.addGame(game);
         logger.info("------------Started new game[" + game.getId() + "]------------");
-        Round newRound = CachedGames.getCurrentRound(gameId);
+        Round newRound = CachedGames.getCurrentRound(game.getId());
         GameLoggingProcessor.logRoundFullInfo(newRound, false);
         return newRound;
     }

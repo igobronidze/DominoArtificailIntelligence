@@ -19,7 +19,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 			GameLoggingProcessor.logInfoAboutMove("<<<<<<<Real Mode<<<<<<<", false);
 		}
 		int gameId = round.getGameInfo().getGameId();
-		GameLoggingProcessor.logInfoAboutMove("Start add tile for opponent method, gameId[" + gameId + "]", virtual);
+		GameLoggingProcessor.logInfoAboutMove("Start addTileForOpponent method, gameId[" + gameId + "]", virtual);
 		TableInfo tableInfo = round.getTableInfo();
 
 		// If it's first time, make possible tiles as bazaar and distribute their probabilities for other
@@ -41,9 +41,9 @@ public class AddForOpponentProcessor extends MoveProcessor {
 
 			round.getTableInfo().setMyMove(true);
 			if (!virtual) {
-				MinMax minMax = new MinMax();
-				Move aiPrediction = minMax.minMax(round);
-				round.setAiPrediction(aiPrediction);
+//				MinMax minMax = new MinMax();
+//				Move aiPrediction = minMax.minMax(round);
+//				round.setAiPrediction(aiPrediction);  TODO
 			}
 			return round;
 		}

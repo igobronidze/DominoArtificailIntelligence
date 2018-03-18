@@ -41,19 +41,30 @@ public class GameLoggingProcessor {
 
     private static StringBuilder gameInfoToString(GameInfo gameInfo) {
         StringBuilder info = new StringBuilder();
-        info.append("          Game Info").append(System.lineSeparator()).append("Game Id:").append(gameInfo.getGameId()).append(",   My Point:").append(gameInfo.getMyPoint())
+        info.append("_____Game Info").append(System.lineSeparator())
+                .append("Game Id:").append(gameInfo.getGameId())
+                .append(",   My Point:").append(gameInfo.getMyPoint())
                 .append(",   Opponent Point:").append(gameInfo.getOpponentPoint()).append(System.lineSeparator());
         return info;
     }
 
     private static StringBuilder tableInfoToString(TableInfo tableInfo) {
         StringBuilder info = new StringBuilder();
-        info.append("          Table Info").append(System.lineSeparator()).append("Left:").append(playedTileToString(tableInfo.getLeft())).append(",   Right:").append(playedTileToString(tableInfo.getRight())).
-                append(",   Top:").append(playedTileToString(tableInfo.getTop())).append(",   Bottom:").append(playedTileToString(tableInfo.getBottom())).append(System.lineSeparator());
-        info.append("My move:").append(tableInfo.isMyMove()).append(",   With Center:").append(tableInfo.isWithCenter()).append(",   Need Tiles:").append(tableInfo.isNeedToAddLeftTiles())
-                .append(",   Omitted Me:").append(tableInfo.isOmittedMe()).append(",   Omitted Opponent:").append(tableInfo.isOmittedOpponent()).append(System.lineSeparator());
-        info.append("Opponent Tiles:").append(tableInfo.getOpponentTilesCount()).append(",   Bazaar Tiles:").append(tableInfo.getBazaarTilesCount()).
-                append(",   Tiles From Bazaar:").append(tableInfo.getTilesFromBazaar()).append(System.lineSeparator());
+        info.append("_____Table Info").append(System.lineSeparator())
+                .append("Left:").append(playedTileToString(tableInfo.getLeft()))
+                .append(",   Right:").append(playedTileToString(tableInfo.getRight()))
+                .append(",   Top:").append(playedTileToString(tableInfo.getTop()))
+                .append(",   Bottom:").append(playedTileToString(tableInfo.getBottom())).append(System.lineSeparator())
+                .append("My move:").append(tableInfo.isMyMove())
+                .append(",   With Center:").append(tableInfo.isWithCenter())
+                .append(",   Omitted Me:").append(tableInfo.isOmittedMe())
+                .append(",   Omitted Opponent:").append(tableInfo.isOmittedOpponent())
+                .append(",   First round:").append(tableInfo.isFirstRound())
+                .append(",   Need to add left tiles:").append(tableInfo.isNeedToAddLeftTiles()).append(System.lineSeparator())
+                .append("Opponent Tiles:").append(tableInfo.getOpponentTilesCount())
+                .append(",   Bazaar Tiles:").append(tableInfo.getBazaarTilesCount())
+                .append(",   Last played prob:").append(tableInfo.getLastPlayedProb())
+                .append(",   Tiles from bazaar:").append(tableInfo.getTilesFromBazaar()).append(System.lineSeparator());
         return info;
     }
 
@@ -66,8 +77,11 @@ public class GameLoggingProcessor {
 
     private static StringBuilder myTileToString(Collection<Tile> tiles) {
         StringBuilder info = new StringBuilder();
-        info.append("          My Tiles").append(System.lineSeparator());
+        info.append("_____My Tiles").append(System.lineSeparator());
         int counter = 0;
+        if (tiles.isEmpty()) {
+            info.append("No tiles").append(System.lineSeparator());
+        }
         for (Tile tile : tiles) {
             if (counter != 0) {
                 info.append("     ");
@@ -87,21 +101,14 @@ public class GameLoggingProcessor {
 
     private static StringBuilder opponentTileToString(Map<Tile, Float> tiles) {
         StringBuilder info = new StringBuilder();
-        info.append("          Opponent Tiles").append(System.lineSeparator());
-        int counter = 0;
+        info.append("_____Opponent Tiles").append(System.lineSeparator());
         NumberFormat formatter = new DecimalFormat("#0.0000");
-        for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-            if (counter != 0) {
-                info.append("     ");
+        for (int i = 0; i <= 6; i++) {
+            for (int j = 6; j >= i ; j--) {
+                Tile tile = new Tile(j, i);
+                Float prob = tiles.get(tile);
+                info.append(tile).append(" ").append(prob == null ? "N     " : formatter.format(prob)).append("     ");
             }
-            info.append(entry.getKey()).append(" ").append(formatter.format(entry.getValue()));
-            counter++;
-            if (counter == 5) {
-                info.append(System.lineSeparator());
-                counter = 0;
-            }
-        }
-        if (counter != 0) {
             info.append(System.lineSeparator());
         }
         return info;

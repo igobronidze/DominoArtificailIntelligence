@@ -21,7 +21,7 @@ public class SystemParameterDAOImpl implements SystemParameterDAO {
     @Override
     public void addSystemParameter(SystemParameter systemParameter) throws DAIException {
         try {
-            logger.info("Start add system parameter method");
+            logger.info("Start addSystemParameter method");
             String uniqueSQL = "SELECT COUNT(*) FROM system_parameter WHERE key = ?";
             pstmt = DatabaseUtil.getConnection().prepareStatement(uniqueSQL);
             pstmt.setString(1, systemParameter.getKey());
@@ -48,7 +48,7 @@ public class SystemParameterDAOImpl implements SystemParameterDAO {
     @Override
     public void editSystemParameter(SystemParameter systemParameter) throws DAIException {
         try {
-            logger.info("Start edit system parameter method");
+            logger.info("Start editSystemParameter method");
             String sql = "UPDATE system_parameter SET value = ?, type = ? WHERE key = ?";
             pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, systemParameter.getValue());
@@ -70,7 +70,7 @@ public class SystemParameterDAOImpl implements SystemParameterDAO {
     @Override
     public void deleteSystemParameter(String key) throws DAIException {
         try {
-            logger.info("Started delete system parameter with key [" + key + "]");
+            logger.info("Started deleteSystemParameter with key [" + key + "]");
             String sql = "DELETE FROM system_parameter WHERE key = ?";
             pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, key);

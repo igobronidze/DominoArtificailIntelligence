@@ -22,7 +22,6 @@ abstract class OpponentTilesPane extends TilesPane {
         initComponents();
     }
 
-    @SuppressWarnings("Duplicates")
     private void initComponents() {
         NumberFormat formatter = new DecimalFormat("#0.0000");
         for (int i = 6; i >= 0; i--) {
@@ -32,10 +31,10 @@ abstract class OpponentTilesPane extends TilesPane {
             hBox.setPadding(new Insets(8));
             for (int j = i; j >= 0; j--) {
                 Tile tile = new Tile(i, j);
-                float prob = opponentTiles.get(tile);
+                Float prob = opponentTiles.get(tile);
                 if (showTile(tile)) {
                     ImageView imageView = getImageView(tile, true);
-                    Label opponentLabel = new Label("" + formatter.format(prob));
+                    Label opponentLabel = new Label("" + (prob == null ? "N" : formatter.format(prob)));
                     opponentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red; -fx-font-weight: bold");
                     VBox vBox = new VBox(5);
                     vBox.setAlignment(Pos.TOP_CENTER);
@@ -67,8 +66,8 @@ abstract class OpponentTilesPane extends TilesPane {
     public void onTilePressed(Tile tile) {
         if (!round.getTableInfo().isMyMove()) {
             if (!isFirsMove()) {
-                imageViews.get(tile.hashCode()).setFitHeight(IMAGE_HEIGHT + 10);
-                imageViews.get(tile.hashCode()).setFitWidth(IMAGE_WIDTH + 10);
+                imageViews.get(tile).setFitHeight(IMAGE_HEIGHT + 10);
+                imageViews.get(tile).setFitWidth(IMAGE_WIDTH + 10);
                 showArrows(this, tile);
             } else {
                 onTileEntered(tile, MoveDirection.LEFT);
@@ -80,7 +79,7 @@ abstract class OpponentTilesPane extends TilesPane {
 
     @Override
     public boolean showTile(Tile tile) {
-        return tile != null && opponentTiles.containsKey(tile.hashCode());
+        return tile != null && opponentTiles.containsKey(tile);
     }
 
     public abstract void onAddTileEntered();

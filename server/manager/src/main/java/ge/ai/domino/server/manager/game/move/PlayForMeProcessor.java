@@ -15,19 +15,15 @@ public class PlayForMeProcessor extends MoveProcessor {
 	public Round move(Round round, Move move, boolean virtual) throws DAIException {
 		// Logging
 		GameLoggingProcessor.logInfoAboutMove(virtual ? "<<<<<<<Virtual Mode>>>>>>>" : "<<<<<<<Real Mode<<<<<<<", virtual);
-		// Left must be greater or equal than right
-		int left = Math.min(move.getLeft(), move.getRight());
-		int right = Math.max(move.getLeft(), move.getRight());
 		MoveDirection direction = move.getDirection();
 
 		round.getTableInfo().setOmittedMe(false);
 		int gameId = round.getGameInfo().getGameId();
-		GameLoggingProcessor.logInfoAboutMove("Start play for me method for tile [" + left + "-" + right + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
+		GameLoggingProcessor.logInfoAboutMove("Start playForMe method for tile [" + move.getLeft() + "-" + move.getRight() + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
 
 		// Not played twins case
 		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {
-			GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (left == right ? left : -1));
-			float sum = GameOperations.makeTilesAsBazaarAndReturnProbabilitiesSum(round);
+			float sum = GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (move.getLeft() == move.getRight() ? move.getLeft() : -1));
 			GameOperations.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
 		}
 

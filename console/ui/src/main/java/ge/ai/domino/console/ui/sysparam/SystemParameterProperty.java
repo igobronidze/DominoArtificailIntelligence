@@ -14,7 +14,7 @@ public class SystemParameterProperty {
 
     private SimpleStringProperty type;
 
-    public SystemParameterProperty(SystemParameter systemParameter) {
+    SystemParameterProperty(SystemParameter systemParameter) {
         this.id = new SimpleIntegerProperty(systemParameter.getId());
         this.key = new SimpleStringProperty(systemParameter.getKey());
         this.value = new SimpleStringProperty(systemParameter.getValue());

@@ -115,7 +115,7 @@ public class GamePane extends BorderPane {
                                 TCHButton meButton = new TCHButton(Messages.get("me"));
                                 meButton.setOnAction(event -> {
                                     try {
-                                        AppController.round.getTableInfo().setMyMove(true);
+                                        AppController.round.getTableInfo().setMyMove(true);  // TODO not work on server side
                                         AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                                         reload();
                                         stage.close();
@@ -126,7 +126,7 @@ public class GamePane extends BorderPane {
                                 TCHButton opponentButton = new TCHButton(Messages.get("he"));
                                 opponentButton.setOnAction(event -> {
                                      try {
-                                        AppController.round.getTableInfo().setMyMove(false);
+                                        AppController.round.getTableInfo().setMyMove(false);  // TODO not work on server side
                                         AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                                         reload();
                                         stage.close();

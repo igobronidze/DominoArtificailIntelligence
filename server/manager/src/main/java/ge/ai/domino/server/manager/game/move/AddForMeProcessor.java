@@ -23,9 +23,6 @@ public class AddForMeProcessor extends MoveProcessor {
 
 	@Override
 	public Round move(Round round, Move move, boolean virtual) throws DAIException {
-		// Left must be greater or equal than right
-		int left = Math.max(move.getLeft(), move.getRight());
-		int right = Math.min(move.getLeft(), move.getRight());
 		// Logging
 		if (virtual) {
 			GameLoggingProcessor.logInfoAboutMove("<<<<<<<Virtual Mode>>>>>>>", true);
@@ -33,7 +30,7 @@ public class AddForMeProcessor extends MoveProcessor {
 			GameLoggingProcessor.logInfoAboutMove("<<<<<<<Real Mode<<<<<<<", false);
 		}
 		int gameId = round.getGameInfo().getGameId();
-		GameLoggingProcessor.logInfoAboutMove("Start add tile for me method for tile [" + left + "-" + right + "], gameId[" + gameId + "]", virtual);
+		GameLoggingProcessor.logInfoAboutMove("Start addTileForMe method for tile [" + move.getLeft() + "-" + move.getRight() + "], gameId[" + gameId + "]", virtual);
 		TableInfo tableInfo = round.getTableInfo();
 
 		// If omit -> a) If opponent also has omitted finish b) Make opponent try
@@ -49,7 +46,7 @@ public class AddForMeProcessor extends MoveProcessor {
 		}
 
 		// Add for mer
-		Tile tile = new Tile(left, right);
+		Tile tile = new Tile(move.getLeft(), move.getRight());
 		round.getMyTiles().add(tile);
 
 		// Delete for opponent and produce probability
@@ -58,7 +55,6 @@ public class AddForMeProcessor extends MoveProcessor {
 		opponentTiles.remove(tile);
 		GameOperations.distributeProbabilitiesOpponentProportional(opponentTiles, prob);
 
-		tableInfo.setOpponentTilesCount(tableInfo.getOpponentTilesCount() + 1);
 		tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
 
 		// Execute MinMax
@@ -68,12 +64,12 @@ public class AddForMeProcessor extends MoveProcessor {
 				round.getTableInfo().setMyMove(false);
 			}
 			if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove() && !virtual) {
-				Move aiPrediction = minMax.minMax(round);
-				round.setAiPrediction(aiPrediction);
+//				Move aiPrediction = minMax.minMax(round);  TODO
+//				round.setAiPrediction(aiPrediction);
 			}
 		} else if (round.getTableInfo().getLeft() != null && !virtual) {
-			Move aiPrediction = minMax.minMax(round);
-			round.setAiPrediction(aiPrediction);
+//			Move aiPrediction = minMax.minMax(round);   TODO
+//			round.setAiPrediction(aiPrediction);
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Added tile for me, gameId[" + gameId + "]", virtual);

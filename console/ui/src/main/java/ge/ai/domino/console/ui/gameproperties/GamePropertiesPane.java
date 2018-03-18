@@ -53,8 +53,7 @@ public class GamePropertiesPane extends VBox {
         TCHTextField nameField = new TCHTextField(TCHComponentSize.MEDIUM);
         TCHFieldLabel nameFieldLabel = new TCHFieldLabel(Messages.get("name"), nameField);
         List<Integer> points = systemParameterService.getIntegerListParameterValue(possiblePoints);
-        List<Object> objPoints = new ArrayList<>();
-        objPoints.addAll(points);
+        List<Object> objPoints = new ArrayList<>(points);
         TCHComboBox pointComboBox = new TCHComboBox(objPoints);
         TCHFieldLabel pointFieldLabel = new TCHFieldLabel(Messages.get("point"), pointComboBox);
         TCHButton startButton = new TCHButton(Messages.get("start"));

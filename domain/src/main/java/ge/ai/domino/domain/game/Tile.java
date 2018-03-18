@@ -36,4 +36,9 @@ public class Tile {
 		result = 7 * result + right;
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return left + "-" + right;
+	}
 }

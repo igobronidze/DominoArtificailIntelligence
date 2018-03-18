@@ -25,7 +25,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     @Override
     public int addPlayedGame(PlayedGame game) {
         try {
-            logger.info("Start add game game method");
+            logger.info("Start addGame method");
             String sql = "INSERT INTO played_game (version, point_for_win, opponent_name, website, result) VALUES (?,?,?,?,?);";
             pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, game.getVersion());
@@ -39,7 +39,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             ResultSet rs = pstmt.executeQuery();
             rs.next();
             int id = rs.getInt("max_id");
-            logger.info("Added game game with id [" + id + "]");
+            logger.info("Added game id [" + id + "]");
             return id;
         } catch (SQLException ex) {
             logger.error("Error occurred while add game game", ex);
@@ -52,7 +52,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     @Override
     public void updatePlayedGame(PlayedGame game) {
         try {
-            logger.info("Start edit game game method id[" + game.getId() + "]");
+            logger.info("Start editGame method id[" + game.getId() + "]");
             String sql = "UPDATE played_game SET result = ?, date = ?, time = ?, my_point = ?, opponent_point = ?, game_history = ? WHERE id = ?";
             pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, game.getResult().name());
@@ -63,7 +63,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             pstmt.setString(6, GameHistoryMarshaller.getMarshalledHistory(game.getGameHistory()));
             pstmt.setInt(7, game.getId());
             pstmt.executeUpdate();
-            logger.info("Updated game game id[" + game.getId() + "]");
+            logger.info("Updated game id[" + game.getId() + "]");
         } catch (SQLException ex) {
             logger.error("Error occurred while edit game game", ex);
         } finally {
@@ -138,12 +138,12 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     @Override
     public void deletePlayedGame(int gameId) {
         try {
-            logger.info("Start delete game game method id[" + gameId + "]");
+            logger.info("Start deleteGame method id[" + gameId + "]");
             String sql = "DELETE FROM played_game WHERE id = ?";
             pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
             pstmt.setInt(1, gameId);
             pstmt.executeUpdate();
-            logger.info("Deleted game game id[" + gameId + "]");
+            logger.info("Deleted game id[" + gameId + "]");
         } catch (SQLException ex) {
             logger.error("Error occurred while delete game game", ex);
         } finally {

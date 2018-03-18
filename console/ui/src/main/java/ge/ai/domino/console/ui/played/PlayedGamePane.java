@@ -129,7 +129,7 @@ public class PlayedGamePane extends BorderPane {
     }
 
     private void loadPlayedGames() {
-        List<PlayedGame> playedGames = playedGameService.getPlayedGames(versionField.getText(), resultComboBox.getValue() == null ? null : resultComboBox.getValue(),
+        List<PlayedGame> playedGames = playedGameService.getPlayedGames(versionField.getText(), resultComboBox.getValue(),
                 opponentNameField.getText(), websiteField.getText());
         List<PlayedGameProperty> playedGameProperties = new ArrayList<>();
         for (PlayedGame playedGame : playedGames) {

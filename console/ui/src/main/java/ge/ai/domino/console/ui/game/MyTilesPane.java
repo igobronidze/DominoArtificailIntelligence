@@ -26,7 +26,6 @@ abstract class MyTilesPane extends TilesPane {
         this.setPadding(new Insets(8));
     }
 
-    @SuppressWarnings("Duplicates")
     private void initComponents() {
         for (Tile tile : round.getMyTiles()) {
             if (showTile(tile)) {
@@ -57,8 +56,8 @@ abstract class MyTilesPane extends TilesPane {
     public void onTilePressed(Tile tile) {
         if (round.getTableInfo().isMyMove()) {
             if (!isFirsMove()) {
-                imageViews.get(tile.hashCode()).setFitHeight(IMAGE_HEIGHT + 10);
-                imageViews.get(tile.hashCode()).setFitWidth(IMAGE_WIDTH + 10);
+                imageViews.get(tile).setFitHeight(IMAGE_HEIGHT + 10);
+                imageViews.get(tile).setFitWidth(IMAGE_WIDTH + 10);
                 showArrows(this, tile);
             } else {
                 onTileEntered(tile, MoveDirection.LEFT);

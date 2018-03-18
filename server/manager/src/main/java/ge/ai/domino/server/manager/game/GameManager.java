@@ -34,8 +34,8 @@ public class GameManager {
 
     private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
 
-    public Round startGame(GameProperties gameProperties, int gameId) throws DAIException {
-        logger.info("Started prepare new game");
+    public Round startGame(GameProperties gameProperties, int gameId) {
+        logger.info("Preparing new game");
         Game game = InitialUtil.getInitialGame(gameProperties, gameId);
         CachedGames.addGame(game);
         logger.info("------------Started new game[" + game.getId() + "]------------");
@@ -46,7 +46,7 @@ public class GameManager {
 
     public Round addTileForMe(int gameId, int left, int right) throws DAIException {
         Round round = CachedGames.getCurrentRound(gameId);
-        Move move = new Move(left, right, MoveDirection.LEFT);
+        Move move = getMove(left, right, MoveDirection.LEFT);
         Round newRound = addForMeProcessor.move(round, move, false);
         CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
         if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() == 1) {
@@ -59,13 +59,14 @@ public class GameManager {
 
     public Round addTileForOpponent(int gameId) throws DAIException {
         Round round = CachedGames.getCurrentRound(gameId);
-        Round newRound = addForOpponentProcessor.move(round, new Move(0, 0, MoveDirection.LEFT), false);
+        Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT), false);
         CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
         CachedGames.addMove(gameId, round.getTableInfo().isOmittedOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove(), false);
         return newRound;
     }
 
     public Round playForMe(int gameId, Move move) throws DAIException {
+        move = getMove(move);
         Round round = CachedGames.getCurrentRound(gameId);
         Round newRound = playForMeProcessor.move(round, move, false);
         CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
@@ -74,6 +75,7 @@ public class GameManager {
     }
 
     public Round playForOpponent(int gameId, Move move) throws DAIException {
+        move = getMove(move);
         Round round = CachedGames.getCurrentRound(gameId);
         Round newRound = playForOpponentProcessor.move(round, move, false);
         CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
@@ -83,7 +85,7 @@ public class GameManager {
 
     public Round getLastPlayedRound(int gameId) throws DAIException {
         Round round = CachedGames.getCurrentRound(gameId);
-        logger.info("Start get last game round method, gameId[" + gameId + "]");
+        logger.info("Start getLastPlayedRound method, gameId[" + gameId + "]");
         Game game = CachedGames.getGame(round.getGameInfo().getGameId());
         if (game.getRounds().isEmpty()) {
             logger.warn("There is not any round in history, gameId[" + gameId + "]");
@@ -99,7 +101,7 @@ public class GameManager {
     public Round addLeftTilesForMe(int gameId, int opponentTilesCount) throws DAIException {
         Round round = CachedGames.getCurrentRound(gameId);
         GameInfo gameInfo = round.getGameInfo();
-        logger.info("Start add left tile method, gameId[" + gameId + "]");
+        logger.info("Start addLeftTileForMe method, gameId[" + gameId + "]");
         round.getTableInfo().setNeedToAddLeftTiles(false);
         TableInfo tableInfo = round.getTableInfo();
         Round newRound;
@@ -123,5 +125,13 @@ public class GameManager {
         }
         OpponentTilesValidator.validateOpponentTiles(newRound, 0, "addLeftTilesForMe");
         return newRound;
+    }
+
+    private Move getMove(int left, int right, MoveDirection direction) {
+        return new Move(Math.max(left, right), Math.min(left, right), direction);
+    }
+
+    private Move getMove(Move move) {
+        return new Move(Math.max(move.getLeft(), move.getRight()), Math.min(move.getLeft(), move.getRight()), move.getDirection());
     }
 }

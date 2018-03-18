@@ -4,15 +4,15 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
-public class ControlPanelFooter extends BorderPane {
+class ControlPanelFooter extends BorderPane {
 
-    public static final int HEIGHT = 25;
+    private static final int HEIGHT = 25;
 
     private Label leftLabel;
 
     private Label rightLabel;
 
-    public ControlPanelFooter() {
+    ControlPanelFooter() {
         initComponents();
         initUI();
     }

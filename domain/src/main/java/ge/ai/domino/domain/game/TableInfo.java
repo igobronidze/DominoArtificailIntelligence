@@ -4,8 +4,6 @@ import ge.ai.domino.domain.played.PlayedTile;
 
 public class TableInfo {
 
-    private boolean withCenter;
-
     private PlayedTile top;
 
     private PlayedTile right;
@@ -14,7 +12,17 @@ public class TableInfo {
 
     private PlayedTile left;
 
+    private boolean withCenter;
+
     private boolean myMove;
+
+    private boolean omittedMe;
+
+    private boolean omittedOpponent;
+
+    private boolean firstRound;
+
+    private boolean needToAddLeftTiles;
 
     private float opponentTilesCount;
 
@@ -22,15 +30,7 @@ public class TableInfo {
 
     private float lastPlayedProb;
 
-    private boolean needToAddLeftTiles;
-
     private int tilesFromBazaar;
-
-    private boolean omittedMe;
-
-    private boolean omittedOpponent;
-
-    private boolean firstRound;
 
     public boolean isWithCenter() {
         return withCenter;

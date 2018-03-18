@@ -21,18 +21,15 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		} else {
 			GameLoggingProcessor.logInfoAboutMove("<<<<<<<Real Mode<<<<<<<", false);
 		}
-		int left = move.getLeft();
-		int right = move.getRight();
 		MoveDirection direction = move.getDirection();
 		round.getTableInfo().setOmittedOpponent(false);
 		int gameId = round.getGameInfo().getGameId();
-		GameLoggingProcessor.logInfoAboutMove("Start play for opponent method for tile [" + left + "-" + right + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
+		GameLoggingProcessor.logInfoAboutMove("Start playForOpponent method for tile [" + move.getLeft() + "-" + move.getRight() + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
 
 		// Not played twins case
 		Map<Tile, Float> opponentTiles = round.getOpponentTiles();
 		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {
-			GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (left == right ? left : -1));
-			float sum = GameOperations.makeTilesAsBazaarAndReturnProbabilitiesSum(round);
+			float sum = GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (move.getLeft() == move.getRight() ? move.getLeft() : -1));
 			GameOperations.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
 		}
 
@@ -61,9 +58,9 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		}
 
 		if (!virtual) {
-			MinMax minMax = new MinMax();
-			Move aiPrediction = minMax.minMax(round);
-			round.setAiPrediction(aiPrediction);
+//			MinMax minMax = new MinMax();
+//			Move aiPrediction = minMax.minMax(round);
+//			round.setAiPrediction(aiPrediction); TODO
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Played tile for opponent, gameId[" + gameId + "]", virtual);

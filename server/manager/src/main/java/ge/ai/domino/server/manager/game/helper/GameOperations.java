@@ -1,10 +1,6 @@
 package ge.ai.domino.server.manager.game.helper;
 
-import ge.ai.domino.domain.game.Game;
-import ge.ai.domino.domain.game.GameInfo;
-import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.TableInfo;
-import ge.ai.domino.domain.game.Tile;
+import ge.ai.domino.domain.game.*;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.server.caching.game.CachedGames;
@@ -13,7 +9,6 @@ import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class GameOperations {
 
@@ -92,34 +87,67 @@ public class GameOperations {
 	}
 
 	public static void distributeProbabilitiesOpponentProportional(Map<Tile, Float> tiles, float probability) {
-		Map<Tile, Float> filteredTiles = tiles.entrySet().stream()
-				.filter(entry -> filterTile(entry.getValue(), false, true, false, true))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-		float sum = filteredTiles.values().stream()
-				.reduce(0.0F, Float::sum);
-		int count = filteredTiles.size();
+		int count = 0;
+		float sum = 0.0F;
+		for (float prob : tiles.values()) {
+			if (filterTile(prob, false, true, false, true)) {
+				sum += prob;
+				count++;
+			}
+		}
 
 		if (ComparisonHelper.equal(sum + probability, count)) {
-			filteredTiles.entrySet().stream()
-					.forEach(entry -> entry.setValue(1.0F));
+			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
+				if (filterTile(entry.getValue(), false, true, false, true)) {
+					entry.setValue(1.0F);
+				}
+			}
 		} else {
-			filteredTiles.entrySet().stream()
-					.forEach(entry -> {
-				float add = probability * entry.getValue() / sum;
-				entry.setValue(entry.getValue() + add);
-			});
+			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
+				if (filterTile(entry.getValue(), false, true, false, true)) {
+					float add = probability * entry.getValue() / sum;
+					entry.setValue(entry.getValue() + add);
+				}
+			}
 		}
 	}
 
+	// TODO
 	public static void updateProbabilitiesForLastPickedTiles(Round round, boolean played) {
-		Set<Integer> notUsedNumbers = getPossiblePlayNumbers(round.getTableInfo());
-		Map<Tile, Float> usefulTiles = round.getOpponentTiles().entrySet().stream()
-				.filter(entry -> !notUsedNumbers.contains(entry.getKey().getLeft()) && !notUsedNumbers.contains(entry.getKey().getRight()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
 		float bazaarTilesCount = round.getTableInfo().getTilesFromBazaar();
-		GameOperations.distributeProbabilitiesBazaarProportional(usefulTiles, played ? bazaarTilesCount - 1 : bazaarTilesCount);
+		float probability = played ? bazaarTilesCount - 1 : bazaarTilesCount;
+
+		Map<Tile, Float> tiles = round.getOpponentTiles();
+		Set<Integer> notUsedNumbers = getPossiblePlayNumbers(round.getTableInfo());
+
+		int count = 0;
+		float sum = 0.0F;
+		for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
+			if (filterTile(entry.getValue(), false, true, false, true)
+					&& !notUsedNumbers.contains(entry.getKey().getLeft()) && !notUsedNumbers.contains(entry.getKey().getRight())) {
+				sum += (1 - entry.getValue());
+				count++;
+			}
+		}
+
+		if (ComparisonHelper.equal(sum + probability, count)) {
+			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
+				if (filterTile(entry.getValue(), false, true, false, true)
+						&& !notUsedNumbers.contains(entry.getKey().getLeft()) && !notUsedNumbers.contains(entry.getKey().getRight())) {
+					entry.setValue(1.0F);
+				}
+			}
+		} else {
+			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
+				if (filterTile(entry.getValue(), false, true, false, true)
+						&& !notUsedNumbers.contains(entry.getKey().getLeft()) && !notUsedNumbers.contains(entry.getKey().getRight())) {
+					float add = probability * (1 - entry.getValue()) / sum;
+					entry.setValue(entry.getValue() + add);
+				}
+			}
+		}
+
+
 		round.getTableInfo().setTilesFromBazaar(0);
 	}
 
@@ -251,28 +279,6 @@ public class GameOperations {
 			if (i >= count) {
 				return i;
 			}
-		}
-	}
-
-	private static void distributeProbabilitiesBazaarProportional(Map<Tile, Float> tiles, float probability) {
-		Map<Tile, Float> filteredTiles = tiles.entrySet().stream()
-				.filter(entry -> filterTile(entry.getValue(), false, true, false, true))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-		float sum = filteredTiles.values().stream()
-				.map(prob -> 1 - prob)
-				.reduce(0.0F, Float::sum);
-		int count = filteredTiles.size();
-
-		if (ComparisonHelper.equal(sum + probability, count)) {
-			filteredTiles.entrySet().stream()
-					.forEach(entry -> entry.setValue(1.0F));
-		} else {
-			filteredTiles.entrySet().stream()
-					.forEach(entry -> {
-						float add = probability * (1 - entry.getValue()) / sum;
-						entry.setValue(entry.getValue() + add);
-					});
 		}
 	}
 }

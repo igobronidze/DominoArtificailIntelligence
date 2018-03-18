@@ -9,7 +9,7 @@ public class ShortcutProperty {
 
     private StringProperty value;
 
-    public ShortcutProperty(String key, String value) {
+    ShortcutProperty(String key, String value) {
         this.key = new SimpleStringProperty(key);
         this.value = new SimpleStringProperty(value);
     }

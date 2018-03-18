@@ -1,10 +1,6 @@
 package ge.ai.domino.console.ui.sysparam;
 
-import ge.ai.domino.console.ui.tchcomponents.TCHButton;
-import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
-import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
-import ge.ai.domino.console.ui.tchcomponents.TCHFieldLabel;
-import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
+import ge.ai.domino.console.ui.tchcomponents.*;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.DAIExceptionHandling;
@@ -20,11 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -79,18 +71,8 @@ public class SystemParametersPane extends HBox {
         typeColumn.prefWidthProperty().bind(doubleBinding.divide(3));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         TableColumn deleteColumn = new TableColumn<>("");
-        deleteColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SystemParameterProperty, Boolean>, ObservableValue<Boolean>>() {
-            @Override
-            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<SystemParameterProperty, Boolean> p) {
-                return new SimpleBooleanProperty(p.getValue() != null);
-            }
-        });
-        deleteColumn.setCellFactory(new Callback<TableColumn<SystemParameterProperty, Boolean>, TableCell<SystemParameterProperty, Boolean>>() {
-            @Override
-            public TableCell<SystemParameterProperty, Boolean> call(TableColumn<SystemParameterProperty, Boolean> p) {
-                return new DeleteButtonCell();
-            }
-        });
+        deleteColumn.setCellValueFactory((Callback<TableColumn.CellDataFeatures<SystemParameterProperty, Boolean>, ObservableValue<Boolean>>) p -> new SimpleBooleanProperty(p.getValue() != null));
+        deleteColumn.setCellFactory((Callback<TableColumn<SystemParameterProperty, Boolean>, TableCell<SystemParameterProperty, Boolean>>) p -> new DeleteButtonCell());
         deleteColumn.setPrefWidth(70);
         tableView.getColumns().addAll(idColumn, keyColumn, valueColumn, typeColumn, deleteColumn);
         loadSystemParameters();

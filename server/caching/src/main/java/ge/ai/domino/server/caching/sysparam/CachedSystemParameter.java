@@ -35,13 +35,13 @@ public class CachedSystemParameter {
 
     public static void reloadParams() {
         try {
-            logger.info("Start cached system parameter reloading");
+            logger.info("Reloading System parameters");
             cachedParameters = new HashMap<>();
             List<SystemParameter> systemParameterList = systemParameterDAO.getSystemParameters(null, null);
             for (SystemParameter systemParameter : systemParameterList) {
                 cachedParameters.put(systemParameter.getKey(), systemParameter.getValue());
             }
-            logger.info("Reload cached system parameters");
+            logger.info("Cached system parameters");
         } catch (Exception ex) {
             cachedParameters = null;
             logger.error("Can't cached system parameters", ex);

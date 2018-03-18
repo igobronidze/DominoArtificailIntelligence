@@ -17,7 +17,7 @@ public class ControlPanel extends Application {
     private Scene scene;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         stage = primaryStage;
         primaryStage.setTitle(Messages.get("Domino"));
         root = new BorderPane();

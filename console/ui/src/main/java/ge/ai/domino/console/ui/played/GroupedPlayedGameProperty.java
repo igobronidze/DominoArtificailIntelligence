@@ -22,7 +22,7 @@ public class GroupedPlayedGameProperty {
 
     private SimpleFloatProperty winPercentForFinished;
 
-    public GroupedPlayedGameProperty(GroupedPlayedGame game) {
+    GroupedPlayedGameProperty(GroupedPlayedGame game) {
         version = new SimpleStringProperty(game.getVersion());
         pointForWin = new SimpleStringProperty(game.getPointForWin() == null ? "" : "" + game.getPointForWin());
         opponentName = new SimpleStringProperty(game.getOpponentName());

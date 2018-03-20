@@ -19,6 +19,7 @@ import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.server.manager.game.move.MoveProcessor;
 import ge.ai.domino.server.manager.game.move.PlayForMeProcessor;
 import ge.ai.domino.server.manager.game.move.PlayForOpponentProcessor;
+import ge.ai.domino.server.manager.game.validator.MoveValidator;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 import org.apache.log4j.Logger;
 
@@ -68,6 +69,7 @@ public class GameManager {
     public Round playForMe(int gameId, Move move) throws DAIException {
         move = getMove(move);
         Round round = CachedGames.getCurrentRound(gameId);
+        MoveValidator.validateMove(round, move);
         Round newRound = playForMeProcessor.move(round, move, false);
         CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
         CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move),false);
@@ -77,6 +79,7 @@ public class GameManager {
     public Round playForOpponent(int gameId, Move move) throws DAIException {
         move = getMove(move);
         Round round = CachedGames.getCurrentRound(gameId);
+        MoveValidator.validateMove(round, move);
         Round newRound = playForOpponentProcessor.move(round, move, false);
         CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
         CachedGames.addMove(gameId, MoveHelper.getPlayForOpponentMove(move), false);

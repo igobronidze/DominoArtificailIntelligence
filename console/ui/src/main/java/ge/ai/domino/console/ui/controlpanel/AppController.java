@@ -4,7 +4,5 @@ import ge.ai.domino.domain.game.Round;
 
 public class AppController {
 
-    public static Round round;
-
-    public static boolean startedGame;
+	public static Round round;
 }

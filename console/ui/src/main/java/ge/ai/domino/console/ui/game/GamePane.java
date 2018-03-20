@@ -20,6 +20,7 @@ import ge.ai.domino.service.game.GameService;
 import ge.ai.domino.service.game.GameServiceImpl;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -31,19 +32,42 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.HashMap;
+import java.util.Map;
+
 public class GamePane extends BorderPane {
 
-    private final GameService gameService = new GameServiceImpl();
+    private static final int IMAGE_WIDTH = 65;
 
-    private OpponentTilesPane opponentTilesPane;
+    private static final int IMAGE_HEIGHT = 110;
 
-    private MyTilesPane myTilesPane;
+    private final ControlPanel controlPanel;
+
+    private ImageView upArrow;
+
+    private ImageView rightArrow;
+
+    private ImageView downArrow;
+
+    private ImageView leftArrow;
+
+    private Map<Tile, ImageView> myTilesImages = new HashMap<>();
+
+    private Map<Tile, ImageView> opponentTilesImages = new HashMap<>();
+
+    private Tile pressedTile;
+
+    private boolean pressedOnMyTile;
+
+    private boolean arrowsVisible;
 
     private boolean pressedOnCtrl;
 
     private Integer firstPressedNumber;
 
-    private final ControlPanel controlPanel;
+    private final GameService gameService = new GameServiceImpl();
 
     public GamePane(ControlPanel controlPanel) {
         this.controlPanel = controlPanel;
@@ -51,10 +75,10 @@ public class GamePane extends BorderPane {
     }
 
     private void reload() {
-        initUI();
+        this.setPadding(new Insets(8));
         initTopPane();
-        initCenterPane();
-        initBottomPane();
+        this.setCenter(getOpponentTilesPane());
+        this.setBottom(getMyTilesPane());
         initKeyboardListener();
         if (AppController.round != null && AppController.round.getGameInfo().isFinished()) {
             new SaveGameWindow() {
@@ -73,13 +97,9 @@ public class GamePane extends BorderPane {
                     showNextGameWindow();
                 }
             }.showWindow();
-        } else if (AppController.round.getTableInfo().isNeedToAddLeftTiles()) {
+        } else if (AppController.round != null && AppController.round.getTableInfo().isNeedToAddLeftTiles()) {
             showAddLeftTilesCount();
         }
-    }
-
-    private void initUI() {
-        this.setPadding(new Insets(8));
     }
 
     private void initTopPane() {
@@ -94,103 +114,6 @@ public class GamePane extends BorderPane {
         flowPane.setPadding(new Insets(0, 4, 8, 4));
         flowPane.getChildren().addAll(myPointsLabel, opponentPointLabel, bazaarCountLabel, undoImage);
         this.setTop(flowPane);
-    }
-
-    private void initCenterPane() {
-        opponentTilesPane = new OpponentTilesPane(AppController.round) {
-            @Override
-            public void onTileEntered(Tile tile, MoveDirection direction) {
-                if (direction == null) {
-                    showIncorrectMoveMessage();
-                    reload();
-                } else {
-                    try {
-                        if (AppController.round.getTableInfo().isMyMove()) {
-                            TableInfo tableInfo = AppController.round.getTableInfo();
-                            if (tableInfo.getLeft() == null && tableInfo.isFirstRound() && AppController.round.getMyTiles().size() == 6) {
-                                Stage stage = new Stage();
-                                stage.setResizable(false);
-                                stage.setTitle(Messages.get("gameStarter"));
-                                TCHLabel label = new TCHLabel(Messages.get("whoStartGame"));
-                                TCHButton meButton = new TCHButton(Messages.get("me"));
-                                meButton.setOnAction(event -> {
-                                    try {
-                                        AppController.round.getTableInfo().setMyMove(true);  // TODO not work on server side
-                                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                                        reload();
-                                        stage.close();
-                                    } catch (DAIException ex) {
-                                        WarnDialog.showWarnDialog(ex);
-                                    }
-                                });
-                                TCHButton opponentButton = new TCHButton(Messages.get("he"));
-                                opponentButton.setOnAction(event -> {
-                                     try {
-                                        AppController.round.getTableInfo().setMyMove(false);  // TODO not work on server side
-                                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                                        reload();
-                                        stage.close();
-                                    } catch (DAIException ex) {
-                                        WarnDialog.showWarnDialog(ex);
-                                    }
-                                });
-                                HBox hBox = new HBox(25);
-                                hBox.setAlignment(Pos.TOP_CENTER);
-                                hBox.getChildren().addAll(meButton, opponentButton);
-                                VBox vBox = new VBox(30);
-                                vBox.setPadding(new Insets(20));
-                                vBox.setAlignment(Pos.TOP_CENTER);
-                                vBox.getChildren().addAll(label, hBox);
-                                stage.setScene(new Scene(vBox));
-                                stage.setWidth(350);
-                                stage.setHeight(140);
-                                stage.showAndWait();
-                            } else {
-                                AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                                reload();
-                            }
-                        } else {
-                            AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), new Move(tile.getLeft(), tile.getRight(), direction));
-                            reload();
-                        }
-                    } catch (DAIException ex) {
-                        WarnDialog.showWarnDialog(ex);
-                    }
-                }
-            }
-
-            @Override
-            public void onAddTileEntered() {
-                try {
-                    AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
-                } catch (DAIException ex) {
-                    WarnDialog.showWarnDialog(ex);
-                }
-                reload();
-            }
-        };
-        this.setCenter(opponentTilesPane);
-    }
-
-    private void initBottomPane() {
-        myTilesPane = new MyTilesPane(AppController.round) {
-            @Override
-            public void onTileEntered(Tile tile, MoveDirection direction) {
-                if (direction == null) {
-                    showIncorrectMoveMessage();
-                    reload();
-                } else {
-                    try {
-                        AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(tile.getLeft(), tile.getRight(), direction));
-                        AppController.round.setAiPrediction(null);
-                    } catch (DAIException ex) {
-                        WarnDialog.showWarnDialog(ex);
-                    }
-                    reload();
-                }
-            }
-        };
-        this.setBottom(myTilesPane);
     }
 
     private void initKeyboardListener() {
@@ -218,36 +141,36 @@ public class GamePane extends BorderPane {
                         firstPressedNumber = tmp;
                     }
                     Tile tile = new Tile(firstPressedNumber, secondPressedNumber);
-                    if (myTilesPane.showTile(tile)) {
-                        myTilesPane.onTilePressed(tile);
-                    } else if (opponentTilesPane.showTile(tile)) {
-                        opponentTilesPane.onTilePressed(tile);
+                    if (AppController.round.getMyTiles().contains(tile)) {
+                        onMyTilePressed(tile);
+                    } else if (AppController.round.getOpponentTiles().containsKey(tile)) {
+                        onOpponentTilePressed(tile);
                     }
                     firstPressedNumber = null;
                     secondPressedNumber = null;
                     return;
                 } catch (NumberFormatException ignore) {}
             }
-            if (pressedOnCtrl && TilesPane.isArrowsVisible()) {
+            if (pressedOnCtrl && arrowsVisible) {
                 if (e.getCode() == KeyCode.UP) {
-                    TilesPane.onUpArrowPressed();
+                    onUpArrowPressed();
                     return;
                 }
                 if (e.getCode() == KeyCode.LEFT) {
-                    TilesPane.onLeftArrowPressed();
+                    onLeftArrowPressed();
                     return;
                 }
                 if (e.getCode() == KeyCode.DOWN) {
-                    TilesPane.onDownArrowPressed();
+                    onDownArrowPressed();
                     return;
                 }
                 if (e.getCode() == KeyCode.RIGHT) {
-                    TilesPane.onRightArrowPressed();
+                    onRightArrowPressed();
                     return;
                 }
             }
             if (pressedOnCtrl && e.getCode() == KeyCode.ADD) {
-                opponentTilesPane.onAddTileEntered();
+                ontAddTileEntered();
                 return;
             }
             if (pressedOnCtrl && e.getCode() == KeyCode.Z) {
@@ -319,7 +242,6 @@ public class GamePane extends BorderPane {
         TCHButton noButton = new TCHButton(Messages.get("no"));
         noButton.setOnAction(event -> {
             controlPanel.getRoot().setCenter(new GamePropertiesPane(controlPanel));
-            AppController.startedGame = false;
             stage.close();
         });
         HBox hBox = new HBox(25);
@@ -333,5 +255,321 @@ public class GamePane extends BorderPane {
         stage.setWidth(400);
         stage.setHeight(140);
         stage.showAndWait();
+    }
+
+    private FlowPane getMyTilesPane() {
+        FlowPane myTilesPane = new FlowPane();
+        myTilesPane.setHgap(25);
+        myTilesPane.setVgap(10);
+        myTilesPane.setStyle("-fx-border-color: green; -fx-border-radius: 25px; -fx-border-size: 2px;");
+        myTilesPane.setPadding(new Insets(8));
+        initArrows();
+        initMyTilesComponents(myTilesPane);
+        return myTilesPane;
+    }
+
+    private FlowPane getOpponentTilesPane() {
+        FlowPane opponentTilesPane = new FlowPane();
+        opponentTilesPane.setHgap(25);
+        opponentTilesPane.setVgap(10);
+        initOpponentTilesComponents(opponentTilesPane);
+        return opponentTilesPane;
+    }
+
+    private void initArrows() {
+        upArrow = new ImageView(ImageFactory.getImage("arrows/up.png"));
+        setImageStyle(upArrow);
+        upArrow.setOnMouseClicked(e -> onUpArrowPressed());
+        rightArrow = new ImageView(ImageFactory.getImage("arrows/right.png"));
+        setImageStyle(rightArrow);
+        rightArrow.setOnMouseClicked(e -> onRightArrowPressed());
+        downArrow = new ImageView(ImageFactory.getImage("arrows/down.png"));
+        setImageStyle(downArrow);
+        downArrow.setOnMouseClicked(e -> onDownArrowPressed());
+        leftArrow = new ImageView(ImageFactory.getImage("arrows/left.png"));
+        leftArrow.setOnMouseClicked(e -> onLeftArrowPressed());
+        setImageStyle(leftArrow);
+        setImageVisibility(false);
+    }
+
+    private void setImageStyle(ImageView imageView) {
+        imageView.setFitWidth(90);
+        imageView.setFitHeight(90);
+        imageView.setOnMouseEntered(event -> this.setCursor(Cursor.HAND));
+        imageView.setOnMouseExited(event -> this.setCursor(Cursor.DEFAULT));
+    }
+
+    private void setImageVisibility(boolean visible) {
+        upArrow.setVisible(visible);
+        rightArrow.setVisible(visible);
+        downArrow.setVisible(visible);
+        leftArrow.setVisible(visible);
+        arrowsVisible = visible;
+    }
+
+    private void initMyTilesComponents(FlowPane flowPane) {
+        for (Tile tile : AppController.round.getMyTiles()) {
+            if (AppController.round.getMyTiles().contains(tile)) {
+                VBox vBox = new VBox();
+                vBox.setAlignment(Pos.TOP_CENTER);
+                ImageView imageView = getImageView(tile, AppController.round.getTableInfo().isMyMove());
+                myTilesImages.put(tile, imageView);
+                Move aiPrediction = AppController.round.getAiPrediction();
+                if (aiPrediction != null) {
+                    int bestX = aiPrediction.getLeft();
+                    int bestY = aiPrediction.getRight();
+                    if (tile.getLeft() == bestX && tile.getRight() == bestY) {
+                        NumberFormat formatter = new DecimalFormat("#0.0000");
+                        Label label = new Label(aiPrediction.getDirection().name() + "(" + formatter.format(AppController.round.getHeuristicValue()) + ")");
+                        vBox.getChildren().add(label);
+                    }
+                }
+                imageView.setOnMouseClicked(e -> onMyTilePressed(tile));
+                vBox.getChildren().add(imageView);
+                flowPane.getChildren().add(vBox);
+            }
+        }
+        flowPane.getChildren().addAll(leftArrow, upArrow, downArrow, rightArrow);
+    }
+
+    private void initOpponentTilesComponents(FlowPane flowPane) {
+        NumberFormat formatter = new DecimalFormat("#0.0000");
+        for (int i = 6; i >= 0; i--) {
+            HBox hBox = new HBox();
+            hBox.setStyle("-fx-border-color: green; -fx-border-radius: 25px; -fx-border-size: 1px;");
+            hBox.setSpacing(10);
+            hBox.setPadding(new Insets(8));
+            for (int j = i; j >= 0; j--) {
+                Tile tile = new Tile(i, j);
+                Float prob = AppController.round.getOpponentTiles().get(tile);
+                if (AppController.round.getOpponentTiles().containsKey(tile)) {
+                    ImageView imageView = getImageView(tile, true);
+                    Label opponentLabel = new Label("" + (prob == null ? "N" : formatter.format(prob)));
+                    opponentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red; -fx-font-weight: bold");
+                    VBox vBox = new VBox(5);
+                    vBox.setAlignment(Pos.TOP_CENTER);
+                    vBox.getChildren().addAll(opponentLabel, imageView);
+                    hBox.getChildren().add(vBox);
+                    opponentTilesImages.put(tile, imageView);
+                    imageView.setOnMouseClicked(e -> onOpponentTilePressed(tile));
+                } else {
+                    VBox vBox = new VBox();
+                    vBox.setPrefHeight(IMAGE_HEIGHT);
+                    vBox.setPrefWidth(IMAGE_WIDTH);
+                    hBox.getChildren().addAll(vBox);
+                }
+            }
+            flowPane.getChildren().add(hBox);
+        }
+        if (!AppController.round.getTableInfo().isMyMove()) {
+            ImageView addImageView = new ImageView(ImageFactory.getImage("add_black.png"));
+            addImageView.setOnMouseEntered(event -> this.setCursor(Cursor.HAND));
+            addImageView.setOnMouseExited(event -> this.setCursor(Cursor.DEFAULT));
+            setImageStyle(addImageView);
+            flowPane.getChildren().add(addImageView);
+            addImageView.setOnMouseClicked(e -> {
+                ontAddTileEntered();
+            });
+        }
+    }
+
+    private void onMyTilePressed(Tile tile) {
+        if (AppController.round.getTableInfo().isMyMove()) {
+            if (!isFirsMove()) {
+                myTilesImages.get(tile).setFitHeight(IMAGE_HEIGHT + 10);
+                myTilesImages.get(tile).setFitWidth(IMAGE_WIDTH + 10);
+                pressedTile = tile;
+                pressedOnMyTile = true;
+                setImageVisibility(true);
+            } else {
+                onMyTileEntered(tile, MoveDirection.LEFT);
+            }
+        }
+    }
+
+    private void onOpponentTilePressed(Tile tile) {
+        if (!AppController.round.getTableInfo().isMyMove()) {
+            if (!isFirsMove()) {
+                opponentTilesImages.get(tile).setFitHeight(IMAGE_HEIGHT + 10);
+                opponentTilesImages.get(tile).setFitWidth(IMAGE_WIDTH + 10);
+                pressedTile = tile;
+                pressedOnMyTile = false;
+                setImageVisibility(true);
+            } else {
+                ontOpponentTileEntered(tile, MoveDirection.LEFT);
+            }
+        } else {
+            ontOpponentTileEntered(tile, MoveDirection.LEFT);
+        }
+    }
+
+    private ImageView getImageView(Tile tile, boolean clickable) {
+        ImageView imageView = new ImageView(ImageFactory.getImage("tiles/" + tile.getLeft() + "-" + tile.getRight() + ".png"));
+        imageView.setFitHeight(IMAGE_HEIGHT);
+        imageView.setFitWidth(IMAGE_WIDTH);
+        if (clickable) {
+            imageView.setOnMouseEntered(event -> this.setCursor(Cursor.HAND));
+            imageView.setOnMouseExited(event -> this.setCursor(Cursor.DEFAULT));
+        }
+        return imageView;
+    }
+
+    private boolean isFirsMove() {
+        TableInfo tableInfo = AppController.round.getTableInfo();
+        return tableInfo.getTop() == null && tableInfo.getRight() == null && tableInfo.getBottom() == null && tableInfo.getLeft() == null;
+    }
+
+    private void onMyTileEntered(Tile tile, MoveDirection direction) {
+        if (direction == null) {
+            showIncorrectMoveMessage();
+            reload();
+        } else {
+            try {
+                AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(tile.getLeft(), tile.getRight(), direction));
+                AppController.round.setAiPrediction(null);
+            } catch (DAIException ex) {
+                WarnDialog.showWarnDialog(ex);
+            }
+            reload();
+        }
+    }
+
+    private void ontOpponentTileEntered(Tile tile, MoveDirection direction) {
+        if (direction == null) {
+            showIncorrectMoveMessage();
+            reload();
+        } else {
+            try {
+                if (AppController.round.getTableInfo().isMyMove()) {
+                    TableInfo tableInfo = AppController.round.getTableInfo();
+                    if (tableInfo.getLeft() == null && tableInfo.isFirstRound() && AppController.round.getMyTiles().size() == 6) {
+                        Stage stage = new Stage();
+                        stage.setResizable(false);
+                        stage.setTitle(Messages.get("gameStarter"));
+                        TCHLabel label = new TCHLabel(Messages.get("whoStartGame"));
+                        TCHButton meButton = new TCHButton(Messages.get("me"));
+                        meButton.setOnAction(event -> {
+                            try {
+                                AppController.round = gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
+                                AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                                reload();
+                                stage.close();
+                            } catch (DAIException ex) {
+                                WarnDialog.showWarnDialog(ex);
+                            }
+                        });
+                        TCHButton opponentButton = new TCHButton(Messages.get("he"));
+                        opponentButton.setOnAction(event -> {
+                            try {
+                                AppController.round = gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
+                                AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                                reload();
+                                stage.close();
+                            } catch (DAIException ex) {
+                                WarnDialog.showWarnDialog(ex);
+                            }
+                        });
+                        HBox hBox = new HBox(25);
+                        hBox.setAlignment(Pos.TOP_CENTER);
+                        hBox.getChildren().addAll(meButton, opponentButton);
+                        VBox vBox = new VBox(30);
+                        vBox.setPadding(new Insets(20));
+                        vBox.setAlignment(Pos.TOP_CENTER);
+                        vBox.getChildren().addAll(label, hBox);
+                        stage.setScene(new Scene(vBox));
+                        stage.setWidth(350);
+                        stage.setHeight(140);
+                        stage.showAndWait();
+                    } else {
+                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                        reload();
+                    }
+                } else {
+                    AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), new Move(tile.getLeft(), tile.getRight(), direction));
+                    reload();
+                }
+            } catch (DAIException ex) {
+                WarnDialog.showWarnDialog(ex);
+            }
+        }
+    }
+
+    private void onUpArrowPressed() {
+        TableInfo tableInfo = AppController.round.getTableInfo();
+        Integer top = tableInfo.getTop().getOpenSide();
+        if ((top == pressedTile.getLeft() || top == pressedTile.getRight()) && !tableInfo.getLeft().isCenter() && !tableInfo.getRight().isCenter())
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, MoveDirection.TOP);
+            } else {
+                ontOpponentTileEntered(pressedTile, MoveDirection.TOP);
+            }
+        else {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, null);
+            } else {
+                ontOpponentTileEntered(pressedTile, null);
+            }
+        }
+    }
+
+    private void onRightArrowPressed() {
+        Integer right = AppController.round.getTableInfo().getRight().getOpenSide();
+        if (right == pressedTile.getLeft() || right == pressedTile.getRight()) {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, MoveDirection.RIGHT);
+            } else {
+                ontOpponentTileEntered(pressedTile, MoveDirection.RIGHT);
+            }
+        } else {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, null);
+            } else {
+                ontOpponentTileEntered(pressedTile, null);
+            }
+        }
+    }
+
+    private void onDownArrowPressed() {
+        TableInfo tableInfo = AppController.round.getTableInfo();
+        Integer bottom = tableInfo.getBottom().getOpenSide();
+        if ((bottom == pressedTile.getLeft()) || bottom == pressedTile.getRight() && !tableInfo.getLeft().isCenter() && !tableInfo.getRight().isCenter()) {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile,  MoveDirection.BOTTOM);
+            } else {
+                ontOpponentTileEntered(pressedTile,  MoveDirection.BOTTOM);
+            }
+        } else {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, null);
+            } else {
+                ontOpponentTileEntered(pressedTile, null);
+            }
+        }
+    }
+
+    private void onLeftArrowPressed() {
+        Integer left = AppController.round.getTableInfo().getLeft().getOpenSide();
+        if (left == pressedTile.getLeft() || left == pressedTile.getRight()) {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, MoveDirection.LEFT);
+            } else {
+                ontOpponentTileEntered(pressedTile, MoveDirection.LEFT);
+            }
+        } else {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, null);
+            } else {
+                ontOpponentTileEntered(pressedTile, null);
+            }
+        }
+    }
+
+    private void ontAddTileEntered() {
+        try {
+            AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
+        } catch (DAIException ex) {
+            WarnDialog.showWarnDialog(ex);
+        }
+        reload();
     }
 }

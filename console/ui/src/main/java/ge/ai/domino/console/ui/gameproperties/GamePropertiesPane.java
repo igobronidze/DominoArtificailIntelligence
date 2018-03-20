@@ -66,9 +66,8 @@ public class GamePropertiesPane extends VBox {
                 gameProperties.setWebsite(websiteField.getText());
                 gameProperties.setOpponentName(nameField.getText());
                 try {
-                    AppController.round = GAME_SERVICE.startGame(gameProperties, 0);
+                    AppController.round =  GAME_SERVICE.startGame(gameProperties, 0);
                     controlPanel.getRoot().setCenter(new GamePane(controlPanel));
-                    AppController.startedGame = true;
                 } catch (DAIException ex) {
                     WarnDialog.showWarnDialog(ex);
                 }

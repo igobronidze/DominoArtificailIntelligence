@@ -21,7 +21,7 @@ public abstract class SaveGameWindow extends Stage {
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
     public void showWindow() {
-        if (AppController.startedGame) {
+        if (AppController.round != null) {
             this.setResizable(false);
             this.setTitle(Messages.get("saveGame"));
             TCHLabel label = new TCHLabel(Messages.get("doYouWantToSaveGame"));

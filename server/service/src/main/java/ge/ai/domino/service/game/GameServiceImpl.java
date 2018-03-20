@@ -44,4 +44,9 @@ public class GameServiceImpl implements GameService {
     public Round addLeftTiles(int gameId, int opponentTilesCount) throws DAIException {
         return gameManager.addLeftTilesForMe(gameId, opponentTilesCount);
     }
+
+    @Override
+    public Round specifyRoundBeginner(int gameId, boolean startMe) {
+        return gameManager.specifyRoundBeginner(gameId, startMe);
+    }
 }

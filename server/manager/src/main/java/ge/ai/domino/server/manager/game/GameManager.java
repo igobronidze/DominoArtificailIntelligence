@@ -127,6 +127,12 @@ public class GameManager {
         return newRound;
     }
 
+    public Round specifyRoundBeginner(int gameId, boolean startMe) {
+        Round round = CachedGames.getCurrentRound(gameId);
+        round.getTableInfo().setMyMove(startMe);
+        return round;
+    }
+
     private Move getMove(int left, int right, MoveDirection direction) {
         return new Move(Math.max(left, right), Math.min(left, right), direction);
     }

@@ -50,7 +50,6 @@ public class GameOperations {
 	public static Round finishedLastAndGetNewRound(Round round, boolean finishedMe, boolean countLeft, boolean virtual) {
 		GameInfo gameInfo = round.getGameInfo();
 		int gameId = gameInfo.getGameId();
-		Game game = CachedGames.getGame(gameId);
 		round.getTableInfo().setTilesFromBazaar(0);
 		if (countLeft) {
 			if (finishedMe) {
@@ -59,7 +58,7 @@ public class GameOperations {
 				addLeftTiles(gameInfo, countLeftTiles(round, true, virtual), false, gameId, virtual);
 			}
 		}
-		int scoreForWin = game.getProperties().getPointsForWin();
+		int scoreForWin = CachedGames.getGameProperties(gameId).getPointsForWin();
 		if (!round.getTableInfo().isOmittedOpponent() || !round.getTableInfo().isOmittedMe()) {
 			if (gameInfo.getMyPoint() >= scoreForWin && gameInfo.getMyPoint() >= gameInfo.getOpponentPoint()) {
 				round.getGameInfo().setFinished(true);
@@ -71,13 +70,12 @@ public class GameOperations {
 				return round;
 			}
 		}
-		game.getRounds().add(round);
+		CachedGames.addRound(gameId, round);
 		Round newRound = InitialUtil.getInitialRound(0);
 		newRound.getTableInfo().setLastPlayedProb(round.getTableInfo().getLastPlayedProb());   // For MinMax
 		newRound.getTableInfo().setMyMove(true);
 		newRound.getTableInfo().setFirstRound(false);
 		newRound.setGameInfo(round.getGameInfo());
-		game.getRounds().add(newRound);
 		if (!finishedMe && !virtual) {
 			CachedGames.makeOpponentNextRoundBeginner(gameId);
 		}

@@ -1,15 +1,20 @@
 package ge.ai.domino.server.caching.game;
 
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
+import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.PlayedMove;
 import ge.ai.domino.domain.played.RoundHistory;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CachedGames {
+
+    private static final Logger logger = Logger.getLogger(CachedGames.class);
 
     private static final Map<Integer, Game> cachedGames = new HashMap<>();
 
@@ -17,8 +22,18 @@ public class CachedGames {
         cachedGames.put(game.getId(), game);
     }
 
-    public static Game getGame(int gameId) {
-        return cachedGames.get(gameId);
+    public static GameProperties getGameProperties(int gameId) {
+        return cachedGames.get(gameId).getProperties();
+    }
+
+    public static Round getAndRemoveLastRound(int gameId) throws DAIException {
+        Game game = cachedGames.get(gameId);
+        if (!game.getRounds().isEmpty()) {
+            return game.getRounds().poll();
+        } else {
+            logger.warn("Rounds is empty gameId[" + gameId + "]");
+            throw new DAIException("roundsIsEmpty");
+        }
     }
 
     public static Round getCurrentRound(int gameId) {
@@ -56,12 +71,15 @@ public class CachedGames {
         }
     }
 
-    public static void removeLastMove(int gameId) {
+    public static void removeLastMove(int gameId) throws DAIException {
         GameHistory gameHistory = cachedGames.get(gameId).getGameHistory();
         RoundHistory roundHistory = gameHistory.getRoundHistories().getLast();
         roundHistory.getPlayedMoves().removeLast();
         if (roundHistory.getPlayedMoves().isEmpty()) {
             gameHistory.getRoundHistories().removeLast();
+        } else {
+            logger.warn("Move history is empty gameId[" + gameId + "]");
+            throw new DAIException("movesHistoryIsEmpty");
         }
     }
 

@@ -87,16 +87,10 @@ public class GameManager {
     }
 
     public Round getLastPlayedRound(int gameId) throws DAIException {
-        Round round = CachedGames.getCurrentRound(gameId);
         logger.info("Start getLastPlayedRound method, gameId[" + gameId + "]");
-        Game game = CachedGames.getGame(round.getGameInfo().getGameId());
-        if (game.getRounds().isEmpty()) {
-            logger.warn("There is not any round in history, gameId[" + gameId + "]");
-            return round;
-        }
+        Round newRound = CachedGames.getAndRemoveLastRound(gameId);
         CachedGames.removeLastMove(gameId);
         logger.info("Undo last game round, gameId[" + gameId + "]");
-        Round newRound = game.getRounds().poll();
         OpponentTilesValidator.validateOpponentTiles(newRound, newRound.getTableInfo().getTilesFromBazaar(), "getLastPlayedRound");
         return newRound;
     }

@@ -104,7 +104,7 @@ public class MinMax {
             return round.getHeuristicValue();
         }
         if (gameInfo.isFinished()) {
-            return RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGame(gameId).getProperties().getPointsForWin());
+            return RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGameProperties(gameId).getPointsForWin());
         }
         // If opponent omit, add him left tiles and return pure heuristic value
         if (tableInfo.isNeedToAddLeftTiles()) {

@@ -30,7 +30,7 @@ public class InitialUtil {
         game.getRounds().add(getInitialRound(game.getId()));
         game.setGameHistory(new GameHistory());
         if (gameId != 0 && game.getProperties() == null) {
-            game.setProperties(CachedGames.getGame(gameId).getProperties());
+            game.setProperties(CachedGames.getGameProperties(gameId));
         }
         return game;
     }

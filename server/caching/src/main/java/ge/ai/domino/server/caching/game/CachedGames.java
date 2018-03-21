@@ -7,6 +7,7 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.PlayedMove;
 import ge.ai.domino.domain.played.RoundHistory;
+import ge.ai.domino.serverutil.CloneUtil;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -28,8 +29,9 @@ public class CachedGames {
 
     public static Round getAndRemoveLastRound(int gameId) throws DAIException {
         Game game = cachedGames.get(gameId);
+        game.getRounds().poll();
         if (!game.getRounds().isEmpty()) {
-            return game.getRounds().poll();
+            return game.getRounds().getFirst();
         } else {
             logger.warn("Rounds is empty gameId[" + gameId + "]");
             throw new DAIException("roundsIsEmpty");
@@ -37,7 +39,7 @@ public class CachedGames {
     }
 
     public static Round getCurrentRound(int gameId) {
-        return cachedGames.get(gameId).getRounds().peek();
+        return CloneUtil.getClone(cachedGames.get(gameId).getRounds().peek());
     }
 
     public static void addRound(int gameId, Round round) {
@@ -75,8 +77,8 @@ public class CachedGames {
         GameHistory gameHistory = cachedGames.get(gameId).getGameHistory();
         RoundHistory roundHistory = gameHistory.getRoundHistories().getLast();
         roundHistory.getPlayedMoves().removeLast();
-        if (roundHistory.getPlayedMoves().isEmpty()) {
-            gameHistory.getRoundHistories().removeLast();
+        if (!roundHistory.getPlayedMoves().isEmpty()) {
+            roundHistory.getPlayedMoves().poll();
         } else {
             logger.warn("Move history is empty gameId[" + gameId + "]");
             throw new DAIException("movesHistoryIsEmpty");

@@ -25,5 +25,10 @@
             <artifactId>caching</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ge.ai.domino</groupId>
+            <artifactId>server-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

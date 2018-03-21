@@ -9,7 +9,6 @@ import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.server.caching.game.CachedGames;
-import ge.ai.domino.server.manager.game.helper.CloneUtil;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.InitialUtil;
 import ge.ai.domino.server.manager.game.helper.MoveHelper;
@@ -49,7 +48,7 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId);
         Move move = getMove(left, right, MoveDirection.LEFT);
         Round newRound = addForMeProcessor.move(round, move, false);
-        CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
+        CachedGames.addRound(gameId, newRound);
         if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() == 1) {
             CachedGames.addMove(gameId, MoveHelper.getAddInitialTileForMeMove(move), true);
         } else {
@@ -61,7 +60,7 @@ public class GameManager {
     public Round addTileForOpponent(int gameId) throws DAIException {
         Round round = CachedGames.getCurrentRound(gameId);
         Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT), false);
-        CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
+        CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, round.getTableInfo().isOmittedOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove(), false);
         return newRound;
     }
@@ -71,7 +70,7 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId);
         MoveValidator.validateMove(round, move);
         Round newRound = playForMeProcessor.move(round, move, false);
-        CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
+        CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move),false);
         return newRound;
     }
@@ -81,7 +80,7 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId);
         MoveValidator.validateMove(round, move);
         Round newRound = playForOpponentProcessor.move(round, move, false);
-        CachedGames.addRound(gameId, CloneUtil.getClone(newRound));
+        CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForOpponentMove(move), false);
         return newRound;
     }

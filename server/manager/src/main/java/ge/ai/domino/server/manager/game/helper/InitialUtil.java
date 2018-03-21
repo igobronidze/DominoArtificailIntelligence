@@ -27,7 +27,7 @@ public class InitialUtil {
         Game game = new Game();
         game.setProperties(gameProperties);
         game.setId(playedGameManager.addPlayedGame(gameProperties));
-        game.getRounds().add(getInitialRound(game.getId()));
+        game.getRounds().push(getInitialRound(game.getId()));
         game.setGameHistory(new GameHistory());
         if (gameId != 0 && game.getProperties() == null) {
             game.setProperties(CachedGames.getGameProperties(gameId));

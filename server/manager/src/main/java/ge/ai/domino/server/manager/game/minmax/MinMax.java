@@ -10,7 +10,7 @@ import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.game.CachedGames;
-import ge.ai.domino.server.manager.game.helper.CloneUtil;
+import ge.ai.domino.serverutil.CloneUtil;
 import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.heuristic.ComplexRoundHeuristic;

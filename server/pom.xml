@@ -16,6 +16,7 @@
         <module>caching</module>
         <module>manager</module>
         <module>service</module>
+        <module>server-util</module>
     </modules>
 
     <dependencies>

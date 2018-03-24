@@ -6,7 +6,6 @@ import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.PlayedMove;
-import ge.ai.domino.domain.played.RoundHistory;
 import ge.ai.domino.serverutil.CloneUtil;
 import org.apache.log4j.Logger;
 
@@ -27,25 +26,6 @@ public class CachedGames {
         return cachedGames.get(gameId).getProperties();
     }
 
-    public static Round getAndRemoveLastRound(int gameId) throws DAIException {
-        Game game = cachedGames.get(gameId);
-        game.getRounds().poll();
-        if (!game.getRounds().isEmpty()) {
-            return game.getRounds().getFirst();
-        } else {
-            logger.warn("Rounds is empty gameId[" + gameId + "]");
-            throw new DAIException("roundsIsEmpty");
-        }
-    }
-
-    public static Round getCurrentRound(int gameId) {
-        return CloneUtil.getClone(cachedGames.get(gameId).getRounds().peek());
-    }
-
-    public static void addRound(int gameId, Round round) {
-        cachedGames.get(gameId).getRounds().push(round);
-    }
-
     public static void makeOpponentNextRoundBeginner(int gameId) {
         cachedGames.get(gameId).setOpponentNextRoundBeginner(true);
     }
@@ -62,26 +42,36 @@ public class CachedGames {
         return cachedGames.get(gameId).getLeftTilesCountFromLastRound();
     }
 
-    public static void addMove(int gameId, PlayedMove playedMove, boolean firstMove) {
-        GameHistory gameHistory = cachedGames.get(gameId).getGameHistory();
-        if (firstMove) {
-            RoundHistory roundHistory = new RoundHistory();
-            roundHistory.getPlayedMoves().add(playedMove);
-            gameHistory.getRoundHistories().add(roundHistory);
+    public static void addRound(int gameId, Round round) {
+        cachedGames.get(gameId).getRounds().addFirst(round);
+    }
+
+    public static Round getCurrentRound(int gameId) {
+        return CloneUtil.getClone(cachedGames.get(gameId).getRounds().getFirst());
+    }
+
+    public static Round getAndRemoveLastRound(int gameId) throws DAIException {
+        Game game = cachedGames.get(gameId);
+        if (game.getRounds().size() <= 1) {
+            logger.warn("Rounds is empty gameId[" + gameId + "]");
+            throw new DAIException("roundsIsEmpty");
         } else {
-            gameHistory.getRoundHistories().getLast().getPlayedMoves().add(playedMove);
+            game.getRounds().removeFirst();
+            return game.getRounds().getFirst();
         }
+    }
+
+    public static void addMove(int gameId, PlayedMove playedMove) {
+        cachedGames.get(gameId).getGameHistory().getPlayedMoves().addFirst(playedMove);
     }
 
     public static void removeLastMove(int gameId) throws DAIException {
         GameHistory gameHistory = cachedGames.get(gameId).getGameHistory();
-        RoundHistory roundHistory = gameHistory.getRoundHistories().getLast();
-        roundHistory.getPlayedMoves().removeLast();
-        if (!roundHistory.getPlayedMoves().isEmpty()) {
-            roundHistory.getPlayedMoves().poll();
-        } else {
+        if (gameHistory.getPlayedMoves().size() <= 1) {
             logger.warn("Move history is empty gameId[" + gameId + "]");
             throw new DAIException("movesHistoryIsEmpty");
+        } else {
+            gameHistory.getPlayedMoves().removeFirst();
         }
     }
 

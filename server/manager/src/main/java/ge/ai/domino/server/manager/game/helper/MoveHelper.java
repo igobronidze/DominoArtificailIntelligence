@@ -6,6 +6,12 @@ import ge.ai.domino.domain.played.PlayedMove;
 
 public class MoveHelper {
 
+    public static PlayedMove getStartNewRoundMove() {
+        PlayedMove playedMove = new PlayedMove();
+        playedMove.setType(MoveType.START_NEW_ROUND);
+        return playedMove;
+    }
+
     public static PlayedMove getOmittedMeMove() {
         PlayedMove playedMove = new PlayedMove();
         playedMove.setType(MoveType.I_OMIT);

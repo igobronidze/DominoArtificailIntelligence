@@ -7,13 +7,13 @@ import java.util.Deque;
 @XmlRootElement(name = "GameHistory")
 public class GameHistory {
 
-    private Deque<RoundHistory> roundHistories = new ArrayDeque<>();
+    private Deque<PlayedMove> playedMoves = new ArrayDeque<>();
 
-    public Deque<RoundHistory> getRoundHistories() {
-        return roundHistories;
+    public Deque<PlayedMove> getPlayedMoves() {
+        return playedMoves;
     }
 
-    public void setRoundHistories(Deque<RoundHistory> roundHistories) {
-        this.roundHistories = roundHistories;
+    public void setPlayedMoves(Deque<PlayedMove> playedMoves) {
+        this.playedMoves = playedMoves;
     }
 }

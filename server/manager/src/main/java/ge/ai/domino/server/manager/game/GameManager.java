@@ -34,10 +34,11 @@ public class GameManager {
 
     private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
 
-    public Round startGame(GameProperties gameProperties, int gameId) {
+    public Round startGame(GameProperties gameProperties, int gameIdWithSameProperties) {
         logger.info("Preparing new game");
-        Game game = InitialUtil.getInitialGame(gameProperties, gameId);
+        Game game = InitialUtil.getInitialGame(gameProperties, gameIdWithSameProperties);
         CachedGames.addGame(game);
+        CachedGames.addMove(game.getId(), MoveHelper.getStartNewRoundMove());
         logger.info("------------Started new game[" + game.getId() + "]------------");
         Round newRound = CachedGames.getCurrentRound(game.getId());
         GameLoggingProcessor.logRoundFullInfo(newRound, false);
@@ -50,9 +51,9 @@ public class GameManager {
         Round newRound = addForMeProcessor.move(round, move, false);
         CachedGames.addRound(gameId, newRound);
         if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() == 1) {
-            CachedGames.addMove(gameId, MoveHelper.getAddInitialTileForMeMove(move), true);
+            CachedGames.addMove(gameId, MoveHelper.getAddInitialTileForMeMove(move));
         } else {
-            CachedGames.addMove(gameId, round.getTableInfo().isOmittedMe() ? MoveHelper.getOmittedMeMove() : MoveHelper.getAddTileForMeMove(move), false);
+            CachedGames.addMove(gameId, round.getTableInfo().isOmittedMe() ? MoveHelper.getOmittedMeMove() : MoveHelper.getAddTileForMeMove(move));
         }
         return newRound;
     }
@@ -61,7 +62,7 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId);
         Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT), false);
         CachedGames.addRound(gameId, newRound);
-        CachedGames.addMove(gameId, round.getTableInfo().isOmittedOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove(), false);
+        CachedGames.addMove(gameId, round.getTableInfo().isOmittedOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove());
         return newRound;
     }
 
@@ -71,7 +72,7 @@ public class GameManager {
         MoveValidator.validateMove(round, move);
         Round newRound = playForMeProcessor.move(round, move, false);
         CachedGames.addRound(gameId, newRound);
-        CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move),false);
+        CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move));
         return newRound;
     }
 
@@ -81,7 +82,7 @@ public class GameManager {
         MoveValidator.validateMove(round, move);
         Round newRound = playForOpponentProcessor.move(round, move, false);
         CachedGames.addRound(gameId, newRound);
-        CachedGames.addMove(gameId, MoveHelper.getPlayForOpponentMove(move), false);
+        CachedGames.addMove(gameId, MoveHelper.getPlayForOpponentMove(move));
         return newRound;
     }
 

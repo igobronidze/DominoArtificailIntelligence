@@ -71,6 +71,7 @@ public class GameOperations {
 			}
 		}
 		CachedGames.addRound(gameId, round);
+		CachedGames.addMove(gameId, MoveHelper.getStartNewRoundMove());
 		Round newRound = InitialUtil.getInitialRound(0);
 		newRound.getTableInfo().setLastPlayedProb(round.getTableInfo().getLastPlayedProb());   // For MinMax
 		newRound.getTableInfo().setMyMove(true);

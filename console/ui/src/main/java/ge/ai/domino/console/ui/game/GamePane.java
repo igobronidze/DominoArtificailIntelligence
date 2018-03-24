@@ -434,7 +434,7 @@ public class GamePane extends BorderPane {
 				TCHButton meButton = new TCHButton(Messages.get("me"));
 				meButton.setOnAction(event -> {
 					try {
-						AppController.round = gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
+						gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
 						AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
 						reload();
 						stage.close();
@@ -445,7 +445,7 @@ public class GamePane extends BorderPane {
 				TCHButton opponentButton = new TCHButton(Messages.get("he"));
 				opponentButton.setOnAction(event -> {
 					try {
-						AppController.round = gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
+						gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
 						AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
 						reload();
 						stage.close();
@@ -485,9 +485,9 @@ public class GamePane extends BorderPane {
 
 	private void onUpArrowPressed() {
 		if (pressedOnMyTile) {
-			onMyTileEntered(pressedTile, null);
+			onMyTileEntered(pressedTile, MoveDirection.TOP);
 		} else {
-			ontOpponentTileEntered(pressedTile, null);
+			ontOpponentTileEntered(pressedTile, MoveDirection.TOP);
 		}
 	}
 

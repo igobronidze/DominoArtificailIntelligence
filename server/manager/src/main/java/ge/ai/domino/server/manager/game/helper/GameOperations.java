@@ -47,37 +47,29 @@ public class GameOperations {
 		}
 	}
 
-	public static Round finishedLastAndGetNewRound(Round round, boolean finishedMe, boolean countLeft, boolean virtual) {
+	public static Round finishedLastAndGetNewRound(Round round, boolean addForMe, int leftTilesCount, boolean virtual) {
 		GameInfo gameInfo = round.getGameInfo();
 		int gameId = gameInfo.getGameId();
-		round.getTableInfo().setTilesFromBazaar(0);
-		if (countLeft) {
-			if (finishedMe) {
-				addLeftTiles(gameInfo, countLeftTiles(round, false, virtual), true, gameId, virtual);
-			} else {
-				addLeftTiles(gameInfo, countLeftTiles(round, true, virtual), false, gameId, virtual);
-			}
-		}
+		addLeftTiles(gameInfo, leftTilesCount, addForMe, gameId, virtual);
 		int scoreForWin = CachedGames.getGameProperties(gameId).getPointsForWin();
-		if (!round.getTableInfo().isOmittedOpponent() || !round.getTableInfo().isOmittedMe()) {
+		if (!round.getTableInfo().isOmittedOpponent() || !round.getTableInfo().isOmittedMe()) {  // If game was not blocked
 			if (gameInfo.getMyPoint() >= scoreForWin && gameInfo.getMyPoint() >= gameInfo.getOpponentPoint()) {
 				round.getGameInfo().setFinished(true);
-				GameLoggingProcessor.logInfoAboutMove("I win the game", virtual);
+				GameLoggingProcessor.logInfoAboutMove("I won the game", virtual);
 				return round;
 			} else if (gameInfo.getOpponentPoint() >= scoreForWin) {
 				round.getGameInfo().setFinished(true);
-				GameLoggingProcessor.logInfoAboutMove("He win the game", virtual);
+				GameLoggingProcessor.logInfoAboutMove("He won the game", virtual);
 				return round;
 			}
 		}
-		CachedGames.addRound(gameId, round);
-		CachedGames.addMove(gameId, MoveHelper.getStartNewRoundMove());
+
 		Round newRound = InitialUtil.getInitialRound(0);
 		newRound.getTableInfo().setLastPlayedProb(round.getTableInfo().getLastPlayedProb());   // For MinMax
 		newRound.getTableInfo().setMyMove(true);
 		newRound.getTableInfo().setFirstRound(false);
 		newRound.setGameInfo(round.getGameInfo());
-		if (!finishedMe && !virtual) {
+		if (!addForMe && !virtual) {
 			CachedGames.makeOpponentNextRoundBeginner(gameId);
 		}
 
@@ -111,7 +103,6 @@ public class GameOperations {
 		}
 	}
 
-	// TODO
 	public static void updateProbabilitiesForLastPickedTiles(Round round, boolean played) {
 		float bazaarTilesCount = round.getTableInfo().getTilesFromBazaar();
 		float probability = played ? bazaarTilesCount - 1 : bazaarTilesCount;

@@ -21,5 +21,5 @@ public interface GameService {
 
     Round addLeftTiles(int gameId, int opponentTilesCount) throws DAIException;
 
-    Round specifyRoundBeginner(int gameId, boolean startMe);
+    void specifyRoundBeginner(int gameId, boolean startMe);
 }

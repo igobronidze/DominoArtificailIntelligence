@@ -40,7 +40,7 @@ public class MoveValidator {
 				}
 				break;
 			case BOTTOM:
-				if (right == null || ((right.getOpenSide() != move.getLeft() && right.getOpenSide() != move.getRight()) || tableInfo.getLeft().isCenter() || tableInfo.getRight().isCenter())) {
+				if (bottom == null || ((bottom.getOpenSide() != move.getLeft() && bottom.getOpenSide() != move.getRight()) || tableInfo.getLeft().isCenter() || tableInfo.getRight().isCenter())) {
 					logger.warn("Incorrect move[" + move +"]");
 					throw new DAIException("incorrectMove");
 				}

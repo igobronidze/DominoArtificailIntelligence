@@ -46,8 +46,12 @@ public class CachedGames {
         cachedGames.get(gameId).getRounds().addFirst(round);
     }
 
-    public static Round getCurrentRound(int gameId) {
-        return CloneUtil.getClone(cachedGames.get(gameId).getRounds().getFirst());
+    public static Round getCurrentRound(int gameId, boolean clone) {
+        if (clone) {
+            return CloneUtil.getClone(cachedGames.get(gameId).getRounds().getFirst());
+        } else {
+            return cachedGames.get(gameId).getRounds().getFirst();
+        }
     }
 
     public static Round getAndRemoveLastRound(int gameId) throws DAIException {

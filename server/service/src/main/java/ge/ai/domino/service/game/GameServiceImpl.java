@@ -46,7 +46,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Round specifyRoundBeginner(int gameId, boolean startMe) {
-        return gameManager.specifyRoundBeginner(gameId, startMe);
+    public void specifyRoundBeginner(int gameId, boolean startMe) {
+        gameManager.specifyRoundBeginner(gameId, startMe);
     }
 }

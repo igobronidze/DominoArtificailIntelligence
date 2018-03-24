@@ -40,13 +40,13 @@ public class GameManager {
         CachedGames.addGame(game);
         CachedGames.addMove(game.getId(), MoveHelper.getStartNewRoundMove());
         logger.info("------------Started new game[" + game.getId() + "]------------");
-        Round newRound = CachedGames.getCurrentRound(game.getId());
+        Round newRound = CachedGames.getCurrentRound(game.getId(), false);
         GameLoggingProcessor.logRoundFullInfo(newRound, false);
         return newRound;
     }
 
     public Round addTileForMe(int gameId, int left, int right) throws DAIException {
-        Round round = CachedGames.getCurrentRound(gameId);
+        Round round = CachedGames.getCurrentRound(gameId, true);
         Move move = getMove(left, right, MoveDirection.LEFT);
         Round newRound = addForMeProcessor.move(round, move, false);
         CachedGames.addRound(gameId, newRound);
@@ -59,7 +59,7 @@ public class GameManager {
     }
 
     public Round addTileForOpponent(int gameId) throws DAIException {
-        Round round = CachedGames.getCurrentRound(gameId);
+        Round round = CachedGames.getCurrentRound(gameId, true);
         Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT), false);
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, round.getTableInfo().isOmittedOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove());
@@ -68,7 +68,7 @@ public class GameManager {
 
     public Round playForMe(int gameId, Move move) throws DAIException {
         move = getMove(move);
-        Round round = CachedGames.getCurrentRound(gameId);
+        Round round = CachedGames.getCurrentRound(gameId, true);
         MoveValidator.validateMove(round, move);
         Round newRound = playForMeProcessor.move(round, move, false);
         CachedGames.addRound(gameId, newRound);
@@ -78,7 +78,7 @@ public class GameManager {
 
     public Round playForOpponent(int gameId, Move move) throws DAIException {
         move = getMove(move);
-        Round round = CachedGames.getCurrentRound(gameId);
+        Round round = CachedGames.getCurrentRound(gameId, true);
         MoveValidator.validateMove(round, move);
         Round newRound = playForOpponentProcessor.move(round, move, false);
         CachedGames.addRound(gameId, newRound);
@@ -96,7 +96,7 @@ public class GameManager {
     }
 
     public Round addLeftTilesForMe(int gameId, int opponentTilesCount) throws DAIException {
-        Round round = CachedGames.getCurrentRound(gameId);
+        Round round = CachedGames.getCurrentRound(gameId, false);
         GameInfo gameInfo = round.getGameInfo();
         logger.info("Start addLeftTileForMe method, gameId[" + gameId + "]");
         round.getTableInfo().setNeedToAddLeftTiles(false);
@@ -124,10 +124,10 @@ public class GameManager {
         return newRound;
     }
 
-    public Round specifyRoundBeginner(int gameId, boolean startMe) {
-        Round round = CachedGames.getCurrentRound(gameId);
-        round.getTableInfo().setMyMove(startMe);
-        return round;
+    public void specifyRoundBeginner(int gameId, boolean startMe) {
+        if (!startMe) {
+            CachedGames.makeOpponentNextRoundBeginner(gameId);
+        }
     }
 
     private Move getMove(int left, int right, MoveDirection direction) {

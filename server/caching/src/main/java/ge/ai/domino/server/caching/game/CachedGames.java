@@ -34,7 +34,7 @@ public class CachedGames {
         return cachedGames.get(gameId).isOpponentNextRoundBeginner();
     }
 
-    public static void addLeftTilesCountFromLastRound(int gameId, int point) {
+    public static void setLeftTilesCountFromLastRound(int gameId, int point) {
         cachedGames.get(gameId).setLeftTilesCountFromLastRound(point);
     }
 
@@ -81,5 +81,13 @@ public class CachedGames {
 
     public static GameHistory getGameHistory(int gameId) {
         return cachedGames.get(gameId).getGameHistory();
+    }
+
+    public static void specifyOpponentLeftTilesCount(int gameId, int leftTilesCount) {
+        cachedGames.get(gameId).setOpponentLeftTilesCount(leftTilesCount);
+    }
+
+    public static int getOpponentLeftTilesCount(int gameId) {
+        return cachedGames.get(gameId).getOpponentLeftTilesCount();
     }
 }

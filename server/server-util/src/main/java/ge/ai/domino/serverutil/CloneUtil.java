@@ -1,16 +1,12 @@
 package ge.ai.domino.serverutil;
 
-import ge.ai.domino.domain.game.GameInfo;
-import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.TableInfo;
-import ge.ai.domino.domain.game.Tile;
+import ge.ai.domino.domain.game.*;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.PlayedTile;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class CloneUtil {
 
@@ -20,14 +16,8 @@ public class CloneUtil {
         clone.setTableInfo(getClone(round.getTableInfo()));
         clone.setGameInfo(getClone(round.getGameInfo()));
         clone.setOpponentTiles(getClone((round.getOpponentTiles())));
-        clone.setMyTiles(getClone(round.getMyTiles()));
+        clone.setMyTiles(new HashSet<>(round.getMyTiles()));
         clone.setHeuristicValue(round.getHeuristicValue());
-        return clone;
-    }
-
-    private static Set<Tile> getClone(Set<Tile> myTiles) {
-        Set<Tile> clone = new HashSet<>();
-        clone.addAll(myTiles);
         return clone;
     }
 
@@ -57,10 +47,8 @@ public class CloneUtil {
         clone.setMyMove(tableInfo.isMyMove());
         clone.setWithCenter(tableInfo.isWithCenter());
         clone.setLastPlayedProb(tableInfo.getLastPlayedProb());
-        clone.setNeedToAddLeftTiles(tableInfo.isNeedToAddLeftTiles());
         clone.setTilesFromBazaar(tableInfo.getTilesFromBazaar());
-        clone.setOmittedMe(tableInfo.isOmittedMe());
-        clone.setOmittedOpponent(tableInfo.isOmittedOpponent());
+        clone.setRoundBlockingInfo(getClone(tableInfo.getRoundBlockingInfo()));
         clone.setFirstRound(tableInfo.isFirstRound());
         return clone;
     }
@@ -82,7 +70,14 @@ public class CloneUtil {
         clone.setGameId(gameInfo.getGameId());
         clone.setMyPoint(gameInfo.getMyPoint());
         clone.setOpponentPoint(gameInfo.getOpponentPoint());
-        clone.setFinished(gameInfo.isFinished());
+        return clone;
+    }
+
+    private static RoundBlockingInfo getClone(RoundBlockingInfo roundBlockingInfo) {
+        RoundBlockingInfo clone = new RoundBlockingInfo();
+        clone.setOmitMe(roundBlockingInfo.isOmitMe());
+        clone.setOmitOpponent(roundBlockingInfo.isOmitOpponent());
+        clone.setLastNotTwinPlayedTileMy(roundBlockingInfo.isLastNotTwinPlayedTileMy());
         return clone;
     }
 }

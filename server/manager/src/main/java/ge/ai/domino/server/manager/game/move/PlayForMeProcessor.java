@@ -17,7 +17,10 @@ public class PlayForMeProcessor extends MoveProcessor {
 		GameLoggingProcessor.logInfoAboutMove(virtual ? "<<<<<<<Virtual Mode>>>>>>>" : "<<<<<<<Real Mode<<<<<<<", virtual);
 		MoveDirection direction = move.getDirection();
 
-		round.getTableInfo().setOmittedMe(false);
+		round.getTableInfo().getRoundBlockingInfo().setOmitMe(false);
+		if (move.getRight() != move.getLeft()) {
+			round.getTableInfo().getRoundBlockingInfo().setLastNotTwinPlayedTileMy(true);
+		}
 		int gameId = round.getGameInfo().getGameId();
 		GameLoggingProcessor.logInfoAboutMove("Start playForMe method for tile [" + move.getLeft() + "-" + move.getRight() + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
 
@@ -32,11 +35,11 @@ public class PlayForMeProcessor extends MoveProcessor {
 		round.getMyTiles().remove(tmpTile);
 		GameOperations.playTile(round, move);
 
-		GameOperations.addLeftTiles(round.getGameInfo(), GameOperations.countScore(round), true, gameId, virtual);
+		round.getGameInfo().setMyPoint(round.getGameInfo().getMyPoint() + GameOperations.countScore(round));
 		round.getTableInfo().setMyMove(false);
 
 		if (round.getMyTiles().size() == 0) {
-			round.getTableInfo().setNeedToAddLeftTiles(true);
+			round = GameOperations.finishedLastAndGetNewRound(round, true, GameOperations.countLeftTiles(round, false, virtual), virtual);
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Played tile for me, gameId[" + gameId + "]", virtual);

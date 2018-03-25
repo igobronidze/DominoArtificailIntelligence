@@ -35,17 +35,17 @@ public class AddForMeProcessor extends MoveProcessor {
 
 		// If omit -> a) If opponent also has omitted finish b) Make opponent try
 		if (tableInfo.getBazaarTilesCount() == 2) {
-			tableInfo.setOmittedMe(true);
-			if (tableInfo.isOmittedOpponent()) {
-				round.getTableInfo().setNeedToAddLeftTiles(true);
-				return round;
+			tableInfo.getRoundBlockingInfo().setOmitMe(true);
+			if (tableInfo.getRoundBlockingInfo().isOmitOpponent()) {
+				round = GameOperations.blockRound(round, CachedGames.getOpponentLeftTilesCount(gameId), virtual);
 			} else {
 				round.getTableInfo().setMyMove(false);
-				return round;
 			}
+			GameLoggingProcessor.logRoundFullInfo(round, virtual);
+			return round;
 		}
 
-		// Add for mer
+		// Add for me
 		Tile tile = new Tile(move.getLeft(), move.getRight());
 		round.getMyTiles().add(tile);
 
@@ -60,8 +60,8 @@ public class AddForMeProcessor extends MoveProcessor {
 		// Execute MinMax
 		MinMax minMax = new MinMax();
 		if (tableInfo.getLeft() == null && round.getMyTiles().size() == 7) {
-			if (CachedGames.isOpponentNextRoundBeginner(gameId) && !virtual) {
-				round.getTableInfo().setMyMove(false);
+			if (!virtual) {
+				round.getTableInfo().setMyMove(!CachedGames.isOpponentNextRoundBeginner(gameId));
 			}
 			if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove() && !virtual) {
 //				Move aiPrediction = minMax.minMax(round);  TODO

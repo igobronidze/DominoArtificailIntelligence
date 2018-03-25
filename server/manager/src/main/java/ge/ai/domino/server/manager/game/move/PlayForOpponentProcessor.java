@@ -22,7 +22,10 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 			GameLoggingProcessor.logInfoAboutMove("<<<<<<<Real Mode<<<<<<<", false);
 		}
 		MoveDirection direction = move.getDirection();
-		round.getTableInfo().setOmittedOpponent(false);
+		round.getTableInfo().getRoundBlockingInfo().setOmitOpponent(false);
+		if (move.getRight() != move.getLeft()) {
+			round.getTableInfo().getRoundBlockingInfo().setLastNotTwinPlayedTileMy(false);
+		}
 		int gameId = round.getGameInfo().getGameId();
 		GameLoggingProcessor.logInfoAboutMove("Start playForOpponent method for tile [" + move.getLeft() + "-" + move.getRight() + "] direction [" + direction.name() + "], gameId[" + gameId + "]", virtual);
 
@@ -49,12 +52,12 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		// Play tile
 		GameOperations.playTile(round, move);
 		round.getTableInfo().setOpponentTilesCount(round.getTableInfo().getOpponentTilesCount() - 1);
-		GameOperations.addLeftTiles(round.getGameInfo(), GameOperations.countScore(round), false, gameId, virtual);
+		round.getGameInfo().setOpponentPoint(round.getGameInfo().getOpponentPoint() + GameOperations.countScore(round));
 		round.getTableInfo().setMyMove(true);
 
 
 		if (round.getTableInfo().getOpponentTilesCount() == 0) {
-			return GameOperations.finishedLastAndGetNewRound(round, false, true, virtual);
+			round = GameOperations.finishedLastAndGetNewRound(round, false, GameOperations.countLeftTiles(round, true, virtual), virtual);
 		}
 
 		if (!virtual) {

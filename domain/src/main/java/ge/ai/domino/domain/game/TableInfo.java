@@ -16,13 +16,9 @@ public class TableInfo {
 
     private boolean myMove;
 
-    private boolean omittedMe;
-
-    private boolean omittedOpponent;
+    private RoundBlockingInfo roundBlockingInfo = new RoundBlockingInfo();
 
     private boolean firstRound;
-
-    private boolean needToAddLeftTiles;
 
     private float opponentTilesCount;
 
@@ -104,14 +100,6 @@ public class TableInfo {
         this.lastPlayedProb = lastPlayedProb;
     }
 
-    public boolean isNeedToAddLeftTiles() {
-        return needToAddLeftTiles;
-    }
-
-    public void setNeedToAddLeftTiles(boolean needToAddLeftTiles) {
-        this.needToAddLeftTiles = needToAddLeftTiles;
-    }
-
     public int getTilesFromBazaar() {
         return tilesFromBazaar;
     }
@@ -120,20 +108,12 @@ public class TableInfo {
         this.tilesFromBazaar = tilesFromBazaar;
     }
 
-    public boolean isOmittedMe() {
-        return omittedMe;
+    public RoundBlockingInfo getRoundBlockingInfo() {
+        return roundBlockingInfo;
     }
 
-    public void setOmittedMe(boolean omittedMe) {
-        this.omittedMe = omittedMe;
-    }
-
-    public boolean isOmittedOpponent() {
-        return omittedOpponent;
-    }
-
-    public void setOmittedOpponent(boolean omittedOpponent) {
-        this.omittedOpponent = omittedOpponent;
+    public void setRoundBlockingInfo(RoundBlockingInfo roundBlockingInfo) {
+        this.roundBlockingInfo = roundBlockingInfo;
     }
 
     public boolean isFirstRound() {

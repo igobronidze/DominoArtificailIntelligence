@@ -19,6 +19,8 @@ public class Game {
 
     private boolean opponentNextRoundBeginner;
 
+    private int opponentLeftTilesCount;
+
     public int getId() {
         return id;
     }
@@ -65,5 +67,13 @@ public class Game {
 
     public void setOpponentNextRoundBeginner(boolean opponentNextRoundBeginner) {
         this.opponentNextRoundBeginner = opponentNextRoundBeginner;
+    }
+
+    public int getOpponentLeftTilesCount() {
+        return opponentLeftTilesCount;
+    }
+
+    public void setOpponentLeftTilesCount(int opponentLeftTilesCount) {
+        this.opponentLeftTilesCount = opponentLeftTilesCount;
     }
 }

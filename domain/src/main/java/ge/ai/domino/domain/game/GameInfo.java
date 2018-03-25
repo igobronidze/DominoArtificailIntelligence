@@ -8,8 +8,6 @@ public class GameInfo {
 
     private int opponentPoint;
 
-    private boolean finished;
-
     public int getMyPoint() {
         return myPoint;
     }
@@ -32,13 +30,5 @@ public class GameInfo {
 
     public void setGameId(int gameId) {
         this.gameId = gameId;
-    }
-
-    public boolean isFinished() {
-        return finished;
-    }
-
-    public void setFinished(boolean finished) {
-        this.finished = finished;
     }
 }

@@ -25,13 +25,14 @@ public class InitialUtil {
 
     public static Game getInitialGame(GameProperties gameProperties, int gameId) {
         Game game = new Game();
-        game.setProperties(gameProperties);
-        game.setId(playedGameManager.addPlayedGame(gameProperties));
-        game.getRounds().push(getInitialRound(game.getId()));
-        game.setGameHistory(new GameHistory());
         if (gameId != 0 && game.getProperties() == null) {
             game.setProperties(CachedGames.getGameProperties(gameId));
+        } else {
+            game.setProperties(gameProperties);
         }
+        game.setId(playedGameManager.addPlayedGame(game.getProperties()));
+        game.getRounds().push(getInitialRound(game.getId()));
+        game.setGameHistory(new GameHistory());
         return game;
     }
 

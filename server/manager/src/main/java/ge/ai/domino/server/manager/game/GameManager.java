@@ -1,11 +1,7 @@
 package ge.ai.domino.server.manager.game;
 
 import ge.ai.domino.domain.exception.DAIException;
-import ge.ai.domino.domain.game.Game;
-import ge.ai.domino.domain.game.GameInfo;
-import ge.ai.domino.domain.game.GameProperties;
-import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.game.*;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.server.caching.game.CachedGames;
@@ -53,7 +49,7 @@ public class GameManager {
         if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() == 1) {
             CachedGames.addMove(gameId, MoveHelper.getAddInitialTileForMeMove(move));
         } else {
-            CachedGames.addMove(gameId, round.getTableInfo().isOmittedMe() ? MoveHelper.getOmittedMeMove() : MoveHelper.getAddTileForMeMove(move));
+            CachedGames.addMove(gameId, round.getTableInfo().getRoundBlockingInfo().isOmitMe() ? MoveHelper.getOmittedMeMove() : MoveHelper.getAddTileForMeMove(move));
         }
         return newRound;
     }
@@ -62,7 +58,7 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId, true);
         Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT), false);
         CachedGames.addRound(gameId, newRound);
-        CachedGames.addMove(gameId, round.getTableInfo().isOmittedOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove());
+        CachedGames.addMove(gameId, round.getTableInfo().getRoundBlockingInfo().isOmitOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove());
         return newRound;
     }
 
@@ -95,39 +91,14 @@ public class GameManager {
         return newRound;
     }
 
-    public Round addLeftTilesForMe(int gameId, int opponentTilesCount) throws DAIException {
-        Round round = CachedGames.getCurrentRound(gameId, false);
-        GameInfo gameInfo = round.getGameInfo();
-        logger.info("Start addLeftTileForMe method, gameId[" + gameId + "]");
-        round.getTableInfo().setNeedToAddLeftTiles(false);
-        TableInfo tableInfo = round.getTableInfo();
-        Round newRound;
-        if (tableInfo.isOmittedMe() && tableInfo.isOmittedOpponent()) {
-            int myTilesCount = GameOperations.countLeftTiles(round, true, false);
-            if (myTilesCount < opponentTilesCount) {
-                GameOperations.addLeftTiles(gameInfo, opponentTilesCount, true, gameId, false);
-                logger.info("Added lef tiles for me, gameId[" + gameId + "], count[" + opponentTilesCount + "]");
-            } else if (myTilesCount > opponentTilesCount) {
-                GameOperations.addLeftTiles(gameInfo, myTilesCount, false, gameId, false);
-                logger.info("Added lef tiles for opponent, gameId[" + gameId + "], count[" + myTilesCount + "]");
-            } else {
-                CachedGames.addLeftTilesCountFromLastRound(gameId, myTilesCount);
-                logger.info("Added last round tiles count in cach, gameId[" + gameId + "], count[" + myTilesCount + "]");
-            }
-            newRound = GameOperations.finishedLastAndGetNewRound(round, round.getTableInfo().isMyMove(), false, false);
-        } else {
-            GameOperations.addLeftTiles(gameInfo, opponentTilesCount, true, gameId, false);
-            logger.info("Added lef tiles for me, gameId[" + gameId + "], count[" + opponentTilesCount + "]");
-            newRound = GameOperations.finishedLastAndGetNewRound(round, true, false, false);
-        }
-        OpponentTilesValidator.validateOpponentTiles(newRound, 0, "addLeftTilesForMe");
-        return newRound;
-    }
-
     public void specifyRoundBeginner(int gameId, boolean startMe) {
         if (!startMe) {
             CachedGames.makeOpponentNextRoundBeginner(gameId);
         }
+    }
+
+    public void specifyOpponentLeftTiles(int gameId, int leftTilesCount) {
+        CachedGames.specifyOpponentLeftTilesCount(gameId, leftTilesCount);
     }
 
     private Move getMove(int left, int right, MoveDirection direction) {

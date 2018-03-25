@@ -13,17 +13,22 @@ import java.util.Set;
 public class GameOperations {
 
 	public static int countLeftTiles(Round round, boolean countMine, boolean virtual) {
+		int gameId = round.getGameInfo().getGameId();
+
 		float count = 0;
 		if (countMine) {
 			for (Tile tile : round.getMyTiles()) {
 				count += tile.getLeft() + tile.getRight();
 			}
 		} else {
-			for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
-				count += entry.getValue() * (entry.getKey().getLeft() + entry.getKey().getRight());
+			if (virtual) {
+				for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
+					count += entry.getValue() * (entry.getKey().getLeft() + entry.getKey().getRight());
+				}
+			} else {
+				count = CachedGames.getOpponentLeftTilesCount(gameId);
 			}
 		}
-		int gameId = round.getGameInfo().getGameId();
 		if (count == 0) {
 			GameLoggingProcessor.logInfoAboutMove("Left tiles count is " + 10 + "(0,0), gameId[" + gameId + "]", virtual);
 			return 10;
@@ -43,7 +48,7 @@ public class GameOperations {
 			gameInfo.setOpponentPoint(gameInfo.getOpponentPoint() + count + countFromLastRound);
 		}
 		if (!virtual) {
-			CachedGames.addLeftTilesCountFromLastRound(gameId, 0);
+			CachedGames.setLeftTilesCountFromLastRound(gameId, 0);
 		}
 	}
 
@@ -52,21 +57,17 @@ public class GameOperations {
 		int gameId = gameInfo.getGameId();
 		addLeftTiles(gameInfo, leftTilesCount, addForMe, gameId, virtual);
 		int scoreForWin = CachedGames.getGameProperties(gameId).getPointsForWin();
-		if (!round.getTableInfo().isOmittedOpponent() || !round.getTableInfo().isOmittedMe()) {  // If game was not blocked
-			if (gameInfo.getMyPoint() >= scoreForWin && gameInfo.getMyPoint() >= gameInfo.getOpponentPoint()) {
-				round.getGameInfo().setFinished(true);
-				GameLoggingProcessor.logInfoAboutMove("I won the game", virtual);
-				return round;
-			} else if (gameInfo.getOpponentPoint() >= scoreForWin) {
-				round.getGameInfo().setFinished(true);
-				GameLoggingProcessor.logInfoAboutMove("He won the game", virtual);
-				return round;
-			}
+		if (gameInfo.getMyPoint() >= scoreForWin && gameInfo.getMyPoint() >= gameInfo.getOpponentPoint()) {
+			GameLoggingProcessor.logInfoAboutMove("I won the game", virtual);
+			return round;
+		} else if (gameInfo.getOpponentPoint() >= scoreForWin) {
+			GameLoggingProcessor.logInfoAboutMove("He won the game", virtual);
+			return round;
 		}
 
 		Round newRound = InitialUtil.getInitialRound(0);
 		newRound.getTableInfo().setLastPlayedProb(round.getTableInfo().getLastPlayedProb());   // For MinMax
-		newRound.getTableInfo().setMyMove(true);
+		newRound.getTableInfo().setMyMove(true); // For pick up new tiles
 		newRound.getTableInfo().setFirstRound(false);
 		newRound.setGameInfo(round.getGameInfo());
 		if (!addForMe && !virtual) {
@@ -74,6 +75,31 @@ public class GameOperations {
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Finished round and start new one, gameId[" + gameId + "]", virtual);
+		return newRound;
+	}
+
+	public static Round blockRound(Round round, int opponentLeftTilesCount, boolean virtual) {
+		int gameId = round.getGameInfo().getGameId();
+
+		int myLeftTilesCount = countLeftTiles(round, true, virtual);
+		if (myLeftTilesCount < opponentLeftTilesCount) {
+			addLeftTiles(round.getGameInfo(), opponentLeftTilesCount, true, gameId, virtual);
+		} else if (myLeftTilesCount > opponentLeftTilesCount) {
+			addLeftTiles(round.getGameInfo(), myLeftTilesCount, false, gameId, virtual);
+		} else {
+			CachedGames.setLeftTilesCountFromLastRound(gameId, CachedGames.getLeftTilesCountFromLastRound(gameId) + myLeftTilesCount);
+		}
+
+		Round newRound = InitialUtil.getInitialRound(0);
+		newRound.getTableInfo().setLastPlayedProb(round.getTableInfo().getLastPlayedProb());   // For MinMax
+		newRound.getTableInfo().setMyMove(true); // For pick up new tiles
+		newRound.getTableInfo().setFirstRound(false);
+		newRound.setGameInfo(round.getGameInfo());
+		if (!round.getTableInfo().getRoundBlockingInfo().isLastNotTwinPlayedTileMy()) {
+			CachedGames.makeOpponentNextRoundBeginner(gameId);
+		}
+
+		GameLoggingProcessor.logInfoAboutMove("Finished(blocked) round and start new one, gameId[" + gameId + "]", virtual);
 		return newRound;
 	}
 
@@ -110,26 +136,24 @@ public class GameOperations {
 		Map<Tile, Float> tiles = round.getOpponentTiles();
 		Set<Integer> notUsedNumbers = getPossiblePlayNumbers(round.getTableInfo());
 
-		int count = 0;
 		float sum = 0.0F;
 		for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-			if (filterTile(entry.getValue(), false, true, false, true)
+			if (filterTile(entry.getValue(), false, true, false, false)
 					&& !notUsedNumbers.contains(entry.getKey().getLeft()) && !notUsedNumbers.contains(entry.getKey().getRight())) {
 				sum += (1 - entry.getValue());
-				count++;
 			}
 		}
 
-		if (ComparisonHelper.equal(sum + probability, count)) {
+		if (ComparisonHelper.equal(probability, sum)) {
 			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-				if (filterTile(entry.getValue(), false, true, false, true)
+				if (filterTile(entry.getValue(), false, true, false, false)
 						&& !notUsedNumbers.contains(entry.getKey().getLeft()) && !notUsedNumbers.contains(entry.getKey().getRight())) {
 					entry.setValue(1.0F);
 				}
 			}
 		} else {
 			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-				if (filterTile(entry.getValue(), false, true, false, true)
+				if (filterTile(entry.getValue(), false, true, false, false)
 						&& !notUsedNumbers.contains(entry.getKey().getLeft()) && !notUsedNumbers.contains(entry.getKey().getRight())) {
 					float add = probability * (1 - entry.getValue()) / sum;
 					entry.setValue(entry.getValue() + add);

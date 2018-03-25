@@ -92,7 +92,7 @@ public class MinMax {
         TableInfo tableInfo = round.getTableInfo();
         GameInfo gameInfo = round.getGameInfo();
         // If game is blocked
-        if (tableInfo.isOmittedMe() && tableInfo.isOmittedOpponent()) {
+        if (tableInfo.getRoundBlockingInfo().isOmitMe() && tableInfo.getRoundBlockingInfo().isOmitOpponent()) {
             int opponentTilesCount = GameOperations.countLeftTiles(round, false, true);
             int myTilesCount = GameOperations.countLeftTiles(round, true, false);
             if (myTilesCount < opponentTilesCount) {
@@ -103,11 +103,11 @@ public class MinMax {
             round.setHeuristicValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, tableInfo.isMyMove()));
             return round.getHeuristicValue();
         }
-        if (gameInfo.isFinished()) {
+        if (tableInfo.getOpponentTilesCount() == 0.0F || round.getMyTiles().isEmpty()) {
             return RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGameProperties(gameId).getPointsForWin());
         }
         // If opponent omit, add him left tiles and return pure heuristic value
-        if (tableInfo.isNeedToAddLeftTiles()) {
+        if (round.getMyTiles().isEmpty()) {
             int opponentTilesCount = GameOperations.countLeftTiles(round, false, true);
             GameOperations.addLeftTiles(gameInfo, opponentTilesCount, true, 0, true);
             round.setHeuristicValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, !tableInfo.isMyMove()));
@@ -152,12 +152,7 @@ public class MinMax {
             }
         } else {
             // Possible moves sorted ASC
-            Queue<Round> possibleRounds = new PriorityQueue<>(new Comparator<Round>() {
-                @Override
-                public int compare(Round o1, Round o2) {
-                    return Float.compare(o1.getHeuristicValue(), o2.getHeuristicValue());
-                }
-            });
+            Queue<Round> possibleRounds = new PriorityQueue<>((o1, o2) -> Float.compare(o1.getHeuristicValue(), o2.getHeuristicValue()));
             // Play all possible move and add in queue
             for (Move move : moves) {
                 Round nextRound = playForOpponentProcessor.move(CloneUtil.getClone(round), move, true);
@@ -234,9 +229,8 @@ public class MinMax {
                     addPossibleMovesForTile(tile, left, right, top, bottom, moves);
                 }
             } else {
-                round.getOpponentTiles().entrySet().stream().filter(entry -> entry.getValue() > 0.0).forEach(entry -> {
-                    addPossibleMovesForTile(entry.getKey(), left, right, top, bottom, moves);
-                });
+                round.getOpponentTiles().entrySet().stream().filter(entry -> entry.getValue() > 0.0).forEach(
+                        entry -> addPossibleMovesForTile(entry.getKey(), left, right, top, bottom, moves));
             }
         }
         return moves;

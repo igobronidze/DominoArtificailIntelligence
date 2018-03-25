@@ -4,9 +4,9 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.move.Move;
+import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
-import ge.ai.domino.server.manager.game.minmax.MinMax;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 
 public class AddForOpponentProcessor extends MoveProcessor {
@@ -29,10 +29,9 @@ public class AddForOpponentProcessor extends MoveProcessor {
 		}
 
 		if (tableInfo.getBazaarTilesCount() == 2) { // If omit
-			tableInfo.setOmittedOpponent(true);
-			if (tableInfo.isOmittedMe()) { // If I have already omit
-				round.getTableInfo().setNeedToAddLeftTiles(true);
-				return round;
+			tableInfo.getRoundBlockingInfo().setOmitOpponent(true);
+			if (tableInfo.getRoundBlockingInfo().isOmitMe()) {
+				round = GameOperations.blockRound(round, CachedGames.getOpponentLeftTilesCount(gameId), virtual);
 			}
 
 			if (tableInfo.getTilesFromBazaar() > 0) {
@@ -45,6 +44,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 //				Move aiPrediction = minMax.minMax(round);
 //				round.setAiPrediction(aiPrediction);  TODO
 			}
+			GameLoggingProcessor.logRoundFullInfo(round, virtual);
 			return round;
 		}
 

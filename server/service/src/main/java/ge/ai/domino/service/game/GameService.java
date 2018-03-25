@@ -19,7 +19,7 @@ public interface GameService {
 
     Round getLastPlayedRound(int gameId) throws DAIException;
 
-    Round addLeftTiles(int gameId, int opponentTilesCount) throws DAIException;
-
     void specifyRoundBeginner(int gameId, boolean startMe);
+
+    void specifyOpponentLeftTiles(int gameId, int leftTilesCount);
 }

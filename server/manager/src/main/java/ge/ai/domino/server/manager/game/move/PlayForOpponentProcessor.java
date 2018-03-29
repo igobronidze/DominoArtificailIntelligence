@@ -42,7 +42,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		opponentTiles.remove(tile);
 
 		if (round.getTableInfo().getTilesFromBazaar() > 0) {
-			GameOperations.updateProbabilitiesForLastPickedTiles(round, true);
+			GameOperations.updateProbabilitiesForLastPickedTiles(round, true, virtual);
 		} else {
 			if (prob != 1.0) {
 				GameOperations.distributeProbabilitiesOpponentProportional(opponentTiles, prob - 1);
@@ -61,7 +61,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		}
 
 		if (!virtual) {
-//			round.setAiPrediction(new MinMax().minMax(round)); TODO
+			round.setAiPrediction(new MinMax().minMax(round));
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Played tile for opponent, gameId[" + gameId + "]", virtual);

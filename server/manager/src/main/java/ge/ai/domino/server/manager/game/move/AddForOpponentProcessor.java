@@ -34,14 +34,14 @@ public class AddForOpponentProcessor extends MoveProcessor {
 			if (tableInfo.getRoundBlockingInfo().isOmitMe()) {
 				round = GameOperations.blockRound(round, CachedGames.getOpponentLeftTilesCount(gameId), virtual);
 			} else {
-				if (tableInfo.getTilesFromBazaar() > 0) {
-					GameOperations.updateProbabilitiesForLastPickedTiles(round, false);
-				}
-
 				round.getTableInfo().setMyMove(true);
 				if (!virtual) {
-//					round.setAiPrediction(new MinMax().minMax(round)); TODO
+					if (tableInfo.getTilesFromBazaar() > 0) {
+						GameOperations.updateProbabilitiesForLastPickedTiles(round, false, false);
+					}
+					round.setAiPrediction(new MinMax().minMax(round));
 				}
+
 			}
 			GameLoggingProcessor.logRoundFullInfo(round, virtual);
 			return round;
@@ -50,6 +50,9 @@ public class AddForOpponentProcessor extends MoveProcessor {
 
 			tableInfo.setOpponentTilesCount(tableInfo.getOpponentTilesCount() + 1);
 			tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
+			if (virtual) {
+				GameOperations.updateProbabilitiesForLastPickedTiles(round, false, true);
+			}
 
 			GameLoggingProcessor.logInfoAboutMove("Added tile for opponent, gameId[" + gameId + "]", virtual);
 			GameLoggingProcessor.logRoundFullInfo(round, virtual);

@@ -424,7 +424,6 @@ public class GamePane extends BorderPane {
 				showAddLeftTilesCount(tile, direction);
 			} else {
 				AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(tile.getLeft(), tile.getRight(), direction));
-				AppController.round.setAiPrediction(null);  // TODO will not make any change
 			}
 		} catch (DAIException ex) {
 			WarnDialog.showWarnDialog(ex);

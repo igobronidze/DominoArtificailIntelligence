@@ -66,7 +66,7 @@ public class MinMax {
         Move bestMove = null;
         float bestHeuristic = Integer.MIN_VALUE;
         for (Move move : moves) {
-            Round nextRound = addForMeProcessor.move(CloneUtil.getClone(round), move, true);
+            Round nextRound = playForMeProcessor.move(CloneUtil.getClone(round), move, true);
             float heuristic = getHeuristicValue(nextRound, 1);
             if (bestMove == null || heuristic > bestHeuristic) {
                 bestMove = move;
@@ -91,27 +91,10 @@ public class MinMax {
         recursionCount++;
         TableInfo tableInfo = round.getTableInfo();
         GameInfo gameInfo = round.getGameInfo();
-        // If game is blocked
-        if (tableInfo.getRoundBlockingInfo().isOmitMe() && tableInfo.getRoundBlockingInfo().isOmitOpponent()) {
-            int opponentTilesCount = GameOperations.countLeftTiles(round, false, true);
-            int myTilesCount = GameOperations.countLeftTiles(round, true, false);
-            if (myTilesCount < opponentTilesCount) {
-                GameOperations.addLeftTiles(gameInfo, opponentTilesCount, true, 0, true);
-            } else if (myTilesCount > opponentTilesCount) {
-                GameOperations.addLeftTiles(gameInfo, myTilesCount, false, 0, true);
-            }
-            round.setHeuristicValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, tableInfo.isMyMove()));
-            return round.getHeuristicValue();
-        }
-        if (tableInfo.getOpponentTilesCount() == 0.0F || round.getMyTiles().isEmpty()) {
+
+        // Recursion end conditions: Game is finished, Started new round, reachet tree root
+        if (round.getGameInfo().isFinished()) {
             return RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGameProperties(gameId).getPointsForWin());
-        }
-        // If opponent omit, add him left tiles and return pure heuristic value
-        if (round.getMyTiles().isEmpty()) {
-            int opponentTilesCount = GameOperations.countLeftTiles(round, false, true);
-            GameOperations.addLeftTiles(gameInfo, opponentTilesCount, true, 0, true);
-            round.setHeuristicValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, !tableInfo.isMyMove()));
-            return round.getHeuristicValue();
         }
         if (isNewRound(round)) {
             round.setHeuristicValue(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, !tableInfo.isMyMove()));
@@ -121,6 +104,7 @@ public class MinMax {
             round.setHeuristicValue(roundHeuristic.getHeuristic(round));
             return round.getHeuristicValue();
         }
+
         List<Move> moves = getPossibleMoves(round);
         if (round.getTableInfo().isMyMove()) {
             // Best move for me
@@ -160,12 +144,15 @@ public class MinMax {
                 possibleRounds.add(nextRound);
             }
 
-            int notPlayedTilesCount = (int)round.getOpponentTiles().values().stream().filter(prob -> prob == 0).count();   // Tile count which opponent didn't play
+            int canNotPlayTilesCount = (int)round.getOpponentTiles().values().stream().filter(prob -> prob == 0).count();   // Tile count which opponent didn't play
             float heuristic = 0.0F;
             float remainingProbability = 1.0F;
             for (Round nextRound : possibleRounds) {
                 float prob;
-                if (notPlayedTilesCount == tableInfo.getBazaarTilesCount()) {
+                // Can't move more tile than there are in bazaar or was played
+                if (canNotPlayTilesCount > tableInfo.getBazaarTilesCount()) {
+                    break;
+                } else if (canNotPlayTilesCount == tableInfo.getBazaarTilesCount()) {
                     prob = remainingProbability;   // Last chance to play
                 } else {
                     prob = remainingProbability * nextRound.getTableInfo().getLastPlayedProb();
@@ -173,12 +160,7 @@ public class MinMax {
                 heuristic += nextRound.getHeuristicValue() * prob;
                 remainingProbability -= prob;
 
-                // Can't move more tile than there are in bazaar
-                notPlayedTilesCount++;
-                if (notPlayedTilesCount > tableInfo.getBazaarTilesCount()) {
-                    break;
-
-                }
+                canNotPlayTilesCount++;
             }
             // Bazaar case
             if (!ComparisonHelper.equal(remainingProbability, 0)) {

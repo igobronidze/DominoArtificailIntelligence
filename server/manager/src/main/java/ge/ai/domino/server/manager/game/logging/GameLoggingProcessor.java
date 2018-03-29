@@ -60,7 +60,7 @@ public class GameLoggingProcessor {
                 .append(",   Omitted Me:").append(tableInfo.getRoundBlockingInfo().isOmitMe())
                 .append(",   Omitted Opponent:").append(tableInfo.getRoundBlockingInfo().isOmitOpponent())
                 .append(",   Last played not twin tile is mine:").append(tableInfo.getRoundBlockingInfo().isLastNotTwinPlayedTileMy())
-                .append(",   First round:").append(tableInfo.isFirstRound())
+                .append(",   First round:").append(tableInfo.isFirstRound()).append(System.lineSeparator())
                 .append("Opponent Tiles:").append(tableInfo.getOpponentTilesCount())
                 .append(",   Bazaar Tiles:").append(tableInfo.getBazaarTilesCount())
                 .append(",   Last played prob:").append(tableInfo.getLastPlayedProb())

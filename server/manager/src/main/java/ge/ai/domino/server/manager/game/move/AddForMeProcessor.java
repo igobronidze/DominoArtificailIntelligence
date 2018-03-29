@@ -37,7 +37,7 @@ public class AddForMeProcessor extends MoveProcessor {
 		if (tableInfo.getBazaarTilesCount() == 2) {
 			tableInfo.getRoundBlockingInfo().setOmitMe(true);
 			if (tableInfo.getRoundBlockingInfo().isOmitOpponent()) {
-				round = GameOperations.blockRound(round, CachedGames.getOpponentLeftTilesCount(gameId), virtual);
+				round = GameOperations.blockRound(round, virtual ? GameOperations.countLeftTiles(round, false, true) :  CachedGames.getOpponentLeftTilesCount(gameId), virtual);
 			} else {
 				round.getTableInfo().setMyMove(false);
 			}
@@ -60,16 +60,14 @@ public class AddForMeProcessor extends MoveProcessor {
 		// Execute MinMax
 		MinMax minMax = new MinMax();
 		if (tableInfo.getLeft() == null && round.getMyTiles().size() == 7) {
-			if (!virtual) {
-				round.getTableInfo().setMyMove(!CachedGames.isOpponentNextRoundBeginner(gameId));
-			}
-			if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove() && !virtual) {
-//				Move aiPrediction = minMax.minMax(round);  TODO
-//				round.setAiPrediction(aiPrediction);
-			}
+		    if (!virtual) {
+                round.getTableInfo().setMyMove(!CachedGames.isOpponentNextRoundBeginner(gameId));
+                if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove()) {
+//				round.setAiPrediction(minMax.minMax(round)); TODO
+                }
+            }
 		} else if (round.getTableInfo().getLeft() != null && !virtual) {
-//			Move aiPrediction = minMax.minMax(round);   TODO
-//			round.setAiPrediction(aiPrediction);
+//			round.setAiPrediction(minMax.minMax(round)); TODO
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Added tile for me, gameId[" + gameId + "]", virtual);

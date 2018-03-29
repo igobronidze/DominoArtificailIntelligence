@@ -81,8 +81,7 @@ public class GamePane extends BorderPane {
 		this.setCenter(getOpponentTilesPane());
 		this.setBottom(getMyTilesPane());
 		initKeyboardListener();
-		if (AppController.round != null && (AppController.round.getTableInfo().getOpponentTilesCount() == 0.0F || AppController.round.getMyTiles().isEmpty())
-				&& AppController.round.getTableInfo().getLeft() != null) {
+		if (AppController.round.getGameInfo().isFinished()) {
 			new SaveGameWindow() {
 				@Override
 				public void onYes() {

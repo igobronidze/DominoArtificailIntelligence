@@ -61,9 +61,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		}
 
 		if (!virtual) {
-//			MinMax minMax = new MinMax();
-//			Move aiPrediction = minMax.minMax(round);
-//			round.setAiPrediction(aiPrediction); TODO
+//			round.setAiPrediction(new MinMax().minMax(round)); TODO
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Played tile for opponent, gameId[" + gameId + "]", virtual);

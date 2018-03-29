@@ -70,6 +70,7 @@ public class CloneUtil {
         clone.setGameId(gameInfo.getGameId());
         clone.setMyPoint(gameInfo.getMyPoint());
         clone.setOpponentPoint(gameInfo.getOpponentPoint());
+        clone.setFinished(gameInfo.isFinished());
         return clone;
     }
 

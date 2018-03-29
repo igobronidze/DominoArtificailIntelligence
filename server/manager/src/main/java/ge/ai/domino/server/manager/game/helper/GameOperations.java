@@ -59,19 +59,25 @@ public class GameOperations {
 		int scoreForWin = CachedGames.getGameProperties(gameId).getPointsForWin();
 		if (gameInfo.getMyPoint() >= scoreForWin && gameInfo.getMyPoint() >= gameInfo.getOpponentPoint()) {
 			GameLoggingProcessor.logInfoAboutMove("I won the game", virtual);
+			round.getGameInfo().setFinished(true);
 			return round;
 		} else if (gameInfo.getOpponentPoint() >= scoreForWin) {
+			round.getGameInfo().setFinished(true);
 			GameLoggingProcessor.logInfoAboutMove("He won the game", virtual);
 			return round;
 		}
 
 		Round newRound = InitialUtil.getInitialRound(0);
 		newRound.getTableInfo().setLastPlayedProb(round.getTableInfo().getLastPlayedProb());   // For MinMax
-		newRound.getTableInfo().setMyMove(true); // For pick up new tiles
 		newRound.getTableInfo().setFirstRound(false);
 		newRound.setGameInfo(round.getGameInfo());
-		if (!addForMe && !virtual) {
-			CachedGames.makeOpponentNextRoundBeginner(gameId);
+		if (virtual) {
+			newRound.getTableInfo().setMyMove(addForMe);
+		} else {
+			newRound.getTableInfo().setMyMove(true); // For pick up new tiles
+			if (!addForMe) {
+				CachedGames.makeOpponentNextRoundBeginner(gameId);
+			}
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Finished round and start new one, gameId[" + gameId + "]", virtual);
@@ -87,7 +93,9 @@ public class GameOperations {
 		} else if (myLeftTilesCount > opponentLeftTilesCount) {
 			addLeftTiles(round.getGameInfo(), myLeftTilesCount, false, gameId, virtual);
 		} else {
-			CachedGames.setLeftTilesCountFromLastRound(gameId, CachedGames.getLeftTilesCountFromLastRound(gameId) + myLeftTilesCount);
+			if (!virtual) {
+				CachedGames.setLeftTilesCountFromLastRound(gameId, CachedGames.getLeftTilesCountFromLastRound(gameId) + myLeftTilesCount);
+			}
 		}
 
 		Round newRound = InitialUtil.getInitialRound(0);
@@ -95,7 +103,9 @@ public class GameOperations {
 		newRound.getTableInfo().setMyMove(true); // For pick up new tiles
 		newRound.getTableInfo().setFirstRound(false);
 		newRound.setGameInfo(round.getGameInfo());
-		if (!round.getTableInfo().getRoundBlockingInfo().isLastNotTwinPlayedTileMy()) {
+		if (virtual) {
+			newRound.getTableInfo().setMyMove(round.getTableInfo().getRoundBlockingInfo().isLastNotTwinPlayedTileMy());
+		} else if (!round.getTableInfo().getRoundBlockingInfo().isLastNotTwinPlayedTileMy()) {
 			CachedGames.makeOpponentNextRoundBeginner(gameId);
 		}
 

@@ -8,6 +8,7 @@ import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
+import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.game.minmax.MinMax;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
@@ -20,6 +21,10 @@ public class AddForMeProcessor extends MoveProcessor {
 	private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
 	private final SysParam minMaxOnFirstTile = new SysParam("minMaxOnFirstTile", "false");
+
+	public AddForMeProcessor(OpponentTilesValidator opponentTilesValidator) {
+		super(opponentTilesValidator);
+	}
 
 	@Override
 	public Round move(Round round, Move move, boolean virtual) throws DAIException {
@@ -53,7 +58,7 @@ public class AddForMeProcessor extends MoveProcessor {
 		Map<Tile, Float> opponentTiles = round.getOpponentTiles();
 		float prob = opponentTiles.get(tile);
 		opponentTiles.remove(tile);
-		GameOperations.distributeProbabilitiesOpponentProportional(opponentTiles, prob);
+		ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTiles, prob);
 
 		tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
 
@@ -73,7 +78,7 @@ public class AddForMeProcessor extends MoveProcessor {
 		GameLoggingProcessor.logInfoAboutMove("Added tile for me, gameId[" + gameId + "]", virtual);
 		GameLoggingProcessor.logRoundFullInfo(round, virtual);
 
-		OpponentTilesValidator.validateOpponentTiles(round, 0, "addTileForMe");
+		opponentTilesValidator.validateOpponentTiles(round, 0, "addTileForMe", virtual);
 		return round;
 	}
 }

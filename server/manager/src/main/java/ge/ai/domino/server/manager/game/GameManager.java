@@ -22,13 +22,15 @@ public class GameManager {
 
     private static final Logger logger = Logger.getLogger(GameManager.class);
 
-    private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
+    private final OpponentTilesValidator opponentTilesValidator = new OpponentTilesValidator();
 
-    private final MoveProcessor playForOpponentProcessor = new PlayForOpponentProcessor();
+    private final MoveProcessor playForMeProcessor = new PlayForMeProcessor(opponentTilesValidator);
 
-    private final MoveProcessor addForMeProcessor = new AddForMeProcessor();
+    private final MoveProcessor playForOpponentProcessor = new PlayForOpponentProcessor(opponentTilesValidator);
 
-    private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
+    private final MoveProcessor addForMeProcessor = new AddForMeProcessor(opponentTilesValidator);
+
+    private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor(opponentTilesValidator);
 
     public Round startGame(GameProperties gameProperties, int gameIdWithSameProperties) {
         logger.info("Preparing new game");
@@ -88,7 +90,6 @@ public class GameManager {
         Round newRound = CachedGames.getAndRemoveLastRound(gameId);
         CachedGames.removeLastMove(gameId);
         logger.info("Undo last game round, gameId[" + gameId + "]");
-        OpponentTilesValidator.validateOpponentTiles(newRound, newRound.getTableInfo().getTilesFromBazaar(), "getLastPlayedRound");
         return newRound;
     }
 

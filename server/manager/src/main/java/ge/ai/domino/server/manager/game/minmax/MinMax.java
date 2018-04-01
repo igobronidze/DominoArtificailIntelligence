@@ -1,16 +1,14 @@
 package ge.ai.domino.server.manager.game.minmax;
 
 import ge.ai.domino.domain.exception.DAIException;
-import ge.ai.domino.domain.game.GameInfo;
-import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.TableInfo;
-import ge.ai.domino.domain.game.Tile;
+import ge.ai.domino.domain.game.*;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
+import ge.ai.domino.server.manager.game.helper.MoveHelper;
 import ge.ai.domino.server.manager.game.heuristic.ComplexRoundHeuristic;
 import ge.ai.domino.server.manager.game.heuristic.RoundHeuristic;
 import ge.ai.domino.server.manager.game.heuristic.RoundHeuristicHelper;
@@ -19,6 +17,7 @@ import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.server.manager.game.move.MoveProcessor;
 import ge.ai.domino.server.manager.game.move.PlayForMeProcessor;
 import ge.ai.domino.server.manager.game.move.PlayForOpponentProcessor;
+import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.serverutil.CloneUtil;
 import org.apache.log4j.Logger;
@@ -42,13 +41,15 @@ public class MinMax {
 
     private final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "7");
 
-    private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
+    private OpponentTilesValidator opponentTilesValidator = new OpponentTilesValidator();
 
-    private final MoveProcessor playForOpponentProcessor = new PlayForOpponentProcessor();
+    private final MoveProcessor playForMeProcessor = new PlayForMeProcessor(opponentTilesValidator);
 
-    private final MoveProcessor addForMeProcessor = new AddForMeProcessor();
+    private final MoveProcessor playForOpponentProcessor = new PlayForOpponentProcessor(opponentTilesValidator);
 
-    private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
+    private final MoveProcessor addForMeProcessor = new AddForMeProcessor(opponentTilesValidator);
+
+    private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor(opponentTilesValidator);
 
     private int treeHeight;
 
@@ -63,12 +64,19 @@ public class MinMax {
         List<Move> moves = getPossibleMoves(round);
         Move bestMove = null;
         float bestHeuristic = Integer.MIN_VALUE;
+        Round bestRound = null;
         for (Move move : moves) {
             Round nextRound = playForMeProcessor.move(CloneUtil.getClone(round), move, true);
+            nextRound.setParentRound(new ParentRound(round, MoveHelper.getPlayForMeMove(move), 0.0F, 0));
             float heuristic = getHeuristicValue(nextRound, 1);
             if (bestMove == null || heuristic > bestHeuristic) {
                 bestMove = move;
                 bestHeuristic = heuristic;
+                if (bestRound != null) {
+                    bestRound.getParentRound().setProbability(0.0F);
+                }
+                bestRound = nextRound;
+                bestRound.getParentRound().setProbability(1.0F);
             }
             logger.info("PlayedMove- " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + heuristic);
         }
@@ -82,6 +90,7 @@ public class MinMax {
         round.setHeuristicValue(bestHeuristic);
         Move aiPrediction = new Move(bestMove.getLeft(), bestMove.getRight(), bestMove.getDirection());
         logger.info("AIPrediction is [" + bestMove.getLeft() + "-" + bestMove.getRight() + " " + bestMove.getDirection().name() + "], " + "heuristic: " + bestHeuristic);
+        opponentTilesValidator.applyValidation();
         return aiPrediction;
     }
 
@@ -109,9 +118,14 @@ public class MinMax {
             Round bestRound = null;
             for (Move move : moves) {
                 Round nextRound = playForMeProcessor.move(CloneUtil.getClone(round), move, true);
+                nextRound.setParentRound(new ParentRound(round, MoveHelper.getPlayForMeMove(move), 0.0F, height));
                 getHeuristicValue(nextRound, height + 1);
                 if (bestRound == null || nextRound.getHeuristicValue() > bestRound.getHeuristicValue()) {
+                    if (bestRound != null) {
+                        bestRound.getParentRound().setProbability(0.0F);
+                    }
                     bestRound = nextRound;
+                    bestRound.getParentRound().setProbability(1.0F);
                 }
             }
             // If there are no available move, use bazaar tiles
@@ -123,7 +137,10 @@ public class MinMax {
                     float prob = entry.getValue();
                     if (prob != 1.0) {
                         float probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
-                        heuristic += getHeuristicValue(addForMeProcessor.move(CloneUtil.getClone(round), new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT), true), height + 1) * probForPickTile;
+                        Move move = new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT);
+                        Round nextRound = addForMeProcessor.move(CloneUtil.getClone(round), move, true);
+                        nextRound.setParentRound(new ParentRound(round, MoveHelper.getAddTileForMeMove(move), 1.0F, height));
+                        heuristic += getHeuristicValue(nextRound, height + 1) * probForPickTile;
                     }
                 }
                 round.setHeuristicValue(heuristic);
@@ -138,6 +155,7 @@ public class MinMax {
             // Play all possible move and add in queue
             for (Move move : moves) {
                 Round nextRound = playForOpponentProcessor.move(CloneUtil.getClone(round), move, true);
+                nextRound.setParentRound(new ParentRound(round, MoveHelper.getPlayForOpponentMove(move), 0.0F, height));
                 getHeuristicValue(nextRound, height + 1);
                 possibleRounds.add(nextRound);
             }
@@ -156,6 +174,7 @@ public class MinMax {
                     prob = remainingProbability * nextRound.getTableInfo().getLastPlayedProb();
                 }
                 heuristic += nextRound.getHeuristicValue() * prob;
+                nextRound.getParentRound().setProbability(prob);
                 remainingProbability -= prob;
 
                 canNotPlayTilesCount++;
@@ -163,30 +182,8 @@ public class MinMax {
             // Bazaar case
             if (!ComparisonHelper.equal(remainingProbability, 0)) {
                 Round addedRound = addForOpponentProcessor.move(CloneUtil.getClone(round), null, true);
-                if (tableInfo.getBazaarTilesCount() > 2) {
-                    float bazaarSum = tableInfo.getBazaarTilesCount();
-                    float usedProb = 0.0F;
-                    PlayedTile left = tableInfo.getLeft();
-                    PlayedTile right = tableInfo.getRight();
-                    PlayedTile top = tableInfo.getTop();
-                    PlayedTile bottom = tableInfo.getBottom();
-                    for (Tile tile : addedRound.getOpponentTiles().keySet()) {
-                        if ((left != null && (left.getOpenSide() == tile.getLeft() || left.getOpenSide() == tile.getRight())) ||
-                                (right != null && (right.getOpenSide() == tile.getLeft() || right.getOpenSide() == tile.getRight())) ||
-                                (top != null && (top.getOpenSide() == tile.getLeft() || top.getOpenSide() == tile.getRight())) ||
-                                (bottom != null && (bottom.getOpenSide() == tile.getLeft() || bottom.getOpenSide() == tile.getRight()))) {
-                            Round cloneRound = CloneUtil.getClone(addedRound);
-                            float prob = remainingProbability * 1 / bazaarSum;
-                            usedProb += prob;
-                            cloneRound.getOpponentTiles().put(tile, 1.0F);
-                            heuristic += getHeuristicValue(cloneRound, height + 1) * prob;
-                        }
-                    }
-                    remainingProbability -= usedProb;
-                }
-                if (!ComparisonHelper.equal(remainingProbability, 0)) {
-                    heuristic += getHeuristicValue(addedRound, height + 1) * remainingProbability;
-                }
+                addedRound.setParentRound(new ParentRound(round, MoveHelper.getAddTileForOpponentMove(), remainingProbability, height));
+                heuristic += getHeuristicValue(addedRound, height + 1) * remainingProbability;
             }
             round.setHeuristicValue(heuristic);
             return heuristic;

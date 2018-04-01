@@ -6,6 +6,7 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
+import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.game.minmax.MinMax;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
@@ -13,6 +14,10 @@ import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 import java.util.Map;
 
 public class PlayForOpponentProcessor extends MoveProcessor {
+
+	public PlayForOpponentProcessor(OpponentTilesValidator opponentTilesValidator) {
+		super(opponentTilesValidator);
+	}
 
 	@Override
 	public Round move(Round round, Move move, boolean virtual) throws DAIException {
@@ -33,7 +38,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		Map<Tile, Float> opponentTiles = round.getOpponentTiles();
 		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {
 			float sum = GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (move.getLeft() == move.getRight() ? move.getLeft() : -1));
-			GameOperations.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
+			ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
 		}
 
 		Tile tile = new Tile(move.getLeft(), move.getRight());
@@ -42,10 +47,10 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		opponentTiles.remove(tile);
 
 		if (round.getTableInfo().getTilesFromBazaar() > 0) {
-			GameOperations.updateProbabilitiesForLastPickedTiles(round, true, virtual);
+			ProbabilitiesDistributor.updateProbabilitiesForLastPickedTiles(round, true, virtual);
 		} else {
 			if (prob != 1.0) {
-				GameOperations.distributeProbabilitiesOpponentProportional(opponentTiles, prob - 1);
+				ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTiles, prob - 1);
 			}
 		}
 
@@ -67,7 +72,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		GameLoggingProcessor.logInfoAboutMove("Played tile for opponent, gameId[" + gameId + "]", virtual);
 		GameLoggingProcessor.logRoundFullInfo(round, virtual);
 
-		OpponentTilesValidator.validateOpponentTiles(round, 0, "playForOpponent " + move);
+		opponentTilesValidator.validateOpponentTiles(round, 0, "playForOpponent " + move, virtual);
 		return round;
 	}
 }

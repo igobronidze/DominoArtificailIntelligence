@@ -6,10 +6,15 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
+import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 
 public class PlayForMeProcessor extends MoveProcessor {
+
+	public PlayForMeProcessor(OpponentTilesValidator opponentTilesValidator) {
+		super(opponentTilesValidator);
+	}
 
 	@Override
 	public Round move(Round round, Move move, boolean virtual) throws DAIException {
@@ -27,7 +32,7 @@ public class PlayForMeProcessor extends MoveProcessor {
 		// Not played twins case
 		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {
 			float sum = GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (move.getLeft() == move.getRight() ? move.getLeft() : -1));
-			GameOperations.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
+			ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
 		}
 
 		// Play tile
@@ -45,7 +50,7 @@ public class PlayForMeProcessor extends MoveProcessor {
 		GameLoggingProcessor.logInfoAboutMove("Played tile for me, gameId[" + gameId + "]", virtual);
 		GameLoggingProcessor.logRoundFullInfo(round, virtual);
 
-		OpponentTilesValidator.validateOpponentTiles(round, 0, "playForMe" + move);
+		opponentTilesValidator.validateOpponentTiles(round, 0, "playForMe" + move, virtual);
 		return round;
 	}
 }

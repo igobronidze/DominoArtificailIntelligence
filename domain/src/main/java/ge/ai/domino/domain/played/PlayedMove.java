@@ -47,4 +47,12 @@ public class PlayedMove {
     public void setRight(int right) {
         this.right = right;
     }
+
+    @Override
+    public String toString() {
+        return  "type=" + (type == null ? "N" : type) +
+                ", direction=" + (direction == null ? "N" : direction) +
+                ", left=" + left +
+                ", right=" + right;
+    }
 }

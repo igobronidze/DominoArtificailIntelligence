@@ -113,72 +113,6 @@ public class GameOperations {
 		return newRound;
 	}
 
-	public static void distributeProbabilitiesOpponentProportional(Map<Tile, Float> tiles, float probability) {
-		OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter()
-				.notOpponent(true)
-				.notBazaar(true);
-
-		int count = 0;
-		float sum = 0.0F;
-		for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-			if (opponentTilesFilter.filter(entry)) {
-				sum += entry.getValue();
-				count++;
-			}
-		}
-
-		if (ComparisonHelper.equal(sum + probability, count)) {
-			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-				if (opponentTilesFilter.filter(entry)) {
-					entry.setValue(1.0F);
-				}
-			}
-		} else {
-			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-				if (opponentTilesFilter.filter(entry)) {
-					float add = probability * entry.getValue() / sum;
-					entry.setValue(entry.getValue() + add);
-				}
-			}
-		}
-	}
-
-	public static void updateProbabilitiesForLastPickedTiles(Round round, boolean played, boolean virtual) {
-		float bazaarTilesCount = round.getTableInfo().getTilesFromBazaar();
-		float probability = played ? bazaarTilesCount - 1 : bazaarTilesCount;
-
-		Map<Tile, Float> tiles = round.getOpponentTiles();
-		Set<Integer> notUsedNumbers = virtual ? null : getPossiblePlayNumbers(round.getTableInfo());
-
-		OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter()
-				.notOpponent(true)
-				.notUsedNumber(notUsedNumbers);
-
-		float sum = 0.0F;
-		for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-			if (opponentTilesFilter.filter(entry)) {
-				sum += (1 - entry.getValue());
-			}
-		}
-
-		if (ComparisonHelper.equal(probability, sum)) {
-			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-				if (opponentTilesFilter.filter(entry)) {
-					entry.setValue(1.0F);
-				}
-			}
-		} else {
-			for (Map.Entry<Tile, Float> entry : tiles.entrySet()) {
-				if (opponentTilesFilter.filter(entry)) {
-					float add = probability * (1 - entry.getValue()) / sum;
-					entry.setValue(entry.getValue() + add);
-				}
-			}
-		}
-
-		round.getTableInfo().setTilesFromBazaar(0);
-	}
-
 	public static float makeTilesAsBazaarAndReturnProbabilitiesSum(Round round) {
 		Set<Integer> possiblePlayNumbers = getPossiblePlayNumbers(round.getTableInfo());
 
@@ -204,7 +138,6 @@ public class GameOperations {
 
 		float sum = 0.0F;
 		for (Map.Entry<Tile, Float> entry : opponentTiles.entrySet()) {
-			Tile tile = entry.getKey();
 			if (opponentTilesFilter.filter(entry)) {
 				sum += entry.getValue();
 				entry.setValue(0.0F);
@@ -286,7 +219,7 @@ public class GameOperations {
 		}
 	}
 
-	private static Set<Integer> getPossiblePlayNumbers(TableInfo tableInfo) {
+	public static Set<Integer> getPossiblePlayNumbers(TableInfo tableInfo) {
 		Set<Integer> possiblePlayNumbers = new HashSet<>();
 		if (tableInfo.getTop() != null) {
 			possiblePlayNumbers.add(tableInfo.getTop().getOpenSide());

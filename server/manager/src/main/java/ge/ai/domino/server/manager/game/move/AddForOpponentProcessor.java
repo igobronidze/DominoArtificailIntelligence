@@ -6,11 +6,16 @@ import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
+import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.game.minmax.MinMax;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 
 public class AddForOpponentProcessor extends MoveProcessor {
+
+	public AddForOpponentProcessor(OpponentTilesValidator opponentTilesValidator) {
+		super(opponentTilesValidator);
+	}
 
 	@Override
 	public Round move(Round round, Move move, boolean virtual) throws DAIException {
@@ -26,7 +31,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 		// If it's first time, make possible tiles as bazaar and distribute their probabilities for other
 		if (tableInfo.getTilesFromBazaar() == 0 && !tableInfo.getRoundBlockingInfo().isOmitOpponent()) {
 			float sum = GameOperations.makeTilesAsBazaarAndReturnProbabilitiesSum(round);
-			GameOperations.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
+			ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
 		}
 
 		if (tableInfo.getBazaarTilesCount() == 2) { // If omit
@@ -37,7 +42,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 				round.getTableInfo().setMyMove(true);
 				if (!virtual) {
 					if (tableInfo.getTilesFromBazaar() > 0) {
-						GameOperations.updateProbabilitiesForLastPickedTiles(round, false, false);
+						ProbabilitiesDistributor.updateProbabilitiesForLastPickedTiles(round, false, false);
 					}
 					round.setAiPrediction(new MinMax().minMax(round));
 				}
@@ -51,13 +56,13 @@ public class AddForOpponentProcessor extends MoveProcessor {
 			tableInfo.setOpponentTilesCount(tableInfo.getOpponentTilesCount() + 1);
 			tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
 			if (virtual) {
-				GameOperations.updateProbabilitiesForLastPickedTiles(round, false, true);
+				ProbabilitiesDistributor.updateProbabilitiesForLastPickedTiles(round, false, true);
 			}
 
 			GameLoggingProcessor.logInfoAboutMove("Added tile for opponent, gameId[" + gameId + "]", virtual);
 			GameLoggingProcessor.logRoundFullInfo(round, virtual);
 
-			OpponentTilesValidator.validateOpponentTiles(round, round.getTableInfo().getTilesFromBazaar(), "addTileForOpponent");
+			opponentTilesValidator.validateOpponentTiles(round, round.getTableInfo().getTilesFromBazaar(), "addTileForOpponent", virtual);
 			return round;
 		}
 	}

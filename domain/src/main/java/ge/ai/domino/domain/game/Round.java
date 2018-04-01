@@ -21,6 +21,8 @@ public class Round {
 
     private float heuristicValue;
 
+    private ParentRound parentRound;
+
     public Set<Tile> getMyTiles() {
         return myTiles;
     }
@@ -67,5 +69,13 @@ public class Round {
 
     public void setHeuristicValue(float heuristicValue) {
         this.heuristicValue = heuristicValue;
+    }
+
+    public ParentRound getParentRound() {
+        return parentRound;
+    }
+
+    public void setParentRound(ParentRound parentRound) {
+        this.parentRound = parentRound;
     }
 }

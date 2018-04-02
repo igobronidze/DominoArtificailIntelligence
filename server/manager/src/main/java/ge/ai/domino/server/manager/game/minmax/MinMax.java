@@ -57,21 +57,29 @@ public class MinMax {
 
     private int gameId;
 
-    public Move minMax(Round round) throws DAIException {
+    public List<AiPrediction> minMax(Round round) throws DAIException {
         long ms = System.currentTimeMillis();
         this.gameId = round.getGameInfo().getGameId();
         treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
         List<Move> moves = getPossibleMoves(round);
-        Move bestMove = null;
-        float bestHeuristic = Integer.MIN_VALUE;
         Round bestRound = null;
+        AiPrediction bestAiPrediction = null;
+        List<AiPrediction> aiPredictions = new ArrayList<>();
+        logger.info("Ai predictions:");
         for (Move move : moves) {
             Round nextRound = playForMeProcessor.move(CloneUtil.getClone(round), move, true);
-            nextRound.setParentRound(new ParentRound(round, MoveHelper.getPlayForMeMove(move), 0.0F, 0));
+            nextRound.setParentRound(new ParentRound(round, MoveHelper.getPlayForMeMove(move), -1.0F, 0));
             float heuristic = getHeuristicValue(nextRound, 1);
-            if (bestMove == null || heuristic > bestHeuristic) {
-                bestMove = move;
-                bestHeuristic = heuristic;
+            AiPrediction aiPrediction = new AiPrediction();
+            aiPrediction.setMove(move);
+            aiPrediction.setHeuristicValue(heuristic);
+            aiPredictions.add(aiPrediction);
+            if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
+                if (bestAiPrediction != null) {
+                    bestAiPrediction.setBestMove(false);
+                }
+                bestAiPrediction = aiPrediction;
+                bestAiPrediction.setBestMove(true);
                 if (bestRound != null) {
                     bestRound.getParentRound().setProbability(0.0F);
                 }
@@ -83,15 +91,15 @@ public class MinMax {
         float tookMs = System.currentTimeMillis() - ms;
         logger.info("MinMax took " + tookMs + "ms, recursion count " + recursionCount + ", average " + (tookMs / recursionCount));
         recursionCount = 0;
-        if (bestMove == null) {
+        if (aiPredictions.isEmpty() || bestAiPrediction == null) {
             logger.info("No AIPrediction");
             return null;
         }
-        round.setHeuristicValue(bestHeuristic);
-        Move aiPrediction = new Move(bestMove.getLeft(), bestMove.getRight(), bestMove.getDirection());
-        logger.info("AIPrediction is [" + bestMove.getLeft() + "-" + bestMove.getRight() + " " + bestMove.getDirection().name() + "], " + "heuristic: " + bestHeuristic);
+        round.setHeuristicValue(bestAiPrediction.getHeuristicValue());
+        logger.info("AIPrediction is [" + bestAiPrediction.getMove().getLeft() + "-" + bestAiPrediction.getMove().getRight() + " " +
+                bestAiPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestAiPrediction.getHeuristicValue());
         opponentTilesValidator.applyValidation();
-        return aiPrediction;
+        return aiPredictions;
     }
 
     private float getHeuristicValue(Round round, int height) throws DAIException {
@@ -99,7 +107,7 @@ public class MinMax {
         TableInfo tableInfo = round.getTableInfo();
         GameInfo gameInfo = round.getGameInfo();
 
-        // Recursion end conditions: Game is finished, Started new round, reachet tree root
+        // Recursion end conditions: Game is finished, Started new round, reached tree root
         if (round.getGameInfo().isFinished()) {
             return RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGameProperties(gameId).getPointsForWin());
         }

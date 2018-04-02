@@ -12,7 +12,6 @@ public class CloneUtil {
 
     public static Round getClone(Round round) {
         Round clone = new Round();
-        clone.setAiPrediction(getClone(round.getAiPrediction()));
         clone.setTableInfo(getClone(round.getTableInfo()));
         clone.setGameInfo(getClone(round.getGameInfo()));
         clone.setOpponentTiles(getClone((round.getOpponentTiles())));

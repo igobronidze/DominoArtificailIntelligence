@@ -68,11 +68,11 @@ public class AddForMeProcessor extends MoveProcessor {
 		    if (!virtual) {
                 round.getTableInfo().setMyMove(!CachedGames.isOpponentNextRoundBeginner(gameId));
                 if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove()) {
-				round.setAiPrediction(minMax.minMax(round));
+					round.setAiPredictions(minMax.minMax(round));
                 }
             }
 		} else if (round.getTableInfo().getLeft() != null && !virtual) {
-			round.setAiPrediction(minMax.minMax(round));
+			round.setAiPredictions(minMax.minMax(round));
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Added tile for me, gameId[" + gameId + "]", virtual);

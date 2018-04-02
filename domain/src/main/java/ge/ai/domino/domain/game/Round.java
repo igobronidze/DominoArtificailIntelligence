@@ -1,11 +1,6 @@
 package ge.ai.domino.domain.game;
 
-import ge.ai.domino.domain.move.Move;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Round {
 
@@ -13,7 +8,7 @@ public class Round {
 
     private Map<Tile, Float> opponentTiles = new HashMap<>();
 
-    private Move aiPrediction;
+    private List<AiPrediction> aiPredictions;
 
     private TableInfo tableInfo;
 
@@ -39,12 +34,12 @@ public class Round {
         this.opponentTiles = opponentTiles;
     }
 
-    public Move getAiPrediction() {
-        return aiPrediction;
+    public List<AiPrediction> getAiPredictions() {
+        return aiPredictions;
     }
 
-    public void setAiPrediction(Move aiPrediction) {
-        this.aiPrediction = aiPrediction;
+    public void setAiPredictions(List<AiPrediction> aiPredictions) {
+        this.aiPredictions = aiPredictions;
     }
 
     public TableInfo getTableInfo() {

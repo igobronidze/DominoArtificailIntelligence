@@ -68,7 +68,7 @@ public class GameManager {
         move = getMove(move);
         Round round = CachedGames.getCurrentRound(gameId, true);
         MoveValidator.validateMove(round, move);
-        round.setAiPrediction(null);
+        round.setAiPredictions(null);
         Round newRound = playForMeProcessor.move(round, move, false);
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move));

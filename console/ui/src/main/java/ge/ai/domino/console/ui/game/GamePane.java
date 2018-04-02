@@ -11,6 +11,7 @@ import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.domain.game.AiPrediction;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
@@ -36,6 +37,7 @@ import javafx.stage.StageStyle;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GamePane extends BorderPane {
@@ -311,26 +313,38 @@ public class GamePane extends BorderPane {
 	}
 
 	private void initMyTilesComponents(FlowPane flowPane) {
+		List<AiPrediction> aiPredictions = AppController.round.getAiPredictions();
 		AppController.round.getMyTiles().stream().filter(tile -> AppController.round.getMyTiles().contains(tile)).forEach(tile -> {
 			VBox vBox = new VBox();
 			vBox.setAlignment(Pos.TOP_CENTER);
 			ImageView imageView = getImageView(tile, AppController.round.getTableInfo().isMyMove());
 			myTilesImages.put(tile, imageView);
-			Move aiPrediction = AppController.round.getAiPrediction();
+			AiPrediction aiPrediction = getAiPredictionByTile(aiPredictions, tile);
 			if (aiPrediction != null) {
-				int bestX = aiPrediction.getLeft();
-				int bestY = aiPrediction.getRight();
-				if (tile.getLeft() == bestX && tile.getRight() == bestY) {
-					NumberFormat formatter = new DecimalFormat("#0.0000");
-					Label label = new Label(aiPrediction.getDirection().name() + "(" + formatter.format(AppController.round.getHeuristicValue()) + ")");
-					vBox.getChildren().add(label);
+				NumberFormat formatter = new DecimalFormat("#0.0000");
+				Label label = new Label(aiPrediction.getMove().getDirection().name() + "(" + formatter.format(aiPrediction.getHeuristicValue()) + ")");
+				if (aiPrediction.isBestMove()) {
+					label.setStyle("-fx-font-size: 14px; -fx-text-fill: green; -fx-font-weight: bold");
 				}
+				vBox.getChildren().add(label);
 			}
 			imageView.setOnMouseClicked(e -> onMyTilePressed(tile));
 			vBox.getChildren().add(imageView);
 			flowPane.getChildren().add(vBox);
 		});
 		flowPane.getChildren().addAll(leftArrow, upArrow, downArrow, rightArrow);
+	}
+
+	private AiPrediction getAiPredictionByTile(List<AiPrediction> aiPredictions, Tile tile) {
+		if (aiPredictions == null) {
+			return null;
+		}
+		for (AiPrediction aiPrediction : aiPredictions) {
+			if (aiPrediction.getMove().getLeft() == tile.getLeft() && aiPrediction.getMove().getRight() == tile.getRight()) {
+				return aiPrediction;
+			}
+		}
+		return null;
 	}
 
 	private void initOpponentTilesComponents(FlowPane flowPane) {

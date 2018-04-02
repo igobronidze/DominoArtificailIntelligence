@@ -44,7 +44,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 					if (tableInfo.getTilesFromBazaar() > 0) {
 						ProbabilitiesDistributor.updateProbabilitiesForLastPickedTiles(round, false, false);
 					}
-					round.setAiPrediction(new MinMax().minMax(round));
+					round.setAiPredictions(new MinMax().minMax(round));
 				}
 
 			}

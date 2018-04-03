@@ -16,11 +16,10 @@ public class CloneUtil {
         clone.setGameInfo(getClone(round.getGameInfo()));
         clone.setOpponentTiles(getClone((round.getOpponentTiles())));
         clone.setMyTiles(new HashSet<>(round.getMyTiles()));
-        clone.setHeuristicValue(round.getHeuristicValue());
         return clone;
     }
 
-    private static Map<Tile, Float> getClone(Map<Tile, Float> opponentTiles) {
+    public static Map<Tile, Float> getClone(Map<Tile, Float> opponentTiles) {
         Map<Tile, Float> clone = new HashMap<>();
         for (Map.Entry<Tile, Float> entry : opponentTiles.entrySet()) {
             clone.put(entry.getKey(), entry.getValue());
@@ -45,7 +44,6 @@ public class CloneUtil {
         clone.setBazaarTilesCount(tableInfo.getBazaarTilesCount());
         clone.setMyMove(tableInfo.isMyMove());
         clone.setWithCenter(tableInfo.isWithCenter());
-        clone.setLastPlayedProb(tableInfo.getLastPlayedProb());
         clone.setTilesFromBazaar(tableInfo.getTilesFromBazaar());
         clone.setRoundBlockingInfo(getClone(tableInfo.getRoundBlockingInfo()));
         clone.setFirstRound(tableInfo.isFirstRound());

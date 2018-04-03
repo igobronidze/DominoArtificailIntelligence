@@ -8,13 +8,8 @@ import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
-import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 
 public class PlayForMeProcessor extends MoveProcessor {
-
-	public PlayForMeProcessor(OpponentTilesValidator opponentTilesValidator) {
-		super(opponentTilesValidator);
-	}
 
 	@Override
 	public Round move(Round round, Move move, boolean virtual) throws DAIException {
@@ -50,7 +45,6 @@ public class PlayForMeProcessor extends MoveProcessor {
 		GameLoggingProcessor.logInfoAboutMove("Played tile for me, gameId[" + gameId + "]", virtual);
 		GameLoggingProcessor.logRoundFullInfo(round, virtual);
 
-		opponentTilesValidator.validateOpponentTiles(round, 0, "playForMe" + move, virtual);
 		return round;
 	}
 }

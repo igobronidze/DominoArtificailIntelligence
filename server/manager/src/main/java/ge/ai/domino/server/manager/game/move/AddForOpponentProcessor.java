@@ -8,14 +8,9 @@ import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
-import ge.ai.domino.server.manager.game.minmax.MinMax;
-import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMax;
 
 public class AddForOpponentProcessor extends MoveProcessor {
-
-	public AddForOpponentProcessor(OpponentTilesValidator opponentTilesValidator) {
-		super(opponentTilesValidator);
-	}
 
 	@Override
 	public Round move(Round round, Move move, boolean virtual) throws DAIException {
@@ -44,7 +39,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 					if (tableInfo.getTilesFromBazaar() > 0) {
 						ProbabilitiesDistributor.updateProbabilitiesForLastPickedTiles(round, false, false);
 					}
-					round.setAiPredictions(new MinMax().minMax(round));
+					round.setAiPredictions(new MinMax().solve(round));
 				}
 
 			}
@@ -62,7 +57,6 @@ public class AddForOpponentProcessor extends MoveProcessor {
 			GameLoggingProcessor.logInfoAboutMove("Added tile for opponent, gameId[" + gameId + "]", virtual);
 			GameLoggingProcessor.logRoundFullInfo(round, virtual);
 
-			opponentTilesValidator.validateOpponentTiles(round, round.getTableInfo().getTilesFromBazaar(), "addTileForOpponent", virtual);
 			return round;
 		}
 	}

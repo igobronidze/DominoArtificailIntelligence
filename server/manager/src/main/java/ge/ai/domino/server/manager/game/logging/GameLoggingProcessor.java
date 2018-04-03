@@ -63,7 +63,6 @@ public class GameLoggingProcessor {
                 .append(",   First round:").append(tableInfo.isFirstRound()).append(System.lineSeparator())
                 .append("Opponent Tiles:").append(tableInfo.getOpponentTilesCount())
                 .append(",   Bazaar Tiles:").append(tableInfo.getBazaarTilesCount())
-                .append(",   Last played prob:").append(tableInfo.getLastPlayedProb())
                 .append(",   Tiles from bazaar:").append(tableInfo.getTilesFromBazaar()).append(System.lineSeparator());
         return info;
     }

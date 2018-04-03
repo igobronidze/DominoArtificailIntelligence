@@ -1,6 +1,9 @@
 package ge.ai.domino.server.manager.game.helper;
 
-import ge.ai.domino.domain.game.*;
+import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.server.caching.game.CachedGames;
@@ -68,7 +71,6 @@ public class GameOperations {
 		}
 
 		Round newRound = InitialUtil.getInitialRound(0);
-		newRound.getTableInfo().setLastPlayedProb(round.getTableInfo().getLastPlayedProb());   // For MinMax
 		newRound.getTableInfo().setFirstRound(false);
 		newRound.setGameInfo(round.getGameInfo());
 		if (virtual) {
@@ -99,7 +101,6 @@ public class GameOperations {
 		}
 
 		Round newRound = InitialUtil.getInitialRound(0);
-		newRound.getTableInfo().setLastPlayedProb(round.getTableInfo().getLastPlayedProb());   // For MinMax
 		newRound.getTableInfo().setMyMove(true); // For pick up new tiles
 		newRound.getTableInfo().setFirstRound(false);
 		newRound.setGameInfo(round.getGameInfo());

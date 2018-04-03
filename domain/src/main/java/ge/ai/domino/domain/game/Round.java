@@ -14,10 +14,6 @@ public class Round {
 
     private GameInfo gameInfo;
 
-    private float heuristicValue;
-
-    private ParentRound parentRound;
-
     public Set<Tile> getMyTiles() {
         return myTiles;
     }
@@ -56,21 +52,5 @@ public class Round {
 
     public void setGameInfo(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
-    }
-
-    public float getHeuristicValue() {
-        return heuristicValue;
-    }
-
-    public void setHeuristicValue(float heuristicValue) {
-        this.heuristicValue = heuristicValue;
-    }
-
-    public ParentRound getParentRound() {
-        return parentRound;
-    }
-
-    public void setParentRound(ParentRound parentRound) {
-        this.parentRound = parentRound;
     }
 }

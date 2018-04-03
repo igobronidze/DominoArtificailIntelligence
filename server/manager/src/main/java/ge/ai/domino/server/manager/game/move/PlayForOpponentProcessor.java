@@ -8,16 +8,11 @@ import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
-import ge.ai.domino.server.manager.game.minmax.MinMax;
-import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMax;
 
 import java.util.Map;
 
 public class PlayForOpponentProcessor extends MoveProcessor {
-
-	public PlayForOpponentProcessor(OpponentTilesValidator opponentTilesValidator) {
-		super(opponentTilesValidator);
-	}
 
 	@Override
 	public Round move(Round round, Move move, boolean virtual) throws DAIException {
@@ -43,7 +38,6 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 
 		Tile tile = new Tile(move.getLeft(), move.getRight());
 		float prob = opponentTiles.get(tile);
-		round.getTableInfo().setLastPlayedProb(prob);
 		opponentTiles.remove(tile);
 
 		if (round.getTableInfo().getTilesFromBazaar() > 0) {
@@ -66,13 +60,12 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		}
 
 		if (!virtual) {
-			round.setAiPredictions(new MinMax().minMax(round));
+			round.setAiPredictions(new MinMax().solve(round));
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Played tile for opponent, gameId[" + gameId + "]", virtual);
 		GameLoggingProcessor.logRoundFullInfo(round, virtual);
 
-		opponentTilesValidator.validateOpponentTiles(round, 0, "playForOpponent " + move, virtual);
 		return round;
 	}
 }

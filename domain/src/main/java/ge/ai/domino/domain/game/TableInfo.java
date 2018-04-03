@@ -24,8 +24,6 @@ public class TableInfo {
 
     private float bazaarTilesCount;
 
-    private float lastPlayedProb;
-
     private int tilesFromBazaar;
 
     public boolean isWithCenter() {
@@ -90,14 +88,6 @@ public class TableInfo {
 
     public void setBazaarTilesCount(float bazaarTilesCount) {
         this.bazaarTilesCount = bazaarTilesCount;
-    }
-
-    public float getLastPlayedProb() {
-        return lastPlayedProb;
-    }
-
-    public void setLastPlayedProb(float lastPlayedProb) {
-        this.lastPlayedProb = lastPlayedProb;
     }
 
     public int getTilesFromBazaar() {

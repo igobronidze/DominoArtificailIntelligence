@@ -222,6 +222,7 @@ public class MinMax implements AiSolver {
 				float prob = remainingProbability * opponentTilesClone.get(new Tile(nextNodeRound.getLastPlayedMove().getLeft(), nextNodeRound.getLastPlayedMove().getRight()));
 				heuristic += nextNodeRound.getHeuristic() * prob;
 				nextNodeRound.setLastPlayedProbability(prob);
+				opponentTilesClone.put(new Tile(nextNodeRound.getLastPlayedMove().getLeft(), nextNodeRound.getLastPlayedMove().getRight()), 0.0F);
 				ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTilesClone, prob);
 				remainingProbability -= prob;
 			}
@@ -337,17 +338,17 @@ public class MinMax implements AiSolver {
 			logger.info("Rounds full info");
 
 			List<NodeRound> parentRounds = new ArrayList<>();
-			while (notValidRound != null) {
+			while (notValidRound.getParent() != null) {
 				parentRounds.add(notValidRound);
 				notValidRound = notValidRound.getParent();
 			}
-			for (int i = parentRounds.size() - 1; i > 0; i--) {
+			GameLoggingProcessor.logRoundFullInfo(notValidRound.getRound(), false); // Still print if virtual
+			for (int i = parentRounds.size() - 1; i >= 0; i--) {
 				notValidRound = parentRounds.get(i);
 				logger.info("Height: " + notValidRound.getTreeHeight());
-				GameLoggingProcessor.logRoundFullInfo(notValidRound.getRound(), false); // Still print if virtual
 				logger.info("Play move with probability[" + notValidRound.getLastPlayedProbability() + "], move[" + notValidRound.getLastPlayedMove() + "]");
+				GameLoggingProcessor.logRoundFullInfo(notValidRound.getRound(), false); // Still print if virtual
 			}
-			GameLoggingProcessor.logRoundFullInfo(parentRounds.get(0).getRound(), false);  // Last(notValid) round
 
 			logger.info(System.lineSeparator() + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 			throw new DAIException("probabilitiesSumIsNoEqualToOpponentTilesCount");

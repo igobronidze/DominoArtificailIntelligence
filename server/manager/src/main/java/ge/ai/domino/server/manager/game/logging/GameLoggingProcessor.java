@@ -106,7 +106,7 @@ public class GameLoggingProcessor {
             for (int j = 6; j >= i ; j--) {
                 Tile tile = new Tile(j, i);
                 Float prob = tiles.get(tile);
-                info.append(tile).append(" ").append(prob == null ? "N     " : formatter.format(prob)).append("     ");
+                info.append(tile).append(" ").append(prob == null ? "N  |  " : formatter.format(prob)).append("  |  ");
             }
             info.append(System.lineSeparator());
         }

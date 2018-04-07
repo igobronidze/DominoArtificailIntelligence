@@ -6,7 +6,7 @@ public class AiPrediction {
 
     private Move move;
 
-    private float heuristicValue;
+    private double heuristicValue;
 
     private boolean bestMove;
 
@@ -18,11 +18,11 @@ public class AiPrediction {
         this.move = move;
     }
 
-    public float getHeuristicValue() {
+    public double getHeuristicValue() {
         return heuristicValue;
     }
 
-    public void setHeuristicValue(float heuristicValue) {
+    public void setHeuristicValue(double heuristicValue) {
         this.heuristicValue = heuristicValue;
     }
 

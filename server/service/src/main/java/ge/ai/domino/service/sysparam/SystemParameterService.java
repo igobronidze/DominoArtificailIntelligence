@@ -21,7 +21,7 @@ public interface SystemParameterService {
 
     Integer getIntegerParameterValue(SysParam parameter);
 
-    Float getFloatParameterValue(SysParam parameter);
+    Double getDoubleParameterValue(SysParam parameter);
 
     Long getLongParameterValue(SysParam parameter);
 

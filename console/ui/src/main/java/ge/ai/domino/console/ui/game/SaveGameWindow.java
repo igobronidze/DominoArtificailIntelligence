@@ -29,7 +29,7 @@ public abstract class SaveGameWindow extends Stage {
             yesButton.setOnAction(event -> {
                 GameInfo gameInfo = AppController.round.getGameInfo();
                 PlayedGame playedGame = new PlayedGame();
-                if (AppController.round.getTableInfo().getOpponentTilesCount() == 0.0F || AppController.round.getMyTiles().isEmpty() && AppController.round.getTableInfo().getLeft() != null) {
+                if (AppController.round.getTableInfo().getOpponentTilesCount() == 0.0 || AppController.round.getMyTiles().isEmpty() && AppController.round.getTableInfo().getLeft() != null) {
                     if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
                         playedGame.setResult(GameResult.I_WIN);
                     } else {

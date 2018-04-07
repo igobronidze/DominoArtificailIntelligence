@@ -17,7 +17,7 @@ public class InitialUtil {
 
     private static final PlayedGameManager playedGameManager = new PlayedGameManager();
 
-    private static final float INITIAL_PROBABILITY_FOR_OPPONENT = 1.0F / 4;
+    private static final double INITIAL_PROBABILITY_FOR_OPPONENT = 1.0 / 4;
 
     private static final int INITIAL_COUNT_TILES_IN_BAZAAR = 21;
 
@@ -50,8 +50,8 @@ public class InitialUtil {
         return round;
     }
 
-    private static Map<Tile, Float> getInitialTiles() {
-        Map<Tile, Float> tiles = new HashMap<>();
+    private static Map<Tile, Double> getInitialTiles() {
+        Map<Tile, Double> tiles = new HashMap<>();
         for (int i = 0; i < INITIAL_COUNT_TILES_FOR_OPPONENT; i++) {
             for (int j = 0; j <= i; j++) {
                 tiles.put(new Tile(i, j), INITIAL_PROBABILITY_FOR_OPPONENT);

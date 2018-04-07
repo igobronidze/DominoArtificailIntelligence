@@ -6,7 +6,7 @@ public class Round {
 
     private Set<Tile> myTiles = new HashSet<>();
 
-    private Map<Tile, Float> opponentTiles = new HashMap<>();
+    private Map<Tile, Double> opponentTiles = new HashMap<>();
 
     private List<AiPrediction> aiPredictions;
 
@@ -22,11 +22,11 @@ public class Round {
         this.myTiles = myTiles;
     }
 
-    public Map<Tile, Float> getOpponentTiles() {
+    public Map<Tile, Double> getOpponentTiles() {
         return opponentTiles;
     }
 
-    public void setOpponentTiles(Map<Tile, Float> opponentTiles) {
+    public void setOpponentTiles(Map<Tile, Double> opponentTiles) {
         this.opponentTiles = opponentTiles;
     }
 

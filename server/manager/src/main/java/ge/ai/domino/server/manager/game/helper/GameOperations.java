@@ -18,14 +18,14 @@ public class GameOperations {
 	public static int countLeftTiles(Round round, boolean countMine, boolean virtual) {
 		int gameId = round.getGameInfo().getGameId();
 
-		float count = 0;
+		double count = 0;
 		if (countMine) {
 			for (Tile tile : round.getMyTiles()) {
 				count += tile.getLeft() + tile.getRight();
 			}
 		} else {
 			if (virtual) {
-				for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
+				for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
 					count += entry.getValue() * (entry.getKey().getLeft() + entry.getKey().getRight());
 				}
 			} else {
@@ -114,34 +114,34 @@ public class GameOperations {
 		return newRound;
 	}
 
-	public static float makeTilesAsBazaarAndReturnProbabilitiesSum(Round round) {
+	public static double makeTilesAsBazaarAndReturnProbabilitiesSum(Round round) {
 		Set<Integer> possiblePlayNumbers = getPossiblePlayNumbers(round.getTableInfo());
 
 		OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter()
 				.notBazaar(true)
 				.mustUsedNumbers(possiblePlayNumbers);
 
-		float sum = 0.0F;
-		for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
+		double sum = 0.0;
+		for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
 			if (opponentTilesFilter.filter(entry)) {
 				sum += entry.getValue();
-				entry.setValue(0.0F);
+				entry.setValue(0.0);
 			}
 		}
 		return sum;
 	}
 
-	public static float makeTwinTilesAsBazaarAndReturnProbabilitiesSum(Map<Tile, Float> opponentTiles, int twinNumber) {
+	public static double makeTwinTilesAsBazaarAndReturnProbabilitiesSum(Map<Tile, Double> opponentTiles, int twinNumber) {
 		OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter()
 				.notBazaar(true)
 				.twin(true)
 				.leftMoreThan(twinNumber);
 
-		float sum = 0.0F;
-		for (Map.Entry<Tile, Float> entry : opponentTiles.entrySet()) {
+		double sum = 0.0;
+		for (Map.Entry<Tile, Double> entry : opponentTiles.entrySet()) {
 			if (opponentTilesFilter.filter(entry)) {
 				sum += entry.getValue();
-				entry.setValue(0.0F);
+				entry.setValue(0.0);
 			}
 		}
 		return sum;
@@ -237,7 +237,7 @@ public class GameOperations {
 		return possiblePlayNumbers;
 	}
 
-	private static int normalizeLeftTilesCount(float count) {
+	private static int normalizeLeftTilesCount(double count) {
 		for (int i = 5; ; i += 5) {
 			if (i >= count) {
 				return i;

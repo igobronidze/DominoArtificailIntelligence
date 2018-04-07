@@ -51,8 +51,8 @@ public class AddForMeProcessor extends MoveProcessor {
 		round.getMyTiles().add(tile);
 
 		// Delete for opponent and produce probability
-		Map<Tile, Float> opponentTiles = round.getOpponentTiles();
-		float prob = opponentTiles.get(tile);
+		Map<Tile, Double> opponentTiles = round.getOpponentTiles();
+		double prob = opponentTiles.get(tile);
 		opponentTiles.remove(tile);
 		ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTiles, prob);
 

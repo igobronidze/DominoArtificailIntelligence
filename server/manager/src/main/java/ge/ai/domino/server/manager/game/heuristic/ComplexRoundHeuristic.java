@@ -15,23 +15,23 @@ public class ComplexRoundHeuristic implements RoundHeuristic {
     private final SysParam coefficientForComplexHeuristic = new SysParam("coefficientForComplexHeuristic", "12");
 
     @Override
-    public float getHeuristic(Round round) {
-        float heuristic = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
+    public double getHeuristic(Round round) {
+        double heuristic = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
         int myTilesCount = round.getMyTiles().size();
         heuristic += sysParamManager.getIntegerParameterValue(coefficientForComplexHeuristic) * (countPossibleMoves(round, true) / myTilesCount / myTilesCount -
                 countPossibleMoves(round, false) / round.getTableInfo().getOpponentTilesCount() / round.getTableInfo().getOpponentTilesCount());
         return heuristic;
     }
 
-    private float countPossibleMoves(Round round, boolean me) {
-        float count = 0.0F;
+    private double countPossibleMoves(Round round, boolean me) {
+        double count = 0.0;
         TableInfo tableInfo = round.getTableInfo();
         if (me) {
             for (Tile tile : round.getMyTiles()) {
                 count += countMove(tile, tableInfo);
             }
         } else {
-            for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
+            for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
                 count += entry.getValue() * countMove(entry.getKey(), tableInfo);
             }
         }

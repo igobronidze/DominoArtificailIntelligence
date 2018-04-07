@@ -356,7 +356,7 @@ public class GamePane extends BorderPane {
 			hBox.setPadding(new Insets(8));
 			for (int j = i; j >= 0; j--) {
 				Tile tile = new Tile(i, j);
-				Float prob = AppController.round.getOpponentTiles().get(tile);
+				Double prob = AppController.round.getOpponentTiles().get(tile);
 				if (AppController.round.getOpponentTiles().containsKey(tile)) {
 					ImageView imageView = getImageView(tile, true);
 					Label opponentLabel = new Label("" + (prob == null ? "N" : formatter.format(prob)));

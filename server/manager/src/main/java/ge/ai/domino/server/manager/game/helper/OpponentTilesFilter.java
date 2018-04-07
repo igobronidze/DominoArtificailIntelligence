@@ -63,19 +63,19 @@ public class OpponentTilesFilter {
 		return this;
 	}
 
-	public boolean filter(Map.Entry<Tile, Float> entry) {
-		Float prob = entry.getValue();
+	public boolean filter(Map.Entry<Tile, Double> entry) {
+		Double prob = entry.getValue();
 		Tile tile = entry.getKey();
-		if (opponent && prob != 1.0F) {
+		if (opponent && prob != 1.0) {
 			return false;
 		}
-		if (notOpponent && prob == 1.0F) {
+		if (notOpponent && prob == 1.0) {
 			return false;
 		}
-		if (bazaar && prob != 0.0F) {
+		if (bazaar && prob != 0.0) {
 			return false;
 		}
-		if (notBazaar && prob == 0.0F) {
+		if (notBazaar && prob == 0.0) {
 			return false;
 		}
 		if (twin && tile.getLeft() != tile.getRight()) {

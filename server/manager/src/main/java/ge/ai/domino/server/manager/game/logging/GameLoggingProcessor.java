@@ -105,13 +105,13 @@ public class GameLoggingProcessor {
         return info;
     }
 
-    private static StringBuilder opponentTileToString(Map<Tile, Float> tiles) {
+    private static StringBuilder opponentTileToString(Map<Tile, Double> tiles) {
         StringBuilder info = new StringBuilder();
         info.append("__________Opponent Tiles__________").append(END_LINE);
         for (int i = 0; i <= 6; i++) {
             for (int j = 6; j >= i ; j--) {
                 Tile tile = new Tile(j, i);
-                Float prob = tiles.get(tile);
+                Double prob = tiles.get(tile);
                 info.append(tile).append(EQUAL_CHARACTER_WITH_SPACE).append(prob == null ? "N     " : formatter.format(prob));
                 if (j != i) {
                     info.append(DELIMITER_WITH_SPACES);

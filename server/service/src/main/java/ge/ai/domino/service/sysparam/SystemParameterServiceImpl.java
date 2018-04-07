@@ -51,8 +51,8 @@ public class SystemParameterServiceImpl implements SystemParameterService {
     }
 
     @Override
-    public Float getFloatParameterValue(SysParam parameter) {
-        return systemParameterManager.getFloatParameterValue(parameter);
+    public Double getDoubleParameterValue(SysParam parameter) {
+        return systemParameterManager.getDoubleParameterValue(parameter);
     }
 
     @Override

@@ -16,11 +16,11 @@ public class NodeRound {
 
 	private int treeHeight;
 
-	private float heuristic;
+	private double heuristic;
 
 	private PlayedMove lastPlayedMove;
 
-	private float lastPlayedProbability;
+	private double lastPlayedProbability;
 
 	public Round getRound() {
 		return round;
@@ -54,11 +54,11 @@ public class NodeRound {
 		this.treeHeight = treeHeight;
 	}
 
-	public float getHeuristic() {
+	public double getHeuristic() {
 		return heuristic;
 	}
 
-	public void setHeuristic(float heuristic) {
+	public void setHeuristic(double heuristic) {
 		this.heuristic = heuristic;
 	}
 
@@ -70,11 +70,11 @@ public class NodeRound {
 		this.lastPlayedMove = lastPlayedMove;
 	}
 
-	public float getLastPlayedProbability() {
+	public double getLastPlayedProbability() {
 		return lastPlayedProbability;
 	}
 
-	public void setLastPlayedProbability(float lastPlayedProbability) {
+	public void setLastPlayedProbability(double lastPlayedProbability) {
 		this.lastPlayedProbability = lastPlayedProbability;
 	}
 }

@@ -57,8 +57,8 @@ public class RoundParser {
         return round;
     }
 
-    private static Map<Tile, Float> parseOpponentTiles(String[] lines) {
-        Map<Tile, Float> opponentTiles = new HashMap<>();
+    private static Map<Tile, Double> parseOpponentTiles(String[] lines) {
+        Map<Tile, Double> opponentTiles = new HashMap<>();
         for (String line : lines) {
             String[] opponentTilesString = line.split(Pattern.quote(GameLoggingProcessor.DELIMITER));
             for (String opponentTileString : opponentTilesString) {
@@ -66,7 +66,7 @@ public class RoundParser {
                 String tile = tileAndProb[0].trim();
                 String prob = tileAndProb[1].trim();
                 if (!prob.equals(GameLoggingProcessor.NOT)) {
-                    opponentTiles.put(parseTile(tile), Float.valueOf(prob));
+                    opponentTiles.put(parseTile(tile), Double.valueOf(prob));
                 }
             }
         }
@@ -109,8 +109,8 @@ public class RoundParser {
         tableInfo.setRoundBlockingInfo(roundBlockingInfo);
 
         String[] properties3 = lines[3].split(Pattern.quote(GameLoggingProcessor.DELIMITER));
-        tableInfo.setOpponentTilesCount(Float.valueOf(properties3[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-        tableInfo.setBazaarTilesCount(Float.valueOf(properties3[1].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
+        tableInfo.setOpponentTilesCount(Double.valueOf(properties3[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
+        tableInfo.setBazaarTilesCount(Double.valueOf(properties3[1].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
         tableInfo.setTilesFromBazaar(Integer.valueOf(properties3[2].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
 
         return tableInfo;

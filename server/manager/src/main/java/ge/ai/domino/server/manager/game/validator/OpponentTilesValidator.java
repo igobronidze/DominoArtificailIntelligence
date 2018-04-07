@@ -30,11 +30,11 @@ public class OpponentTilesValidator {
 	 *                while will not play or omit)
 	 * @throws DAIException Throw if not correct probabilities
 	 */
-	public static void validateOpponentTiles(Round round, float addProb, String msg) throws DAIException {
+	public static void validateOpponentTiles(Round round, double addProb, String msg) throws DAIException {
 		if (sysParamManager.getBooleanParameterValue(checkOpponentProbabilities)) {
-			float sum = 0.0F;
-			for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
-				float prob = entry.getValue();
+			double sum = 0.0;
+			for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
+				double prob = entry.getValue();
 				int left = entry.getKey().getLeft();
 				int right = entry.getKey().getRight();
 				if (prob > 1.0) {

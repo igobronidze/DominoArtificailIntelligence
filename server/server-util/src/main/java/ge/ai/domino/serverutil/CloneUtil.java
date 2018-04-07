@@ -19,9 +19,9 @@ public class CloneUtil {
         return clone;
     }
 
-    public static Map<Tile, Float> getClone(Map<Tile, Float> opponentTiles) {
-        Map<Tile, Float> clone = new HashMap<>();
-        for (Map.Entry<Tile, Float> entry : opponentTiles.entrySet()) {
+    public static Map<Tile, Double> getClone(Map<Tile, Double> opponentTiles) {
+        Map<Tile, Double> clone = new HashMap<>();
+        for (Map.Entry<Tile, Double> entry : opponentTiles.entrySet()) {
             clone.put(entry.getKey(), entry.getValue());
         }
         return clone;

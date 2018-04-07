@@ -20,9 +20,9 @@ public class TableInfo {
 
     private RoundBlockingInfo roundBlockingInfo = new RoundBlockingInfo();
 
-    private float opponentTilesCount;
+    private double opponentTilesCount;
 
-    private float bazaarTilesCount;
+    private double bazaarTilesCount;
 
     private int tilesFromBazaar;
 
@@ -74,19 +74,19 @@ public class TableInfo {
         this.myMove = myMove;
     }
 
-    public float getOpponentTilesCount() {
+    public double getOpponentTilesCount() {
         return opponentTilesCount;
     }
 
-    public void setOpponentTilesCount(float opponentTilesCount) {
+    public void setOpponentTilesCount(double opponentTilesCount) {
         this.opponentTilesCount = opponentTilesCount;
     }
 
-    public float getBazaarTilesCount() {
+    public double getBazaarTilesCount() {
         return bazaarTilesCount;
     }
 
-    public void setBazaarTilesCount(float bazaarTilesCount) {
+    public void setBazaarTilesCount(double bazaarTilesCount) {
         this.bazaarTilesCount = bazaarTilesCount;
     }
 

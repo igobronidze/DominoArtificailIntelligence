@@ -17,8 +17,8 @@ public class SystemParameterManager {
         return Integer.parseInt(getStringParameterValue(parameter));
     }
 
-    public Float getFloatParameterValue(SysParam parameter) {
-        return Float.parseFloat(getStringParameterValue(parameter));
+    public Double getDoubleParameterValue(SysParam parameter) {
+        return Double.parseDouble(getStringParameterValue(parameter));
     }
 
     public Long getLongParameterValue(SysParam parameter) {

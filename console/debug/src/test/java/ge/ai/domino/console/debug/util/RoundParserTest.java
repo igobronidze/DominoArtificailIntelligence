@@ -48,9 +48,9 @@ public class RoundParserTest {
 
     private static final boolean lastNotTwinTileIsMine = false;
 
-    private static final float opponentTilesCount = 8.0F;
+    private static final double opponentTilesCount = 8.0;
 
-    private static final float bazaarTilesCount = 11.0F;
+    private static final double bazaarTilesCount = 11.0;
 
     private static final int tilesFromBazaar = 0;
 
@@ -61,25 +61,25 @@ public class RoundParserTest {
         add(new Tile(2, 0));
     }};
 
-    private static final Map<Tile, Float> opponentTiles = new HashMap<Tile, Float>() {{
-        put(new Tile(6, 1), 0.0667F);
-        put(new Tile(6, 2), 0.0667F);
-        put(new Tile(6, 4), 0.0667F);
-        put(new Tile(5, 0), 0.0667F);
-        put(new Tile(5, 1), 0.0667F);
-        put(new Tile(5, 2), 0.0667F);
-        put(new Tile(5, 3), 0.0667F);
-        put(new Tile(5, 4), 0.0667F);
-        put(new Tile(4, 2), 1.0F);
-        put(new Tile(4, 3), 0.0667F);
-        put(new Tile(4, 4), 1.0F);
-        put(new Tile(3, 0), 0.0667F);
-        put(new Tile(3, 1), 0.0667F);
-        put(new Tile(3, 3), 0.0667F);
-        put(new Tile(2, 1), 1.0F);
-        put(new Tile(2, 2), 1.0F);
-        put(new Tile(1, 0), 0.0667F);
-        put(new Tile(0, 0), 0.0667F);
+    private static final Map<Tile, Double> opponentTiles = new HashMap<Tile, Double>() {{
+        put(new Tile(6, 1), 0.0667);
+        put(new Tile(6, 2), 0.0667);
+        put(new Tile(6, 4), 0.0667);
+        put(new Tile(5, 0), 0.0667);
+        put(new Tile(5, 1), 0.0667);
+        put(new Tile(5, 2), 0.0667);
+        put(new Tile(5, 3), 0.0667);
+        put(new Tile(5, 4), 0.0667);
+        put(new Tile(4, 2), 1.0);
+        put(new Tile(4, 3), 0.0667);
+        put(new Tile(4, 4), 1.0);
+        put(new Tile(3, 0), 0.0667);
+        put(new Tile(3, 1), 0.0667);
+        put(new Tile(3, 3), 0.0667);
+        put(new Tile(2, 1), 1.0);
+        put(new Tile(2, 2), 1.0);
+        put(new Tile(1, 0), 0.0667);
+        put(new Tile(0, 0), 0.0667);
     }};
 
     private static final String roundLog = "__________Game Info__________\n" +
@@ -111,7 +111,7 @@ public class RoundParserTest {
         assertEquals(mockRound.getOpponentTiles(), roundFromLog.getOpponentTiles());
     }
 
-    private void assertEquals(Map<Tile, Float> expected, Map<Tile, Float> real) {
+    private void assertEquals(Map<Tile, Double> expected, Map<Tile, Double> real) {
         Assert.assertEquals(expected.size(), real.size());
         for (Tile tile : expected.keySet()) {
             Assert.assertTrue(real.containsKey(tile));
@@ -195,7 +195,7 @@ public class RoundParserTest {
     }
 
     private static String opponentTileToLog(Tile tile) {
-        Float prob = opponentTiles.get(tile);
+        Double prob = opponentTiles.get(tile);
         return tile + ": " + (prob == null ? "N     " : GameLoggingProcessor.formatter.format(prob));
     }
 }

@@ -92,7 +92,7 @@ public class MinMax implements AiSolver {
 			nextNodeRound.setTreeHeight(1);
 			nodeRound.getChildren().add(nextNodeRound);
 			validateOpponentTiles(nextNodeRound, "playForMe");
-			float heuristic = getHeuristicValue(nextNodeRound, 2);
+			double heuristic = getHeuristicValue(nextNodeRound, 2);
 			AiPrediction aiPrediction = new AiPrediction();
 			aiPrediction.setMove(move);
 			aiPrediction.setHeuristicValue(heuristic);
@@ -104,14 +104,14 @@ public class MinMax implements AiSolver {
 				bestAiPrediction = aiPrediction;
 				bestAiPrediction.setBestMove(true);
 				if (bestNodeRound != null) {
-					bestNodeRound.setLastPlayedProbability(0.0F);
+					bestNodeRound.setLastPlayedProbability(0.0);
 				}
 				bestNodeRound = nextNodeRound;
-				bestNodeRound.setLastPlayedProbability(1.0F);
+				bestNodeRound.setLastPlayedProbability(1.0);
 			}
 			logger.info("PlayedMove- " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + heuristic);
 		}
-		float tookMs = System.currentTimeMillis() - ms;
+		double tookMs = System.currentTimeMillis() - ms;
 		logger.info("MinMax took " + tookMs + "ms, recursion count " + recursionCount + ", average " + (tookMs / recursionCount));
 		recursionCount = 0;
 		if (aiPredictions.isEmpty() || bestAiPrediction == null) {
@@ -126,7 +126,7 @@ public class MinMax implements AiSolver {
 		return aiPredictions;
 	}
 
-	private float getHeuristicValue(NodeRound nodeRound, int height) throws DAIException {
+	private double getHeuristicValue(NodeRound nodeRound, int height) throws DAIException {
 		recursionCount++;
 		Round round = nodeRound.getRound();
 		TableInfo tableInfo = round.getTableInfo();
@@ -161,21 +161,21 @@ public class MinMax implements AiSolver {
 				getHeuristicValue(nextNodeRound, height + 1);
 				if (bestNodeRound == null || bestNodeRound.getHeuristic() > bestNodeRound.getHeuristic()) {
 					if (bestNodeRound != null) {
-						bestNodeRound.setLastPlayedProbability(0.0F);
+						bestNodeRound.setLastPlayedProbability(0.0);
 					}
 					bestNodeRound = nextNodeRound;
-					bestNodeRound.setLastPlayedProbability(1.0F);
+					bestNodeRound.setLastPlayedProbability(1.0);
 				}
 			}
 			// If there are no available move, use bazaar tiles
 			if (bestNodeRound == null) {
-				float heuristic = 0.0F;
-				float bazaarProbSum = round.getTableInfo().getBazaarTilesCount();
-				for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
+				double heuristic = 0.0;
+				double bazaarProbSum = round.getTableInfo().getBazaarTilesCount();
+				for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
 					Tile tile = entry.getKey();
-					float prob = entry.getValue();
+					double prob = entry.getValue();
 					if (prob != 1.0) {
-						float probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
+						double probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
 						Move move = new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT);
 						Round nextRound = addForMeProcessor.move(CloneUtil.getClone(round), move, true);
 						NodeRound nextNodeRound = new NodeRound();
@@ -197,9 +197,9 @@ public class MinMax implements AiSolver {
 			}
 		} else {
 			// Possible moves sorted ASC
-			Queue<NodeRound> possibleRounds = new PriorityQueue<>((o1, o2) -> Float.compare(o1.getHeuristic(), o2.getHeuristic()));
+			Queue<NodeRound> possibleRounds = new PriorityQueue<>((o1, o2) -> Double.compare(o1.getHeuristic(), o2.getHeuristic()));
 			// Play all possible move and add in queue
-			Map<Tile, Float> opponentTilesClone = CloneUtil.getClone(round.getOpponentTiles());
+			Map<Tile, Double> opponentTilesClone = CloneUtil.getClone(round.getOpponentTiles());
 			for (Move move : moves) {
 				Round nextRound = playForOpponentProcessor.move(CloneUtil.getClone(round), move, true);
 				NodeRound nextNodeRound = new NodeRound();
@@ -213,22 +213,22 @@ public class MinMax implements AiSolver {
 				possibleRounds.add(nextNodeRound);
 			}
 
-			float heuristic = 0.0F;
-			float remainingProbability = 1.0F;
+			double heuristic = 0.0;
+			double remainingProbability = 1.0;
 			for (NodeRound nextNodeRound : possibleRounds) {
-				if (ComparisonHelper.equal(remainingProbability, 0.0F)) {
+				if (ComparisonHelper.equal(remainingProbability, 0.0)) {
 					break;
 				}
-				float prob = remainingProbability * opponentTilesClone.get(new Tile(nextNodeRound.getLastPlayedMove().getLeft(), nextNodeRound.getLastPlayedMove().getRight()));
+				double prob = remainingProbability * opponentTilesClone.get(new Tile(nextNodeRound.getLastPlayedMove().getLeft(), nextNodeRound.getLastPlayedMove().getRight()));
 				heuristic += nextNodeRound.getHeuristic() * prob;
 				nextNodeRound.setLastPlayedProbability(prob);
-				opponentTilesClone.put(new Tile(nextNodeRound.getLastPlayedMove().getLeft(), nextNodeRound.getLastPlayedMove().getRight()), 0.0F);
+				opponentTilesClone.put(new Tile(nextNodeRound.getLastPlayedMove().getLeft(), nextNodeRound.getLastPlayedMove().getRight()), 0.0);
 				ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTilesClone, prob);
 				remainingProbability -= prob;
 			}
 
 			// Bazaar case
-			if (!ComparisonHelper.equal(remainingProbability, 0.0F)) {
+			if (!ComparisonHelper.equal(remainingProbability, 0.0)) {
 				Round nextRound = addForOpponentProcessor.move(CloneUtil.getClone(round), null, true);
 				NodeRound nextNodeRound = new NodeRound();
 				nextNodeRound.setRound(nextRound);
@@ -308,13 +308,13 @@ public class MinMax implements AiSolver {
 
 	private void validateOpponentTiles(NodeRound nodeRound, String msg) {
 		if (systemParameterManager.getBooleanParameterValue(checkOpponentProbabilities)) {
-			float sum = 0.0F;
+			double sum = 0.0;
 			Round round = nodeRound.getRound();
-			for (Map.Entry<Tile, Float> entry : round.getOpponentTiles().entrySet()) {
-				float prob = entry.getValue();
+			for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
+				double prob = entry.getValue();
 				int left = entry.getKey().getLeft();
 				int right = entry.getKey().getRight();
-				if (prob > 1.0F) {
+				if (prob > 1.0) {
 					notValidRound = nodeRound;
 					errorMsg = "Opponent tile probability is more than one, tile[" + left + "-" + right + "] method[" + msg + "]";
 					break;

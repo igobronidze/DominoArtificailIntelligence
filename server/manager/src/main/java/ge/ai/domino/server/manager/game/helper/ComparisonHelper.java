@@ -9,7 +9,7 @@ public class ComparisonHelper {
 
 	private static final SysParam epsilonForProbabilities = new SysParam("epsilonForProbabilities", "0.00001");
 
-	public static boolean equal(float firstNum, float secondNum) {
-		return Math.abs(firstNum - secondNum) < sysParamManager.getFloatParameterValue(epsilonForProbabilities);
+	public static boolean equal(double firstNum, double secondNum) {
+		return Math.abs(firstNum - secondNum) < sysParamManager.getDoubleParameterValue(epsilonForProbabilities);
 	}
 }

@@ -1,7 +1,7 @@
 package ge.ai.domino.console.ui.played;
 
 import ge.ai.domino.domain.played.GroupedPlayedGame;
-import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class GroupedPlayedGameProperty {
@@ -20,7 +20,7 @@ public class GroupedPlayedGameProperty {
 
     private SimpleStringProperty stoppedPercent;
 
-    private SimpleFloatProperty winPercentForFinished;
+    private SimpleDoubleProperty winPercentForFinished;
 
     GroupedPlayedGameProperty(GroupedPlayedGame game) {
         version = new SimpleStringProperty(game.getVersion());
@@ -28,10 +28,10 @@ public class GroupedPlayedGameProperty {
         opponentName = new SimpleStringProperty(game.getOpponentName());
         website = new SimpleStringProperty(game.getWebsite());
         int sum = game.getWin() + game.getLose() + game.getStopped();
-        winPercent = new SimpleStringProperty("" + game.getWin() + " (" + ((float)game.getWin() / sum * 100) + "%)");
-        losePercent = new SimpleStringProperty("" + game.getLose() + " (" + ((float)game.getLose() / sum * 100) + "%)");
-        stoppedPercent = new SimpleStringProperty("" + game.getStopped() + " (" + ((float)game.getStopped() / sum * 100) + "%)");
-        winPercentForFinished = new SimpleFloatProperty((float)game.getWin() / (game.getWin() + game.getLose()) * 100);
+        winPercent = new SimpleStringProperty("" + game.getWin() + " (" + ((double)game.getWin() / sum * 100) + "%)");
+        losePercent = new SimpleStringProperty("" + game.getLose() + " (" + ((double)game.getLose() / sum * 100) + "%)");
+        stoppedPercent = new SimpleStringProperty("" + game.getStopped() + " (" + ((double)game.getStopped() / sum * 100) + "%)");
+        winPercentForFinished = new SimpleDoubleProperty((double)game.getWin() / (game.getWin() + game.getLose()) * 100);
     }
 
     public String getVersion() {
@@ -90,11 +90,11 @@ public class GroupedPlayedGameProperty {
         this.stoppedPercent.set(stoppedPercent);
     }
 
-    public float getWinPercentForFinished() {
+    public double getWinPercentForFinished() {
         return winPercentForFinished.get();
     }
 
-    public void setWinPercentForFinished(float winPercentForFinished) {
+    public void setWinPercentForFinished(double winPercentForFinished) {
         this.winPercentForFinished.set(winPercentForFinished);
     }
 }

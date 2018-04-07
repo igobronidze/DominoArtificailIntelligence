@@ -13,6 +13,10 @@ public class PlayedTile {
     public PlayedTile() {
     }
 
+    public PlayedTile(int openSide) {
+        this.openSide = openSide;
+    }
+
     public PlayedTile(int openSide, boolean twin, boolean considerInSum, boolean center) {
         this.openSide = openSide;
         this.twin = twin;

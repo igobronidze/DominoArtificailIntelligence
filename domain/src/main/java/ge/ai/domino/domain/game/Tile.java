@@ -2,6 +2,8 @@ package ge.ai.domino.domain.game;
 
 public class Tile {
 
+	public static final String DELIMITER = "-";
+
 	private final int left;
 
 	private final int right;
@@ -39,6 +41,6 @@ public class Tile {
 
 	@Override
 	public String toString() {
-		return left + "-" + right;
+		return left + DELIMITER + right;
 	}
 }

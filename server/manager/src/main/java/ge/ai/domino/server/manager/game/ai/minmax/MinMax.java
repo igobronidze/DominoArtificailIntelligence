@@ -333,7 +333,7 @@ public class MinMax implements AiSolver {
 
 	private void applyValidation() throws DAIException {
 		if (notValidRound != null) {
-			logger.info(System.lineSeparator() + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+			logger.info(System.lineSeparator() + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 			logger.warn(errorMsg);
 			logger.info("Rounds full info");
 
@@ -350,7 +350,7 @@ public class MinMax implements AiSolver {
 				GameLoggingProcessor.logRoundFullInfo(notValidRound.getRound(), false); // Still print if virtual
 			}
 
-			logger.info(System.lineSeparator() + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+			logger.info(System.lineSeparator() + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 			throw new DAIException("probabilitiesSumIsNoEqualToOpponentTilesCount");
 		}
 	}

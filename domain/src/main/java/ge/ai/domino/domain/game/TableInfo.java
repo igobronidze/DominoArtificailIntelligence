@@ -16,9 +16,9 @@ public class TableInfo {
 
     private boolean myMove;
 
-    private RoundBlockingInfo roundBlockingInfo = new RoundBlockingInfo();
-
     private boolean firstRound;
+
+    private RoundBlockingInfo roundBlockingInfo = new RoundBlockingInfo();
 
     private float opponentTilesCount;
 

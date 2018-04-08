@@ -219,12 +219,12 @@ public class MinMax implements AiSolver {
 				if (ComparisonHelper.equal(remainingProbability, 0.0)) {
 					break;
 				}
-				double prob = remainingProbability * opponentTilesClone.get(new Tile(nextNodeRound.getLastPlayedMove().getLeft(), nextNodeRound.getLastPlayedMove().getRight()));
-				heuristic += nextNodeRound.getHeuristic() * prob;
-				nextNodeRound.setLastPlayedProbability(prob);
+				double prob = opponentTilesClone.get(new Tile(nextNodeRound.getLastPlayedMove().getLeft(), nextNodeRound.getLastPlayedMove().getRight()));
+				heuristic += nextNodeRound.getHeuristic() * prob * remainingProbability;
+				nextNodeRound.setLastPlayedProbability(prob * remainingProbability);
 				opponentTilesClone.put(new Tile(nextNodeRound.getLastPlayedMove().getLeft(), nextNodeRound.getLastPlayedMove().getRight()), 0.0);
 				ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTilesClone, prob);
-				remainingProbability -= prob;
+				remainingProbability -= prob * remainingProbability;
 			}
 
 			// Bazaar case

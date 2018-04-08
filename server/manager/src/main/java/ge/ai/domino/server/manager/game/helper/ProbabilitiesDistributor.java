@@ -29,6 +29,11 @@ public class ProbabilitiesDistributor {
             }
         }
 
+//        int sumInt = (int)Math.round(sum);
+//        if (sumInt - sum > 0.0000001 && sumInt - sum < 0.0001 && probability > 0.0001) {
+//            distributeProbabilitiesOpponentProportional(tiles, sumInt - sum);
+//        }
+
         if (probability < 0.0) {
             if (ComparisonHelper.equal(sum, -1 * probability)) {
                 setStaticProbabilities(tiles, opponentTilesFilter, 0.0);

@@ -31,7 +31,7 @@ public class GamePropertiesPane extends VBox {
 
     private static final GameService GAME_SERVICE = new GameServiceImpl();
 
-    private static final SysParam possiblePoints = new SysParam("possiblePoints", "75,155,255");
+    private static final SysParam possiblePoints = new SysParam("possiblePoints", "75,155,175,255,355");
 
     private final ControlPanel controlPanel;
 

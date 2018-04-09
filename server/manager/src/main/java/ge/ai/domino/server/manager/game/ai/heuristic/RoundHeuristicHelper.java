@@ -1,4 +1,4 @@
-package ge.ai.domino.server.manager.game.heuristic;
+package ge.ai.domino.server.manager.game.ai.heuristic;
 
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.sysparam.SysParam;
@@ -10,11 +10,13 @@ public class RoundHeuristicHelper {
 
     private static final SysParam heuristicValueForStartNextRound = new SysParam("heuristicValueForStartNextRound", "15");
 
+    private static final SysParam rateForFinishedGameHeuristic = new SysParam("rateForFinishedGameHeuristic", "1.0");
+
     public static double getFinishedGameHeuristic(GameInfo gameInfo, int pointForWin) {
         if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
-            return pointForWin;
+            return pointForWin * sysParamManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
         } else {
-            return - 1 * pointForWin;
+            return - 1 * pointForWin * sysParamManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
         }
     }
 

@@ -66,7 +66,7 @@ public class CachedGames {
     }
 
     public static void addMove(int gameId, PlayedMove playedMove) {
-        cachedGames.get(gameId).getGameHistory().getPlayedMoves().addFirst(playedMove);
+        cachedGames.get(gameId).getGameHistory().getPlayedMoves().addLast(playedMove);
     }
 
     public static void removeLastMove(int gameId) throws DAIException {
@@ -75,7 +75,7 @@ public class CachedGames {
             logger.warn("Move history is empty gameId[" + gameId + "]");
             throw new DAIException("movesHistoryIsEmpty");
         } else {
-            gameHistory.getPlayedMoves().removeFirst();
+            gameHistory.getPlayedMoves().removeLast();
         }
     }
 

@@ -1,4 +1,4 @@
-package ge.ai.domino.server.manager.game.heuristic;
+package ge.ai.domino.server.manager.game.ai.heuristic;
 
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;

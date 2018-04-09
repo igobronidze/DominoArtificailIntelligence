@@ -15,9 +15,9 @@ import ge.ai.domino.server.manager.game.ai.AiSolver;
 import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.server.manager.game.helper.MoveHelper;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
-import ge.ai.domino.server.manager.game.heuristic.ComplexRoundHeuristic;
-import ge.ai.domino.server.manager.game.heuristic.RoundHeuristic;
-import ge.ai.domino.server.manager.game.heuristic.RoundHeuristicHelper;
+import ge.ai.domino.server.manager.game.ai.heuristic.ComplexRoundHeuristic;
+import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristic;
+import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristicHelper;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
@@ -29,6 +29,7 @@ import ge.ai.domino.serverutil.CloneUtil;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +160,7 @@ public class MinMax implements AiSolver {
 				nodeRound.getChildren().add(nextNodeRound);
 				validateOpponentTiles(nextNodeRound, "playForMe");
 				getHeuristicValue(nextNodeRound, height + 1);
-				if (bestNodeRound == null || bestNodeRound.getHeuristic() > bestNodeRound.getHeuristic()) {
+				if (bestNodeRound == null || nextNodeRound.getHeuristic() > bestNodeRound.getHeuristic()) {
 					if (bestNodeRound != null) {
 						bestNodeRound.setLastPlayedProbability(0.0);
 					}
@@ -197,7 +198,7 @@ public class MinMax implements AiSolver {
 			}
 		} else {
 			// Possible moves sorted ASC
-			Queue<NodeRound> possibleRounds = new PriorityQueue<>((o1, o2) -> Double.compare(o1.getHeuristic(), o2.getHeuristic()));
+			Queue<NodeRound> possibleRounds = new PriorityQueue<>(Comparator.comparingDouble(NodeRound::getHeuristic));
 			// Play all possible move and add in queue
 			Map<Tile, Double> opponentTilesClone = CloneUtil.getClone(round.getOpponentTiles());
 			for (Move move : moves) {

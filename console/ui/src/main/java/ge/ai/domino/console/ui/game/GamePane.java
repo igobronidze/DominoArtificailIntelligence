@@ -36,6 +36,7 @@ import javafx.stage.StageStyle;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -319,14 +320,16 @@ public class GamePane extends BorderPane {
 			vBox.setAlignment(Pos.TOP_CENTER);
 			ImageView imageView = getImageView(tile, AppController.round.getTableInfo().isMyMove());
 			myTilesImages.put(tile, imageView);
-			AiPrediction aiPrediction = getAiPredictionByTile(aiPredictions, tile);
-			if (aiPrediction != null) {
+			List<AiPrediction> tilePredictions = getAiPredictionByTile(aiPredictions, tile);
+			if (!tilePredictions.isEmpty()) {
 				NumberFormat formatter = new DecimalFormat("#0.0000");
-				Label label = new Label(aiPrediction.getMove().getDirection().name() + "(" + formatter.format(aiPrediction.getHeuristicValue()) + ")");
-				if (aiPrediction.isBestMove()) {
-					label.setStyle("-fx-font-size: 14px; -fx-text-fill: green; -fx-font-weight: bold");
+				for (AiPrediction aiPrediction : tilePredictions) {
+					Label label = new Label(aiPrediction.getMove().getDirection().name() + "(" + formatter.format(aiPrediction.getHeuristicValue()) + ")");
+					if (aiPrediction.isBestMove()) {
+						label.setStyle("-fx-font-size: 14px; -fx-text-fill: green; -fx-font-weight: bold");
+					}
+					vBox.getChildren().add(label);
 				}
-				vBox.getChildren().add(label);
 			}
 			imageView.setOnMouseClicked(e -> onMyTilePressed(tile));
 			vBox.getChildren().add(imageView);
@@ -335,16 +338,17 @@ public class GamePane extends BorderPane {
 		flowPane.getChildren().addAll(leftArrow, upArrow, downArrow, rightArrow);
 	}
 
-	private AiPrediction getAiPredictionByTile(List<AiPrediction> aiPredictions, Tile tile) {
+	private List<AiPrediction> getAiPredictionByTile(List<AiPrediction> aiPredictions, Tile tile) {
+		List<AiPrediction> result = new ArrayList<>();
 		if (aiPredictions == null) {
-			return null;
+			return result;
 		}
 		for (AiPrediction aiPrediction : aiPredictions) {
 			if (aiPrediction.getMove().getLeft() == tile.getLeft() && aiPrediction.getMove().getRight() == tile.getRight()) {
-				return aiPrediction;
+				result.add(aiPrediction);
 			}
 		}
-		return null;
+		return result;
 	}
 
 	private void initOpponentTilesComponents(FlowPane flowPane) {

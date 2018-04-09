@@ -138,7 +138,7 @@ public class MinMax implements AiSolver {
 			return RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGameProperties(gameId).getPointsForWin());
 		}
 		if (isNewRound(round)) {
-			nodeRound.setHeuristic(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, !tableInfo.isMyMove()));
+			nodeRound.setHeuristic(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, tableInfo.isMyMove()));
 			return nodeRound.getHeuristic();
 		}
 		if (height == treeHeight) {

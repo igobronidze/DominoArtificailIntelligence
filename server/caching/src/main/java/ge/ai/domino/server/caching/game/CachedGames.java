@@ -26,8 +26,8 @@ public class CachedGames {
         return cachedGames.get(gameId).getProperties();
     }
 
-    public static void makeOpponentNextRoundBeginner(int gameId) {
-        cachedGames.get(gameId).setOpponentNextRoundBeginner(true);
+    public static void changeNextRoundBeginner(int gameId, boolean startMe) {
+        cachedGames.get(gameId).setOpponentNextRoundBeginner(!startMe);
     }
 
     public static boolean isOpponentNextRoundBeginner(int gameId) {

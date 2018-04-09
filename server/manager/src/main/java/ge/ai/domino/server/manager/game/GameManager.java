@@ -97,9 +97,7 @@ public class GameManager {
     }
 
     public void specifyRoundBeginner(int gameId, boolean startMe) {
-        if (!startMe) {
-            CachedGames.makeOpponentNextRoundBeginner(gameId);
-        }
+        CachedGames.changeNextRoundBeginner(gameId, startMe);
     }
 
     public void specifyOpponentLeftTiles(int gameId, int leftTilesCount) {

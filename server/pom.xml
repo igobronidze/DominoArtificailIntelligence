@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dai</artifactId>
         <groupId>ge.ai.domino</groupId>
-        <version>0.4</version>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

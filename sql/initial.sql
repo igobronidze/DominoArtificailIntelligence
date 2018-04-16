@@ -19,3 +19,12 @@ CREATE TABLE played_game (
   website VARCHAR(50) NOT NULL,
   game_history TEXT
 );
+
+CREATE TABLE opponent_play (
+  id SERIAL PRIMARY KEY,
+  game_id int NOT NULL,
+  version VARCHAR(50) NOT NULL,
+  move_type VARCHAR(50) NOT NULL,
+  tile VARCHAR(50) NOT NULL,
+  opponent_tiles TEXT NOT NULL
+);

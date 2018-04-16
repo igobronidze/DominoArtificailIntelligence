@@ -4,12 +4,14 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.PlayedMove;
 import ge.ai.domino.serverutil.CloneUtil;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CachedGames {
@@ -89,5 +91,13 @@ public class CachedGames {
 
     public static int getOpponentLeftTilesCount(int gameId) {
         return cachedGames.get(gameId).getOpponentLeftTilesCount();
+    }
+
+    public static void addOpponentPlay(int gameId, OpponentPlay opponentPlay) {
+        cachedGames.get(gameId).getOpponentPlays().add(opponentPlay);
+    }
+
+    public static List<OpponentPlay> getOpponentPlays(int gameId) {
+        return cachedGames.get(gameId).getOpponentPlays();
     }
 }

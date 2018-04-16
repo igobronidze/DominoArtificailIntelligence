@@ -2,6 +2,7 @@ package ge.ai.domino.console.ui.game;
 
 import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
+import ge.ai.domino.console.ui.tchcomponents.TCHCheckBox;
 import ge.ai.domino.console.ui.tchcomponents.TCHLabel;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.domain.game.GameInfo;
@@ -24,32 +25,16 @@ public abstract class SaveGameWindow extends Stage {
         if (AppController.round != null) {
             this.setResizable(false);
             this.setTitle(Messages.get("saveGame"));
-            TCHLabel label = new TCHLabel(Messages.get("doYouWantToSaveGame"));
-            TCHButton yesButton = new TCHButton(Messages.get("yes"));
-            yesButton.setOnAction(event -> {
-                GameInfo gameInfo = AppController.round.getGameInfo();
-                PlayedGame playedGame = new PlayedGame();
-                if (AppController.round.getTableInfo().getOpponentTilesCount() == 0.0 || AppController.round.getMyTiles().isEmpty() && AppController.round.getTableInfo().getLeft() != null) {
-                    if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
-                        playedGame.setResult(GameResult.I_WIN);
-                    } else {
-                        playedGame.setResult(GameResult.OPPONENT_WIN);
-                    }
-                } else {
-                    playedGame.setResult(GameResult.STOPPED);
-                }
-                playedGame.setMyPoint(gameInfo.getMyPoint());
-                playedGame.setOpponentPoint(gameInfo.getOpponentPoint());
-                playedGame.setId(gameInfo.getGameId());
-                playedGameService.updatePlayedGame(playedGame);
-                onYes();
-                AppController.round = null;
-                this.close();
-            });
-            TCHButton noButton = new TCHButton(Messages.get("no"));
-            noButton.setOnAction(event -> {
-                playedGameService.deletePlayedGame(AppController.round.getGameInfo().getGameId());
-                onNo();
+            VBox optionsVBox = new VBox(10);
+            TCHCheckBox saveGameCheckBox = new TCHCheckBox(Messages.get("saveGame2"));
+            saveGameCheckBox.setSelected(true);
+            TCHCheckBox saveOpponentPlaysCheckBox = new TCHCheckBox(Messages.get("saveOpponentPlays"));
+            saveOpponentPlaysCheckBox.setSelected(true);
+            optionsVBox.getChildren().addAll(saveGameCheckBox, saveOpponentPlaysCheckBox);
+            TCHButton saveButton = new TCHButton(Messages.get("save"));
+            saveButton.setOnAction(event -> {
+                playedGameService.finishGame(AppController.round.getGameInfo().getGameId(), saveGameCheckBox.isSelected(), saveOpponentPlaysCheckBox.isSelected());
+                onSave();
                 AppController.round = null;
                 this.close();
             });
@@ -58,23 +43,22 @@ public abstract class SaveGameWindow extends Stage {
                 onCancel();
                 this.close();
             });
+            this.setOnCloseRequest(we -> onCancel());
             HBox hBox = new HBox(25);
             hBox.setAlignment(Pos.TOP_CENTER);
-            hBox.getChildren().addAll(yesButton, noButton, cancelButton);
+            hBox.getChildren().addAll(saveButton, cancelButton);
             VBox vBox = new VBox(30);
             vBox.setPadding(new Insets(20));
             vBox.setAlignment(Pos.TOP_CENTER);
-            vBox.getChildren().addAll(label, hBox);
+            vBox.getChildren().addAll(optionsVBox, hBox);
             this.setScene(new Scene(vBox));
             this.setWidth(400);
-            this.setHeight(140);
+            this.setHeight(165);
             this.showAndWait();
         }
     }
 
-    public abstract void onYes();
-
-    public abstract void onNo();
+    public abstract void onSave();
 
     public abstract void onCancel();
 }

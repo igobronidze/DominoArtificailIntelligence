@@ -30,11 +30,7 @@ public class ControlPanel extends Application {
             if (AppController.round != null) {
                 new SaveGameWindow() {
                     @Override
-                    public void onYes() {
-                    }
-
-                    @Override
-                    public void onNo() {
+                    public void onSave() {
                     }
 
                     @Override

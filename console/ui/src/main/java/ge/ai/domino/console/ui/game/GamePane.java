@@ -87,12 +87,7 @@ public class GamePane extends BorderPane {
 		if (AppController.round.getGameInfo().isFinished()) {
 			new SaveGameWindow() {
 				@Override
-				public void onYes() {
-					showNextGameWindow();
-				}
-
-				@Override
-				public void onNo() {
+				public void onSave() {
 					showNextGameWindow();
 				}
 

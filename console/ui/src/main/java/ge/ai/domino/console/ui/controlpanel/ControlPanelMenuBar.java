@@ -111,13 +111,7 @@ public class ControlPanelMenuBar extends MenuBar {
             if (AppController.round != null) {
                 new SaveGameWindow() {
                     @Override
-                    public void onYes() {
-                        AppController.round = null;
-                        controlPanel.initComponents();
-                    }
-
-                    @Override
-                    public void onNo() {
+                    public void onSave() {
                         AppController.round = null;
                         controlPanel.initComponents();
                     }
@@ -136,12 +130,7 @@ public class ControlPanelMenuBar extends MenuBar {
             if (AppController.round != null) {
                 new SaveGameWindow() {
                     @Override
-                    public void onYes() {
-                        controlPanel.getStage().close();
-                    }
-
-                    @Override
-                    public void onNo() {
+                    public void onSave() {
                         controlPanel.getStage().close();
                     }
 

@@ -17,17 +17,12 @@ public class PlayedGameServiceImpl implements PlayedGameService {
     }
 
     @Override
-    public void updatePlayedGame(PlayedGame playedGame) {
-        playedGameManager.updatePlayedGame(playedGame);
-    }
-
-    @Override
     public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin) {
         return playedGameManager.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByWebsite, groupedByPointForWin);
     }
 
     @Override
-    public void deletePlayedGame(int gameId) {
-        playedGameManager.deletePlayedGame(gameId);
+    public void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays) {
+        playedGameManager.finishGame(gameId, saveGame, saveOpponentPlays);
     }
 }

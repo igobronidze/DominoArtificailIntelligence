@@ -10,9 +10,7 @@ public interface PlayedGameService {
 
     List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, String website);
 
-    void updatePlayedGame(PlayedGame playedGame);
-
     List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin);
 
-    void deletePlayedGame(int gameId);
+    void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays);
 }

@@ -28,3 +28,5 @@ CREATE TABLE opponent_play (
   tile VARCHAR(50) NOT NULL,
   opponent_tiles TEXT NOT NULL
 );
+
+ALTER TABLE opponent_play ADD COLUMN possible_play_numbers VARCHAR(200);

@@ -24,8 +24,6 @@ public class Game {
 
     private int opponentLeftTilesCount;
 
-    private List<OpponentPlay> opponentPlays = new ArrayList<>();
-
     public int getId() {
         return id;
     }
@@ -80,13 +78,5 @@ public class Game {
 
     public void setOpponentLeftTilesCount(int opponentLeftTilesCount) {
         this.opponentLeftTilesCount = opponentLeftTilesCount;
-    }
-
-    public List<OpponentPlay> getOpponentPlays() {
-        return opponentPlays;
-    }
-
-    public void setOpponentPlays(List<OpponentPlay> opponentPlays) {
-        this.opponentPlays = opponentPlays;
     }
 }

@@ -11,11 +11,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class OpponentPlayDAOImpl implements OpponentPlayDAO {
 
     private Logger logger = Logger.getLogger(OpponentPlayDAOImpl.class);
+
+    private static final String POSSIBLE_PLAY_NUMBERS_DELIMITER = ",";
 
     private PreparedStatement pstmt;
 
@@ -24,13 +27,14 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
         try {
             logger.info("Start addOpponentPlays method count[" + opponentPlays.size() + "]");
             for (OpponentPlay opponentPlay : opponentPlays) {
-                String sql = "INSERT INTO opponent_play (game_id, version, move_type, tile, opponent_tiles) VALUES (?,?,?,?,?);";
+                String sql = "INSERT INTO opponent_play (game_id, version, move_type, tile, opponent_tiles, possible_play_numbers) VALUES (?,?,?,?,?);";
                 pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
                 pstmt.setInt(1, opponentPlay.getGameId());
                 pstmt.setString(2, opponentPlay.getVersion());
                 pstmt.setString(3, opponentPlay.getMoveType().name());
                 pstmt.setString(4, opponentPlay.getTile().toString());
                 pstmt.setString(5, OpponentTilesMarshaller.getMarshalledTiles(opponentPlay.getOpponentTiles()));
+                pstmt.setString(6, joinPossiblePlayNumbers(opponentPlay.getPossiblePlayNumbers()));
                 pstmt.executeUpdate();
             }
             logger.info("Added opponent plays");
@@ -45,7 +49,7 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
     public List<OpponentPlay> getOpponentPlays(String version, Integer gameId) {
         List<OpponentPlay> opponentPlays = new ArrayList<>();
         try {
-            String sql = "SELECT id, game_id, version, move_type, tile, opponent_tiles FROM opponent_play WHERE 1 = 1 ";
+            String sql = "SELECT * FROM opponent_play WHERE 1 = 1 ";
             if (!StringUtil.isEmpty(version)) {
                 sql += "AND version = '" + version + "' ";
             }
@@ -62,6 +66,7 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
                 opponentPlay.setMoveType(MoveType.valueOf(rs.getString("move_type")));
                 opponentPlay.setTile(parseTile(rs.getString("tile")));
                 opponentPlay.setOpponentTiles(OpponentTilesMarshaller.unmarshallOpponentTiles(rs.getString("opponent_tiles")));
+                opponentPlay.setPossiblePlayNumbers(splitPossiblePlayNumbers(rs.getString("possible_play_numbers")));
                 opponentPlays.add(opponentPlay);
             }
         } catch (SQLException ex) {
@@ -72,9 +77,29 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
         return opponentPlays;
     }
 
+    private String joinPossiblePlayNumbers(List<Integer> possiblePlayNumbers) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < possiblePlayNumbers.size(); i++) {
+            sb.append(possiblePlayNumbers.get(i));
+            if (i != possiblePlayNumbers.size() - 1) {
+                sb.append(POSSIBLE_PLAY_NUMBERS_DELIMITER);
+            }
+        }
+        return sb.toString();
+    }
+
+    private List<Integer> splitPossiblePlayNumbers(String text) {
+        List<Integer> result = new ArrayList<>();
+        if (text != null && !text.isEmpty()) {
+            for (String str : text.split(POSSIBLE_PLAY_NUMBERS_DELIMITER)) {
+                result.add(Integer.parseInt(str));
+            }
+        }
+        return result;
+    }
+
     private Tile parseTile(String tileStr) {
         String[] parts = tileStr.split(Tile.DELIMITER);
-        Tile tile = new Tile(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
-        return tile;
+        return new Tile(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
     }
 }

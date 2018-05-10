@@ -12,6 +12,7 @@ import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.server.caching.game.CachedGames;
+import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.InitialUtil;
 import ge.ai.domino.server.manager.game.helper.MoveHelper;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
@@ -25,6 +26,7 @@ import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 import ge.ai.domino.server.manager.util.ProjectVersionUtil;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class GameManager {
@@ -67,7 +69,7 @@ public class GameManager {
     public Round addTileForOpponent(int gameId) throws DAIException {
         Round round = CachedGames.getCurrentRound(gameId, true);
         CachedGames.addOpponentPlay(gameId, new OpponentPlay(0, gameId, ProjectVersionUtil.getVersion(), MoveType.ADD_FOR_OPPONENT,
-                new Tile(0, 0), getOpponentTilesWrapper(round.getOpponentTiles())));
+                new Tile(0, 0), getOpponentTilesWrapper(round.getOpponentTiles()), new ArrayList<>(GameOperations.getPossiblePlayNumbers(round.getTableInfo()))));
         Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT), false);
         OpponentTilesValidator.validateOpponentTiles(round, round.getTableInfo().getTilesFromBazaar(), "addTileForOpponent");
         CachedGames.addRound(gameId, newRound);
@@ -92,7 +94,7 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId, true);
         MoveValidator.validateMove(round, move);
         CachedGames.addOpponentPlay(gameId, new OpponentPlay(0, gameId, ProjectVersionUtil.getVersion(), MoveType.PLAY_FOR_OPPONENT,
-                new Tile(move.getLeft(), move.getRight()), getOpponentTilesWrapper(round.getOpponentTiles())));
+                new Tile(move.getLeft(), move.getRight()), getOpponentTilesWrapper(round.getOpponentTiles()), new ArrayList<>()));
         Round newRound = playForOpponentProcessor.move(round, move, false);
         OpponentTilesValidator.validateOpponentTiles(round, 0, "playForOpponent " + move);
         CachedGames.addRound(gameId, newRound);

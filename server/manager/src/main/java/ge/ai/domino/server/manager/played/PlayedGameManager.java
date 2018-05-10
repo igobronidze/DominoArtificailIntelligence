@@ -4,6 +4,7 @@ import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
+import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.GroupedPlayedGame;
 import ge.ai.domino.domain.played.PlayedGame;
@@ -16,6 +17,7 @@ import ge.ai.domino.server.dao.played.PlayedGameDAOImpl;
 import ge.ai.domino.server.manager.util.ProjectVersionUtil;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -72,10 +74,26 @@ public class PlayedGameManager {
             playedGameDAO.deletePlayedGame(gameId);
         }
         if (saveOpponentPlays) {
-            List<OpponentPlay> opponentPlays = CachedGames.getOpponentPlays(gameId);
+            List<OpponentPlay> opponentPlays = removeExtraPlays(CachedGames.getOpponentPlays(gameId));
             if (!opponentPlays.isEmpty()) {
-                opponentPlayDAO.addOpponentPlays(CachedGames.getOpponentPlays(gameId));
+                opponentPlayDAO.addOpponentPlays(opponentPlays);
             }
         }
+    }
+
+    private List<OpponentPlay> removeExtraPlays(List<OpponentPlay> opponentPlays) {
+        List<OpponentPlay> result = new ArrayList<>();
+        boolean lastAdd = false;
+        for (OpponentPlay opponentPlay : opponentPlays) {
+            if (opponentPlay.getMoveType() == MoveType.ADD_FOR_OPPONENT) {
+                if (!lastAdd) {
+                    result.add(opponentPlay);
+                }
+                lastAdd = true;
+            } else {
+                result.add(opponentPlay);
+            }
+        }
+        return result;
     }
 }

@@ -84,11 +84,11 @@ public class GroupedOpponentPlaysPane extends BorderPane {
         if (data != null && !data.isEmpty()) {
             int columnsCount = data.get(0).size();
 
-            TableColumn<Map<String, String>, Boolean> gameIdColumn = new TableColumn<>(Messages.get("gameId"));
+            TableColumn<Map<String, String>, String> gameIdColumn = new TableColumn<>(Messages.get("gameId"));
             gameIdColumn.setCellValueFactory(new MapValueFactory(GroupedOpponentPlaysProperty.GAME_ID_KEY));
             gameIdColumn.prefWidthProperty().bind(doubleBinding.divide(columnsCount));
             tableView.getColumns().add(gameIdColumn);
-            TableColumn<Map<String, String>, Boolean> versionColumn = new TableColumn<>(Messages.get("version"));
+            TableColumn<Map<String, String>, String> versionColumn = new TableColumn<>(Messages.get("version"));
             versionColumn.setCellValueFactory(new MapValueFactory(GroupedOpponentPlaysProperty.VERSION_KEY));
             versionColumn.prefWidthProperty().bind(doubleBinding.divide(columnsCount));
             tableView.getColumns().add(versionColumn);
@@ -96,9 +96,10 @@ public class GroupedOpponentPlaysPane extends BorderPane {
             List<TableColumn<Map<String, String>, String>> additionalColumns = new ArrayList<>();
             for (Map.Entry<String, String> entry : data.get(0).entrySet()) {
                 if (!entry.getKey().equals(GroupedOpponentPlaysProperty.GAME_ID_KEY) && !entry.getKey().equals(GroupedOpponentPlaysProperty.VERSION_KEY)) {
-                    TableColumn<Map<String, String>, Boolean> column = new TableColumn<>(Messages.get(entry.getKey()));
+                    TableColumn<Map<String, String>, String> column = new TableColumn<>(Messages.get(entry.getKey()));
                     column.setCellValueFactory(new MapValueFactory(entry.getKey()));
                     column.prefWidthProperty().bind(doubleBinding.divide(columnsCount));
+                    additionalColumns.add(column);
                 }
             }
             tableView.getColumns().addAll(additionalColumns);

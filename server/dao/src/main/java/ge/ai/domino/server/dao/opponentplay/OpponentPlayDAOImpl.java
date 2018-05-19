@@ -27,7 +27,7 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
         try {
             logger.info("Start addOpponentPlays method count[" + opponentPlays.size() + "]");
             for (OpponentPlay opponentPlay : opponentPlays) {
-                String sql = "INSERT INTO opponent_play (game_id, version, move_type, tile, opponent_tiles, possible_play_numbers) VALUES (?,?,?,?,?);";
+                String sql = "INSERT INTO opponent_play (game_id, version, move_type, tile, opponent_tiles, possible_play_numbers) VALUES (?,?,?,?,?,?);";
                 pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
                 pstmt.setInt(1, opponentPlay.getGameId());
                 pstmt.setString(2, opponentPlay.getVersion());

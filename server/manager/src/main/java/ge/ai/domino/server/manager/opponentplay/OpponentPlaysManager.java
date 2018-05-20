@@ -64,6 +64,7 @@ public class OpponentPlaysManager {
                 }
                 result.add(groupedOpponentPlay);
             }
+            result.sort((o1, o2) -> o2.getGameId() - o1.getGameId());
             return result;
         } else if (groupByGame) {
             Map<Integer, Map<String, Double>> guessesSum = new HashMap<>();
@@ -91,8 +92,10 @@ public class OpponentPlaysManager {
                 }
                 result.add(groupedOpponentPlay);
             }
+            result.sort((o1, o2) -> o2.getGameId() - o1.getGameId());
             return result;
         } else {
+            groupedOpponentPlays.sort((o1, o2) -> o2.getGameId() - o1.getGameId());
             return groupedOpponentPlays;
         }
     }

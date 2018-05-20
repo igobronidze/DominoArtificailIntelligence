@@ -51,6 +51,7 @@ public class GroupedPlayedGamePane extends BorderPane {
 
     private void initFilters() {
         groupByVersionCheckBox = new TCHCheckBox(Messages.get("groupByVersion"));
+        groupByVersionCheckBox.setSelected(true);
         groupByOpponentNameCheckBox = new TCHCheckBox(Messages.get("groupByOpponentName"));
         groupByWebsiteCheckBox = new TCHCheckBox(Messages.get("groupByWebsite"));
         groupByPointForWinCheckBox = new TCHCheckBox(Messages.get("groupByPointForWin"));

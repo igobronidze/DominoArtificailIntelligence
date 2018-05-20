@@ -218,6 +218,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                     sb.append("GROUP BY point_for_win");
                 }
             }
+            sb.append(" ORDER BY version DESC;");
             pstmt = DatabaseUtil.getConnection().prepareStatement(sb.toString());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {

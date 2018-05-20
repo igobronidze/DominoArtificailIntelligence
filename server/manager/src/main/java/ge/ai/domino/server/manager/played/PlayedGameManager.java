@@ -85,14 +85,10 @@ public class PlayedGameManager {
         List<OpponentPlay> result = new ArrayList<>();
         boolean lastAdd = false;
         for (OpponentPlay opponentPlay : opponentPlays) {
-            if (opponentPlay.getMoveType() == MoveType.ADD_FOR_OPPONENT) {
-                if (!lastAdd) {
-                    result.add(opponentPlay);
-                }
-                lastAdd = true;
-            } else {
+            if (!lastAdd) {
                 result.add(opponentPlay);
             }
+            lastAdd = opponentPlay.getMoveType() == MoveType.ADD_FOR_OPPONENT;
         }
         return result;
     }

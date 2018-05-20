@@ -81,7 +81,7 @@ public class CachedGames {
         } else {
             PlayedMove playedMove = gameHistory.getPlayedMoves().removeLast();
             if (playedMove.getType() == MoveType.ADD_FOR_OPPONENT || playedMove.getType() == MoveType.PLAY_FOR_OPPONENT) {
-                cachedGames.get(gameId).getGameHistory().getOpponentPlays().removeLast();
+                cachedGames.get(gameId).getOpponentPlays().removeLast();
             }
         }
     }
@@ -99,10 +99,10 @@ public class CachedGames {
     }
 
     public static void addOpponentPlay(int gameId, OpponentPlay opponentPlay) {
-        cachedGames.get(gameId).getGameHistory().getOpponentPlays().addLast(opponentPlay);
+        cachedGames.get(gameId).getOpponentPlays().addLast(opponentPlay);
     }
 
     public static List<OpponentPlay> getOpponentPlays(int gameId) {
-        return new ArrayList<>(cachedGames.get(gameId).getGameHistory().getOpponentPlays());
+        return new ArrayList<>(cachedGames.get(gameId).getOpponentPlays());
     }
 }

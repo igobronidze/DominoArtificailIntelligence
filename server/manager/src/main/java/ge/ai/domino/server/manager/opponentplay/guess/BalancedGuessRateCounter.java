@@ -20,7 +20,7 @@ public class BalancedGuessRateCounter implements GuessRateCounter {
 			for (OpponentTile opponentTile : opponentPlay.getOpponentTiles().getOpponentTiles()) {
 				if (opponentPlay.getPossiblePlayNumbers().contains(opponentTile.getLeft()) || opponentPlay.getPossiblePlayNumbers().contains(opponentTile.getRight())) {
 					real *= (1 - opponentTile.getProbability());
-					expected *= (1 - opponentTile.getProbability());
+					expected *= (1 - expectedProb);
 				}
 			}
 			return real / expected;

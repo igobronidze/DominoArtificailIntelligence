@@ -18,6 +18,8 @@ public class Game {
 
     private GameHistory gameHistory;
 
+    private Deque<OpponentPlay> opponentPlays = new ArrayDeque<>();
+
     private int leftTilesCountFromLastRound;
 
     private boolean opponentNextRoundBeginner;
@@ -78,5 +80,13 @@ public class Game {
 
     public void setOpponentLeftTilesCount(int opponentLeftTilesCount) {
         this.opponentLeftTilesCount = opponentLeftTilesCount;
+    }
+
+    public Deque<OpponentPlay> getOpponentPlays() {
+        return opponentPlays;
+    }
+
+    public void setOpponentPlays(Deque<OpponentPlay> opponentPlays) {
+        this.opponentPlays = opponentPlays;
     }
 }

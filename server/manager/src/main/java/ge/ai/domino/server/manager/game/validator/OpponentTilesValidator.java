@@ -28,9 +28,8 @@ public class OpponentTilesValidator {
 	 * @param round   Round
 	 * @param addProb Some probabilities may not be added, so we provide this fact(for example whe opponent get a new tile, it's probability is not added
 	 *                while will not play or omit)
-	 * @throws DAIException Throw if not correct probabilities
 	 */
-	public static void validateOpponentTiles(Round round, double addProb, String msg) throws DAIException {
+	public static String validateOpponentTiles(Round round, double addProb, String msg) {
 		if (sysParamManager.getBooleanParameterValue(checkOpponentProbabilities)) {
 			double sum = 0.0;
 			for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
@@ -40,19 +39,20 @@ public class OpponentTilesValidator {
 				if (prob > 1.0) {
 					logger.warn("Opponent tile probability is more than one, tile[" + left + "-" + right + "] method[" + msg + "]");
 					GameLoggingProcessor.logRoundFullInfo(round, false);   // Still print if virtual
-					throw new DAIException("opponentTileProbabilityIsMoreThanOne");
+					return "opponentTileProbabilityIsMoreThanOne";
 				} else if (prob < 0.0) {
 					logger.warn("Opponent tile probability is less than zero, tile[" + left + "-" + right + "] method[" + msg + "]");
 					GameLoggingProcessor.logRoundFullInfo(round, false);   // Still print if virtual
-					throw new DAIException("opponentTileProbabilityIsLessThanZero");
+					return "opponentTileProbabilityIsLessThanZero";
 				}
 				sum += prob;
 			}
 			if (!ComparisonHelper.equal(sum + addProb, round.getTableInfo().getOpponentTilesCount())) {
 				logger.warn("Opponent tile count and probabilities sum is not same... count:" + round.getTableInfo().getOpponentTilesCount() + "  sum:" + sum + "  addProb:" + addProb + ", method[" + msg + "]");
 				GameLoggingProcessor.logRoundFullInfo(round, false);   // Still print if virtual
-				throw new DAIException("probabilitiesSumIsNoEqualToOpponentTilesCount");
+				return "probabilitiesSumIsNoEqualToOpponentTilesCount";
 			}
 		}
+		return null;
 	}
 }

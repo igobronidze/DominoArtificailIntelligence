@@ -1,23 +1,24 @@
 package ge.ai.domino.server.manager.game.ai.minmax;
 
 import ge.ai.domino.domain.exception.DAIException;
-import ge.ai.domino.domain.game.AiPrediction;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
+import ge.ai.domino.domain.game.ai.AiPrediction;
+import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.ai.AiSolver;
-import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
-import ge.ai.domino.server.manager.game.helper.MoveHelper;
-import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.ai.heuristic.ComplexRoundHeuristic;
 import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristic;
 import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristicHelper;
+import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
+import ge.ai.domino.server.manager.game.helper.MoveHelper;
+import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
@@ -68,14 +69,16 @@ public class MinMax implements AiSolver {
 
 	private String errorMsg;
 
+	private String errorMsgKey;
+
 	@Override
-	public List<AiPrediction> solve(Round round) throws DAIException {
+	public AiPredictionsWrapper solve(Round round) throws DAIException {
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
 		return minMax(nodeRound);
 	}
 
-	private List<AiPrediction> minMax(NodeRound nodeRound) throws DAIException {
+	private AiPredictionsWrapper minMax(NodeRound nodeRound) throws DAIException {
 		long ms = System.currentTimeMillis();
 		this.gameId = nodeRound.getRound().getGameInfo().getGameId();
 		treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
@@ -123,8 +126,10 @@ public class MinMax implements AiSolver {
 		logger.info("AIPrediction is [" + bestAiPrediction.getMove().getLeft() + "-" + bestAiPrediction.getMove().getRight() + " " +
 				bestAiPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestAiPrediction.getHeuristicValue());
 
-		applyValidation();
-		return aiPredictions;
+		AiPredictionsWrapper aiPredictionsWrapper = new AiPredictionsWrapper();
+		aiPredictionsWrapper.setAiPredictions(aiPredictions);
+		aiPredictionsWrapper.setWarnMsgKey(applyValidation());
+		return aiPredictionsWrapper;
 	}
 
 	private double getHeuristicValue(NodeRound nodeRound, int height) throws DAIException {
@@ -318,21 +323,24 @@ public class MinMax implements AiSolver {
 				if (prob > 1.0) {
 					notValidRound = nodeRound;
 					errorMsg = "Opponent tile probability is more than one, tile[" + left + "-" + right + "] method[" + msg + "]";
+					errorMsgKey = "opponentTileProbabilityIsMoreThanOne";
 					break;
 				} else if (prob < 0.0) {
 					notValidRound = nodeRound;
 					errorMsg = "Opponent tile probability is less than zero, tile[" + left + "-" + right + "] method[" + msg + "]";
+					errorMsgKey = "opponentTileProbabilityIsLessThanZero";
 				}
 				sum += prob;
 			}
 			if (!ComparisonHelper.equal(sum, round.getTableInfo().getOpponentTilesCount())) {
 				notValidRound = nodeRound;
 				errorMsg = "Opponent tile count and probabilities sum is not same... count:" + round.getTableInfo().getOpponentTilesCount() + "  sum:" + sum + ", method[" + msg + "]";
+				errorMsgKey = "probabilitiesSumIsNoEqualToOpponentTilesCount";
 			}
 		}
 	}
 
-	private void applyValidation() throws DAIException {
+	private String applyValidation() {
 		if (notValidRound != null) {
 			logger.info(System.lineSeparator() + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 			logger.warn(errorMsg);
@@ -352,7 +360,8 @@ public class MinMax implements AiSolver {
 			}
 
 			logger.info(System.lineSeparator() + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-			throw new DAIException("probabilitiesSumIsNoEqualToOpponentTilesCount");
+			return errorMsgKey;
 		}
+		return null;
 	}
 }

@@ -11,13 +11,12 @@ import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.domain.exception.DAIException;
-import ge.ai.domino.domain.game.AiPrediction;
+import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
-import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.service.game.GameService;
 import ge.ai.domino.service.game.GameServiceImpl;
 import javafx.geometry.Insets;
@@ -309,13 +308,18 @@ public class GamePane extends BorderPane {
 	}
 
 	private void initMyTilesComponents(FlowPane flowPane) {
-		List<AiPrediction> aiPredictions = AppController.round.getAiPredictions();
+		if (AppController.round.getAiPredictions() != null) {
+			String warnMsgKey = AppController.round.getAiPredictions().getWarnMsgKey();
+			if (warnMsgKey != null) {
+				WarnDialog.showWarnDialog(Messages.get(warnMsgKey));
+			}
+		}
 		AppController.round.getMyTiles().stream().filter(tile -> AppController.round.getMyTiles().contains(tile)).forEach(tile -> {
 			VBox vBox = new VBox();
 			vBox.setAlignment(Pos.TOP_CENTER);
 			ImageView imageView = getImageView(tile, AppController.round.getTableInfo().isMyMove());
 			myTilesImages.put(tile, imageView);
-			List<AiPrediction> tilePredictions = getAiPredictionByTile(aiPredictions, tile);
+			List<AiPrediction> tilePredictions = getAiPredictionByTile(AppController.round.getAiPredictions() == null ? null : AppController.round.getAiPredictions().getAiPredictions(), tile);
 			if (!tilePredictions.isEmpty()) {
 				NumberFormat formatter = new DecimalFormat("#0.0000");
 				for (AiPrediction aiPrediction : tilePredictions) {

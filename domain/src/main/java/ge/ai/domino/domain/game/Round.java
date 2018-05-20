@@ -1,5 +1,8 @@
 package ge.ai.domino.domain.game;
 
+import ge.ai.domino.domain.game.ai.AiPrediction;
+import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
+
 import java.util.*;
 
 public class Round {
@@ -8,11 +11,13 @@ public class Round {
 
     private Map<Tile, Double> opponentTiles = new HashMap<>();
 
-    private List<AiPrediction> aiPredictions;
+    private AiPredictionsWrapper aiPredictions = new AiPredictionsWrapper();
 
     private TableInfo tableInfo;
 
     private GameInfo gameInfo;
+
+    private String warnMsgKey;
 
     public Set<Tile> getMyTiles() {
         return myTiles;
@@ -30,11 +35,11 @@ public class Round {
         this.opponentTiles = opponentTiles;
     }
 
-    public List<AiPrediction> getAiPredictions() {
+    public AiPredictionsWrapper getAiPredictions() {
         return aiPredictions;
     }
 
-    public void setAiPredictions(List<AiPrediction> aiPredictions) {
+    public void setAiPredictions(AiPredictionsWrapper aiPredictions) {
         this.aiPredictions = aiPredictions;
     }
 
@@ -52,5 +57,13 @@ public class Round {
 
     public void setGameInfo(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
+    }
+
+    public String getWarnMsgKey() {
+        return warnMsgKey;
+    }
+
+    public void setWarnMsgKey(String warnMsgKey) {
+        this.warnMsgKey = warnMsgKey;
     }
 }

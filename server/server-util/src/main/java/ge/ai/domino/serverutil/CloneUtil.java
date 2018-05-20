@@ -27,13 +27,6 @@ public class CloneUtil {
         return clone;
     }
 
-    private static Move getClone(Move aiPrediction) {
-        if (aiPrediction == null) {
-            return null;
-        }
-        return new Move(aiPrediction.getLeft(), aiPrediction.getRight(), aiPrediction.getDirection());
-    }
-
     private static TableInfo getClone(TableInfo tableInfo) {
         TableInfo clone = new TableInfo();
         clone.setTop(getClone(tableInfo.getTop()));

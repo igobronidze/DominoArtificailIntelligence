@@ -61,6 +61,7 @@ public class GroupedOpponentPlaysPane extends BorderPane {
         versionField = new TCHTextField(TCHComponentSize.SMALL);
         TCHFieldLabel versionFieldLabel = new TCHFieldLabel(Messages.get("version"), versionField);
         groupByOpponentGameIdCheckBox = new TCHCheckBox(Messages.get("groupByGameId"));
+        groupByOpponentGameIdCheckBox.setSelected(true);
         groupByVersionCheckBox = new TCHCheckBox(Messages.get("groupByVersion"));
         TCHButton searchButton = new TCHButton();
         searchButton.setGraphic(new ImageView(ImageFactory.getImage("search.png")));

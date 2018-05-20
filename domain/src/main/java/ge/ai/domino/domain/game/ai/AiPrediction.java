@@ -1,4 +1,4 @@
-package ge.ai.domino.domain.game;
+package ge.ai.domino.domain.game.ai;
 
 import ge.ai.domino.domain.move.Move;
 

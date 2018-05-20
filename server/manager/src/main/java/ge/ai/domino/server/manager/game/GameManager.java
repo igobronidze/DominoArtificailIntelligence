@@ -56,7 +56,7 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId, true);
         Move move = getMove(left, right, MoveDirection.LEFT);
         Round newRound = addForMeProcessor.move(round, move, false);
-        OpponentTilesValidator.validateOpponentTiles(round, 0, "addTileForMe");
+        newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, 0, "addTileForMe"));
         CachedGames.addRound(gameId, newRound);
         if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() == 1) {
             CachedGames.addMove(gameId, MoveHelper.getAddInitialTileForMeMove(move));
@@ -71,7 +71,7 @@ public class GameManager {
         CachedGames.addOpponentPlay(gameId, new OpponentPlay(0, gameId, ProjectVersionUtil.getVersion(), MoveType.ADD_FOR_OPPONENT,
                 new Tile(0, 0), getOpponentTilesWrapper(round.getOpponentTiles()), new ArrayList<>(GameOperations.getPossiblePlayNumbers(round.getTableInfo()))));
         Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT), false);
-        OpponentTilesValidator.validateOpponentTiles(round, round.getTableInfo().getTilesFromBazaar(), "addTileForOpponent");
+        newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, round.getTableInfo().getTilesFromBazaar(), "addTileForOpponent"));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, round.getTableInfo().getRoundBlockingInfo().isOmitOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove());
         return newRound;
@@ -83,7 +83,7 @@ public class GameManager {
         MoveValidator.validateMove(round, move);
         round.setAiPredictions(null);
         Round newRound = playForMeProcessor.move(round, move, false);
-        OpponentTilesValidator.validateOpponentTiles(round, 0, "playForMe" + move);
+        newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, 0, "playForMe" + move));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move));
         return newRound;
@@ -96,7 +96,7 @@ public class GameManager {
         CachedGames.addOpponentPlay(gameId, new OpponentPlay(0, gameId, ProjectVersionUtil.getVersion(), MoveType.PLAY_FOR_OPPONENT,
                 new Tile(move.getLeft(), move.getRight()), getOpponentTilesWrapper(round.getOpponentTiles()), new ArrayList<>()));
         Round newRound = playForOpponentProcessor.move(round, move, false);
-        OpponentTilesValidator.validateOpponentTiles(round, 0, "playForOpponent " + move);
+        newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, 0, "playForOpponent " + move));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForOpponentMove(move));
         return newRound;

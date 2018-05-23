@@ -12,6 +12,8 @@ import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.server.caching.game.CachedGames;
+import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.server.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.InitialUtil;
 import ge.ai.domino.server.manager.game.helper.MoveHelper;
@@ -86,6 +88,9 @@ public class GameManager {
         newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, 0, "playForMe" + move));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move));
+
+        changeCachedNodeRound(gameId, move);
+
         return newRound;
     }
 
@@ -132,5 +137,17 @@ public class GameManager {
             opponentTilesWrapper.getOpponentTiles().add(new OpponentTile(entry.getKey().getLeft(), entry.getKey().getRight(), entry.getValue()));
         }
         return opponentTilesWrapper;
+    }
+
+    private void changeCachedNodeRound(long gameId, Move move) {
+        NodeRound nodeRound = CachedMinMax.getNodeRound(gameId);
+        if (nodeRound != null) {
+            for (NodeRound child : nodeRound.getChildren()) {
+                if (Move.equals(move, child.getLastPlayedMove())) {
+                    CachedMinMax.setLastNodeRound(gameId, child);
+                    break;
+                }
+            }
+        }
     }
 }

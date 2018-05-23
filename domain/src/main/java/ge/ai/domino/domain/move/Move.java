@@ -1,5 +1,7 @@
 package ge.ai.domino.domain.move;
 
+import ge.ai.domino.domain.played.PlayedMove;
+
 public class Move {
 
     private final int left;
@@ -39,12 +41,20 @@ public class Move {
     public int hashCode() {
         int result = left;
         result = 31 * result + right;
-        result = 31 * result + direction.hashCode();
+        if (direction != null) {
+            result = 31 * result + direction.hashCode();
+        }
         return result;
     }
 
     @Override
     public String toString() {
         return left + "-" + right + " " + direction;
+    }
+
+    public static boolean equals(Move move, PlayedMove playedMove) {
+        return move.getLeft() == playedMove.getLeft()
+                && move.getRight() == playedMove.getRight()
+                && move.getDirection() == playedMove.getDirection();
     }
 }

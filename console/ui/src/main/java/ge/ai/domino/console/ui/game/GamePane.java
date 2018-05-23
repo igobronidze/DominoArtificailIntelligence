@@ -241,6 +241,7 @@ public class GamePane extends BorderPane {
 		});
 		TCHButton noButton = new TCHButton(Messages.get("no"));
 		noButton.setOnAction(event -> {
+			AppController.round = null;
 			controlPanel.getRoot().setCenter(new GamePropertiesPane(controlPanel));
 			stage.close();
 		});

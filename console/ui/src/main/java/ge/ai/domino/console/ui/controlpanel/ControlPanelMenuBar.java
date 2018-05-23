@@ -140,6 +140,7 @@ public class ControlPanelMenuBar extends MenuBar {
                 new SaveGameWindow() {
                     @Override
                     public void onSave() {
+                        AppController.round = null;
                         controlPanel.getStage().close();
                     }
 

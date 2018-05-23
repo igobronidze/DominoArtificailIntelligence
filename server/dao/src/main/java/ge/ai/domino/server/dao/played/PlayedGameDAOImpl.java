@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 public class PlayedGameDAOImpl implements PlayedGameDAO {
 
@@ -98,7 +99,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 Date dateFromDB = rs.getDate("date");
                 Time timeFromDB = rs.getTime("time");
                 if (dateFromDB != null && timeFromDB != null) {
-                    game.setEndDate(new java.util.Date(dateFromDB.getTime() + timeFromDB.getTime()));
+                    TimeZone tz = TimeZone.getDefault();
+                    game.setEndDate(new java.util.Date(dateFromDB.getTime() + timeFromDB.getTime() + tz.getOffset(new java.util.Date().getTime())));
                 }
                 game.setMyPoint(rs.getInt("my_point"));
                 game.setOpponentPoint(rs.getInt("opponent_point"));
@@ -218,7 +220,6 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                     sb.append("GROUP BY point_for_win");
                 }
             }
-            sb.append(" ORDER BY version DESC;");
             pstmt = DatabaseUtil.getConnection().prepareStatement(sb.toString());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {

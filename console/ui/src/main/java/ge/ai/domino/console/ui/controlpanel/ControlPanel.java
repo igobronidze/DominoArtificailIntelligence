@@ -31,6 +31,7 @@ public class ControlPanel extends Application {
                 new SaveGameWindow() {
                     @Override
                     public void onSave() {
+                        AppController.round = null;
                     }
 
                     @Override

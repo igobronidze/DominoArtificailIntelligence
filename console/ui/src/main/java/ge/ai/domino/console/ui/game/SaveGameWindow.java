@@ -35,7 +35,6 @@ public abstract class SaveGameWindow extends Stage {
             saveButton.setOnAction(event -> {
                 playedGameService.finishGame(AppController.round.getGameInfo().getGameId(), saveGameCheckBox.isSelected(), saveOpponentPlaysCheckBox.isSelected());
                 onSave();
-                AppController.round = null;
                 this.close();
             });
             TCHButton cancelButton = new TCHButton(Messages.get("cancel"));

@@ -73,6 +73,6 @@ public class GamePropertiesPane extends VBox {
                 }
             }
         });
-        this.getChildren().addAll(websiteFieldLabel, nameFieldLabel, pointFieldLabel, startButton);
+        this.getChildren().addAll(nameFieldLabel, websiteFieldLabel, pointFieldLabel, startButton);
     }
 }

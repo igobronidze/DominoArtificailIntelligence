@@ -75,7 +75,16 @@ public class MinMax implements AiSolver {
 	public AiPredictionsWrapper solve(Round round) throws DAIException {
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
-		return minMax(nodeRound);
+		AiPredictionsWrapper aiPredictionsWrapper = minMax(nodeRound);
+		CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound);
+		return aiPredictionsWrapper;
+	}
+
+	public void minMaxForCachedNodeRound(Round round) throws DAIException {
+		NodeRound nodeRound = new NodeRound();
+		nodeRound.setRound(round);
+		nodeRound.setHeuristic(getHeuristicValue(nodeRound, 2));   // height -1
+		CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound);
 	}
 
 	private AiPredictionsWrapper minMax(NodeRound nodeRound) throws DAIException {

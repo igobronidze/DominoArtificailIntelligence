@@ -5,6 +5,8 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
+import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
@@ -40,6 +42,10 @@ public class PlayForMeProcessor extends MoveProcessor {
 
 		if (round.getMyTiles().size() == 0) {
 			round = GameOperations.finishedLastAndGetNewRound(round, true, GameOperations.countLeftTiles(round, false, virtual), virtual);
+		}
+
+		if (CachedMinMax.getNodeRound(gameId) == null && round.getTableInfo().getOpponentTilesCount() == 7) {
+//			new MinMax().minMaxForCachedNodeRound(round); TODO
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Played tile for me, gameId[" + gameId + "]", virtual);

@@ -5,6 +5,7 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
+import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
@@ -54,12 +55,12 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		round.getGameInfo().setOpponentPoint(round.getGameInfo().getOpponentPoint() + GameOperations.countScore(round));
 		round.getTableInfo().setMyMove(true);
 
-
 		if (round.getTableInfo().getOpponentTilesCount() == 0) {
 			round = GameOperations.finishedLastAndGetNewRound(round, false, GameOperations.countLeftTiles(round, true, virtual), virtual);
 		}
 
 		if (!virtual) {
+//			new MinMaxPredictor().predict(round, move);  TODO
 			round.setAiPredictions(new MinMax().solve(round));
 		}
 

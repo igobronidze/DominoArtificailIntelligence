@@ -41,6 +41,7 @@ public class AddForMeProcessor extends MoveProcessor {
 				round = GameOperations.blockRound(round, virtual ? GameOperations.countLeftTiles(round, false, true) :  CachedGames.getOpponentLeftTilesCount(gameId), virtual);
 			} else {
 				round.getTableInfo().setMyMove(false);
+//				new MinMax().minMaxForCachedNodeRound(round); TODO
 			}
 			GameLoggingProcessor.logRoundFullInfo(round, virtual);
 			return round;

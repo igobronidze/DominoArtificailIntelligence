@@ -3,12 +3,16 @@ package ge.ai.domino.console.ui.controlpanel;
 import ge.ai.domino.console.ui.game.SaveGameWindow;
 import ge.ai.domino.console.ui.gameproperties.GamePropertiesPane;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.service.function.FunctionService;
+import ge.ai.domino.service.function.FunctionServiceImpl;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class ControlPanel extends Application {
+
+    private FunctionService functionService = new FunctionServiceImpl();
 
     private Stage stage;
 
@@ -18,6 +22,8 @@ public class ControlPanel extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        functionService.initFunctions();
+
         stage = primaryStage;
         primaryStage.setTitle(Messages.get("Domino"));
         root = new BorderPane();

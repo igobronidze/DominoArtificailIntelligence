@@ -19,6 +19,8 @@ public class PlayForMeProcessor extends MoveProcessor {
 		GameLoggingProcessor.logInfoAboutMove(virtual ? "<<<<<<<Virtual Mode>>>>>>>" : "<<<<<<<Real Mode<<<<<<<", virtual);
 		MoveDirection direction = move.getDirection();
 
+		boolean firstMove = round.getTableInfo().getLeft() == null;
+
 		round.getTableInfo().getRoundBlockingInfo().setOmitMe(false);
 		if (move.getRight() != move.getLeft()) {
 			round.getTableInfo().getRoundBlockingInfo().setLastNotTwinPlayedTileMy(true);
@@ -44,8 +46,8 @@ public class PlayForMeProcessor extends MoveProcessor {
 			round = GameOperations.finishedLastAndGetNewRound(round, true, GameOperations.countLeftTiles(round, false, virtual), virtual);
 		}
 
-		if (CachedMinMax.getNodeRound(gameId) == null && round.getTableInfo().getOpponentTilesCount() == 7) {
-//			new MinMax().minMaxForCachedNodeRound(round); TODO
+		if (firstMove) {
+			new MinMax().minMaxForCachedNodeRound(round);
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Played tile for me, gameId[" + gameId + "]", virtual);

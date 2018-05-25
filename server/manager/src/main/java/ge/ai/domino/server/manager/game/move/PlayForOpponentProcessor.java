@@ -22,6 +22,8 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		} else {
 			GameLoggingProcessor.logInfoAboutMove("<<<<<<<Real Mode<<<<<<<", false);
 		}
+		boolean firstMove = round.getTableInfo().getLeft() == null;
+
 		MoveDirection direction = move.getDirection();
 		round.getTableInfo().getRoundBlockingInfo().setOmitOpponent(false);
 		if (move.getRight() != move.getLeft()) {
@@ -60,7 +62,9 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		}
 
 		if (!virtual) {
-//			new MinMaxPredictor().predict(round, move);  TODO
+			if (!firstMove) { // is not first move
+				new MinMaxPredictor().predict(round, move);
+			}
 			round.setAiPredictions(new MinMax().solve(round));
 		}
 

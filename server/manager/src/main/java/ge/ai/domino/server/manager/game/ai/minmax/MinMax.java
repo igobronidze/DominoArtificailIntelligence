@@ -73,6 +73,9 @@ public class MinMax implements AiSolver {
 
 	@Override
 	public AiPredictionsWrapper solve(Round round) throws DAIException {
+		this.gameId = round.getGameInfo().getGameId();
+		treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
+
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
 		AiPredictionsWrapper aiPredictionsWrapper = minMax(nodeRound);
@@ -81,6 +84,9 @@ public class MinMax implements AiSolver {
 	}
 
 	public void minMaxForCachedNodeRound(Round round) throws DAIException {
+		this.gameId = round.getGameInfo().getGameId();
+		treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
+
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
 		nodeRound.setHeuristic(getHeuristicValue(nodeRound, 2));   // height -1
@@ -89,8 +95,6 @@ public class MinMax implements AiSolver {
 
 	private AiPredictionsWrapper minMax(NodeRound nodeRound) throws DAIException {
 		long ms = System.currentTimeMillis();
-		this.gameId = nodeRound.getRound().getGameInfo().getGameId();
-		treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
 		List<Move> moves = getPossibleMoves(nodeRound.getRound());
 		AiPrediction bestAiPrediction = null;
 		NodeRound bestNodeRound = null;

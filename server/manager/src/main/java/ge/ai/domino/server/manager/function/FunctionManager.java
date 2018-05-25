@@ -4,7 +4,10 @@ import ge.ai.domino.domain.function.FunctionArgsAndValues;
 import ge.ai.domino.server.caching.function.CachedFunctions;
 import ge.ai.domino.server.dao.function.FunctionDAO;
 import ge.ai.domino.server.dao.function.FunctionDAOImpl;
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionLagrangeForm;
+import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
+
+import java.util.Collections;
 
 public class FunctionManager {
 
@@ -21,7 +24,10 @@ public class FunctionManager {
 		return CachedFunctions.getOpponentPlayHeuristicsDiffsFunction().value(x);
 	}
 
-	private PolynomialFunctionLagrangeForm getPolynomialFunctionLagrangeForm(FunctionArgsAndValues functionArgsAndValues) {
+	private PolynomialSplineFunction getPolynomialFunctionLagrangeForm(FunctionArgsAndValues functionArgsAndValues) {
+		Collections.reverse(functionArgsAndValues.getArgs());
+		Collections.reverse(functionArgsAndValues.getValues());
+
 		double [] args = new double[functionArgsAndValues.getArgs().size()];
 		for (int i = 0; i < functionArgsAndValues.getArgs().size(); i++) {
 			args[i] = functionArgsAndValues.getArgs().get(i);
@@ -30,6 +36,8 @@ public class FunctionManager {
 		for (int i = 0; i < functionArgsAndValues.getValues().size(); i++) {
 			values[i] = functionArgsAndValues.getValues().get(i);
 		}
-		return new PolynomialFunctionLagrangeForm(args, values);
+
+		LinearInterpolator linearInterpolator = new LinearInterpolator();
+		return linearInterpolator.interpolate(args, values);
 	}
 }

@@ -3,8 +3,11 @@ package ge.ai.domino.console.ui.controlpanel;
 import ge.ai.domino.console.ui.game.SaveGameWindow;
 import ge.ai.domino.console.ui.gameproperties.GamePropertiesPane;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.domain.initial.InitialData;
 import ge.ai.domino.service.function.FunctionService;
 import ge.ai.domino.service.function.FunctionServiceImpl;
+import ge.ai.domino.service.initial.InitialDataService;
+import ge.ai.domino.service.initial.InitialDataServiceImpl;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -14,18 +17,23 @@ public class ControlPanel extends Application {
 
     private FunctionService functionService = new FunctionServiceImpl();
 
+    private InitialDataService initialDataService = new InitialDataServiceImpl();
+
     private Stage stage;
 
     private BorderPane root;
 
     private Scene scene;
 
+    private InitialData initialData;
+
     @Override
     public void start(Stage primaryStage) {
         functionService.initFunctions();
+        this.initialData = initialDataService.getInitialData();
 
         stage = primaryStage;
-        primaryStage.setTitle(Messages.get("Domino"));
+        primaryStage.setTitle(Messages.get("Domino") + " " + initialData.getVersion());
         root = new BorderPane();
         initComponents();
         scene = new Scene(root);

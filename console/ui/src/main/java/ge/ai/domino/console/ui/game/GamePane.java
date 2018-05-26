@@ -11,6 +11,7 @@ import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.TableInfo;
@@ -46,6 +47,8 @@ public class GamePane extends BorderPane {
 
 	private static final int IMAGE_HEIGHT = 110;
 
+	private final GameService gameService = new GameServiceImpl();
+
 	private final ControlPanel controlPanel;
 
 	private ImageView upArrow;
@@ -70,10 +73,11 @@ public class GamePane extends BorderPane {
 
 	private Integer firstPressedNumber;
 
-	private final GameService gameService = new GameServiceImpl();
+	private GameProperties gameProperties;
 
-	public GamePane(ControlPanel controlPanel) {
+	public GamePane(ControlPanel controlPanel, GameProperties gameProperties) {
 		this.controlPanel = controlPanel;
+		this.gameProperties = gameProperties;
 		reload();
 	}
 
@@ -104,11 +108,13 @@ public class GamePane extends BorderPane {
 		Label myPointsLabel = new TCHLabel(Messages.get("me") + " - " + gameInfo.getMyPoint() + " (" + AppController.round.getMyTiles().size() + ")");
 		Label opponentPointLabel = new TCHLabel(Messages.get("opponent") + " - " + gameInfo.getOpponentPoint() + " (" + (int) tableInfo.getOpponentTilesCount() + ")");
 		Label bazaarCountLabel = new TCHLabel(Messages.get("bazaar") + " (" + (int) tableInfo.getBazaarTilesCount() + ")");
+		Label opponentLabel = new TCHLabel(Messages.get("opponent") + " - " + gameProperties.getOpponentName() + "(" + gameProperties.getWebsite() + ")");
+		Label pointWorWinLabel = new TCHLabel(Messages.get("pointForWin") + " - " + gameProperties.getPointsForWin());
 		ImageView undoImage = new ImageView(ImageFactory.getImage("undo.png"));
 		undoImage.setOnMouseClicked(event -> onUndo());
 		FlowPane flowPane = new FlowPane(30, 10);
 		flowPane.setPadding(new Insets(0, 4, 8, 4));
-		flowPane.getChildren().addAll(myPointsLabel, opponentPointLabel, bazaarCountLabel, undoImage);
+		flowPane.getChildren().addAll(myPointsLabel, opponentPointLabel, bazaarCountLabel, opponentLabel, pointWorWinLabel, undoImage);
 		this.setTop(flowPane);
 	}
 

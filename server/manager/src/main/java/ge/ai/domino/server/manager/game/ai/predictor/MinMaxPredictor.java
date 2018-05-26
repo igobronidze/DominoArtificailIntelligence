@@ -10,11 +10,14 @@ import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.server.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MinMaxPredictor implements OpponentTilesPredictor {
+
+	private static final Logger logger = Logger.getLogger(MinMaxPredictor.class);
 
 	private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
@@ -25,6 +28,10 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 	@Override
 	public void predict(Round round, Move move) {
 		NodeRound nodeRound = CachedMinMax.getNodeRound(round.getGameInfo().getGameId());
+		if (nodeRound == null) {
+			logger.warn("Last node round is null");
+			return;
+		}
 
 		double playedHeuristic = 0.0;
 		for (NodeRound child : nodeRound.getChildren()) {

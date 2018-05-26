@@ -2,7 +2,9 @@ package ge.ai.domino.server.dao.function;
 
 import ge.ai.domino.domain.function.FunctionArgsAndValues;
 
+import java.util.Map;
+
 public interface FunctionDAO {
 
-	FunctionArgsAndValues getFunctionArgsAndValues(String name);
+	Map<String, FunctionArgsAndValues> getFunctionArgsAndValues(String namePrefix);
 }

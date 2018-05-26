@@ -6,4 +6,6 @@ import ge.ai.domino.domain.move.Move;
 public interface OpponentTilesPredictor {
 
 	void predict(Round round, Move move);
+
+	boolean usePredictor();
 }

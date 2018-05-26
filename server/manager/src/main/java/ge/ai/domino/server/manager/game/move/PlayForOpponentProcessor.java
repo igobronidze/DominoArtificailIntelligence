@@ -5,11 +5,12 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
+import ge.ai.domino.server.manager.game.ai.predictor.OpponentTilesPredictor;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
-import ge.ai.domino.server.manager.game.ai.minmax.MinMax;
 
 import java.util.Map;
 
@@ -62,8 +63,11 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		}
 
 		if (!virtual) {
-			if (!firstMove) { // is not first move
-				new MinMaxPredictor().predict(round, move);
+			OpponentTilesPredictor minMaxPredictor = new MinMaxPredictor();
+			if (minMaxPredictor.usePredictor()) {
+				if (!firstMove) { // is not first move
+					minMaxPredictor.predict(round, move);
+				}
 			}
 			round.setAiPredictions(new MinMax().solve(round));
 		}

@@ -14,6 +14,7 @@ import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.server.manager.game.ai.minmax.NodeRound;
+import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.InitialUtil;
 import ge.ai.domino.server.manager.game.helper.MoveHelper;
@@ -89,7 +90,9 @@ public class GameManager {
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move));
 
-        changeCachedNodeRound(gameId, move);
+        if (new MinMaxPredictor().usePredictor()) {
+            changeCachedNodeRound(gameId, move);
+        }
 
         return newRound;
     }

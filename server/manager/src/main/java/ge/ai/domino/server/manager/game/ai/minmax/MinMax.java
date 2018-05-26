@@ -16,6 +16,7 @@ import ge.ai.domino.server.manager.game.ai.AiSolver;
 import ge.ai.domino.server.manager.game.ai.heuristic.ComplexRoundHeuristic;
 import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristic;
 import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristicHelper;
+import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.server.manager.game.helper.MoveHelper;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
@@ -79,7 +80,9 @@ public class MinMax implements AiSolver {
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
 		AiPredictionsWrapper aiPredictionsWrapper = minMax(nodeRound);
-		CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound);
+		if (new MinMaxPredictor().usePredictor()) {
+			CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound);
+		}
 		return aiPredictionsWrapper;
 	}
 

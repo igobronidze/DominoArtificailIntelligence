@@ -8,6 +8,7 @@ import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.ai.AiSolver;
+import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
@@ -41,7 +42,9 @@ public class AddForMeProcessor extends MoveProcessor {
 				round = GameOperations.blockRound(round, virtual ? GameOperations.countLeftTiles(round, false, true) :  CachedGames.getOpponentLeftTilesCount(gameId), virtual);
 			} else {
 				round.getTableInfo().setMyMove(false);
-				new MinMax().minMaxForCachedNodeRound(round);
+				if (new MinMaxPredictor().usePredictor()) {
+					new MinMax().minMaxForCachedNodeRound(round);
+				}
 			}
 			GameLoggingProcessor.logRoundFullInfo(round, virtual);
 			return round;

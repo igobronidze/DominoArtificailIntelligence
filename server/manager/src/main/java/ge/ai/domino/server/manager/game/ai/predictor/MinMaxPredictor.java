@@ -4,15 +4,21 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveType;
+import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.manager.function.FunctionManager;
 import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.server.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
+import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MinMaxPredictor implements OpponentTilesPredictor {
+
+	private final SystemParameterManager systemParameterManager = new SystemParameterManager();
+
+	private final SysParam useMinMaxPredictor = new SysParam("useMinMaxPredictor", "false");
 
 	private FunctionManager functionManager = new FunctionManager();
 
@@ -48,5 +54,10 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 
 		}
 		ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTiles, probForAdd);
+	}
+
+	@Override
+	public boolean usePredictor() {
+		return systemParameterManager.getBooleanParameterValue(useMinMaxPredictor);
 	}
 }

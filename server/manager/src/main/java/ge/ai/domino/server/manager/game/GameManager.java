@@ -50,6 +50,8 @@ public class GameManager {
         CachedGames.addGame(game);
         CachedGames.addMove(game.getId(), MoveHelper.getStartNewRoundMove());
         logger.info("------------Started new game[" + game.getId() + "]------------");
+        logger.info("Opponent Name: " + game.getProperties().getOpponentName() + "     |     " + "WebSite: " + game.getProperties().getWebsite() + "     |     " +
+        "Point for win: " + game.getProperties().getPointsForWin());
         Round newRound = CachedGames.getCurrentRound(game.getId(), false);
         GameLoggingProcessor.logRoundFullInfo(newRound, false);
         return newRound;

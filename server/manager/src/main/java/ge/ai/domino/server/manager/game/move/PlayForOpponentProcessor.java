@@ -60,16 +60,14 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 
 		if (round.getTableInfo().getOpponentTilesCount() == 0) {
 			round = GameOperations.finishedLastAndGetNewRound(round, false, GameOperations.countLeftTiles(round, true, virtual), virtual);
-		}
-
-		if (!virtual) {
-			OpponentTilesPredictor minMaxPredictor = new MinMaxPredictor();
-			if (minMaxPredictor.usePredictor()) {
-				if (!firstMove) { // is not first move
-					minMaxPredictor.predict(round, move);
-				}
-			}
-			round.setAiPredictions(new MinMax().solve(round));
+		} else if (!virtual) {
+            OpponentTilesPredictor minMaxPredictor = new MinMaxPredictor();
+            if (minMaxPredictor.usePredictor()) {
+                if (!firstMove) { // is not first move
+                    minMaxPredictor.predict(round, move);
+                }
+            }
+            round.setAiPredictions(new MinMax().solve(round));
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Played tile for opponent, gameId[" + gameId + "]", virtual);

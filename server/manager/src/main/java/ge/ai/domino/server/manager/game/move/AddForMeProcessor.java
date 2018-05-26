@@ -46,6 +46,7 @@ public class AddForMeProcessor extends MoveProcessor {
 					new MinMax().minMaxForCachedNodeRound(round);
 				}
 			}
+			GameLoggingProcessor.logInfoAboutMove("I omitted, gameId[" + gameId + "]", virtual);
 			GameLoggingProcessor.logRoundFullInfo(round, virtual);
 			return round;
 		}

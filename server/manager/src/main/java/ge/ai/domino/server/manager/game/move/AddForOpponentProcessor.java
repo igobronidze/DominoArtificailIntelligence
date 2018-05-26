@@ -43,6 +43,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 				}
 
 			}
+			GameLoggingProcessor.logInfoAboutMove("Opponent omitted, gameId[" + gameId + "]", virtual);
 			GameLoggingProcessor.logRoundFullInfo(round, virtual);
 			return round;
 		} else {
@@ -56,7 +57,6 @@ public class AddForOpponentProcessor extends MoveProcessor {
 
 			GameLoggingProcessor.logInfoAboutMove("Added tile for opponent, gameId[" + gameId + "]", virtual);
 			GameLoggingProcessor.logRoundFullInfo(round, virtual);
-
 			return round;
 		}
 	}

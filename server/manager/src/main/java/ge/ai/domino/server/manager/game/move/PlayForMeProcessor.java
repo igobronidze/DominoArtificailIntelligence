@@ -44,9 +44,7 @@ public class PlayForMeProcessor extends MoveProcessor {
 
 		if (round.getMyTiles().size() == 0) {
 			round = GameOperations.finishedLastAndGetNewRound(round, true, GameOperations.countLeftTiles(round, false, virtual), virtual);
-		}
-
-		if (new MinMaxPredictor().usePredictor()) {
+		} else if (new MinMaxPredictor().usePredictor()) {
 			if (firstMove) {
 				new MinMax().minMaxForCachedNodeRound(round);
 			}

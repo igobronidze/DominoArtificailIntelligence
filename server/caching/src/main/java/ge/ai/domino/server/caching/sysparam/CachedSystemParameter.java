@@ -47,4 +47,11 @@ public class CachedSystemParameter {
             logger.error("Can't cached system parameters", ex);
         }
     }
+
+    public static void changeParameterOnlyInCache(String key, String value) {
+        if (cachedParameters == null) {
+            reloadParams();
+        }
+        cachedParameters.put(key, value);
+    }
 }

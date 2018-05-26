@@ -24,6 +24,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 			GameLoggingProcessor.logInfoAboutMove("<<<<<<<Real Mode<<<<<<<", false);
 		}
 		boolean firstMove = round.getTableInfo().getLeft() == null;
+		boolean playedFromBazaar = false;
 
 		MoveDirection direction = move.getDirection();
 		round.getTableInfo().getRoundBlockingInfo().setOmitOpponent(false);
@@ -46,6 +47,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 
 		if (round.getTableInfo().getTilesFromBazaar() > 0) {
 			ProbabilitiesDistributor.updateProbabilitiesForLastPickedTiles(round, true, virtual);
+			playedFromBazaar = true;
 		} else {
 			if (prob != 1.0) {
 				ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTiles, prob - 1);
@@ -62,10 +64,8 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 			round = GameOperations.finishedLastAndGetNewRound(round, false, GameOperations.countLeftTiles(round, true, virtual), virtual);
 		} else if (!virtual) {
             OpponentTilesPredictor minMaxPredictor = new MinMaxPredictor();
-            if (minMaxPredictor.usePredictor()) {
-                if (!firstMove) { // is not first move
-                    minMaxPredictor.predict(round, move);
-                }
+            if (!playedFromBazaar && minMaxPredictor.usePredictor() && !firstMove) {
+				minMaxPredictor.predict(round, move);
             }
             round.setAiPredictions(new MinMax().solve(round));
 		}

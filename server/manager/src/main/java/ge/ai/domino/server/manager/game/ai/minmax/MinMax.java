@@ -129,7 +129,7 @@ public class MinMax implements AiSolver {
 				bestNodeRound = nextNodeRound;
 				bestNodeRound.setLastPlayedProbability(1.0);
 			}
-			logger.info("PlayedMove- " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + heuristic);
+			logger.info("PlayedMove: " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + heuristic);
 		}
 		double tookMs = System.currentTimeMillis() - ms;
 		logger.info("MinMax took " + tookMs + "ms, recursion count " + recursionCount + ", average " + (tookMs / recursionCount));

@@ -36,4 +36,8 @@ public class SystemParameterManager {
         }
         return StringUtil.getIntegerListFromString(text);
     }
+
+    public void changeParameterOnlyInCache(String key, String value) {
+        CachedSystemParameter.changeParameterOnlyInCache(key, value);
+    }
 }

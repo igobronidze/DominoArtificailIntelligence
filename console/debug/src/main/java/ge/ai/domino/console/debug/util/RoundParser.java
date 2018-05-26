@@ -91,10 +91,18 @@ public class RoundParser {
         TableInfo tableInfo = new TableInfo();
 
         String[] properties0 = lines[0].split(Pattern.quote(GameLoggingProcessor.DELIMITER));
-        tableInfo.setLeft(new PlayedTile(Integer.parseInt(properties0[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
-        tableInfo.setRight(new PlayedTile(Integer.parseInt(properties0[1].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
-        tableInfo.setTop(new PlayedTile(Integer.parseInt(properties0[2].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
-        tableInfo.setBottom(new PlayedTile(Integer.parseInt(properties0[3].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
+        try {
+            tableInfo.setLeft(new PlayedTile(Integer.parseInt(properties0[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
+        } catch (NumberFormatException ignore) {}
+        try {
+            tableInfo.setRight(new PlayedTile(Integer.parseInt(properties0[1].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
+        } catch (NumberFormatException ignore) {}
+        try {
+            tableInfo.setTop(new PlayedTile(Integer.parseInt(properties0[2].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
+        } catch (NumberFormatException ignore) {}
+        try {
+            tableInfo.setBottom(new PlayedTile(Integer.parseInt(properties0[3].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
+        } catch (NumberFormatException ignore) {}
 
         String[] properties1 = lines[1].split(Pattern.quote(GameLoggingProcessor.DELIMITER));
         tableInfo.setMyMove(Boolean.valueOf(properties1[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));

@@ -6,6 +6,7 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.server.manager.game.ai.minmax.MinMaxDFS;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
@@ -46,7 +47,7 @@ public class PlayForMeProcessor extends MoveProcessor {
 			round = GameOperations.finishedLastAndGetNewRound(round, true, GameOperations.countLeftTiles(round, false, virtual), virtual);
 		} else if (new MinMaxPredictor().usePredictor()) {
 			if (firstMove && !virtual) {
-				new MinMaxDFS().minMaxForCachedNodeRound(round);
+				MinMaxFactory.getMinMax().minMaxForCachedNodeRound(round);
 			}
 		}
 

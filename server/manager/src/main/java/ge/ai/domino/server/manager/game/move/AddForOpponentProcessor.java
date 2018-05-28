@@ -5,6 +5,7 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.server.caching.game.CachedGames;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
@@ -39,7 +40,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 					if (tableInfo.getTilesFromBazaar() > 0) {
 						ProbabilitiesDistributor.updateProbabilitiesForLastPickedTiles(round, false, false);
 					}
-					round.setAiPredictions(new MinMaxDFS().solve(round));
+					round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
 				}
 
 			}

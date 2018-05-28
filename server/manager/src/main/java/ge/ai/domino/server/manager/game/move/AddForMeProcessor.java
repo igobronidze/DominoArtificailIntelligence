@@ -8,6 +8,7 @@ import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.ai.minmax.MinMaxDFS;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
@@ -42,7 +43,7 @@ public class AddForMeProcessor extends MoveProcessor {
 			} else {
 				round.getTableInfo().setMyMove(false);
 				if (new MinMaxPredictor().usePredictor() && !virtual) {
-					new MinMaxDFS().minMaxForCachedNodeRound(round);
+					MinMaxFactory.getMinMax().minMaxForCachedNodeRound(round);
 				}
 			}
 			GameLoggingProcessor.logInfoAboutMove("I omitted, gameId[" + gameId + "]", virtual);
@@ -67,11 +68,11 @@ public class AddForMeProcessor extends MoveProcessor {
 		    if (!virtual) {
                 round.getTableInfo().setMyMove(!CachedGames.isOpponentNextRoundBeginner(gameId));
                 if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove()) {
-					round.setAiPredictions(new MinMaxDFS().solve(round));
+					round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
                 }
             }
 		} else if (round.getTableInfo().getLeft() != null && !virtual) {
-			round.setAiPredictions(new MinMaxDFS().solve(round));
+			round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Added tile for me, gameId[" + gameId + "]", virtual);

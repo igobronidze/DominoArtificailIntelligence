@@ -40,15 +40,15 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MinMax implements AiSolver {
+public class MinMaxDFS implements AiSolver {
 
-	private static Logger logger = Logger.getLogger(MinMax.class);
+	private Logger logger = Logger.getLogger(MinMaxDFS.class);
 
 	private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
 	private final RoundHeuristic roundHeuristic = new ComplexRoundHeuristic();
 
-	private static final SysParam checkOpponentProbabilities = new SysParam("checkOpponentProbabilities", "false");
+	private final SysParam checkOpponentProbabilities = new SysParam("checkOpponentProbabilities", "false");
 
 	private final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "8");
 
@@ -132,7 +132,7 @@ public class MinMax implements AiSolver {
 			logger.info("PlayedMove: " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + heuristic);
 		}
 		double tookMs = System.currentTimeMillis() - ms;
-		logger.info("MinMax took " + tookMs + "ms, recursion count " + recursionCount + ", average " + (tookMs / recursionCount));
+		logger.info("MinMaxDFS took " + tookMs + "ms, recursion count " + recursionCount + ", average " + (tookMs / recursionCount));
 		recursionCount = 0;
 		if (aiPredictions.isEmpty() || bestAiPrediction == null) {
 			logger.info("No AIPrediction");

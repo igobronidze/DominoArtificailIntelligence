@@ -1,10 +1,12 @@
 package ge.ai.domino.server.manager.game.ai.minmax;
 
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.played.PlayedMove;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class NodeRound {
 
@@ -14,13 +16,17 @@ public class NodeRound {
 
 	private List<NodeRound> children = new ArrayList<>();
 
+	private NodeRound bazaarNodeRound;
+
 	private int treeHeight;
 
-	private double heuristic;
+	private Double heuristic;
 
 	private PlayedMove lastPlayedMove;
 
 	private double lastPlayedProbability;
+
+	Map<Tile, Double> opponentTilesClone;
 
 	public Round getRound() {
 		return round;
@@ -54,11 +60,11 @@ public class NodeRound {
 		this.treeHeight = treeHeight;
 	}
 
-	public double getHeuristic() {
+	public Double getHeuristic() {
 		return heuristic;
 	}
 
-	public void setHeuristic(double heuristic) {
+	public void setHeuristic(Double heuristic) {
 		this.heuristic = heuristic;
 	}
 
@@ -76,5 +82,21 @@ public class NodeRound {
 
 	public void setLastPlayedProbability(double lastPlayedProbability) {
 		this.lastPlayedProbability = lastPlayedProbability;
+	}
+
+	public NodeRound getBazaarNodeRound() {
+		return bazaarNodeRound;
+	}
+
+	public void setBazaarNodeRound(NodeRound bazaarNodeRound) {
+		this.bazaarNodeRound = bazaarNodeRound;
+	}
+
+	public Map<Tile, Double> getOpponentTilesClone() {
+		return opponentTilesClone;
+	}
+
+	public void setOpponentTilesClone(Map<Tile, Double> opponentTilesClone) {
+		this.opponentTilesClone = opponentTilesClone;
 	}
 }

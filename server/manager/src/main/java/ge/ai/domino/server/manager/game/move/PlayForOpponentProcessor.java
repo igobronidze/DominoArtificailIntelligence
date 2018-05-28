@@ -5,7 +5,7 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
-import ge.ai.domino.server.manager.game.ai.minmax.MinMax;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMaxDFS;
 import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.ai.predictor.OpponentTilesPredictor;
 import ge.ai.domino.server.manager.game.helper.GameOperations;
@@ -67,7 +67,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
             if (!playedFromBazaar && minMaxPredictor.usePredictor() && !firstMove) {
 				minMaxPredictor.predict(round, move);
             }
-            round.setAiPredictions(new MinMax().solve(round));
+            round.setAiPredictions(new MinMaxDFS().solve(round));
 		}
 
 		GameLoggingProcessor.logInfoAboutMove("Played tile for opponent, gameId[" + gameId + "]", virtual);

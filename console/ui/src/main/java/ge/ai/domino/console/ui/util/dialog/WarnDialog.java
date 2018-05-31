@@ -6,6 +6,8 @@ import javafx.scene.control.Alert;
 
 public class WarnDialog {
 
+    private static final String UNEXPECTED_ERROR_MSG_KEY = "unexpectedErrorOccurred";
+
     public static void showWarnDialog(String textKey) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(Messages.get("warn"));
@@ -16,5 +18,9 @@ public class WarnDialog {
 
     public static void showWarnDialog(DAIException ex) {
         showWarnDialog(ex.getMessageKey());
+    }
+
+    public static void showUnexpectedError() {
+        showWarnDialog(UNEXPECTED_ERROR_MSG_KEY);
     }
 }

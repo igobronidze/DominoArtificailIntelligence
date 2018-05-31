@@ -70,6 +70,8 @@ public class GamePropertiesPane extends VBox {
                     controlPanel.getRoot().setCenter(new GamePane(controlPanel, gameProperties));
                 } catch (DAIException ex) {
                     WarnDialog.showWarnDialog(ex);
+                } catch (Exception ex) {
+                    WarnDialog.showUnexpectedError();
                 }
             }
         });

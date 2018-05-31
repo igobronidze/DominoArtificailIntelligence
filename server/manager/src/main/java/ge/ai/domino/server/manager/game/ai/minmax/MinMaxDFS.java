@@ -25,6 +25,7 @@ import ge.ai.domino.server.manager.game.move.PlayForMeProcessor;
 import ge.ai.domino.server.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.serverutil.CloneUtil;
+import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class MinMaxDFS extends MinMax {
 		nodeRound.setRound(round);
 		AiPredictionsWrapper aiPredictionsWrapper = minMax(nodeRound);
 		if (new MinMaxPredictor().usePredictor()) {
-			CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound);
+			CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, true);
 		}
 		return aiPredictionsWrapper;
 	}
@@ -82,7 +83,7 @@ public class MinMaxDFS extends MinMax {
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
 		nodeRound.setHeuristic(getHeuristicValue(nodeRound, 2));   // height -1
-		CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound);
+		CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, false);
 	}
 
 	@Override
@@ -192,7 +193,7 @@ public class MinMaxDFS extends MinMax {
 					double prob = entry.getValue();
 					if (prob != 1.0) {
 						double probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
-						Move move = new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT);
+						Move move = TileAndMoveHelper.getMove(tile, MoveDirection.LEFT);
 						Round nextRound = addForMeProcessor.move(CloneUtil.getClone(round), move, true);
 						NodeRound nextNodeRound = new NodeRound();
 						nextNodeRound.setRound(nextRound);
@@ -200,7 +201,7 @@ public class MinMaxDFS extends MinMax {
 						nextNodeRound.setParent(nodeRound);
 						nextNodeRound.setTreeHeight(height);
 						nextNodeRound.setLastPlayedProbability(probForPickTile);
-						nodeRound.getChildren().add(nextNodeRound);
+						nodeRound.setBazaarNodeRound(nextNodeRound);
 						validateOpponentTiles(nextNodeRound, "addForMe");
 						heuristic += getHeuristicValue(nextNodeRound, height + 1) * probForPickTile;
 					}
@@ -252,7 +253,7 @@ public class MinMaxDFS extends MinMax {
 				nextNodeRound.setParent(nodeRound);
 				nextNodeRound.setTreeHeight(height);
 				nextNodeRound.setLastPlayedProbability(remainingProbability);
-				nodeRound.getChildren().add(nextNodeRound);
+				nodeRound.setBazaarNodeRound(nextNodeRound);
 				validateOpponentTiles(nextNodeRound, "addForOpponent");
 				heuristic += getHeuristicValue(nextNodeRound, height + 1) * remainingProbability;
 			}

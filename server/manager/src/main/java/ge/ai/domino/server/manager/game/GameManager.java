@@ -27,6 +27,7 @@ import ge.ai.domino.server.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.server.manager.game.validator.MoveValidator;
 import ge.ai.domino.server.manager.game.validator.OpponentTilesValidator;
 import ge.ai.domino.server.manager.util.ProjectVersionUtil;
+import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -144,14 +145,18 @@ public class GameManager {
         return opponentTilesWrapper;
     }
 
-    private void changeCachedNodeRound(long gameId, Move move) {
-        NodeRound nodeRound = CachedMinMax.getNodeRound(gameId);
-        if (nodeRound != null) {
-            for (NodeRound child : nodeRound.getChildren()) {
-                if (Move.equals(move, child.getLastPlayedMove())) {
-                    CachedMinMax.setLastNodeRound(gameId, child);
-                    break;
+    private void changeCachedNodeRound(long gameId, Move move) throws DAIException {
+        if (CachedMinMax.needChange(gameId)) {
+            NodeRound nodeRound = CachedMinMax.getNodeRound(gameId);
+            if (nodeRound != null) {
+                for (NodeRound child : nodeRound.getChildren()) {
+                    if (TileAndMoveHelper.equalWithHash(move, child.getLastPlayedMove(), nodeRound.getRound().getTableInfo())) {
+                        CachedMinMax.setLastNodeRound(gameId, child, false);
+                        return;
+                    }
                 }
+                logger.warn("Can't find node round for change in MinMax cache, move[" + move + "]");
+                throw new DAIException("cantChangeNodeRound");
             }
         }
     }

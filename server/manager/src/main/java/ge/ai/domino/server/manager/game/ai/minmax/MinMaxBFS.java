@@ -25,6 +25,7 @@ import ge.ai.domino.server.manager.game.move.PlayForMeProcessor;
 import ge.ai.domino.server.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.serverutil.CloneUtil;
+import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class MinMaxBFS extends MinMax {
         nodeRound.setRound(round);
         AiPredictionsWrapper aiPredictionsWrapper = minMax(nodeRound);
         if (new MinMaxPredictor().usePredictor()) {
-            CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound);
+            CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, true);
         }
         return aiPredictionsWrapper;
     }
@@ -91,7 +92,7 @@ public class MinMaxBFS extends MinMax {
         nodeRoundsQueue = null;
 
         applyBottomUpMinMax();
-        CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound);
+        CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, false);
     }
 
     @Override
@@ -133,7 +134,7 @@ public class MinMaxBFS extends MinMax {
         List<AiPrediction> aiPredictions = new ArrayList<>();
 
         for (NodeRound nr : nodeRoundsByHeight.get(1)) {
-            Move move = new Move(nr.getLastPlayedMove().getLeft(), nr.getLastPlayedMove().getRight(), nr.getLastPlayedMove().getDirection());
+            Move move = TileAndMoveHelper.getMove(nr.getLastPlayedMove());
             AiPrediction aiPrediction = new AiPrediction();
             aiPrediction.setMove(move);
             aiPrediction.setHeuristicValue(nr.getHeuristic());
@@ -201,7 +202,7 @@ public class MinMaxBFS extends MinMax {
                     double prob = entry.getValue();
                     if (prob != 1.0) {
                         double probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
-                        Move move = new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT);
+                        Move move = TileAndMoveHelper.getMove(tile, MoveDirection.LEFT);
                         Round nextRound = addForMeProcessor.move(CloneUtil.getClone(round), move, true);
                         NodeRound nextNodeRound = new NodeRound();
                         nextNodeRound.setRound(nextRound);
@@ -209,7 +210,7 @@ public class MinMaxBFS extends MinMax {
                         nextNodeRound.setParent(nodeRound);
                         nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
                         nextNodeRound.setLastPlayedProbability(probForPickTile);
-                        nodeRound.getChildren().add(nextNodeRound);
+                        nodeRound.setBazaarNodeRound(nextNodeRound);
                         validateOpponentTiles(nextNodeRound, "addForMe");
                         nodeRoundsQueue.add(nextNodeRound);
                     }
@@ -248,13 +249,17 @@ public class MinMaxBFS extends MinMax {
                 if (!isLeafNodeRound(nodeRound)) {
                     if (nodeRound.getRound().getTableInfo().isMyMove()) {
                         NodeRound bestNodeRound = null;
-                        for (NodeRound child : nodeRound.getChildren()) {
-                            if (bestNodeRound == null || child.getHeuristic() > bestNodeRound.getHeuristic()) {
-                                if (bestNodeRound != null) {
-                                    bestNodeRound.setLastPlayedProbability(0.0);
+                        if (nodeRound.getChildren().isEmpty()) {
+                            bestNodeRound = nodeRound.getBazaarNodeRound();
+                        } else {
+                            for (NodeRound child : nodeRound.getChildren()) {
+                                if (bestNodeRound == null || child.getHeuristic() > bestNodeRound.getHeuristic()) {
+                                    if (bestNodeRound != null) {
+                                        bestNodeRound.setLastPlayedProbability(0.0);
+                                    }
+                                    bestNodeRound = child;
+                                    bestNodeRound.setLastPlayedProbability(1.0);
                                 }
-                                bestNodeRound = child;
-                                bestNodeRound.setLastPlayedProbability(1.0);
                             }
                         }
                         nodeRound.setHeuristic(bestNodeRound.getHeuristic());

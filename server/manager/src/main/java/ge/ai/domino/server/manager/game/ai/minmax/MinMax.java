@@ -12,6 +12,7 @@ import ge.ai.domino.server.manager.game.ai.AiSolver;
 import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
+import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public abstract class MinMax implements AiSolver {
 		PlayedTile bottom = tableInfo.getBottom();
 		// First move
 		if (tableInfo.getLeft() == null) {
-			moves.addAll(round.getMyTiles().stream().map(tile -> new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT)).collect(Collectors.toList()));
+			moves.addAll(round.getMyTiles().stream().map(tile -> TileAndMoveHelper.getMove(tile, MoveDirection.LEFT)).collect(Collectors.toList()));
 		} else {
 			if (round.getTableInfo().isMyMove()) {
 				for (Tile tile : round.getMyTiles()) {
@@ -65,35 +66,30 @@ public abstract class MinMax implements AiSolver {
 	private void addPossibleMovesForTile(Tile tile, PlayedTile left, PlayedTile right, PlayedTile top, PlayedTile bottom, List<Move> moves) {
 		Set<Integer> played = new HashSet<>();
 		// LEFT RIGHT TOP BOTTOM sequence is important
-		if (!played.contains(hashForPlayedTile(left))) {
+		if (!played.contains(TileAndMoveHelper.hashForPlayedTile(left))) {
 			if (left.getOpenSide() == tile.getLeft() || left.getOpenSide() == tile.getRight()) {
-				moves.add(new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT));
-				played.add(hashForPlayedTile(left));
+				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.LEFT));
+				played.add(TileAndMoveHelper.hashForPlayedTile(left));
 			}
 		}
-		if (!played.contains(hashForPlayedTile(right))) {
+		if (!played.contains(TileAndMoveHelper.hashForPlayedTile(right))) {
 			if (right.getOpenSide() == tile.getLeft() || right.getOpenSide() == tile.getRight()) {
-				moves.add(new Move(tile.getLeft(), tile.getRight(), MoveDirection.RIGHT));
-				played.add(hashForPlayedTile(right));
+				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.RIGHT));
+				played.add(TileAndMoveHelper.hashForPlayedTile(right));
 			}
 		}
-		if (top != null && !played.contains(hashForPlayedTile(top))) {
+		if (top != null && !played.contains(TileAndMoveHelper.hashForPlayedTile(top))) {
 			if ((top.getOpenSide() == tile.getLeft() || top.getOpenSide() == tile.getRight()) && !left.isCenter() && !right.isCenter()) {
-				moves.add(new Move(tile.getLeft(), tile.getRight(), MoveDirection.TOP));
-				played.add(hashForPlayedTile(top));
+				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.TOP));
+				played.add(TileAndMoveHelper.hashForPlayedTile(top));
 			}
 		}
-		if (bottom != null && !played.contains(hashForPlayedTile(bottom))) {
+		if (bottom != null && !played.contains(TileAndMoveHelper.hashForPlayedTile(bottom))) {
 			if ((bottom.getOpenSide() == tile.getLeft() || bottom.getOpenSide() == tile.getRight()) && !left.isCenter() && !right.isCenter()) {
-				moves.add(new Move(tile.getLeft(), tile.getRight(), MoveDirection.BOTTOM));
-				played.add(hashForPlayedTile(bottom));
+				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.BOTTOM));
+				played.add(TileAndMoveHelper.hashForPlayedTile(bottom));
 			}
 		}
-	}
-
-	private int hashForPlayedTile(PlayedTile playedTile) {
-		int p = 10;
-		return (playedTile.getOpenSide() + 1) * (playedTile.isTwin() ? p : 1);
 	}
 
 	protected boolean isNewRound(Round round) {

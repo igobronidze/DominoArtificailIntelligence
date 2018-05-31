@@ -1,5 +1,6 @@
 package ge.ai.domino.server.manager.game.ai.predictor;
 
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
@@ -10,6 +11,7 @@ import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.server.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
+import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -26,7 +28,7 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 	private FunctionManager functionManager = new FunctionManager();
 
 	@Override
-	public void predict(Round round, Move move) {
+	public void predict(Round round, Move move) throws DAIException {
 		NodeRound nodeRound = CachedMinMax.getNodeRound(round.getGameInfo().getGameId());
 		if (nodeRound == null) {
 			logger.warn("Last node round is null");
@@ -34,17 +36,22 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 		}
 
 		double playedHeuristic = 0.0;
+		boolean heuristicFounded = false;
 		for (NodeRound child : nodeRound.getChildren()) {
-			if (Move.equals(move, child.getLastPlayedMove())) {
+			if (TileAndMoveHelper.equalWithHash(move, child.getLastPlayedMove(), nodeRound.getRound().getTableInfo())) {
 				playedHeuristic = child.getHeuristic();
+				heuristicFounded = true;
 			}
+		}
+		if (!heuristicFounded) {
+			logger.warn("Can't find played heuristic for predictor, move[" + move + "]");
+			throw new DAIException("cantFindPlayedHeuristic");
 		}
 
 		Map<Move, Double> balancedHeuristic = new HashMap<>();
 		for (NodeRound child : nodeRound.getChildren()) {
-			if (!Move.equals(move, child.getLastPlayedMove()) && child.getLastPlayedMove().getType() != MoveType.ADD_FOR_OPPONENT) {
-				balancedHeuristic.put(new Move(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight(), child.getLastPlayedMove().getDirection()),
-						playedHeuristic - child.getHeuristic());
+			if (!TileAndMoveHelper.equalWithHash(move, child.getLastPlayedMove(), nodeRound.getRound().getTableInfo())) {
+				balancedHeuristic.put(TileAndMoveHelper.getMove(child.getLastPlayedMove()), playedHeuristic - child.getHeuristic());
 			}
 		}
 

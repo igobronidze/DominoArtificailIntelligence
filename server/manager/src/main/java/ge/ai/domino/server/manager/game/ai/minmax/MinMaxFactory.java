@@ -7,7 +7,7 @@ public class MinMaxFactory {
 
 	private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
-	private static final SysParam minMaxType = new SysParam("minMaxType", "BFS");
+	private static final SysParam minMaxType = new SysParam("minMaxType", "DFS");
 
 	public static MinMax getMinMax() {
 		String type = systemParameterManager.getStringParameterValue(minMaxType);

@@ -26,7 +26,7 @@ public class NodeRound {
 
 	private double lastPlayedProbability;
 
-	Map<Tile, Double> opponentTilesClone;
+	private Map<Tile, Double> opponentTilesClone;
 
 	public Round getRound() {
 		return round;

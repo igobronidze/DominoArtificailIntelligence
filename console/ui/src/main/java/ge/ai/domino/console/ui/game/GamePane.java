@@ -18,6 +18,7 @@ import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
+import ge.ai.domino.serverutil.TileAndMoveHelper;
 import ge.ai.domino.service.game.GameService;
 import ge.ai.domino.service.game.GameServiceImpl;
 import javafx.geometry.Insets;
@@ -193,6 +194,8 @@ public class GamePane extends BorderPane {
 			AppController.round = gameService.getLastPlayedRound(AppController.round.getGameInfo().getGameId());
 		} catch (DAIException ex) {
 			WarnDialog.showWarnDialog(ex);
+		} catch (Exception ex) {
+			WarnDialog.showUnexpectedError();
 		}
 		reload();
 	}
@@ -216,6 +219,8 @@ public class GamePane extends BorderPane {
 				}
 			} catch (DAIException ex) {
 				WarnDialog.showWarnDialog(ex);
+			} catch (Exception ex) {
+				WarnDialog.showUnexpectedError();
 			}
 			stage.close();
 			reload();
@@ -242,6 +247,8 @@ public class GamePane extends BorderPane {
 				reload();
 			} catch (DAIException ex) {
 				WarnDialog.showWarnDialog(ex);
+			} catch (Exception ex) {
+				WarnDialog.showUnexpectedError();
 			}
 			stage.close();
 		});
@@ -447,10 +454,12 @@ public class GamePane extends BorderPane {
 			if (AppController.round.getMyTiles().size() == 1) {
 				showAddLeftTilesCount(tile, direction);
 			} else {
-				AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(tile.getLeft(), tile.getRight(), direction));
+				AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), TileAndMoveHelper.getMove(tile, direction));
 			}
 		} catch (DAIException ex) {
 			WarnDialog.showWarnDialog(ex);
+		} catch (Exception ex) {
+			WarnDialog.showUnexpectedError();
 		}
 		reload();
 	}
@@ -474,6 +483,8 @@ public class GamePane extends BorderPane {
 						stage.close();
 					} catch (DAIException ex) {
 						WarnDialog.showWarnDialog(ex);
+					} catch (Exception ex) {
+						WarnDialog.showUnexpectedError();
 					}
 				});
 				TCHButton opponentButton = new TCHButton(Messages.get("he"));
@@ -485,6 +496,8 @@ public class GamePane extends BorderPane {
 						stage.close();
 					} catch (DAIException ex) {
 						WarnDialog.showWarnDialog(ex);
+					} catch (Exception ex) {
+						WarnDialog.showUnexpectedError();
 					}
 				});
 				HBox hBox = new HBox(25);
@@ -504,13 +517,17 @@ public class GamePane extends BorderPane {
 					reload();
 				} catch (DAIException ex) {
 					WarnDialog.showWarnDialog(ex);
+				} catch (Exception ex) {
+					WarnDialog.showUnexpectedError();
 				}
 			}
 		} else {
 			try {
-				AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), new Move(tile.getLeft(), tile.getRight(), direction));
+				AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), TileAndMoveHelper.getMove(tile, direction));
 			} catch (DAIException ex) {
 				WarnDialog.showWarnDialog(ex);
+			} catch (Exception ex) {
+				WarnDialog.showUnexpectedError();
 			}
 			reload();
 		}
@@ -558,6 +575,8 @@ public class GamePane extends BorderPane {
 			}
 		} catch (DAIException ex) {
 			WarnDialog.showWarnDialog(ex);
+		} catch (Exception ex) {
+			WarnDialog.showUnexpectedError();
 		}
 		reload();
 	}

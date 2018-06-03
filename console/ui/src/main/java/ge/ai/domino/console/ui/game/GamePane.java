@@ -195,6 +195,7 @@ public class GamePane extends BorderPane {
 		} catch (DAIException ex) {
 			WarnDialog.showWarnDialog(ex);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			WarnDialog.showUnexpectedError();
 		}
 		reload();
@@ -220,6 +221,7 @@ public class GamePane extends BorderPane {
 			} catch (DAIException ex) {
 				WarnDialog.showWarnDialog(ex);
 			} catch (Exception ex) {
+				ex.printStackTrace();
 				WarnDialog.showUnexpectedError();
 			}
 			stage.close();
@@ -248,6 +250,7 @@ public class GamePane extends BorderPane {
 			} catch (DAIException ex) {
 				WarnDialog.showWarnDialog(ex);
 			} catch (Exception ex) {
+				ex.printStackTrace();
 				WarnDialog.showUnexpectedError();
 			}
 			stage.close();
@@ -459,6 +462,7 @@ public class GamePane extends BorderPane {
 		} catch (DAIException ex) {
 			WarnDialog.showWarnDialog(ex);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			WarnDialog.showUnexpectedError();
 		}
 		reload();
@@ -484,6 +488,7 @@ public class GamePane extends BorderPane {
 					} catch (DAIException ex) {
 						WarnDialog.showWarnDialog(ex);
 					} catch (Exception ex) {
+						ex.printStackTrace();
 						WarnDialog.showUnexpectedError();
 					}
 				});
@@ -497,6 +502,7 @@ public class GamePane extends BorderPane {
 					} catch (DAIException ex) {
 						WarnDialog.showWarnDialog(ex);
 					} catch (Exception ex) {
+						ex.printStackTrace();
 						WarnDialog.showUnexpectedError();
 					}
 				});
@@ -518,6 +524,7 @@ public class GamePane extends BorderPane {
 				} catch (DAIException ex) {
 					WarnDialog.showWarnDialog(ex);
 				} catch (Exception ex) {
+					ex.printStackTrace();
 					WarnDialog.showUnexpectedError();
 				}
 			}
@@ -527,6 +534,7 @@ public class GamePane extends BorderPane {
 			} catch (DAIException ex) {
 				WarnDialog.showWarnDialog(ex);
 			} catch (Exception ex) {
+				ex.printStackTrace();
 				WarnDialog.showUnexpectedError();
 			}
 			reload();
@@ -576,6 +584,7 @@ public class GamePane extends BorderPane {
 		} catch (DAIException ex) {
 			WarnDialog.showWarnDialog(ex);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			WarnDialog.showUnexpectedError();
 		}
 		reload();

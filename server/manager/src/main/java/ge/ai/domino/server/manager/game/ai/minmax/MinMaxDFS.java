@@ -151,7 +151,7 @@ public class MinMaxDFS extends MinMax {
 
 		// Recursion end conditions: Game is finished, Started new round, reached tree root
 		if (round.getGameInfo().isFinished()) {
-			return RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGameProperties(gameId).getPointsForWin());
+			nodeRound.setHeuristic(RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGameProperties(gameId).getPointsForWin()));
 		}
 		if (isNewRound(round)) {
 			nodeRound.setHeuristic(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, tableInfo.isMyMove()));

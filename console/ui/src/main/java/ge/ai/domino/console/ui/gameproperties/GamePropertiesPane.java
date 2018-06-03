@@ -71,6 +71,7 @@ public class GamePropertiesPane extends VBox {
                 } catch (DAIException ex) {
                     WarnDialog.showWarnDialog(ex);
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     WarnDialog.showUnexpectedError();
                 }
             }

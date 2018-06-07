@@ -117,6 +117,7 @@ public class GameManager {
         logger.info("Start getLastPlayedRound method, gameId[" + gameId + "]");
         Round newRound = CachedGames.getAndRemoveLastRound(gameId);
         CachedGames.removeLastMove(gameId);
+        CachedMinMax.setLastNodeRound(gameId, null, false);
         logger.info("Undo last game round, gameId[" + gameId + "]");
         return newRound;
     }

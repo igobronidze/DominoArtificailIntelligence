@@ -45,7 +45,7 @@ public class MinMaxBFS extends MinMax {
 
     private final RoundHeuristic roundHeuristic = new ComplexRoundHeuristic();
 
-    private final SysParam minMaxIteration = new SysParam("minMaxIteration", "10000");
+    private final SysParam minMaxIteration = new SysParam("minMaxIteration", "100000");
 
     private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
 
@@ -66,6 +66,7 @@ public class MinMaxBFS extends MinMax {
     @Override
     public AiPredictionsWrapper solve(Round round) throws DAIException {
         this.gameId = round.getGameInfo().getGameId();
+        logger.info("Executing MinMaxBFS gameId[" + gameId + "]");
 
         NodeRound nodeRound = new NodeRound();
         nodeRound.setRound(round);
@@ -79,11 +80,14 @@ public class MinMaxBFS extends MinMax {
     @Override
     public void minMaxForCachedNodeRound(Round round) throws DAIException {
         this.gameId = round.getGameInfo().getGameId();
+        logger.info("Executing MinMaxBFSForCachedNodeRound gameId[" + gameId + "]");
 
+        long ms = System.currentTimeMillis();
         NodeRound nodeRound = new NodeRound();
         nodeRound.setRound(round);
         nodeRound.setTreeHeight(1);
         nodeRoundsQueue.add(nodeRound);
+        iteration++;
 
         while (!nodeRoundsQueue.isEmpty() && iteration <= systemParameterManager.getIntegerParameterValue(minMaxIteration)) {
             NodeRound nr = nodeRoundsQueue.remove();
@@ -93,6 +97,7 @@ public class MinMaxBFS extends MinMax {
 
         applyBottomUpMinMax();
         CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, false);
+        logger.info("MinMaxBFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + "ms");
     }
 
     @Override
@@ -109,7 +114,6 @@ public class MinMaxBFS extends MinMax {
             return null;
         }
         for (Move move : moves) {
-            iteration++;
             Round nextRound = playForMeProcessor.move(CloneUtil.getClone(nodeRound.getRound()), move, true);
             NodeRound nextNodeRound = new NodeRound();
             nextNodeRound.setRound(nextRound);
@@ -119,6 +123,7 @@ public class MinMaxBFS extends MinMax {
             nodeRound.getChildren().add(nextNodeRound);
             validateOpponentTiles(nextNodeRound, "playForMe");
             nodeRoundsQueue.add(nextNodeRound);
+            iteration++;
         }
 
         while (!nodeRoundsQueue.isEmpty() && iteration <= systemParameterManager.getIntegerParameterValue(minMaxIteration)) {
@@ -168,7 +173,6 @@ public class MinMaxBFS extends MinMax {
     }
 
     private void processRoundNode(NodeRound nodeRound) throws DAIException {
-        iteration++;
         nodeRoundsByHeight.computeIfAbsent(nodeRound.getTreeHeight(), k -> new ArrayList<>());
         nodeRoundsByHeight.get(nodeRound.getTreeHeight()).add(nodeRound);
 
@@ -194,6 +198,7 @@ public class MinMaxBFS extends MinMax {
                     nodeRound.getChildren().add(nextNodeRound);
                     validateOpponentTiles(nextNodeRound, "playForMe");
                     nodeRoundsQueue.add(nextNodeRound);
+                    iteration++;
                 }
             } else {
                 double bazaarProbSum = round.getTableInfo().getBazaarTilesCount();
@@ -213,6 +218,7 @@ public class MinMaxBFS extends MinMax {
                         nodeRound.setBazaarNodeRound(nextNodeRound);
                         validateOpponentTiles(nextNodeRound, "addForMe");
                         nodeRoundsQueue.add(nextNodeRound);
+                        iteration++;
                     }
                 }
             }
@@ -228,6 +234,7 @@ public class MinMaxBFS extends MinMax {
                 nodeRound.getChildren().add(nextNodeRound);
                 validateOpponentTiles(nextNodeRound, "playForOpponent");
                 nodeRoundsQueue.add(nextNodeRound);
+                iteration++;
             }
             if (moves.size() <= round.getTableInfo().getBazaarTilesCount()) {
                 Round nextRound = addForOpponentProcessor.move(CloneUtil.getClone(round), null, true);
@@ -239,6 +246,7 @@ public class MinMaxBFS extends MinMax {
                 nodeRound.setBazaarNodeRound(nextNodeRound);
                 validateOpponentTiles(nextNodeRound, "addForOpponent");
                 nodeRoundsQueue.add(nextNodeRound);
+                iteration++;
             }
         }
     }
@@ -294,16 +302,8 @@ public class MinMaxBFS extends MinMax {
     }
 
     private boolean isLeafNodeRound(NodeRound nodeRound) {
-        if (!nodeRound.getChildren().isEmpty()) {
-            if (nodeRound.getChildren().get(0) != null) {
-                for (NodeRound child : nodeRound.getChildren()) {
-                    if (child.getHeuristic() == null) {
-                        System.out.println("aeee");
-                    }
-                }
-            }
-        }
-        return nodeRound.getChildren() == null || nodeRound.getChildren().isEmpty() || nodeRound.getChildren().get(0).getHeuristic() == null;
+        List<NodeRound> children = nodeRound.getChildren();
+        return children == null || children.isEmpty() || children.get(children.size() - 1).getHeuristic() == null;
     }
 
     private double getHeuristic(Round round) {

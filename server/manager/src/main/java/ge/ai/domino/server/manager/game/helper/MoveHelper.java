@@ -63,4 +63,10 @@ public class MoveHelper {
         playedMove.setDirection(move.getDirection());
         return playedMove;
     }
+
+    public static PlayedMove getSkipRoundMove() {
+        PlayedMove playedMove = new PlayedMove();
+        playedMove.setType(MoveType.SKIP_ROUND);
+        return playedMove;
+    }
 }

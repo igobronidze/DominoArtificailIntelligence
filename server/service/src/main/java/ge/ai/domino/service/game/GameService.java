@@ -22,4 +22,6 @@ public interface GameService {
     void specifyRoundBeginner(int gameId, boolean startMe);
 
     void specifyOpponentLeftTiles(int gameId, int leftTilesCount);
+
+    Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe);
 }

@@ -31,17 +31,17 @@ public class InitialUtil {
             game.setProperties(gameProperties);
         }
         game.setId(playedGameManager.addPlayedGame(game.getProperties()));
-        game.getRounds().push(getInitialRound(game.getId()));
+        game.getRounds().push(getInitialRound(game.getId(), true));
         game.setGameHistory(new GameHistory());
         return game;
     }
 
-    public static Round getInitialRound(int gameId) {
+    public static Round getInitialRound(int gameId, boolean firstRound) {
         TableInfo tableInfo = new TableInfo();
         tableInfo.setMyMove(true);
         tableInfo.setBazaarTilesCount(INITIAL_COUNT_TILES_IN_BAZAAR);
         tableInfo.setOpponentTilesCount(INITIAL_COUNT_TILES_FOR_OPPONENT);
-        tableInfo.setFirstRound(true);
+        tableInfo.setFirstRound(firstRound);
         Round round = new Round();
         round.setOpponentTiles(getInitialTiles());
         round.setTableInfo(tableInfo);

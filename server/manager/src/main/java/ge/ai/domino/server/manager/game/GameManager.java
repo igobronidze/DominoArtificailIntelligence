@@ -130,6 +130,22 @@ public class GameManager {
         CachedGames.specifyOpponentLeftTilesCount(gameId, leftTilesCount);
     }
 
+    public Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe) {
+        logger.info("Start skipRound method, gameId[" + gameId + "], myPoint[" + myPoint + "], opponentPoint[" + opponentPoint + "]," +
+                " leftTiles[" + leftTiles + "], startMe[" + startMe + "]");
+        Round newRound = InitialUtil.getInitialRound(gameId, false);
+        newRound.getGameInfo().setMyPoint(myPoint);
+        newRound.getGameInfo().setOpponentPoint(opponentPoint);
+
+        CachedGames.changeNextRoundBeginner(gameId, startMe);
+        CachedGames.setLeftTilesCountFromLastRound(gameId, leftTiles);
+
+        CachedGames.addRound(gameId, newRound);
+        CachedGames.addMove(gameId, MoveHelper.getSkipRoundMove());
+        logger.info("Skipped round, gameId[" + gameId + "]");
+        return newRound;
+    }
+
     private Move getMove(int left, int right, MoveDirection direction) {
         return new Move(Math.max(left, right), Math.min(left, right), direction);
     }

@@ -49,4 +49,9 @@ public class GameServiceImpl implements GameService {
     public void specifyOpponentLeftTiles(int gameId, int leftTilesCount) {
         gameManager.specifyOpponentLeftTiles(gameId, leftTilesCount);
     }
+
+    @Override
+    public Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe) {
+        return gameManager.skipRound(gameId, myPoint, opponentPoint, leftTiles, startMe);
+    }
 }

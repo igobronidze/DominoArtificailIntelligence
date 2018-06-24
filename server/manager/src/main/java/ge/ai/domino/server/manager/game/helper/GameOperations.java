@@ -70,8 +70,7 @@ public class GameOperations {
 			return round;
 		}
 
-		Round newRound = InitialUtil.getInitialRound(0);
-		newRound.getTableInfo().setFirstRound(false);
+		Round newRound = InitialUtil.getInitialRound(0, false);
 		newRound.setGameInfo(round.getGameInfo());
 		if (virtual) {
 			newRound.getTableInfo().setMyMove(addForMe);
@@ -102,9 +101,8 @@ public class GameOperations {
 			}
 		}
 
-		Round newRound = InitialUtil.getInitialRound(0);
+		Round newRound = InitialUtil.getInitialRound(0, false);
 		newRound.getTableInfo().setMyMove(true); // For pick up new tiles
-		newRound.getTableInfo().setFirstRound(false);
 		newRound.setGameInfo(round.getGameInfo());
 		if (virtual) {
 			newRound.getTableInfo().setMyMove(round.getTableInfo().getRoundBlockingInfo().isLastNotTwinPlayedTileMy());

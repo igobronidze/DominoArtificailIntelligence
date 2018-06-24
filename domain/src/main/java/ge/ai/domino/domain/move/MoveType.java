@@ -8,5 +8,6 @@ public enum MoveType {
     I_OMIT,
     OPPONENT_OMIT,
     PLAY_FOR_ME,
-    PLAY_FOR_OPPONENT
+    PLAY_FOR_OPPONENT,
+    SKIP_ROUND
 }

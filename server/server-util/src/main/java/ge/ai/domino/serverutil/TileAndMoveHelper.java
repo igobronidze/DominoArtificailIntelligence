@@ -31,10 +31,7 @@ public class TileAndMoveHelper {
 		}
 		PlayedTile playedTile = getPlayedTile(tableInfo, playedMove.getDirection());
 		PlayedTile mayBePlayedTile = getPlayedTile(tableInfo, move.getDirection());
-		if (playedTile != null && mayBePlayedTile != null) {
-			return hashForPlayedTile(playedTile) == hashForPlayedTile(mayBePlayedTile);
-		}
-		return false;
+		return playedTile != null && mayBePlayedTile != null && hashForPlayedTile(playedTile) == hashForPlayedTile(mayBePlayedTile);
 	}
 
 	private static PlayedTile getPlayedTile(TableInfo tableInfo, MoveDirection moveDirection) {

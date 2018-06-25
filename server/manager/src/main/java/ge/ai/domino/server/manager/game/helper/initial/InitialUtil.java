@@ -1,4 +1,4 @@
-package ge.ai.domino.server.manager.game.helper;
+package ge.ai.domino.server.manager.game.helper.initial;
 
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.GameInfo;

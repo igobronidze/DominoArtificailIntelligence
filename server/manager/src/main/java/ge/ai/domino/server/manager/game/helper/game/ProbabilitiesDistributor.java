@@ -1,8 +1,10 @@
-package ge.ai.domino.server.manager.game.helper;
+package ge.ai.domino.server.manager.game.helper.game;
 
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
+import ge.ai.domino.server.manager.game.helper.filter.OpponentTilesFilter;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 
 import java.util.Map;
@@ -65,6 +67,17 @@ public class ProbabilitiesDistributor {
         }
         if (!ComparisonHelper.equal(remainingProbability, 0.0)) {
             distributeProbabilitiesOpponentProportional(tiles, remainingProbability);
+        } else {
+            OpponentTilesFilter newFilter = new OpponentTilesFilter()
+                    .notBazaar(true)
+                    .valueLessThan(1 - remainingProbability);
+            for (Map.Entry<Tile, Double> entry : tiles.entrySet()) {
+                if (newFilter.filter(entry)) {
+                    count++;
+                }
+            }
+            double probForAdd = remainingProbability / count;
+            tiles.entrySet().stream().filter(newFilter::filter).forEach(entry -> entry.setValue(entry.getValue() + probForAdd));
         }
     }
 
@@ -101,10 +114,6 @@ public class ProbabilitiesDistributor {
     }
 
     private static void setStaticProbabilities(Map<Tile, Double> tiles, OpponentTilesFilter opponentTilesFilter, double prob) {
-        for (Map.Entry<Tile, Double> entry : tiles.entrySet()) {
-            if (opponentTilesFilter.filter(entry)) {
-                entry.setValue(prob);
-            }
-        }
+        tiles.entrySet().stream().filter(opponentTilesFilter::filter).forEach(entry -> entry.setValue(prob));
     }
 }

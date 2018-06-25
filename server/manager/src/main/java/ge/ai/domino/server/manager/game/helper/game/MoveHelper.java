@@ -1,4 +1,4 @@
-package ge.ai.domino.server.manager.game.helper;
+package ge.ai.domino.server.manager.game.helper.game;
 
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveType;

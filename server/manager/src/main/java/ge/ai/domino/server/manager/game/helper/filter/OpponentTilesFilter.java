@@ -1,4 +1,4 @@
-package ge.ai.domino.server.manager.game.helper;
+package ge.ai.domino.server.manager.game.helper.filter;
 
 import ge.ai.domino.domain.game.Tile;
 
@@ -22,6 +22,8 @@ public class OpponentTilesFilter {
 	private Set<Integer> mustUsedNumbers;
 
 	private Integer leftMoreThan;
+
+	private Double valueLessThan;
 
 	public OpponentTilesFilter opponent(boolean opponent) {
 		this.opponent = opponent;
@@ -63,6 +65,11 @@ public class OpponentTilesFilter {
 		return this;
 	}
 
+	public OpponentTilesFilter valueLessThan(Double valueLessThan) {
+		this.valueLessThan = valueLessThan;
+		return this;
+	}
+
 	public boolean filter(Map.Entry<Tile, Double> entry) {
 		Double prob = entry.getValue();
 		Tile tile = entry.getKey();
@@ -93,6 +100,11 @@ public class OpponentTilesFilter {
 		}
 		if (leftMoreThan != null) {
 			if (tile.getLeft() <= leftMoreThan) {
+				return false;
+			}
+		}
+		if (valueLessThan != null) {
+			if (prob >= valueLessThan) {
 				return false;
 			}
 		}

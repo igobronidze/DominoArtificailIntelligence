@@ -6,10 +6,9 @@ import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.ai.minmax.MinMaxFactory;
-import ge.ai.domino.server.manager.game.helper.GameOperations;
-import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
+import ge.ai.domino.server.manager.game.helper.game.GameOperations;
+import ge.ai.domino.server.manager.game.helper.game.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
-import ge.ai.domino.server.manager.game.ai.minmax.MinMaxDFS;
 
 public class AddForOpponentProcessor extends MoveProcessor {
 

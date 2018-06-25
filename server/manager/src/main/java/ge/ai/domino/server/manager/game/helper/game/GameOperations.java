@@ -1,4 +1,4 @@
-package ge.ai.domino.server.manager.game.helper;
+package ge.ai.domino.server.manager.game.helper.game;
 
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
@@ -7,6 +7,8 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.server.caching.game.CachedGames;
+import ge.ai.domino.server.manager.game.helper.initial.InitialUtil;
+import ge.ai.domino.server.manager.game.helper.filter.OpponentTilesFilter;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 
 import java.util.HashSet;
@@ -40,7 +42,7 @@ public class GameOperations {
 		return (int)count;
 	}
 
-	public static void addLeftTiles(GameInfo gameInfo, int count, boolean forMe, int gameId, boolean virtual) {
+	private static void addLeftTiles(GameInfo gameInfo, int count, boolean forMe, int gameId, boolean virtual) {
 		int countFromLastRound = virtual ? 0 : CachedGames.getLeftTilesCountFromLastRound(gameId);
 		if (count % 5 != 0) {
 			count = normalizeLeftTilesCount(count);

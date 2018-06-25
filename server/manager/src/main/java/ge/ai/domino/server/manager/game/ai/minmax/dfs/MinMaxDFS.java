@@ -1,4 +1,4 @@
-package ge.ai.domino.server.manager.game.ai.minmax;
+package ge.ai.domino.server.manager.game.ai.minmax.dfs;
 
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
@@ -14,10 +14,13 @@ import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.ai.heuristic.ComplexRoundHeuristic;
 import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristic;
 import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristicHelper;
+import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMax;
+import ge.ai.domino.server.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
-import ge.ai.domino.server.manager.game.helper.MoveHelper;
-import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
+import ge.ai.domino.server.manager.game.helper.game.MoveHelper;
+import ge.ai.domino.server.manager.game.helper.game.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.server.manager.game.move.MoveProcessor;
@@ -42,8 +45,6 @@ public class MinMaxDFS extends MinMax {
 	private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
 	private final RoundHeuristic roundHeuristic = new ComplexRoundHeuristic();
-
-	private final SysParam checkOpponentProbabilities = new SysParam("checkOpponentProbabilities", "false");
 
 	private final SysParam minMaxTreeHeight = new SysParam("minMaxTreeHeight", "8");
 

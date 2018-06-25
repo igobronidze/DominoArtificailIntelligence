@@ -1,9 +1,7 @@
-package ge.ai.domino.server.manager.game.ai.minmax;
+package ge.ai.domino.server.manager.game.ai.minmax.bfs;
 
 import ge.ai.domino.domain.exception.DAIException;
-import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
@@ -14,10 +12,13 @@ import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.manager.game.ai.heuristic.ComplexRoundHeuristic;
 import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristic;
 import ge.ai.domino.server.manager.game.ai.heuristic.RoundHeuristicHelper;
+import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.server.manager.game.ai.minmax.MinMax;
+import ge.ai.domino.server.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
-import ge.ai.domino.server.manager.game.helper.MoveHelper;
-import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
+import ge.ai.domino.server.manager.game.helper.game.MoveHelper;
+import ge.ai.domino.server.manager.game.helper.game.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.server.manager.game.move.MoveProcessor;

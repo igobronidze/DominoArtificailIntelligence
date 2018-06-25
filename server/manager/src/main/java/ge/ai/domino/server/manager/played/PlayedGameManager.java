@@ -6,21 +6,19 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.GameHistory;
+import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.GroupedPlayedGame;
 import ge.ai.domino.domain.played.PlayedGame;
-import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.server.caching.game.CachedGames;
 import ge.ai.domino.server.dao.opponentplay.OpponentPlayDAO;
 import ge.ai.domino.server.dao.opponentplay.OpponentPlayDAOImpl;
 import ge.ai.domino.server.dao.played.PlayedGameDAO;
 import ge.ai.domino.server.dao.played.PlayedGameDAOImpl;
 import ge.ai.domino.server.manager.util.ProjectVersionUtil;
-import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 public class PlayedGameManager {
 

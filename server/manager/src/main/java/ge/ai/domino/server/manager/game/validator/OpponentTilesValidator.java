@@ -1,6 +1,5 @@
 package ge.ai.domino.server.manager.game.validator;
 
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
@@ -9,8 +8,6 @@ import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class OpponentTilesValidator {

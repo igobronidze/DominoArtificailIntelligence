@@ -4,9 +4,7 @@ import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.played.GameHistory;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
 
 public class Game {
 
@@ -46,10 +44,6 @@ public class Game {
         return rounds;
     }
 
-    public void setRounds(Deque<Round> rounds) {
-        this.rounds = rounds;
-    }
-
     public GameHistory getGameHistory() {
         return gameHistory;
     }
@@ -84,9 +78,5 @@ public class Game {
 
     public Deque<OpponentPlay> getOpponentPlays() {
         return opponentPlays;
-    }
-
-    public void setOpponentPlays(Deque<OpponentPlay> opponentPlays) {
-        this.opponentPlays = opponentPlays;
     }
 }

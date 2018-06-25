@@ -1,7 +1,10 @@
 package ge.ai.domino.serverutil;
 
-import ge.ai.domino.domain.game.*;
-import ge.ai.domino.domain.move.Move;
+import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.RoundBlockingInfo;
+import ge.ai.domino.domain.game.TableInfo;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.played.PlayedTile;
 
 import java.util.HashMap;

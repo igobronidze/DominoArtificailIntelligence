@@ -20,7 +20,7 @@ class ControlPanelFooter extends BorderPane {
     private void initComponents() {
         leftLabel = new Label("");
         leftLabel.setStyle("-fx-font-family: sylfaen;");
-        rightLabel = new Label("© Developed by sg 2017");
+        rightLabel = new Label("© Developed by sg 2018");
         rightLabel.setStyle("-fx-font-family: syfaen;");
         rightLabel.setPadding(new Insets(0, 5, 0, 0));
     }

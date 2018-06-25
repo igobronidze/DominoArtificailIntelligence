@@ -26,9 +26,7 @@ public class FunctionDAOImpl implements FunctionDAO {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				String name = rs.getString("function_name");
-				if (functionArgsAndValuesMap.get(name) == null) {
-					functionArgsAndValuesMap.put(name, new FunctionArgsAndValues());
-				}
+				functionArgsAndValuesMap.putIfAbsent(name, new FunctionArgsAndValues());
 				FunctionArgsAndValues functionArgsAndValues = functionArgsAndValuesMap.get(name);
 				functionArgsAndValues.getArgs().add(rs.getDouble("arg"));
 				functionArgsAndValues.getValues().add(rs.getDouble("value"));

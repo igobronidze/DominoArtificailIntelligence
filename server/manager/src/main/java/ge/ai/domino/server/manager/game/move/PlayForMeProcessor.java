@@ -6,11 +6,10 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
-import ge.ai.domino.server.manager.game.ai.minmax.MinMaxDFS;
 import ge.ai.domino.server.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
-import ge.ai.domino.server.manager.game.helper.GameOperations;
-import ge.ai.domino.server.manager.game.helper.ProbabilitiesDistributor;
+import ge.ai.domino.server.manager.game.helper.game.GameOperations;
+import ge.ai.domino.server.manager.game.helper.game.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 
 public class PlayForMeProcessor extends MoveProcessor {

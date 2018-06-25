@@ -1,6 +1,8 @@
 package ge.ai.domino.server.manager.game.ai.minmax;
 
 import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.server.manager.game.ai.minmax.bfs.MinMaxBFS;
+import ge.ai.domino.server.manager.game.ai.minmax.dfs.MinMaxDFS;
 import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
 
 public class MinMaxFactory {

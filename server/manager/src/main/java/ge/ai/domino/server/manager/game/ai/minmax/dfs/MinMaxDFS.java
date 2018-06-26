@@ -152,6 +152,7 @@ public class MinMaxDFS extends MinMax {
 
 	private double getHeuristicValue(NodeRound nodeRound, int height) throws DAIException {
 		recursionCount++;
+		nodeRound.setId(recursionCount);
 		Round round = nodeRound.getRound();
 		TableInfo tableInfo = round.getTableInfo();
 		GameInfo gameInfo = round.getGameInfo();

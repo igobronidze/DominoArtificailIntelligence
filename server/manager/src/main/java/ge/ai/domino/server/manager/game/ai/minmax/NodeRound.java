@@ -10,6 +10,8 @@ import java.util.Map;
 
 public class NodeRound {
 
+	private int id;
+
 	private Round round;
 
 	private NodeRound parent;
@@ -27,6 +29,14 @@ public class NodeRound {
 	private double lastPlayedProbability;
 
 	private Map<Tile, Double> opponentTilesClone;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public Round getRound() {
 		return round;

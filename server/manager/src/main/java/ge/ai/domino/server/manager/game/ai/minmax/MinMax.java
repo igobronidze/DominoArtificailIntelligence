@@ -138,7 +138,7 @@ public abstract class MinMax implements AiSolver {
 			GameLoggingProcessor.logRoundFullInfo(notValidRound.getRound(), false); // Still print if virtual
 			for (int i = parentRounds.size() - 1; i >= 0; i--) {
 				notValidRound = parentRounds.get(i);
-				logger.info("Height: " + notValidRound.getTreeHeight());
+				logger.info("ID: " + notValidRound.getId() + ", Height: " + notValidRound.getTreeHeight());
 				logger.info("Play move with probability[" + notValidRound.getLastPlayedProbability() + "], move[" + notValidRound.getLastPlayedMove() + "]");
 				GameLoggingProcessor.logRoundFullInfo(notValidRound.getRound(), false); // Still print if virtual
 			}

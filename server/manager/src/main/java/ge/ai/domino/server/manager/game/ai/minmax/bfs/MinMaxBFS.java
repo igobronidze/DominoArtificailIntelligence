@@ -298,7 +298,8 @@ public class MinMaxBFS extends MinMax {
 
     private boolean isLeafNodeRound(NodeRound nodeRound) {
         List<NodeRound> children = nodeRound.getChildren();
-        return children == null || children.isEmpty() || children.get(children.size() - 1).getHeuristic() == null;
+        return children == null || children.isEmpty() || children.get(children.size() - 1).getHeuristic() == null ||
+                (nodeRound.getBazaarNodeRound() != null && nodeRound.getBazaarNodeRound().getHeuristic() == null);
     }
 
     private double getHeuristic(Round round) {

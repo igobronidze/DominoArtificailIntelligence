@@ -1,6 +1,5 @@
 package ge.ai.domino.server.dao.opponentplay;
 
-import ge.ai.domino.domain.game.opponentplay.OpponentTile;
 import ge.ai.domino.domain.game.opponentplay.OpponentTilesWrapper;
 import org.apache.log4j.Logger;
 
@@ -13,7 +12,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.List;
 
 public class OpponentTilesMarshaller {
 

@@ -33,9 +33,13 @@
             </activation>
             <modules>
                 <module>domain</module>
-                <module>server</module>
+                <module>caching</module>
                 <module>console</module>
                 <module>util</module>
+                <module>dao</module>
+                <module>manager</module>
+                <module>server-util</module>
+                <module>service</module>
             </modules>
         </profile>
     </profiles>

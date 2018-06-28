@@ -7,28 +7,29 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>server</artifactId>
-    <name>Server</name>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>dao</module>
-        <module>caching</module>
-        <module>manager</module>
-        <module>service</module>
-        <module>server-util</module>
-    </modules>
+    <artifactId>dao</artifactId>
+    <name>DAO</name>
 
     <dependencies>
+        <dependency>
+            <groupId>ge.ai.domino</groupId>
+            <artifactId>domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>ge.ai.domino</groupId>
             <artifactId>util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ge.ai.domino</groupId>
-            <artifactId>domain</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.4.1209.jre7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.0</version>
         </dependency>
     </dependencies>
 

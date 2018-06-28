@@ -17,6 +17,7 @@ import ge.ai.domino.server.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.server.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.ComparisonHelper;
+import ge.ai.domino.server.manager.game.helper.filter.OpponentTilesFilter;
 import ge.ai.domino.server.manager.game.helper.game.MoveHelper;
 import ge.ai.domino.server.manager.game.helper.game.ProbabilitiesDistributor;
 import ge.ai.domino.server.manager.game.move.AddForMeProcessor;
@@ -232,7 +233,10 @@ public class MinMaxBFS extends MinMax {
                 validateOpponentTiles(nextNodeRound, "playForOpponent");
                 addInQueue(nextNodeRound);
             }
-            if (moves.size() <= round.getTableInfo().getBazaarTilesCount()) {
+
+            OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter().bazaar(true);
+            long bazaarTilesCount = round.getOpponentTiles().entrySet().stream().filter(opponentTilesFilter :: filter).count();
+            if (moves.size() + bazaarTilesCount <= round.getTableInfo().getBazaarTilesCount()) {
                 Round nextRound = addForOpponentProcessor.move(CloneUtil.getClone(round), null, true);
                 NodeRound nextNodeRound = new NodeRound();
                 nextNodeRound.setRound(nextRound);

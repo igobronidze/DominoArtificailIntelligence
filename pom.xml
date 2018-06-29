@@ -40,6 +40,7 @@
                 <module>manager</module>
                 <module>server-util</module>
                 <module>service</module>
+                <module>image_processing</module>
             </modules>
         </profile>
     </profiles>

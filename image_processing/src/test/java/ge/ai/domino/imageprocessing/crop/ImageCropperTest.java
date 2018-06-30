@@ -7,17 +7,17 @@ import org.junit.Test;
 
 public class ImageCropperTest {
 
-	private final String SRC_IMAGE_PATH = "test_images/src/crop/for_crop.png";
+	private static final String SRC_IMAGE_PATH = "test_images/src/crop/for_crop.png";
 
-	private final String RESULT_IMAGE_PATH = "test_images/result/crop/cropped.png";
+	private static final String RESULT_IMAGE_PATH = "test_images/result/crop/cropped.png";
 
-	private final int X = 100;
+	private static final int X = 100;
 
-	private final int Y = 200;
+	private static final int Y = 200;
 
-	private final int WIDTH = 250;
+	private static final int WIDTH = 250;
 
-	private final int HEIGHT = 300;
+	private static final int HEIGHT = 300;
 
 	@Test
 	public void testCropImage() {

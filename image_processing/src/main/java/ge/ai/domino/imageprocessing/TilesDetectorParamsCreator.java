@@ -1,17 +1,16 @@
-package ge.ai.domino.imageprocessing.util;
+package ge.ai.domino.imageprocessing;
 
-import ge.ai.domino.imageprocessing.TilesDetectorParams;
 import ge.ai.domino.imageprocessing.crop.CropImageParams;
 
 public class TilesDetectorParamsCreator {
 
-	private static final double TILES_HEIGHT_PERCENTAGE = 25;
+	private static final double TILES_HEIGHT_PERCENTAGE = 20;
 
-	private static final double TILES_MARGIN_BOTTOM_PERCENTAGE = 0;
+	private static final double TILES_MARGIN_BOTTOM_PERCENTAGE = 5;
 
-	private static final double TILES_WIDTH_PERCENTAGE = 70;
+	private static final double TILES_WIDTH_PERCENTAGE = 60;
 
-	private static final double TILES_MARGIN_LEFT_PERCENTAGE =  15;
+	private static final double TILES_MARGIN_LEFT_PERCENTAGE =  20;
 
 	public static TilesDetectorParams createTilesDetectorParams(int imageWidth, int imageHeight) {
 		int x = (int) (imageWidth * TILES_MARGIN_LEFT_PERCENTAGE / 100);

@@ -1,52 +1,98 @@
 package ge.ai.domino.imageprocessing.contour;
 
-import org.bytedeco.javacpp.opencv_core;
-import org.bytedeco.javacpp.opencv_imgcodecs;
-import org.bytedeco.javacpp.opencv_imgproc;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class ContoursDetector {
 
-	private static final String RESULT_IMAGE_PATH = "test_images/result/t/r";
+    private static final int WHITE_RGB = -1;
 
-	public static opencv_core.Mat findContours(opencv_core.Mat srcMat) {
-		opencv_core.Mat grayMat = new opencv_core.Mat();
-		opencv_core.Mat resultMat = new opencv_core.Mat();
-		opencv_core.MatVector contours = new opencv_core.MatVector();
-		opencv_core.Mat hierarchy = new opencv_core.Mat();
-		opencv_imgproc.cvtColor(srcMat, grayMat, opencv_imgproc.CV_BGR2GRAY);
-		opencv_imgproc.blur(grayMat, grayMat, new opencv_core.Size(2, 2));
-		opencv_imgproc.Canny(grayMat, resultMat, 100, 200, 3, false);
+    private int width;
 
-		opencv_imgcodecs.imwrite(RESULT_IMAGE_PATH + "_" + "aaa" + ".png", resultMat);
+    private int height;
 
-		opencv_imgproc.findContours(resultMat, contours, hierarchy, opencv_imgproc.CV_RETR_TREE, opencv_imgproc.CV_CHAIN_APPROX_TC89_L1, new opencv_core.Point(0, 0));
+    private boolean[][] coloredMatrix;
 
-		opencv_core.Mat drawing = new opencv_core.Mat(resultMat.size(), opencv_core.CV_8UC3);
-//		opencv_core.Point point = new opencv_core.Point(drawing.cols() / 2, drawing.rows() / 2);
-//		int radius = Math.min(drawing.cols(), drawing.rows());
-//		opencv_imgproc.circle(drawing, point, radius, new opencv_core.Scalar(255));
+    private boolean[][] checked;
 
-		for (int i = 0; i < contours.size(); i++) {
-//			opencv_core.Scalar color = new opencv_core.Scalar(0, 255, 0, 255);
-//			opencv_imgproc.drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, new opencv_core.Point());
+    public List<Contour> detectContours(BufferedImage image) {
+        initSize(image);
+        initMatrix(image);
 
+        List<Contour> contours = new ArrayList<>();
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (coloredMatrix[i][j] && !checked[i][j]) {
+                    contours.add(getContour(new Point(i, j)));
+                }
+            }
+        }
+        return contours;
+    }
 
+    private Contour getContour(Point point) {
+        Contour contour = new Contour();
+        Queue<Point> queue = new LinkedList<>();
+        queue.add(point);
+        checked[point.getX()][point.getY()] = true;
 
-//			opencv_core.Mat imagePart = new opencv_core.Mat(srcMat.size(), srcMat.type());
-//			srcMat.copyTo(imagePart, drawing);
-//			opencv_imgcodecs.imwrite(resultImagePath + "_" + i + ".jpg", imagePart);
-//			opencv_core.Rect rect = opencv_imgproc.boundingRect(contours.get(i));
-//			opencv_core.Mat r = new opencv_core.Mat();
-//			opencv_core.inRange(new opencv_core.Mat(rect), new opencv_core.Mat(new opencv_core.Scalar(0)), new opencv_core.Mat(new opencv_core.Scalar(50)), r);
-//			opencv_imgcodecs.imwrite(resultImagePath + "_" + i + ".jpg", r);
+        while (!queue.isEmpty()) {
+            Point curr = queue.remove();
+            addPointInContour(curr, contour);
+            queue.addAll(getConnectedPoints(curr.getX(), curr.getY()));
+        }
 
-			opencv_core.Mat mask = new opencv_core.Mat(resultMat.rows(), resultMat.cols(), opencv_core.CV_8UC1);
-			opencv_imgproc.drawContours(mask, contours, i, new opencv_core.Scalar(1));
-			opencv_core.Mat crop = new opencv_core.Mat(srcMat.rows(), srcMat.cols(), opencv_core.CV_8UC3);
-			crop.setTo(new opencv_core.Mat(new opencv_core.Scalar(0, 255, 0, 0)));
-			srcMat.copyTo(crop, mask);
-			opencv_imgcodecs.imwrite(RESULT_IMAGE_PATH + "_" + i + ".png", mask);
-		}
-		return drawing;
-	}
+        for (int i = contour.getTop(); i <= contour.getBottom(); i++) {
+            for (int j = contour.getLeft(); j <= contour.getRight(); j++) {
+                if (coloredMatrix[i][j] && !checked[i][j]) {
+                    Contour child = getContour(new Point(i, j));
+                    child.setParent(contour);
+                    contour.getChildren().add(child);
+                }
+            }
+        }
+
+        return contour;
+    }
+
+    private List<Point> getConnectedPoints(int i, int j) {
+        List<Point> connected = new ArrayList<>();
+        for (short deltaI = -1; deltaI <= 1; deltaI++) {
+            for (short deltaJ = -1; deltaJ <= 1; deltaJ++) {
+                if (i + deltaI >=0 && i + deltaI < height && j + deltaJ >=0 && j + deltaJ < width) {
+                    if (coloredMatrix[i + deltaI][j + deltaJ] && !checked[i + deltaI][j + deltaJ]) {
+                        connected.add(new Point((short)(i + deltaI), (short)(j + deltaJ)));
+                        checked[i + deltaI][j + deltaJ] = true;
+                    }
+                }
+            }
+        }
+        return connected;
+    }
+
+    private void addPointInContour(Point point, Contour contour) {
+        contour.setTop(Math.min(contour.getTop(), point.getX()));
+        contour.setRight(Math.max(contour.getRight(), point.getY()));
+        contour.setBottom(Math.max(contour.getBottom(), point.getX()));
+        contour.setLeft(Math.min(contour.getLeft(), point.getY()));
+    }
+
+    private void initMatrix(BufferedImage image) {
+        coloredMatrix = new boolean[height][width];
+        for (short i = 0; i < height; i++) {
+            for (short j = 0; j < width; j++) {
+                coloredMatrix[i][j] = image.getRGB(j, i) == WHITE_RGB;
+            }
+        }
+
+        checked = new boolean[height][width];
+    }
+
+    private void initSize(BufferedImage image) {
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+    }
 }

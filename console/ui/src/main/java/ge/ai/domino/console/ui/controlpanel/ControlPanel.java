@@ -63,7 +63,7 @@ public class ControlPanel extends Application {
         root.setBottom(new ControlPanelFooter());
     }
 
-    Stage getStage() {
+    public Stage getStage() {
         return stage;
     }
 

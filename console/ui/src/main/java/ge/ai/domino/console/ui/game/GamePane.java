@@ -12,11 +12,11 @@ import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.domain.exception.DAIException;
-import ge.ai.domino.domain.game.GameProperties;
-import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
+import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
@@ -32,6 +32,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -82,6 +83,10 @@ public class GamePane extends BorderPane {
 
     private GameProperties gameProperties;
 
+    private AiPrediction bestAiPrediction;
+
+    private boolean hasPrediction;
+
     public GamePane(ControlPanel controlPanel, GameProperties gameProperties) {
         this.controlPanel = controlPanel;
         this.gameProperties = gameProperties;
@@ -89,6 +94,9 @@ public class GamePane extends BorderPane {
         showDetectTilesWindow(true);
 
         reload(false);
+
+        initKeyboardListener();
+        initFocusLoseListener();
     }
 
     private void showDetectTilesWindow(boolean firstRound) {
@@ -181,7 +189,6 @@ public class GamePane extends BorderPane {
         initTopPane();
         this.setCenter(getOpponentTilesPane());
         this.setBottom(getMyTilesPane());
-        initKeyboardListener();
         if (AppController.round.getGameInfo().isFinished()) {
             new SaveGameWindow() {
                 @Override
@@ -195,7 +202,7 @@ public class GamePane extends BorderPane {
                 }
             }.showWindow();
         }
-        if (showDetectTilesWindow && isFirsMove()) {
+        if (showDetectTilesWindow && isFirsMove() && AppController.round.getMyTiles().isEmpty()) {
             showDetectTilesWindow(false);
             reload(false);
         }
@@ -222,6 +229,29 @@ public class GamePane extends BorderPane {
         flowPane.setPadding(new Insets(0, 4, 8, 4));
         flowPane.getChildren().addAll(myPointsLabel, opponentPointLabel, bazaarCountLabel, opponentLabel, pointWorWinLabel, undoImage, skipImage);
         this.setTop(flowPane);
+    }
+
+    private void initFocusLoseListener() {
+        controlPanel.getStage().focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue) {
+                if (hasPrediction && bestAiPrediction != null) {
+                    try {
+                        Move move = bestAiPrediction.getMove();
+                        if (AppController.round.getMyTiles().size() == 1) {
+                            showAddLeftTilesCount(new Tile(move.getLeft(), move.getRight()), move.getDirection());
+                        } else {
+                            AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(move.getLeft(), move.getRight(), move.getDirection()));
+                            reload(true);
+                        }
+                    } catch (DAIException ex) {
+                        WarnDialog.showWarnDialog(ex);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        WarnDialog.showUnexpectedError();
+                    }
+                }
+            }
+        });
     }
 
     private void initKeyboardListener() {
@@ -259,6 +289,8 @@ public class GamePane extends BorderPane {
                     return;
                 } catch (NumberFormatException ignore) {
                 }
+            } else if (e.getCode() == KeyCode.ALT) {
+                fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, true, true, true, true));
             }
             if (pressedOnCtrl && arrowsVisible) {
                 if (e.getCode() == KeyCode.UP) {
@@ -480,6 +512,7 @@ public class GamePane extends BorderPane {
                 WarnDialog.showWarnDialog(Messages.get(warnMsgKey));
             }
         }
+        hasPrediction = false;
         AppController.round.getMyTiles().stream().filter(tile -> AppController.round.getMyTiles().contains(tile)).forEach(tile -> {
             VBox vBox = new VBox();
             vBox.setAlignment(Pos.TOP_CENTER);
@@ -491,6 +524,8 @@ public class GamePane extends BorderPane {
                 for (AiPrediction aiPrediction : tilePredictions) {
                     Label label = new Label(aiPrediction.getMove().getDirection().name() + "(" + formatter.format(aiPrediction.getHeuristicValue()) + ")");
                     if (aiPrediction.isBestMove()) {
+                        bestAiPrediction = aiPrediction;
+                        hasPrediction = true;
                         label.setStyle("-fx-font-size: 14px; -fx-text-fill: green; -fx-font-weight: bold");
                     }
                     vBox.getChildren().add(label);
@@ -500,6 +535,7 @@ public class GamePane extends BorderPane {
             vBox.getChildren().add(imageView);
             flowPane.getChildren().add(vBox);
         });
+
         flowPane.getChildren().addAll(leftArrow, upArrow, downArrow, rightArrow);
     }
 

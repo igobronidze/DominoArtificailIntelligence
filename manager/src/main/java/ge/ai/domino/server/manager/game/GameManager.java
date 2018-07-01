@@ -4,6 +4,7 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.game.opponentplay.OpponentTile;
@@ -16,8 +17,8 @@ import ge.ai.domino.server.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.server.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.server.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.server.manager.game.helper.game.GameOperations;
-import ge.ai.domino.server.manager.game.helper.initial.InitialUtil;
 import ge.ai.domino.server.manager.game.helper.game.MoveHelper;
+import ge.ai.domino.server.manager.game.helper.initial.InitialUtil;
 import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.server.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.server.manager.game.move.AddForOpponentProcessor;
@@ -31,7 +32,10 @@ import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GameManager {
 
@@ -144,6 +148,55 @@ public class GameManager {
         CachedGames.addMove(gameId, MoveHelper.getSkipRoundMove());
         logger.info("Skipped round, gameId[" + gameId + "]");
         return newRound;
+    }
+
+    public Round addTilesForMe(int gameId, List<Tile> tiles) throws DAIException {
+        logger.info("Start addTilesForMe method, gameId[" + gameId + "]");
+        Round round = CachedGames.getCurrentRound(gameId, true);
+        List<Tile> tilesForAdd = getAddedTiles(tiles, round.getMyTiles());
+        Tile lastAddedTile = getLastAddedTile(tilesForAdd, round.getTableInfo());
+        for (Tile tile : tilesForAdd) {
+            if (lastAddedTile == null || lastAddedTile.getRight() != tile.getRight() || lastAddedTile.getLeft() != tile.getLeft()) {
+                round = addForMeProcessor.move(round, getMove(tile.getLeft(), tile.getRight(), MoveDirection.LEFT), false);
+            }
+        }
+        if (lastAddedTile != null) {
+            round = addForMeProcessor.move(round, getMove(lastAddedTile.getLeft(), lastAddedTile.getRight(), MoveDirection.LEFT), false);
+        } else {
+            Tile tile = round.getOpponentTiles().keySet().stream().findAny().get();
+            round = addForMeProcessor.move(round, getMove(tile.getLeft(), tile.getRight(), MoveDirection.LEFT), false);
+        }
+        logger.info("Added tiles for me, gameId[" + gameId + "]");
+        return round;
+    }
+
+    private Tile getLastAddedTile(List<Tile> tiles, TableInfo tableInfo) {
+        for (Tile tile : tiles) {
+            if (canPlay(tile.getLeft(), tableInfo) || canPlay(tile.getRight(), tableInfo)) {
+                return tile;
+            }
+        }
+        return null;
+    }
+
+    private boolean canPlay(int x, TableInfo tableInfo) {
+        if (tableInfo.getTop() != null && tableInfo.getTop().getOpenSide() == x) {
+            return true;
+        }
+        if (tableInfo.getRight() != null && tableInfo.getRight().getOpenSide() == x) {
+            return true;
+        }
+        if (tableInfo.getBottom() != null && tableInfo.getBottom().getOpenSide() == x) {
+            return true;
+        }
+        if (tableInfo.getLeft() != null && tableInfo.getLeft().getOpenSide() == x) {
+            return true;
+        }
+        return false;
+    }
+
+    private List<Tile> getAddedTiles(List<Tile> tiles, Set<Tile> myTiles) {
+        return tiles.stream().filter(tile -> !myTiles.contains(tile)).collect(Collectors.toList());
     }
 
     private Move getMove(int left, int right, MoveDirection direction) {

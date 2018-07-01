@@ -3,8 +3,11 @@ package ge.ai.domino.service.game;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.server.manager.game.GameManager;
+
+import java.util.List;
 
 public class GameServiceImpl implements GameService {
 
@@ -53,5 +56,10 @@ public class GameServiceImpl implements GameService {
     @Override
     public Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe) {
         return gameManager.skipRound(gameId, myPoint, opponentPoint, leftTiles, startMe);
+    }
+
+    @Override
+    public Round addTilesForMe(int gameId, List<Tile> tiles) throws DAIException {
+        return gameManager.addTilesForMe(gameId, tiles);
     }
 }

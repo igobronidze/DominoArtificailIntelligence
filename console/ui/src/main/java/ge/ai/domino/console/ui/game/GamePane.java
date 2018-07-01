@@ -62,6 +62,8 @@ public class GamePane extends BorderPane {
 
     private static final SysParam bestMoveAutoPlay = new SysParam("bestMoveAutoPlay", "true");
 
+    private static final SysParam detectAddedTiles = new SysParam("detectAddedTiles", "true");
+
     private final TilesDetectorService tilesDetectorService = new TilesDetectorServiceImpl();
 
     private final ControlPanel controlPanel;
@@ -196,6 +198,46 @@ public class GamePane extends BorderPane {
         stage.showAndWait();
     }
 
+    private void showAddedTilesDetectWindow() {
+        controlPanel.getStage().setIconified(true);
+
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.setTitle(Messages.get("detectAddedTiles"));
+        TCHLabel label = new TCHLabel(Messages.get("executeAddedTilesDetector"));
+        TCHButton yesButton = new TCHButton(Messages.get("yes"));
+        yesButton.setOnAction(event -> {
+            try {
+                List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
+                AppController.round = gameService.addTilesForMe(AppController.round.getGameInfo().getGameId(), tiles);
+                controlPanel.getStage().setIconified(false);
+                stage.close();
+                reload(false);
+            } catch (DAIException ex) {
+                WarnDialog.showWarnDialog(ex);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                WarnDialog.showUnexpectedError();
+            }
+        });
+        TCHButton noButton = new TCHButton(Messages.get("no"));
+        noButton.setOnAction(event -> {
+            controlPanel.getStage().setIconified(false);
+            stage.close();
+        });
+        HBox hBox = new HBox(25);
+        hBox.setAlignment(Pos.TOP_CENTER);
+        hBox.getChildren().addAll(yesButton, noButton);
+        VBox vBox = new VBox(30);
+        vBox.setPadding(new Insets(20));
+        vBox.setAlignment(Pos.TOP_CENTER);
+        vBox.getChildren().addAll(label, hBox);
+        stage.setScene(new Scene(vBox));
+        stage.setWidth(390);
+        stage.setHeight(140);
+        stage.showAndWait();
+    }
+
     private void reload(boolean showDetectTilesWindow) {
         this.setPadding(new Insets(8));
         initTopPane();
@@ -216,6 +258,10 @@ public class GamePane extends BorderPane {
         }
         if (showDetectTilesWindow && isFirsMove() && AppController.round.getMyTiles().isEmpty()) {
             showDetectTilesWindow(false);
+        }
+        if (systemParameterService.getBooleanParameterValue(detectAddedTiles) && !hasPrediction && AppController.round.getTableInfo().isMyMove()
+                && AppController.round.getTableInfo().getBazaarTilesCount() != 2 && AppController.round.getTableInfo().getLeft() != null) {
+            showAddedTilesDetectWindow();
         }
     }
 

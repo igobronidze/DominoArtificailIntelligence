@@ -19,11 +19,14 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
+import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import ge.ai.domino.service.game.GameService;
 import ge.ai.domino.service.game.GameServiceImpl;
 import ge.ai.domino.service.imageprocessing.TilesDetectorService;
 import ge.ai.domino.service.imageprocessing.TilesDetectorServiceImpl;
+import ge.ai.domino.service.sysparam.SystemParameterService;
+import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -54,6 +57,10 @@ public class GamePane extends BorderPane {
     private static final int IMAGE_HEIGHT = 110;
 
     private final GameService gameService = new GameServiceImpl();
+
+    private final SystemParameterService systemParameterService = new SystemParameterServiceImpl();
+
+    private static final SysParam bestMoveAutoPlay = new SysParam("bestMoveAutoPlay", "true");
 
     private final TilesDetectorService tilesDetectorService = new TilesDetectorServiceImpl();
 
@@ -87,6 +94,8 @@ public class GamePane extends BorderPane {
 
     private boolean hasPrediction;
 
+    private boolean showingAddLeftTilesWindow;
+
     public GamePane(ControlPanel controlPanel, GameProperties gameProperties) {
         this.controlPanel = controlPanel;
         this.gameProperties = gameProperties;
@@ -115,6 +124,7 @@ public class GamePane extends BorderPane {
                 }
                 controlPanel.getStage().setIconified(false);
                 stage.close();
+                reload(false);
             } catch (DAIException ex) {
                 WarnDialog.showWarnDialog(ex);
             } catch (Exception ex) {
@@ -134,6 +144,7 @@ public class GamePane extends BorderPane {
                 AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(),
                         tiles.get(tiles.size() - 1).getLeft(), tiles.get(tiles.size() - 1).getRight());
                 controlPanel.getStage().setIconified(false);
+                reload(false);
                 stage.close();
             } catch (DAIException ex) {
                 WarnDialog.showWarnDialog(ex);
@@ -155,6 +166,7 @@ public class GamePane extends BorderPane {
                         tiles.get(tiles.size() - 1).getLeft(), tiles.get(tiles.size() - 1).getRight());
                 controlPanel.getStage().setIconified(false);
                 stage.close();
+                reload(false);
             } catch (DAIException ex) {
                 WarnDialog.showWarnDialog(ex);
             } catch (Exception ex) {
@@ -204,7 +216,6 @@ public class GamePane extends BorderPane {
         }
         if (showDetectTilesWindow && isFirsMove() && AppController.round.getMyTiles().isEmpty()) {
             showDetectTilesWindow(false);
-            reload(false);
         }
     }
 
@@ -233,8 +244,8 @@ public class GamePane extends BorderPane {
 
     private void initFocusLoseListener() {
         controlPanel.getStage().focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue) {
-                if (hasPrediction && bestAiPrediction != null) {
+            if (systemParameterService.getBooleanParameterValue(bestMoveAutoPlay) && oldValue) {
+                if (hasPrediction && bestAiPrediction != null && !showingAddLeftTilesWindow) {
                     try {
                         Move move = bestAiPrediction.getMove();
                         if (AppController.round.getMyTiles().size() == 1) {
@@ -243,6 +254,17 @@ public class GamePane extends BorderPane {
                             AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(move.getLeft(), move.getRight(), move.getDirection()));
                             reload(true);
                         }
+                    } catch (DAIException ex) {
+                        WarnDialog.showWarnDialog(ex);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        WarnDialog.showUnexpectedError();
+                    }
+                } else if (!hasPrediction && AppController.round.getTableInfo().isMyMove() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
+                    try {
+                        Tile tile = new ArrayList<>(AppController.round.getOpponentTiles().keySet()).get(0);
+                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                        reload(true);
                     } catch (DAIException ex) {
                         WarnDialog.showWarnDialog(ex);
                     } catch (Exception ex) {
@@ -383,6 +405,7 @@ public class GamePane extends BorderPane {
     }
 
     private void showAddLeftTilesCount(final Tile playedTile, final MoveDirection direction) {
+        showingAddLeftTilesWindow = true;
         Stage stage = new Stage();
         stage.setResizable(false);
         stage.initStyle(StageStyle.UNDECORATED);
@@ -407,6 +430,7 @@ public class GamePane extends BorderPane {
             }
             stage.close();
             reload(true);
+            showingAddLeftTilesWindow = false;
         });
         VBox vBox = new VBox(10);
         vBox.setPadding(new Insets(20));

@@ -77,6 +77,7 @@ public class GameManager {
     }
 
     public Round addTileForOpponent(int gameId) throws DAIException {
+        checkMinMaxInProgress(gameId);
         Round round = CachedGames.getCurrentRound(gameId, true);
         CachedGames.addOpponentPlay(gameId, new OpponentPlay(0, gameId, ProjectVersionUtil.getVersion(), MoveType.ADD_FOR_OPPONENT,
                 new Tile(0, 0), getOpponentTilesWrapper(round.getOpponentTiles()), new ArrayList<>(GameOperations.getPossiblePlayNumbers(round.getTableInfo()))));
@@ -105,6 +106,7 @@ public class GameManager {
     }
 
     public Round playForOpponent(int gameId, Move move) throws DAIException {
+        checkMinMaxInProgress(gameId);
         move = getMove(move);
         Round round = CachedGames.getCurrentRound(gameId, true);
         MoveValidator.validateMove(round, move);
@@ -170,6 +172,12 @@ public class GameManager {
         return round;
     }
 
+    private void checkMinMaxInProgress(int gameId) throws DAIException {
+        if (CachedMinMax.isMinMaxInProgress(gameId)) {
+            throw new DAIException("minMaxIsInProgress");
+        }
+    }
+
     private Tile getLastAddedTile(List<Tile> tiles, TableInfo tableInfo) {
         for (Tile tile : tiles) {
             if (canPlay(tile.getLeft(), tableInfo) || canPlay(tile.getRight(), tableInfo)) {
@@ -215,7 +223,7 @@ public class GameManager {
         return opponentTilesWrapper;
     }
 
-    private void changeCachedNodeRound(long gameId, Move move) throws DAIException {
+    private void changeCachedNodeRound(int gameId, Move move) throws DAIException {
         if (CachedMinMax.needChange(gameId)) {
             NodeRound nodeRound = CachedMinMax.getNodeRound(gameId);
             if (nodeRound != null) {

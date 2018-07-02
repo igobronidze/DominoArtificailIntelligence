@@ -30,6 +30,8 @@ public abstract class MinMax implements AiSolver {
 
 	private final SysParam checkOpponentProbabilities = new SysParam("checkOpponentProbabilities", "false");
 
+	protected final SysParam useMinMaxPredictor = new SysParam("useMinMaxPredictor", "false");
+
 	private NodeRound notValidRound;
 
 	private String errorMsg;

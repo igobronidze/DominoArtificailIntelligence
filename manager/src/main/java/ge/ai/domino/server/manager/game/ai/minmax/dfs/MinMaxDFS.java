@@ -98,13 +98,43 @@ public class MinMaxDFS extends MinMax {
 		return "DFS";
 	}
 
+	@SuppressWarnings("Duplicates")
 	private AiPredictionsWrapper minMax(NodeRound nodeRound) throws DAIException {
 		long ms = System.currentTimeMillis();
 		List<Move> moves = getPossibleMoves(nodeRound.getRound());
+		logger.info("Ai predictions:");
+		if (moves.isEmpty()) {
+			logger.info("No AIPrediction");
+			return null;
+		}
+		if (moves.size() == 1) {
+			if (systemParameterManager.getBooleanParameterValue(useMinMaxPredictor)) {
+				new Thread(() -> {
+					try {
+						CachedMinMax.changeMinMaxInProgress(gameId, true);
+						minMaxForMoves(moves, nodeRound, ms);
+						CachedMinMax.changeMinMaxInProgress(gameId, false);
+					} catch (DAIException ex) {
+						logger.error(ex);
+					}
+				});
+			}
+			AiPredictionsWrapper aiPredictionsWrapper = new AiPredictionsWrapper();
+			AiPrediction aiPrediction = new AiPrediction();
+			aiPrediction.setMove(moves.get(0));
+			aiPrediction.setBestMove(true);
+			aiPredictionsWrapper.getAiPredictions().add(aiPrediction);
+			return aiPredictionsWrapper;
+		} else {
+			return minMaxForMoves(moves, nodeRound, ms);
+		}
+	}
+
+	private AiPredictionsWrapper minMaxForMoves(List<Move> moves, NodeRound nodeRound, long ms) throws DAIException {
+		List<AiPrediction> aiPredictions = new ArrayList<>();
 		AiPrediction bestAiPrediction = null;
 		NodeRound bestNodeRound = null;
-		List<AiPrediction> aiPredictions = new ArrayList<>();
-		logger.info("Ai predictions:");
+
 		for (Move move : moves) {
 			Round nextRound = playForMeProcessor.move(CloneUtil.getClone(nodeRound.getRound()), move, true);
 			NodeRound nextNodeRound = new NodeRound();

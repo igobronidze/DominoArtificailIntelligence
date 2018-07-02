@@ -106,6 +106,7 @@ public class MinMaxBFS extends MinMax {
         return "BFS";
     }
 
+    @SuppressWarnings("Duplicates")
     private AiPredictionsWrapper minMax(NodeRound nodeRound) throws DAIException {
         long ms = System.currentTimeMillis();
         List<Move> moves = getPossibleMoves(nodeRound.getRound());
@@ -114,6 +115,30 @@ public class MinMaxBFS extends MinMax {
             logger.info("No AIPrediction");
             return null;
         }
+        if (moves.size() == 1) {
+            if (systemParameterManager.getBooleanParameterValue(useMinMaxPredictor)) {
+                new Thread(() -> {
+                    try {
+                        CachedMinMax.changeMinMaxInProgress(gameId, true);
+                        minMaxForMoves(moves, nodeRound, ms);
+                        CachedMinMax.changeMinMaxInProgress(gameId, false);
+                    } catch (DAIException ex) {
+                        logger.error(ex);
+                    }
+                });
+            }
+            AiPredictionsWrapper aiPredictionsWrapper = new AiPredictionsWrapper();
+            AiPrediction aiPrediction = new AiPrediction();
+            aiPrediction.setMove(moves.get(0));
+            aiPrediction.setBestMove(true);
+            aiPredictionsWrapper.getAiPredictions().add(aiPrediction);
+            return aiPredictionsWrapper;
+        } else {
+            return minMaxForMoves(moves, nodeRound, ms);
+        }
+    }
+
+    private AiPredictionsWrapper minMaxForMoves(List<Move> moves, NodeRound nodeRound, long ms) throws DAIException {
         for (Move move : moves) {
             Round nextRound = playForMeProcessor.move(CloneUtil.getClone(nodeRound.getRound()), move, true);
             NodeRound nextNodeRound = new NodeRound();

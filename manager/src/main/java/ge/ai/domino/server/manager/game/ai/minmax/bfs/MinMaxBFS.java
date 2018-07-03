@@ -72,11 +72,7 @@ public class MinMaxBFS extends MinMax {
 
         NodeRound nodeRound = new NodeRound();
         nodeRound.setRound(round);
-        AiPredictionsWrapper aiPredictionsWrapper = minMax(nodeRound);
-        if (new MinMaxPredictor().usePredictor()) {
-            CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, true);
-        }
-        return aiPredictionsWrapper;
+        return minMax(nodeRound);
     }
 
     @Override
@@ -121,20 +117,34 @@ public class MinMaxBFS extends MinMax {
                     try {
                         CachedMinMax.changeMinMaxInProgress(gameId, true);
                         minMaxForMoves(moves, nodeRound, ms);
+                        if (new MinMaxPredictor().usePredictor()) {
+                            int gameId = nodeRound.getRound().getGameInfo().getGameId();
+                            if (CachedMinMax.isUseFirstChild(gameId)) {
+                                CachedMinMax.changeUseFirstChild(gameId, false);
+                                CachedMinMax.setLastNodeRound(gameId, nodeRound.getChildren().get(0), false);
+                            } else {
+                                CachedMinMax.setLastNodeRound(gameId, nodeRound, true);
+                            }
+                        }
                         CachedMinMax.changeMinMaxInProgress(gameId, false);
                     } catch (DAIException ex) {
                         logger.error(ex);
                     }
-                });
+                }).start();
             }
             AiPredictionsWrapper aiPredictionsWrapper = new AiPredictionsWrapper();
             AiPrediction aiPrediction = new AiPrediction();
             aiPrediction.setMove(moves.get(0));
             aiPrediction.setBestMove(true);
+            aiPrediction.setHeuristicValue(Integer.MIN_VALUE);
             aiPredictionsWrapper.getAiPredictions().add(aiPrediction);
             return aiPredictionsWrapper;
         } else {
-            return minMaxForMoves(moves, nodeRound, ms);
+            AiPredictionsWrapper aiPredictionsWrapper = minMaxForMoves(moves, nodeRound, ms);
+            if (new MinMaxPredictor().usePredictor()) {
+                CachedMinMax.setLastNodeRound(nodeRound.getRound().getGameInfo().getGameId(), nodeRound, true);
+            }
+            return aiPredictionsWrapper;
         }
     }
 

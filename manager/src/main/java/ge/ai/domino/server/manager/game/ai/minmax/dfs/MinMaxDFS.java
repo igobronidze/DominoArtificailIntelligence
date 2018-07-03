@@ -71,11 +71,7 @@ public class MinMaxDFS extends MinMax {
 
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
-		AiPredictionsWrapper aiPredictionsWrapper = minMax(nodeRound);
-		if (new MinMaxPredictor().usePredictor()) {
-			CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, true);
-		}
-		return aiPredictionsWrapper;
+		return minMax(nodeRound);
 	}
 
 	@Override
@@ -113,20 +109,28 @@ public class MinMaxDFS extends MinMax {
 					try {
 						CachedMinMax.changeMinMaxInProgress(gameId, true);
 						minMaxForMoves(moves, nodeRound, ms);
+						if (new MinMaxPredictor().usePredictor()) {
+							CachedMinMax.setLastNodeRound(nodeRound.getRound().getGameInfo().getGameId(), nodeRound, true);
+						}
 						CachedMinMax.changeMinMaxInProgress(gameId, false);
 					} catch (DAIException ex) {
 						logger.error(ex);
 					}
-				});
+				}).start();
 			}
 			AiPredictionsWrapper aiPredictionsWrapper = new AiPredictionsWrapper();
 			AiPrediction aiPrediction = new AiPrediction();
 			aiPrediction.setMove(moves.get(0));
 			aiPrediction.setBestMove(true);
+			aiPrediction.setHeuristicValue(Integer.MIN_VALUE);
 			aiPredictionsWrapper.getAiPredictions().add(aiPrediction);
 			return aiPredictionsWrapper;
 		} else {
-			return minMaxForMoves(moves, nodeRound, ms);
+			AiPredictionsWrapper aiPredictionsWrapper = minMaxForMoves(moves, nodeRound, ms);
+			if (new MinMaxPredictor().usePredictor()) {
+				CachedMinMax.setLastNodeRound(nodeRound.getRound().getGameInfo().getGameId(), nodeRound, true);
+			}
+			return aiPredictionsWrapper;
 		}
 	}
 

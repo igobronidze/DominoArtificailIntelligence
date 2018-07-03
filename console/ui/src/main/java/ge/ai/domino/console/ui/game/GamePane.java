@@ -306,7 +306,7 @@ public class GamePane extends BorderPane {
                         ex.printStackTrace();
                         WarnDialog.showUnexpectedError();
                     }
-                } else if (!hasPrediction && AppController.round.getTableInfo().isMyMove() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
+                } else if (AppController.round != null && !hasPrediction && AppController.round.getTableInfo().isMyMove() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
                     try {
                         Tile tile = new ArrayList<>(AppController.round.getOpponentTiles().keySet()).get(0);
                         AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
@@ -592,7 +592,8 @@ public class GamePane extends BorderPane {
             if (!tilePredictions.isEmpty()) {
                 NumberFormat formatter = new DecimalFormat("#0.0000");
                 for (AiPrediction aiPrediction : tilePredictions) {
-                    Label label = new Label(aiPrediction.getMove().getDirection().name() + "(" + formatter.format(aiPrediction.getHeuristicValue()) + ")");
+                    String heuristic = aiPrediction.getHeuristicValue() == Integer.MIN_VALUE ? "NAN" : formatter.format(aiPrediction.getHeuristicValue());
+                    Label label = new Label(aiPrediction.getMove().getDirection().name() + "(" + heuristic + ")");
                     if (aiPrediction.isBestMove()) {
                         bestAiPrediction = aiPrediction;
                         hasPrediction = true;

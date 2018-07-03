@@ -224,7 +224,9 @@ public class GameManager {
     }
 
     private void changeCachedNodeRound(int gameId, Move move) throws DAIException {
-        if (CachedMinMax.needChange(gameId)) {
+        if (CachedMinMax.isMinMaxInProgress(gameId)) {
+            CachedMinMax.changeUseFirstChild(gameId, true);
+        } else if (CachedMinMax.needChange(gameId)) {
             NodeRound nodeRound = CachedMinMax.getNodeRound(gameId);
             if (nodeRound != null) {
                 for (NodeRound child : nodeRound.getChildren()) {

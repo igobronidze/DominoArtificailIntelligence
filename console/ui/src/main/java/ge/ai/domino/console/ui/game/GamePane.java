@@ -259,7 +259,7 @@ public class GamePane extends BorderPane {
         if (showDetectTilesWindow && isFirsMove() && AppController.round.getMyTiles().isEmpty()) {
             showDetectTilesWindow(false);
         }
-        if (systemParameterService.getBooleanParameterValue(detectAddedTiles) && !hasPrediction && AppController.round.getTableInfo().isMyMove()
+        if (AppController.round != null && systemParameterService.getBooleanParameterValue(detectAddedTiles) && !hasPrediction && AppController.round.getTableInfo().isMyMove()
                 && AppController.round.getTableInfo().getBazaarTilesCount() != 2 && AppController.round.getTableInfo().getLeft() != null) {
             showAddedTilesDetectWindow();
         }
@@ -474,9 +474,9 @@ public class GamePane extends BorderPane {
                 ex.printStackTrace();
                 WarnDialog.showUnexpectedError();
             }
+            showingAddLeftTilesWindow = false;
             stage.close();
             reload(true);
-            showingAddLeftTilesWindow = false;
         });
         VBox vBox = new VBox(10);
         vBox.setPadding(new Insets(20));

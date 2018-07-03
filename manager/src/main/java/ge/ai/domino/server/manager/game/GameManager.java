@@ -157,8 +157,9 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId, true);
         List<Tile> tilesForAdd = getAddedTiles(tiles, round.getMyTiles());
         Tile lastAddedTile = getLastAddedTile(tilesForAdd, round.getTableInfo());
+        logger.info("Last added tile: "  + lastAddedTile);
         for (Tile tile : tilesForAdd) {
-            if (lastAddedTile == null || lastAddedTile.getRight() != tile.getRight() || lastAddedTile.getLeft() != tile.getLeft()) {
+            if (lastAddedTile == null || !lastAddedTile.equals(tile)) {
                 round = addForMeProcessor.move(round, getMove(tile.getLeft(), tile.getRight(), MoveDirection.LEFT), false);
             }
         }
@@ -188,19 +189,10 @@ public class GameManager {
     }
 
     private boolean canPlay(int x, TableInfo tableInfo) {
-        if (tableInfo.getTop() != null && tableInfo.getTop().getOpenSide() == x) {
-            return true;
-        }
-        if (tableInfo.getRight() != null && tableInfo.getRight().getOpenSide() == x) {
-            return true;
-        }
-        if (tableInfo.getBottom() != null && tableInfo.getBottom().getOpenSide() == x) {
-            return true;
-        }
-        if (tableInfo.getLeft() != null && tableInfo.getLeft().getOpenSide() == x) {
-            return true;
-        }
-        return false;
+        return (tableInfo.getTop() != null && tableInfo.getTop().getOpenSide() == x) ||
+                (tableInfo.getRight() != null && tableInfo.getRight().getOpenSide() == x) ||
+                (tableInfo.getBottom() != null && tableInfo.getBottom().getOpenSide() == x) ||
+                (tableInfo.getLeft() != null && tableInfo.getLeft().getOpenSide() == x);
     }
 
     private List<Tile> getAddedTiles(List<Tile> tiles, Set<Tile> myTiles) {

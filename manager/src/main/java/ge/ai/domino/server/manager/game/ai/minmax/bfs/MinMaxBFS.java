@@ -195,7 +195,7 @@ public class MinMaxBFS extends MinMax {
         }
 
         double tookMs = System.currentTimeMillis() - ms;
-        logger.info("MinMaxDFS took " + tookMs + "ms, iteration " + iteration + ", average " + (tookMs / iteration));
+        logger.info("MinMaxBFS took " + tookMs + "ms, iteration " + iteration + ", average " + (tookMs / iteration));
         iteration = 0;
         nodeRound.setHeuristic(bestAiPrediction.getHeuristicValue());
         logger.info("AIPrediction is [" + bestAiPrediction.getMove().getLeft() + "-" + bestAiPrediction.getMove().getRight() + " " +

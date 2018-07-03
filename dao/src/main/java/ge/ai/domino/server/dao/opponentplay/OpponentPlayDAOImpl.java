@@ -3,7 +3,9 @@ package ge.ai.domino.server.dao.opponentplay;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.move.MoveType;
-import ge.ai.domino.server.dao.DatabaseUtil;
+import ge.ai.domino.server.dao.connection.ConnectionUtil;
+import ge.ai.domino.server.dao.query.FilterCondition;
+import ge.ai.domino.server.dao.query.QueryUtil;
 import ge.ai.domino.util.string.StringUtil;
 import org.apache.log4j.Logger;
 
@@ -19,6 +21,22 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
 
     private static final String POSSIBLE_PLAY_NUMBERS_DELIMITER = ",";
 
+    private static final String OPPONENT_PLAY_TABLE_NAME = "opponent_play";
+
+    private static final String ID_COLUMN_NAME = "id";
+
+    private static final String GAME_ID_COLUMN_NAME = "game_id";
+
+    private static final String VERSION_COLUMN_NAME = "version";
+
+    private static final String MOVE_TYPE_COLUMN_NAME = "move_type";
+
+    private static final String TILE_COLUMN_NAME = "tile";
+
+    private static final String OPPONENT_TILES_COLUMN_NAME = "opponent_tiles";
+
+    private static final String POSSIBLE_PLAY_NUMBERS_COLUMN_NAME = "possible_play_numbers";
+
     private PreparedStatement pstmt;
 
     @Override
@@ -26,8 +44,9 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
         try {
             logger.info("Start addOpponentPlays method count[" + opponentPlays.size() + "]");
             for (OpponentPlay opponentPlay : opponentPlays) {
-                String sql = "INSERT INTO opponent_play (game_id, version, move_type, tile, opponent_tiles, possible_play_numbers) VALUES (?,?,?,?,?,?);";
-                pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
+                String sql = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?);",
+                        OPPONENT_PLAY_TABLE_NAME, GAME_ID_COLUMN_NAME, VERSION_COLUMN_NAME, MOVE_TYPE_COLUMN_NAME, TILE_COLUMN_NAME, OPPONENT_TILES_COLUMN_NAME, POSSIBLE_PLAY_NUMBERS_COLUMN_NAME);
+                pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
                 pstmt.setInt(1, opponentPlay.getGameId());
                 pstmt.setString(2, opponentPlay.getVersion());
                 pstmt.setString(3, opponentPlay.getMoveType().name());
@@ -40,7 +59,7 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
         } catch (SQLException ex) {
             logger.error("Error occurred while add opponent plays", ex);
         } finally {
-            DatabaseUtil.closeConnection();
+            ConnectionUtil.closeConnection();
         }
     }
 
@@ -48,30 +67,30 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
     public List<OpponentPlay> getOpponentPlays(String version, Integer gameId) {
         List<OpponentPlay> opponentPlays = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM opponent_play WHERE 1 = 1 ";
+            StringBuilder sql = new StringBuilder(String.format("SELECT * FROM %s WHERE 1 = 1 ", OPPONENT_PLAY_TABLE_NAME));
             if (!StringUtil.isEmpty(version)) {
-                sql += "AND version = '" + version + "' ";
+                QueryUtil.addFilter(sql, VERSION_COLUMN_NAME, version, FilterCondition.EQUAL, true);
             }
             if (gameId != null) {
-                sql += "AND game_id = '" + gameId + "' ";
+                QueryUtil.addFilter(sql, GAME_ID_COLUMN_NAME, String.valueOf(gameId), FilterCondition.EQUAL, true);
             }
-            pstmt = DatabaseUtil.getConnection().prepareStatement(sql);
+            pstmt = ConnectionUtil.getConnection().prepareStatement(sql.toString());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 OpponentPlay opponentPlay = new OpponentPlay();
-                opponentPlay.setId(rs.getInt("id"));
-                opponentPlay.setVersion(rs.getString("version"));
-                opponentPlay.setGameId(rs.getInt("game_id"));
-                opponentPlay.setMoveType(MoveType.valueOf(rs.getString("move_type")));
-                opponentPlay.setTile(parseTile(rs.getString("tile")));
-                opponentPlay.setOpponentTiles(OpponentTilesMarshaller.unmarshallOpponentTiles(rs.getString("opponent_tiles")));
-                opponentPlay.setPossiblePlayNumbers(splitPossiblePlayNumbers(rs.getString("possible_play_numbers")));
+                opponentPlay.setId(rs.getInt(ID_COLUMN_NAME));
+                opponentPlay.setVersion(rs.getString(VERSION_COLUMN_NAME));
+                opponentPlay.setGameId(rs.getInt(GAME_ID_COLUMN_NAME));
+                opponentPlay.setMoveType(MoveType.valueOf(rs.getString(MOVE_TYPE_COLUMN_NAME)));
+                opponentPlay.setTile(parseTile(rs.getString(TILE_COLUMN_NAME)));
+                opponentPlay.setOpponentTiles(OpponentTilesMarshaller.unmarshallOpponentTiles(rs.getString(OPPONENT_TILES_COLUMN_NAME)));
+                opponentPlay.setPossiblePlayNumbers(splitPossiblePlayNumbers(rs.getString(POSSIBLE_PLAY_NUMBERS_COLUMN_NAME)));
                 opponentPlays.add(opponentPlay);
             }
         } catch (SQLException ex) {
             logger.error("Error occurred while getting opponent plays", ex);
         } finally {
-            DatabaseUtil.closeConnection();
+            ConnectionUtil.closeConnection();
         }
         return opponentPlays;
     }

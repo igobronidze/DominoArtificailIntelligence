@@ -1,4 +1,4 @@
-package ge.ai.domino.server.dao;
+package ge.ai.domino.server.dao.connection;
 
 import ge.ai.domino.util.properties.DAIPropertiesUtil;
 import org.apache.log4j.Logger;
@@ -7,9 +7,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DatabaseUtil {
+public class ConnectionUtil {
 
-    private static final Logger logger = Logger.getLogger(DatabaseUtil.class);
+    private static final Logger logger = Logger.getLogger(ConnectionUtil.class);
 
     private static String databaseDriver;
 

@@ -1,7 +1,7 @@
 package ge.ai.domino.service.opponentplays;
 
 import ge.ai.domino.domain.game.opponentplay.GroupedOpponentPlay;
-import ge.ai.domino.server.manager.opponentplay.OpponentPlaysManager;
+import ge.ai.domino.manager.opponentplay.OpponentPlaysManager;
 
 import java.util.List;
 

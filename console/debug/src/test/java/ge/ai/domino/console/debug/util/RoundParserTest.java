@@ -7,7 +7,7 @@ import ge.ai.domino.domain.game.RoundBlockingInfo;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.played.PlayedTile;
-import ge.ai.domino.server.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
 import org.junit.Assert;
 import org.junit.Test;
 

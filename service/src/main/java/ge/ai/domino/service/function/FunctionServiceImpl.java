@@ -1,6 +1,6 @@
 package ge.ai.domino.service.function;
 
-import ge.ai.domino.server.manager.function.FunctionManager;
+import ge.ai.domino.manager.function.FunctionManager;
 
 public class FunctionServiceImpl implements FunctionService {
 

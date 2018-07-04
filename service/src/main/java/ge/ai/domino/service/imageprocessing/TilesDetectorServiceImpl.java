@@ -2,7 +2,7 @@ package ge.ai.domino.service.imageprocessing;
 
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Tile;
-import ge.ai.domino.server.manager.imageprocessing.TilesDetectorManager;
+import ge.ai.domino.manager.imageprocessing.TilesDetectorManager;
 
 import java.util.List;
 

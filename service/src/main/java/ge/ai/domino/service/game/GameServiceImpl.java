@@ -5,7 +5,7 @@ import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
-import ge.ai.domino.server.manager.game.GameManager;
+import ge.ai.domino.manager.game.GameManager;
 
 import java.util.List;
 

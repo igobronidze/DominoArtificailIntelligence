@@ -4,10 +4,10 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.domain.sysparam.SystemParameter;
 import ge.ai.domino.domain.sysparam.SystemParameterType;
-import ge.ai.domino.server.caching.sysparam.CachedSystemParameter;
-import ge.ai.domino.server.dao.sysparam.SystemParameterDAO;
-import ge.ai.domino.server.dao.sysparam.SystemParameterDAOImpl;
-import ge.ai.domino.server.manager.sysparam.SystemParameterManager;
+import ge.ai.domino.caching.sysparam.CachedSystemParameter;
+import ge.ai.domino.dao.sysparam.SystemParameterDAO;
+import ge.ai.domino.dao.sysparam.SystemParameterDAOImpl;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package ge.ai.domino.service.initial;
 
 import ge.ai.domino.domain.initial.InitialData;
-import ge.ai.domino.server.manager.initial.InitialDataManager;
+import ge.ai.domino.manager.initial.InitialDataManager;
 
 public class InitialDataServiceImpl implements InitialDataService {
 

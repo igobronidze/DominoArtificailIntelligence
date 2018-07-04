@@ -1,10 +1,13 @@
 package ge.ai.domino.console.ui.sysparam;
 
-import ge.ai.domino.console.ui.tchcomponents.*;
+import ge.ai.domino.console.ui.tchcomponents.TCHButton;
+import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
+import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
+import ge.ai.domino.console.ui.tchcomponents.TCHFieldLabel;
+import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
-import ge.ai.domino.console.ui.util.dialog.DAIExceptionHandling;
-import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.domain.sysparam.SystemParameter;
 import ge.ai.domino.domain.sysparam.SystemParameterType;
 import ge.ai.domino.service.sysparam.SystemParameterService;
@@ -16,16 +19,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SystemParametersPane extends HBox {
 
@@ -114,7 +121,7 @@ public class SystemParametersPane extends HBox {
             String type = typeComboBox.getValue().toString();
             SystemParameter systemParameter = new SystemParameter(0, key, value, SystemParameterType.valueOf(type));
             if (!key.isEmpty() && !value.isEmpty()) {
-                try {
+                ServiceExecutor.execute(() -> {
                     if (keyField.isDisabled()) {
                         systemParameterService.editSystemParameter(systemParameter);
                     } else {
@@ -122,9 +129,7 @@ public class SystemParametersPane extends HBox {
                     }
                     clearFields();
                     loadSystemParameters();
-                } catch (DAIException ex) {
-                    DAIExceptionHandling.handleException(ex);
-                }
+                });
             }
         });
         hBox.getChildren().addAll(saveButton, cleanButton);
@@ -153,12 +158,10 @@ public class SystemParametersPane extends HBox {
             cellButton.setPrefWidth(25);
             cellButton.setOnAction(t -> {
                 SystemParameterProperty systemParameterProperty = DeleteButtonCell.this.getTableView().getItems().get(DeleteButtonCell.this.getIndex());
-                try {
+                ServiceExecutor.execute(() -> {
                     systemParameterService.deleteSystemParameter(systemParameterProperty.getKey());
                     loadSystemParameters();
-                } catch (DAIException ex) {
-                    DAIExceptionHandling.handleException(ex);
-                }
+                });
             });
         }
         @Override
@@ -172,10 +175,7 @@ public class SystemParametersPane extends HBox {
 
     private void loadSystemParameters() {
         List<SystemParameter> systemParameters = systemParameterService.getSystemParameters(null, null);
-        List<SystemParameterProperty> systemParameterProperties = new ArrayList<>();
-        for (SystemParameter systemParameter : systemParameters) {
-            systemParameterProperties.add(new SystemParameterProperty(systemParameter));
-        }
+        List<SystemParameterProperty> systemParameterProperties = systemParameters.stream().map(SystemParameterProperty::new).collect(Collectors.toList());
         ObservableList<SystemParameterProperty> data = FXCollections.observableArrayList(systemParameterProperties);
         tableView.setItems(data);
     }

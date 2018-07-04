@@ -3,15 +3,11 @@ package ge.ai.domino.console.ui.game;
 import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.controlpanel.ControlPanel;
 import ge.ai.domino.console.ui.gameproperties.GamePropertiesPane;
-import ge.ai.domino.console.ui.tchcomponents.TCHButton;
-import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
-import ge.ai.domino.console.ui.tchcomponents.TCHFieldLabel;
 import ge.ai.domino.console.ui.tchcomponents.TCHLabel;
-import ge.ai.domino.console.ui.tchcomponents.TCHNumberTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
-import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.TableInfo;
@@ -30,8 +26,6 @@ import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -40,8 +34,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -56,13 +48,13 @@ public class GamePane extends BorderPane {
 
     private static final int IMAGE_HEIGHT = 110;
 
-    private final GameService gameService = new GameServiceImpl();
-
-    private final SystemParameterService systemParameterService = new SystemParameterServiceImpl();
-
     private static final SysParam bestMoveAutoPlay = new SysParam("bestMoveAutoPlay", "true");
 
     private static final SysParam detectAddedTiles = new SysParam("detectAddedTiles", "true");
+
+    private final SystemParameterService systemParameterService = new SystemParameterServiceImpl();
+
+    private final GameService gameService = new GameServiceImpl();
 
     private final TilesDetectorService tilesDetectorService = new TilesDetectorServiceImpl();
 
@@ -113,129 +105,77 @@ public class GamePane extends BorderPane {
     private void showDetectTilesWindow(boolean firstRound) {
         controlPanel.getStage().setIconified(true);
 
-        Stage stage = new Stage();
-        stage.setResizable(false);
-        stage.setTitle(Messages.get("detectTiles"));
-        TCHLabel label = new TCHLabel(Messages.get("executeTilesDetector"));
-        TCHButton yesButton = new TCHButton(Messages.get("yes"));
-        yesButton.setOnAction(event -> {
-            try {
-                List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
-                for (Tile tile : tiles) {
-                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                }
-                controlPanel.getStage().setIconified(false);
-                stage.close();
-                reload(false);
-            } catch (DAIException ex) {
-                WarnDialog.showWarnDialog(ex);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                WarnDialog.showUnexpectedError();
+        new DetectTilesWindow() {
+            @Override
+            public void onYes() {
+                ServiceExecutor.execute(() -> {
+                    List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
+                    for (Tile tile : tiles) {
+                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                    }
+                    controlPanel.getStage().setIconified(false);
+                    reload(false);
+                });
             }
-        });
-        TCHButton startMeButton = new TCHButton(Messages.get("yesAndStartMe"));
-        startMeButton.setOnAction(event -> {
-            try {
-                List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
-                for (int i = 0; i < tiles.size() - 1; i++) {
-                    Tile tile = tiles.get(i);
-                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                }
-                gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
-                AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(),
-                        tiles.get(tiles.size() - 1).getLeft(), tiles.get(tiles.size() - 1).getRight());
-                controlPanel.getStage().setIconified(false);
-                reload(false);
-                stage.close();
-            } catch (DAIException ex) {
-                WarnDialog.showWarnDialog(ex);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                WarnDialog.showUnexpectedError();
+
+            @Override
+            public void onStartMe() {
+                ServiceExecutor.execute(() -> {
+                    List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
+                    for (int i = 0; i < tiles.size() - 1; i++) {
+                        Tile tile = tiles.get(i);
+                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                    }
+                    gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
+                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(),
+                            tiles.get(tiles.size() - 1).getLeft(), tiles.get(tiles.size() - 1).getRight());
+                    controlPanel.getStage().setIconified(false);
+                    reload(false);
+                });
             }
-        });
-        TCHButton startHeButton = new TCHButton(Messages.get("yesAndStartHe"));
-        startHeButton.setOnAction(event -> {
-            try {
-                List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
-                for (int i = 0; i < tiles.size() - 1; i++) {
-                    Tile tile = tiles.get(i);
-                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                }
-                gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
-                AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(),
-                        tiles.get(tiles.size() - 1).getLeft(), tiles.get(tiles.size() - 1).getRight());
-                controlPanel.getStage().setIconified(false);
-                stage.close();
-                reload(false);
-            } catch (DAIException ex) {
-                WarnDialog.showWarnDialog(ex);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                WarnDialog.showUnexpectedError();
+
+            @Override
+            public void onStartHe() {
+                ServiceExecutor.execute(() -> {
+                    List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
+                    for (int i = 0; i < tiles.size() - 1; i++) {
+                        Tile tile = tiles.get(i);
+                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                    }
+                    gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
+                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(),
+                            tiles.get(tiles.size() - 1).getLeft(), tiles.get(tiles.size() - 1).getRight());
+                    controlPanel.getStage().setIconified(false);
+                    reload(false);
+                });
             }
-        });
-        TCHButton noButton = new TCHButton(Messages.get("no"));
-        noButton.setOnAction(event -> {
-            controlPanel.getStage().setIconified(false);
-            stage.close();
-        });
-        HBox hBox = new HBox(25);
-        hBox.setAlignment(Pos.TOP_CENTER);
-        if (firstRound) {
-            hBox.getChildren().addAll(startMeButton, startHeButton, noButton);
-        } else {
-            hBox.getChildren().addAll(yesButton, noButton);
-        }
-        VBox vBox = new VBox(30);
-        vBox.setPadding(new Insets(20));
-        vBox.setAlignment(Pos.TOP_CENTER);
-        vBox.getChildren().addAll(label, hBox);
-        stage.setScene(new Scene(vBox));
-        stage.setWidth(350);
-        stage.setHeight(140);
-        stage.showAndWait();
+
+            @Override
+            public void onNo() {
+                controlPanel.getStage().setIconified(false);
+            }
+        }.showWindow(firstRound);
     }
 
     private void showAddedTilesDetectWindow() {
         controlPanel.getStage().setIconified(true);
 
-        Stage stage = new Stage();
-        stage.setResizable(false);
-        stage.setTitle(Messages.get("detectAddedTiles"));
-        TCHLabel label = new TCHLabel(Messages.get("executeAddedTilesDetector"));
-        TCHButton yesButton = new TCHButton(Messages.get("yes"));
-        yesButton.setOnAction(event -> {
-            try {
-                List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
-                AppController.round = gameService.addTilesForMe(AppController.round.getGameInfo().getGameId(), tiles);
-                controlPanel.getStage().setIconified(false);
-                stage.close();
-                reload(false);
-            } catch (DAIException ex) {
-                WarnDialog.showWarnDialog(ex);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                WarnDialog.showUnexpectedError();
+        new AddTilesDetectWindow() {
+            @Override
+            public void onYes() {
+                ServiceExecutor.execute(() -> {
+                    List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
+                    AppController.round = gameService.addTilesForMe(AppController.round.getGameInfo().getGameId(), tiles);
+                    controlPanel.getStage().setIconified(false);
+                    reload(false);
+                });
             }
-        });
-        TCHButton noButton = new TCHButton(Messages.get("no"));
-        noButton.setOnAction(event -> {
-            controlPanel.getStage().setIconified(false);
-            stage.close();
-        });
-        HBox hBox = new HBox(25);
-        hBox.setAlignment(Pos.TOP_CENTER);
-        hBox.getChildren().addAll(yesButton, noButton);
-        VBox vBox = new VBox(30);
-        vBox.setPadding(new Insets(20));
-        vBox.setAlignment(Pos.TOP_CENTER);
-        vBox.getChildren().addAll(label, hBox);
-        stage.setScene(new Scene(vBox));
-        stage.setWidth(390);
-        stage.setHeight(140);
-        stage.showAndWait();
+
+            @Override
+            public void onNo() {
+                controlPanel.getStage().setIconified(false);
+            }
+        }.showWindow();
     }
 
     private void reload(boolean showDetectTilesWindow) {
@@ -279,7 +219,7 @@ public class GamePane extends BorderPane {
 
         ImageView skipImage = new ImageView(ImageFactory.getImage("skip.png"));
         skipImage.setCursor(Cursor.HAND);
-        skipImage.setOnMouseClicked(event -> onSkip());
+        skipImage.setOnMouseClicked(event -> showSkipRoundWindow());
 
         FlowPane flowPane = new FlowPane(30, 10);
         flowPane.setPadding(new Insets(0, 4, 8, 4));
@@ -291,7 +231,7 @@ public class GamePane extends BorderPane {
         controlPanel.getStage().focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (systemParameterService.getBooleanParameterValue(bestMoveAutoPlay) && oldValue) {
                 if (hasPrediction && bestAiPrediction != null && !showingAddLeftTilesWindow) {
-                    try {
+                    ServiceExecutor.execute(() -> {
                         Move move = bestAiPrediction.getMove();
                         if (AppController.round.getMyTiles().size() == 1) {
                             showAddLeftTilesCount(new Tile(move.getLeft(), move.getRight()), move.getDirection());
@@ -299,23 +239,13 @@ public class GamePane extends BorderPane {
                             AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(move.getLeft(), move.getRight(), move.getDirection()));
                             reload(true);
                         }
-                    } catch (DAIException ex) {
-                        WarnDialog.showWarnDialog(ex);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        WarnDialog.showUnexpectedError();
-                    }
+                    });
                 } else if (AppController.round != null && !hasPrediction && AppController.round.getTableInfo().isMyMove() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
-                    try {
-                        Tile tile = new ArrayList<>(AppController.round.getOpponentTiles().keySet()).get(0);
-                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                        reload(true);
-                    } catch (DAIException ex) {
-                        WarnDialog.showWarnDialog(ex);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        WarnDialog.showUnexpectedError();
-                    }
+                    ServiceExecutor.execute(() -> {
+						Tile tile = new ArrayList<>(AppController.round.getOpponentTiles().keySet()).get(0);
+						AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+						reload(true);
+					});
                 }
             }
         });
@@ -324,20 +254,23 @@ public class GamePane extends BorderPane {
     private void initKeyboardListener() {
         controlPanel.getScene().setOnKeyPressed(e -> {
             Integer secondPressedNumber;
-            if (e.getCode() == KeyCode.BACK_SPACE) {
-                reload(true);
-                return;
+            switch (e.getCode()) {
+                case BACK_SPACE:
+                    reload(true);
+                    return;
+                case CONTROL:
+                    pressedOnCtrl = true;
+                    return;
+                case ALT:
+                    fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, true, true, true, true));
+                    return;
             }
-            if (e.getCode() == KeyCode.CONTROL) {
-                pressedOnCtrl = true;
-                return;
-            }
+
             if (pressedOnCtrl && firstPressedNumber == null) {
                 try {
                     firstPressedNumber = Integer.parseInt(e.getText());
                     return;
-                } catch (NumberFormatException ignore) {
-                }
+                } catch (NumberFormatException ignore) {}
             } else if (pressedOnCtrl) {
                 try {
                     secondPressedNumber = Integer.parseInt(e.getText());
@@ -354,40 +287,41 @@ public class GamePane extends BorderPane {
                     }
                     firstPressedNumber = null;
                     return;
-                } catch (NumberFormatException ignore) {
-                }
-            } else if (e.getCode() == KeyCode.ALT) {
-                fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, true, true, true, true));
+                } catch (NumberFormatException ignore) {}
             }
-            if (pressedOnCtrl && arrowsVisible) {
-                if (e.getCode() == KeyCode.UP) {
-                    onUpArrowPressed();
-                    return;
+
+
+            if (pressedOnCtrl) {
+                if (arrowsVisible) {
+                    switch (e.getCode()) {
+                        case UP:
+                            onUpArrowPressed();
+                            return;
+                        case LEFT:
+                            onLeftArrowPressed();
+                            return;
+                        case DOWN:
+                            onDownArrowPressed();
+                            return;
+                        case RIGHT:
+                            onRightArrowPressed();
+                            return;
+                    }
                 }
-                if (e.getCode() == KeyCode.LEFT) {
-                    onLeftArrowPressed();
-                    return;
+                switch (e.getCode()) {
+                    case ADD:
+                        ontAddTileEntered();
+                        return;
+                    case Z:
+                        onUndo();
+                        break;
+                    case B:
+                        showSkipRoundWindow();
+                        break;
                 }
-                if (e.getCode() == KeyCode.DOWN) {
-                    onDownArrowPressed();
-                    return;
-                }
-                if (e.getCode() == KeyCode.RIGHT) {
-                    onRightArrowPressed();
-                    return;
-                }
-            }
-            if (pressedOnCtrl && e.getCode() == KeyCode.ADD) {
-                ontAddTileEntered();
-                return;
-            }
-            if (pressedOnCtrl && e.getCode() == KeyCode.Z) {
-                onUndo();
-            }
-            if (pressedOnCtrl && e.getCode() == KeyCode.B) {
-                onSkip();
             }
         });
+
         controlPanel.getScene().setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.CONTROL) {
                 pressedOnCtrl = false;
@@ -397,94 +331,64 @@ public class GamePane extends BorderPane {
     }
 
     private void onUndo() {
-        try {
+        ServiceExecutor.execute(() -> {
             AppController.round = gameService.getLastPlayedRound(AppController.round.getGameInfo().getGameId());
-        } catch (DAIException ex) {
-            WarnDialog.showWarnDialog(ex);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            WarnDialog.showUnexpectedError();
-        }
+        });
         reload(true);
     }
 
-    private void onSkip() {
-        Stage stage = new Stage();
-        stage.setResizable(false);
-        stage.setTitle(Messages.get("skipRound"));
-
-        TCHNumberTextField myPointField = new TCHNumberTextField(TCHComponentSize.MEDIUM);
-        TCHFieldLabel myPointFieldLabel = new TCHFieldLabel(Messages.get("myPoint"), myPointField);
-
-        TCHNumberTextField opponentPointField = new TCHNumberTextField(TCHComponentSize.MEDIUM);
-        TCHFieldLabel opponentPointFieldLabel = new TCHFieldLabel(Messages.get("opponentPoint"), opponentPointField);
-
-        TCHNumberTextField leftTilesField = new TCHNumberTextField(TCHComponentSize.MEDIUM);
-        TCHFieldLabel leftTilesFieldLabel = new TCHFieldLabel(Messages.get("leftTilesCount"), leftTilesField);
-
-        CheckBox startMeCheckBox = new CheckBox();
-        TCHFieldLabel startMeFieldLabel = new TCHFieldLabel(Messages.get("startMe"), startMeCheckBox);
-
-        TCHButton skipButton = new TCHButton(Messages.get("skip"));
-        skipButton.setOnAction(event -> {
-            AppController.round = gameService.skipRound(AppController.round.getGameInfo().getGameId(), myPointField.getNumber().intValue(),
-                    opponentPointField.getNumber().intValue(), leftTilesField.getNumber().intValue(), startMeCheckBox.isSelected());
-            stage.close();
-            reload(true);
-        });
-        TCHButton cancelButton = new TCHButton(Messages.get("cancel"));
-        cancelButton.setOnAction(event -> stage.close());
-        HBox hBox = new HBox(25);
-        hBox.setAlignment(Pos.TOP_CENTER);
-        hBox.getChildren().addAll(skipButton, cancelButton);
-
-        VBox vBox = new VBox(15);
-        vBox.setPadding(new Insets(20));
-        vBox.setAlignment(Pos.TOP_CENTER);
-        vBox.getChildren().addAll(myPointFieldLabel, opponentPointFieldLabel, leftTilesFieldLabel, startMeFieldLabel, hBox);
-
-        stage.setScene(new Scene(vBox));
-        stage.setWidth(400);
-        stage.setHeight(350);
-        stage.showAndWait();
+    private void showSkipRoundWindow() {
+        new SkipRoundWindow() {
+            @Override
+            public void onSkip(int myPoint, int opponentPoint, int leftTilesCount, boolean startMe) {
+                AppController.round = gameService.skipRound(AppController.round.getGameInfo().getGameId(), myPoint, opponentPoint, leftTilesCount, startMe);
+                reload(true);
+            }
+        }.showWindow();
     }
 
     private void showAddLeftTilesCount(final Tile playedTile, final MoveDirection direction) {
         showingAddLeftTilesWindow = true;
-        Stage stage = new Stage();
-        stage.setResizable(false);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setTitle(Messages.get("addLeftCount"));
-        TCHNumberTextField countField = new TCHNumberTextField(TCHComponentSize.MEDIUM);
-        TCHButton button = new TCHButton(Messages.get("add"));
-        button.setOnAction(event -> {
-            try {
-                gameService.specifyOpponentLeftTiles(AppController.round.getGameInfo().getGameId(), countField.getNumber().intValue());
-                if (playedTile == null && direction == null) {
-                    AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
-                } else if (direction == null) {
-                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), playedTile.getLeft(), playedTile.getRight());
-                } else {
-                    AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(playedTile.getLeft(), playedTile.getRight(), direction));
-                }
-            } catch (DAIException ex) {
-                WarnDialog.showWarnDialog(ex);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                WarnDialog.showUnexpectedError();
+
+        new AddLeftTilesCountWindow() {
+            @Override
+            public void onSave(int count) {
+                ServiceExecutor.execute(() -> {
+                    gameService.specifyOpponentLeftTiles(AppController.round.getGameInfo().getGameId(), count);
+                    if (playedTile == null && direction == null) {
+                        AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
+                    } else if (direction == null) {
+                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), playedTile.getLeft(), playedTile.getRight());
+                    } else {
+                        AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(playedTile.getLeft(), playedTile.getRight(), direction));
+                    }
+                });
+                showingAddLeftTilesWindow = false;
+                reload(true);
             }
-            showingAddLeftTilesWindow = false;
-            stage.close();
-            reload(true);
-        });
-        VBox vBox = new VBox(10);
-        vBox.setPadding(new Insets(20));
-        vBox.setAlignment(Pos.TOP_CENTER);
-        vBox.getChildren().addAll(countField, button);
-        stage.setScene(new Scene(vBox));
-        stage.setWidth(300);
-        stage.setHeight(100);
-        stage.showAndWait();
+        }.showWindow();
+    }
+
+    private void showGameStarterWindow(Tile tile) {
+        new GameStarterWindow() {
+            @Override
+            public void onMe() {
+                ServiceExecutor.execute(() -> {
+                    gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
+                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                    reload(true);
+                });
+            }
+
+            @Override
+            public void onHe() {
+                ServiceExecutor.execute(() -> {
+                    gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
+                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                    reload(true);
+                });
+            }
+        }.showWindow();
     }
 
     private FlowPane getMyTilesPane() {
@@ -674,19 +578,14 @@ public class GamePane extends BorderPane {
     }
 
     private void onMyTileEntered(Tile tile, MoveDirection direction) {
-        try {
+        ServiceExecutor.execute(() -> {
             if (AppController.round.getMyTiles().size() == 1) {
                 showAddLeftTilesCount(tile, direction);
             } else {
                 AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), TileAndMoveHelper.getMove(tile, direction));
                 reload(true);
             }
-        } catch (DAIException ex) {
-            WarnDialog.showWarnDialog(ex);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            WarnDialog.showUnexpectedError();
-        }
+        });
     }
 
     private void ontOpponentTileEntered(Tile tile, MoveDirection direction) {
@@ -695,72 +594,19 @@ public class GamePane extends BorderPane {
             if (tableInfo.getRoundBlockingInfo().isOmitOpponent() && tableInfo.getBazaarTilesCount() == 2) {
                 showAddLeftTilesCount(tile, null);
             } else if (tableInfo.getLeft() == null && tableInfo.isFirstRound() && AppController.round.getMyTiles().size() == 6) {
-                Stage stage = new Stage();
-                stage.setResizable(false);
-                stage.setTitle(Messages.get("gameStarter"));
-                TCHLabel label = new TCHLabel(Messages.get("whoStartGame"));
-                TCHButton meButton = new TCHButton(Messages.get("me"));
-                meButton.setOnAction(event -> {
-                    try {
-                        gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
-                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                        reload(true);
-                        stage.close();
-                    } catch (DAIException ex) {
-                        WarnDialog.showWarnDialog(ex);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        WarnDialog.showUnexpectedError();
-                    }
-                });
-                TCHButton opponentButton = new TCHButton(Messages.get("he"));
-                opponentButton.setOnAction(event -> {
-                    try {
-                        gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
-                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                        reload(true);
-                        stage.close();
-                    } catch (DAIException ex) {
-                        WarnDialog.showWarnDialog(ex);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        WarnDialog.showUnexpectedError();
-                    }
-                });
-                HBox hBox = new HBox(25);
-                hBox.setAlignment(Pos.TOP_CENTER);
-                hBox.getChildren().addAll(meButton, opponentButton);
-                VBox vBox = new VBox(30);
-                vBox.setPadding(new Insets(20));
-                vBox.setAlignment(Pos.TOP_CENTER);
-                vBox.getChildren().addAll(label, hBox);
-                stage.setScene(new Scene(vBox));
-                stage.setWidth(350);
-                stage.setHeight(140);
-                stage.showAndWait();
+                showGameStarterWindow(tile);
             } else {
-                try {
+                ServiceExecutor.execute(() -> {
                     AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                     reload(true);
-                } catch (DAIException ex) {
-                    WarnDialog.showWarnDialog(ex);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    WarnDialog.showUnexpectedError();
-                }
+                });
             }
         } else {
-            try {
+            ServiceExecutor.execute(() -> {
                 AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), TileAndMoveHelper.getMove(tile, direction));
-            } catch (DAIException ex) {
-                WarnDialog.showWarnDialog(ex);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                WarnDialog.showUnexpectedError();
-            }
+            });
             reload(true);
         }
-
     }
 
     private void onUpArrowPressed() {
@@ -796,18 +642,13 @@ public class GamePane extends BorderPane {
     }
 
     private void ontAddTileEntered() {
-        try {
+        ServiceExecutor.execute(() -> {
             if (AppController.round.getTableInfo().getRoundBlockingInfo().isOmitMe() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
                 showAddLeftTilesCount(null, null);
             } else {
                 AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
             }
-        } catch (DAIException ex) {
-            WarnDialog.showWarnDialog(ex);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            WarnDialog.showUnexpectedError();
-        }
+        });
         reload(true);
     }
 }

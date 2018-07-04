@@ -3,6 +3,7 @@ package ge.ai.domino.console.ui.controlpanel;
 import ge.ai.domino.console.ui.game.SaveGameWindow;
 import ge.ai.domino.console.ui.gameproperties.GamePropertiesPane;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.domain.initial.InitialData;
 import ge.ai.domino.service.function.FunctionService;
 import ge.ai.domino.service.function.FunctionServiceImpl;
@@ -29,8 +30,10 @@ public class ControlPanel extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        functionService.initFunctions();
-        this.initialData = initialDataService.getInitialData();
+        ServiceExecutor.execute(() -> {
+            functionService.initFunctions();
+            this.initialData = initialDataService.getInitialData();
+		});
 
         stage = primaryStage;
         primaryStage.setTitle(Messages.get("Domino") + " " + initialData.getVersion());

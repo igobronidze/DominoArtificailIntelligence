@@ -247,13 +247,12 @@ public class GamePane extends BorderPane {
             new SaveGameWindow() {
                 @Override
                 public void onSave() {
-                    showNextGameWindow();
+                    AppController.round = null;
+                    controlPanel.getRoot().setCenter(new GamePropertiesPane(controlPanel));
                 }
 
                 @Override
-                public void onCancel() {
-                    showNextGameWindow();
-                }
+                public void onCancel() {}
             }.showWindow();
         }
         if (showDetectTilesWindow && isFirsMove() && AppController.round.getMyTiles().isEmpty()) {
@@ -485,43 +484,6 @@ public class GamePane extends BorderPane {
         stage.setScene(new Scene(vBox));
         stage.setWidth(300);
         stage.setHeight(100);
-        stage.showAndWait();
-    }
-
-    private void showNextGameWindow() {
-        Stage stage = new Stage();
-        stage.setResizable(false);
-        stage.setTitle(Messages.get("newGame"));
-        TCHLabel label = new TCHLabel(Messages.get("startNewRound"));
-        TCHButton yesButton = new TCHButton(Messages.get("yes"));
-        yesButton.setOnAction(event -> {
-            try {
-                AppController.round = gameService.startGame(null, AppController.round.getGameInfo().getGameId());
-                reload(true);
-            } catch (DAIException ex) {
-                WarnDialog.showWarnDialog(ex);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                WarnDialog.showUnexpectedError();
-            }
-            stage.close();
-        });
-        TCHButton noButton = new TCHButton(Messages.get("no"));
-        noButton.setOnAction(event -> {
-            AppController.round = null;
-            controlPanel.getRoot().setCenter(new GamePropertiesPane(controlPanel));
-            stage.close();
-        });
-        HBox hBox = new HBox(25);
-        hBox.setAlignment(Pos.TOP_CENTER);
-        hBox.getChildren().addAll(yesButton, noButton);
-        VBox vBox = new VBox(30);
-        vBox.setPadding(new Insets(20));
-        vBox.setAlignment(Pos.TOP_CENTER);
-        vBox.getChildren().addAll(label, hBox);
-        stage.setScene(new Scene(vBox));
-        stage.setWidth(400);
-        stage.setHeight(140);
         stage.showAndWait();
     }
 

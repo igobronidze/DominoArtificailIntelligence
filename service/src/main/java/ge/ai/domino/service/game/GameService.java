@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface GameService {
 
-    Round startGame(GameProperties gameProperties, int gameId) throws DAIException;
+    Round startGame(GameProperties gameProperties) throws DAIException;
 
     Round addTileForMe(int gameId, int left, int right) throws DAIException;
 

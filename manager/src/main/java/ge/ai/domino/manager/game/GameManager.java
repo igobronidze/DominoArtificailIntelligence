@@ -49,9 +49,9 @@ public class GameManager {
 
     private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
 
-    public Round startGame(GameProperties gameProperties, int gameIdWithSameProperties) {
+    public Round startGame(GameProperties gameProperties) {
         logger.info("Preparing new game");
-        Game game = InitialUtil.getInitialGame(gameProperties, gameIdWithSameProperties);
+        Game game = InitialUtil.getInitialGame(gameProperties);
         CachedGames.addGame(game);
         CachedGames.addMove(game.getId(), MoveHelper.getStartNewRoundMove());
         logger.info("------------Started new game[" + game.getId() + "]------------");

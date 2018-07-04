@@ -23,13 +23,9 @@ public class InitialUtil {
 
     private static final int INITIAL_COUNT_TILES_FOR_OPPONENT = 7;
 
-    public static Game getInitialGame(GameProperties gameProperties, int gameId) {
+    public static Game getInitialGame(GameProperties gameProperties) {
         Game game = new Game();
-        if (gameId != 0 && game.getProperties() == null) {
-            game.setProperties(CachedGames.getGameProperties(gameId));
-        } else {
-            game.setProperties(gameProperties);
-        }
+        game.setProperties(gameProperties);
         game.setId(playedGameManager.addPlayedGame(game.getProperties()));
         game.getRounds().push(getInitialRound(game.getId(), true));
         game.setGameHistory(new GameHistory());

@@ -50,6 +50,12 @@ public abstract class SaveGameWindow extends Stage {
             this.setWidth(400);
             this.setHeight(165);
             this.showAndWait();
+
+            this.setOnCloseRequest(we -> {
+                if (AppController.round != null) {
+                    onCancel();
+                }
+            });
         }
     }
 

@@ -14,8 +14,8 @@ public class GameServiceImpl implements GameService {
     private final GameManager gameManager = new GameManager();
 
     @Override
-    public Round startGame(GameProperties gameProperties, int gameIdWithSameProperties) throws DAIException {
-        return gameManager.startGame(gameProperties, gameIdWithSameProperties);
+    public Round startGame(GameProperties gameProperties) throws DAIException {
+        return gameManager.startGame(gameProperties);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class DAIPropertiesUtil {
 
     private static Properties properties;
 
-    static File daiPropertiesFile = new File(daiPropertyPath);
+    public static File daiPropertiesFile = new File(daiPropertyPath);
 
     public static String getProperty(String key) {
         if (properties == null) {

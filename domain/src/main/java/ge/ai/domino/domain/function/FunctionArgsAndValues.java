@@ -11,6 +11,10 @@ public class FunctionArgsAndValues {
 
 	private List<Double> values = new ArrayList<>();
 
+	public FunctionArgsAndValues(String name) {
+		this.name = name;
+	}
+
 	public String getName() {
 		return name;
 	}

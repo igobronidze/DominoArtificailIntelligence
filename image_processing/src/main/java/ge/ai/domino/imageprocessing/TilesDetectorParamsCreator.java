@@ -8,9 +8,9 @@ public class TilesDetectorParamsCreator {
 
 	private static final double TILES_MARGIN_BOTTOM_PERCENTAGE = 5;
 
-	private static final double TILES_WIDTH_PERCENTAGE = 60;
+	private static final double TILES_WIDTH_PERCENTAGE = 70;
 
-	private static final double TILES_MARGIN_LEFT_PERCENTAGE =  20;
+	private static final double TILES_MARGIN_LEFT_PERCENTAGE =  10;
 
 	public static TilesDetectorParams createTilesDetectorParams(int imageWidth, int imageHeight) {
 		int x = (int) (imageWidth * TILES_MARGIN_LEFT_PERCENTAGE / 100);

@@ -160,14 +160,15 @@ public class GameManager {
         logger.info("Last added tile: "  + lastAddedTile);
         for (Tile tile : tilesForAdd) {
             if (lastAddedTile == null || !lastAddedTile.equals(tile)) {
-                round = addForMeProcessor.move(round, getMove(tile.getLeft(), tile.getRight(), MoveDirection.LEFT), false);
+                addTileForMe(gameId, tile.getLeft(), tile.getRight());
             }
         }
         if (lastAddedTile != null) {
             round = addForMeProcessor.move(round, getMove(lastAddedTile.getLeft(), lastAddedTile.getRight(), MoveDirection.LEFT), false);
+            addTileForMe(gameId, lastAddedTile.getLeft(), lastAddedTile.getRight());
         } else {
             Tile tile = round.getOpponentTiles().keySet().stream().findAny().get();
-            round = addForMeProcessor.move(round, getMove(tile.getLeft(), tile.getRight(), MoveDirection.LEFT), false);
+            addTileForMe(gameId, tile.getLeft(), tile.getRight());
         }
         logger.info("Added tiles for me, gameId[" + gameId + "]");
         return round;

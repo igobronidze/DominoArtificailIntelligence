@@ -14,7 +14,7 @@ public abstract class ServiceExecutor {
 		} catch (DAIException ex) {
 			WarnDialog.showWarnDialog(ex);
 		} catch (Exception ex) {
-			logger.error(ex);
+			logger.error("Unexpected Error", ex);
 			WarnDialog.showUnexpectedError();
 		}
 	}

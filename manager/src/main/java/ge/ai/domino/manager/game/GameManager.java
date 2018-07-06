@@ -164,7 +164,6 @@ public class GameManager {
             }
         }
         if (lastAddedTile != null) {
-            round = addForMeProcessor.move(round, getMove(lastAddedTile.getLeft(), lastAddedTile.getRight(), MoveDirection.LEFT), false);
             addTileForMe(gameId, lastAddedTile.getLeft(), lastAddedTile.getRight());
         } else {
             Tile tile = round.getOpponentTiles().keySet().stream().findAny().get();

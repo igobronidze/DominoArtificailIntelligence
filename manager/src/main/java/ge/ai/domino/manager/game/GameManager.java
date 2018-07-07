@@ -170,7 +170,7 @@ public class GameManager {
             addTileForMe(gameId, tile.getLeft(), tile.getRight());
         }
         logger.info("Added tiles for me, gameId[" + gameId + "]");
-        return round;
+        return CachedGames.getCurrentRound(gameId, false);
     }
 
     private void checkMinMaxInProgress(int gameId) throws DAIException {

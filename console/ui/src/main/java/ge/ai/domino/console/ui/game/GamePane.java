@@ -331,9 +331,7 @@ public class GamePane extends BorderPane {
     }
 
     private void onUndo() {
-        ServiceExecutor.execute(() -> {
-            AppController.round = gameService.getLastPlayedRound(AppController.round.getGameInfo().getGameId());
-        });
+        ServiceExecutor.execute(() -> AppController.round = gameService.getLastPlayedRound(AppController.round.getGameInfo().getGameId()));
         reload(true);
     }
 
@@ -602,9 +600,7 @@ public class GamePane extends BorderPane {
                 });
             }
         } else {
-            ServiceExecutor.execute(() -> {
-                AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), TileAndMoveHelper.getMove(tile, direction));
-            });
+            ServiceExecutor.execute(() -> AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), TileAndMoveHelper.getMove(tile, direction)));
             reload(true);
         }
     }

@@ -105,10 +105,7 @@ public class GamePane extends BorderPane {
             @Override
             public void onYes() {
                 ServiceExecutor.execute(() -> {
-                    List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
-                    for (Tile tile : tiles) {
-                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                    }
+                    AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), null);
                     controlPanel.getStage().setIconified(false);
                     reload(false);
                 });
@@ -117,14 +114,7 @@ public class GamePane extends BorderPane {
             @Override
             public void onStartMe() {
                 ServiceExecutor.execute(() -> {
-                    List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
-                    for (int i = 0; i < tiles.size() - 1; i++) {
-                        Tile tile = tiles.get(i);
-                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                    }
-                    gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
-                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(),
-                            tiles.get(tiles.size() - 1).getLeft(), tiles.get(tiles.size() - 1).getRight());
+                    AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), true);
                     controlPanel.getStage().setIconified(false);
                     reload(false);
                 });
@@ -133,14 +123,7 @@ public class GamePane extends BorderPane {
             @Override
             public void onStartHe() {
                 ServiceExecutor.execute(() -> {
-                    List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
-                    for (int i = 0; i < tiles.size() - 1; i++) {
-                        Tile tile = tiles.get(i);
-                        AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                    }
-                    gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
-                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(),
-                            tiles.get(tiles.size() - 1).getLeft(), tiles.get(tiles.size() - 1).getRight());
+                    AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), false);
                     controlPanel.getStage().setIconified(false);
                     reload(false);
                 });

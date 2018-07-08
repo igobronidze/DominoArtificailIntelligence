@@ -3,10 +3,7 @@ package ge.ai.domino.service.game;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
-
-import java.util.List;
 
 public interface GameService {
 
@@ -30,5 +27,5 @@ public interface GameService {
 
     Round detectAndAddNewTilesForMe(int gameId) throws DAIException;
 
-    Round detectAnsAddInitialTilesForMe(int gameId) throws DAIException;
+    Round detectAnsAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException;
 }

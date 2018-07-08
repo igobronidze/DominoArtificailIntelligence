@@ -36,7 +36,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +57,8 @@ public class GameManager {
     private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
 
     private final TilesDetectorManager tilesDetectorManager = new TilesDetectorManager();
+
+    private static final String LOG_IMAGES_DIRECTORY_PATH = "log/images";
 
     public Round startGame(GameProperties gameProperties) {
         logger.info("Preparing new game");
@@ -179,32 +183,44 @@ public class GameManager {
                 addTileForMe(gameId, tile.getLeft(), tile.getRight());
             }
         } catch (Exception ex) {
-            logImage(gameId);
+            logImage(gameId, tilesDetectorManager.getTmpImagePath());
             throw ex;
         }
         logger.info("Added tiles for me, gameId[" + gameId + "]");
         return CachedGames.getCurrentRound(gameId, false);
     }
 
-    public Round detectAndAddInitialTilesForMe(int gameId) throws DAIException {
+    public Round detectAndAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException {
         logger.info("Start detectAndAddInitialTilesForMe method, gameId[" + gameId + "]");
         try {
             List<Tile> tiles = tilesDetectorManager.detectTiles(gameId);
-            for (Tile tile : tiles) {
+            for (int i = 0; i < tiles.size() - 1; i++) {
+                Tile tile = tiles.get(i);
                 addTileForMe(gameId, tile.getLeft(), tile.getRight());
             }
+            if (startMe != null) {
+                specifyRoundBeginner(gameId, startMe);
+            }
+            Tile tile = tiles.get(tiles.size() - 1);
+            addTileForMe(gameId, tile.getLeft(), tile.getRight());
         } catch (Exception ex) {
-            logImage(gameId);
+            logImage(gameId,tilesDetectorManager.getTmpImagePath());
             throw ex;
         }
         logger.info("Added tiles for me, gameId[" + gameId + "]");
         return CachedGames.getCurrentRound(gameId, false);
     }
 
-    private void logImage(int gameId) {
+    private void logImage(int gameId, String imagePath) {
         try {
-            File file = File.createTempFile(TilesDetectorManager.TMP_IMAGE_PREFIX + gameId, TilesDetectorManager.TMP_IMAGE_EXTENSION);
-            Files.copy(file.toPath(), Paths.get("C:\\Users\\SG\\Desktop\\Files\\rame.png"));
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss");
+
+            File folder = new File(LOG_IMAGES_DIRECTORY_PATH);
+            folder.mkdirs();
+            String destPath = folder.getPath() + "/" + sdf.format(new Date()) + TilesDetectorManager.TMP_IMAGE_EXTENSION;
+            Files.copy(Paths.get(imagePath), Paths.get(destPath));
+            new File(imagePath).delete();
+            logger.info("Save log image");
         } catch (IOException ex) {
             logger.error("Can't save log image, gameId[" + gameId + "]");
         }

@@ -3,11 +3,8 @@ package ge.ai.domino.service.game;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.manager.game.GameManager;
-
-import java.util.List;
 
 public class GameServiceImpl implements GameService {
 
@@ -64,7 +61,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Round detectAnsAddInitialTilesForMe(int gameId) throws DAIException {
-        return gameManager.detectAndAddInitialTilesForMe(gameId);
+    public Round detectAnsAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException {
+        return gameManager.detectAndAddInitialTilesForMe(gameId, startMe);
     }
 }

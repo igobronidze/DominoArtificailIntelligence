@@ -59,7 +59,12 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Round addTilesForMe(int gameId, List<Tile> tiles) throws DAIException {
-        return gameManager.addTilesForMe(gameId, tiles);
+    public Round detectAndAddNewTilesForMe(int gameId) throws DAIException {
+        return gameManager.detectAndAddNewTilesForMe(gameId);
+    }
+
+    @Override
+    public Round detectAnsAddInitialTilesForMe(int gameId) throws DAIException {
+        return gameManager.detectAndAddInitialTilesForMe(gameId);
     }
 }

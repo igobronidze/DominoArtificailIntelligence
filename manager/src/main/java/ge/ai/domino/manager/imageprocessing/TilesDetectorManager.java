@@ -15,6 +15,10 @@ import java.util.List;
 
 public class TilesDetectorManager {
 
+    public static final String TMP_IMAGE_PREFIX = "game_";
+
+    public static final String TMP_IMAGE_EXTENSION = ".png";
+
     private static final Logger logger = Logger.getLogger(GameManager.class);
 
     private final TilesDetector tilesDetector = new TilesDetector();
@@ -28,7 +32,7 @@ public class TilesDetectorManager {
             BufferedImage Image = robot.createScreenCapture(capture);
             logger.info("Screenshot took " + (System.currentTimeMillis() - ms) + "ms");
             ms = System.currentTimeMillis();
-            File tempFile = File.createTempFile("game_" + String.valueOf(gameId), ".png");
+            File tempFile = File.createTempFile(TMP_IMAGE_PREFIX + String.valueOf(gameId), TMP_IMAGE_EXTENSION);
             ImageIO.write(Image, "png", new File(tempFile.getAbsolutePath()));
             logger.info("Save of image took " + (System.currentTimeMillis() - ms) + "ms");
             ms = System.currentTimeMillis();

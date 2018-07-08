@@ -1,5 +1,6 @@
 package ge.ai.domino.manager.game;
 
+import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.GameProperties;
@@ -12,25 +13,29 @@ import ge.ai.domino.domain.game.opponentplay.OpponentTilesWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
-import ge.ai.domino.caching.game.CachedGames;
-import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
-import ge.ai.domino.manager.game.helper.game.MoveHelper;
-import ge.ai.domino.manager.game.move.AddForMeProcessor;
-import ge.ai.domino.manager.game.move.MoveProcessor;
-import ge.ai.domino.manager.game.move.PlayForMeProcessor;
-import ge.ai.domino.manager.util.ProjectVersionUtil;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
+import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
+import ge.ai.domino.manager.game.helper.game.MoveHelper;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
 import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.manager.game.move.AddForOpponentProcessor;
+import ge.ai.domino.manager.game.move.MoveProcessor;
+import ge.ai.domino.manager.game.move.PlayForMeProcessor;
 import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.manager.game.validator.MoveValidator;
 import ge.ai.domino.manager.game.validator.OpponentTilesValidator;
+import ge.ai.domino.manager.imageprocessing.TilesDetectorManager;
+import ge.ai.domino.manager.util.ProjectVersionUtil;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +53,8 @@ public class GameManager {
     private final MoveProcessor addForMeProcessor = new AddForMeProcessor();
 
     private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
+
+    private final TilesDetectorManager tilesDetectorManager = new TilesDetectorManager();
 
     public Round startGame(GameProperties gameProperties) {
         logger.info("Preparing new game");
@@ -152,25 +159,55 @@ public class GameManager {
         return newRound;
     }
 
-    public Round addTilesForMe(int gameId, List<Tile> tiles) throws DAIException {
-        logger.info("Start addTilesForMe method, gameId[" + gameId + "]");
+    public Round detectAndAddNewTilesForMe(int gameId) throws DAIException {
+        logger.info("Start detectAndAddNewTilesForMe method, gameId[" + gameId + "]");
         Round round = CachedGames.getCurrentRound(gameId, true);
-        List<Tile> tilesForAdd = getAddedTiles(tiles, round.getMyTiles());
-        Tile lastAddedTile = getLastAddedTile(tilesForAdd, round.getTableInfo());
-        logger.info("Last added tile: "  + lastAddedTile);
-        for (Tile tile : tilesForAdd) {
-            if (lastAddedTile == null || !lastAddedTile.equals(tile)) {
+        try {
+            List<Tile> tiles = tilesDetectorManager.detectTiles(gameId);
+            List<Tile> tilesForAdd = getAddedTiles(tiles, round.getMyTiles());
+            Tile lastAddedTile = getLastAddedTile(tilesForAdd, round.getTableInfo());
+            logger.info("Last added tile: " + lastAddedTile);
+            for (Tile tile : tilesForAdd) {
+                if (lastAddedTile == null || !lastAddedTile.equals(tile)) {
+                    addTileForMe(gameId, tile.getLeft(), tile.getRight());
+                }
+            }
+            if (lastAddedTile != null) {
+                addTileForMe(gameId, lastAddedTile.getLeft(), lastAddedTile.getRight());
+            } else {
+                Tile tile = round.getOpponentTiles().keySet().stream().findAny().get();
                 addTileForMe(gameId, tile.getLeft(), tile.getRight());
             }
-        }
-        if (lastAddedTile != null) {
-            addTileForMe(gameId, lastAddedTile.getLeft(), lastAddedTile.getRight());
-        } else {
-            Tile tile = round.getOpponentTiles().keySet().stream().findAny().get();
-            addTileForMe(gameId, tile.getLeft(), tile.getRight());
+        } catch (Exception ex) {
+            logImage(gameId);
+            throw ex;
         }
         logger.info("Added tiles for me, gameId[" + gameId + "]");
         return CachedGames.getCurrentRound(gameId, false);
+    }
+
+    public Round detectAndAddInitialTilesForMe(int gameId) throws DAIException {
+        logger.info("Start detectAndAddInitialTilesForMe method, gameId[" + gameId + "]");
+        try {
+            List<Tile> tiles = tilesDetectorManager.detectTiles(gameId);
+            for (Tile tile : tiles) {
+                addTileForMe(gameId, tile.getLeft(), tile.getRight());
+            }
+        } catch (Exception ex) {
+            logImage(gameId);
+            throw ex;
+        }
+        logger.info("Added tiles for me, gameId[" + gameId + "]");
+        return CachedGames.getCurrentRound(gameId, false);
+    }
+
+    private void logImage(int gameId) {
+        try {
+            File file = File.createTempFile(TilesDetectorManager.TMP_IMAGE_PREFIX + gameId, TilesDetectorManager.TMP_IMAGE_EXTENSION);
+            Files.copy(file.toPath(), Paths.get("C:\\Users\\SG\\Desktop\\Files\\rame.png"));
+        } catch (IOException ex) {
+            logger.error("Can't save log image, gameId[" + gameId + "]");
+        }
     }
 
     private void checkMinMaxInProgress(int gameId) throws DAIException {

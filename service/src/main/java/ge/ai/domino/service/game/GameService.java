@@ -28,5 +28,7 @@ public interface GameService {
 
     Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe);
 
-    Round addTilesForMe(int gameId, List<Tile> tiles) throws DAIException;
+    Round detectAndAddNewTilesForMe(int gameId) throws DAIException;
+
+    Round detectAnsAddInitialTilesForMe(int gameId) throws DAIException;
 }

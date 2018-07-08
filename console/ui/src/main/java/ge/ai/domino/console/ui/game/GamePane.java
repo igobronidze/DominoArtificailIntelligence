@@ -19,8 +19,6 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import ge.ai.domino.service.game.GameService;
 import ge.ai.domino.service.game.GameServiceImpl;
-import ge.ai.domino.service.imageprocessing.TilesDetectorService;
-import ge.ai.domino.service.imageprocessing.TilesDetectorServiceImpl;
 import ge.ai.domino.service.sysparam.SystemParameterService;
 import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
 import javafx.geometry.Insets;
@@ -55,8 +53,6 @@ public class GamePane extends BorderPane {
     private final SystemParameterService systemParameterService = new SystemParameterServiceImpl();
 
     private final GameService gameService = new GameServiceImpl();
-
-    private final TilesDetectorService tilesDetectorService = new TilesDetectorServiceImpl();
 
     private final ControlPanel controlPanel;
 
@@ -164,8 +160,7 @@ public class GamePane extends BorderPane {
             @Override
             public void onYes() {
                 ServiceExecutor.execute(() -> {
-                    List<Tile> tiles = tilesDetectorService.detectTiles(AppController.round.getGameInfo().getGameId());
-                    AppController.round = gameService.addTilesForMe(AppController.round.getGameInfo().getGameId(), tiles);
+                    AppController.round = gameService.detectAndAddNewTilesForMe(AppController.round.getGameInfo().getGameId());
                     controlPanel.getStage().setIconified(false);
                     reload(false);
                 });

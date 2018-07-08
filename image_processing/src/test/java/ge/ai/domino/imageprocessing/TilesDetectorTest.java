@@ -6,69 +6,107 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TilesDetectorTest {
 
-	private static final String SRC_IMAGE_PATH_1 = "test_images/src/domino_1.png";
+	private static final String IMAGE_PATH_SUFFIX = "test_images/src/domino_";
 
-	private static final String SRC_IMAGE_PATH_2 = "test_images/src/domino_2.png";
+	private static final String IMAGE_EXTENSION = ".png";
 
-	private static final String SRC_IMAGE_PATH_3 = "test_images/src/domino_3.png";
+	private static final int imageCount = 5;
 
-	private static final List<Tile> EXPECTED_TILES_1 = new ArrayList<>();
+	private static final Map<Integer, String> imagePathMap = new HashMap<>();
 
-	private static final List<Tile> EXPECTED_TILES_2 = new ArrayList<>();
-
-	private static final List<Tile> EXPECTED_TILES_3 = new ArrayList<>();
+	private static final Map<Integer, List<Tile>> expectedTilesMap = new HashMap<>();
 
 	private static final TilesDetector tilesDetector = new TilesDetector();
 
 	@BeforeClass
 	public static void init() {
-		EXPECTED_TILES_1.add(new Tile(5, 5));
-		EXPECTED_TILES_1.add(new Tile(5, 1));
-		EXPECTED_TILES_1.add(new Tile(5, 0));
-		EXPECTED_TILES_1.add(new Tile(4, 4));
-		EXPECTED_TILES_1.add(new Tile(4, 2));
-		EXPECTED_TILES_1.add(new Tile(3, 3));
-		EXPECTED_TILES_1.add(new Tile(0, 0));
+		initPathMap();
 
-		EXPECTED_TILES_2.add(new Tile(6, 3));
-		EXPECTED_TILES_2.add(new Tile(5, 4));
-		EXPECTED_TILES_2.add(new Tile(4, 1));
-		EXPECTED_TILES_2.add(new Tile(3, 3));
-		EXPECTED_TILES_2.add(new Tile(2, 2));
-		EXPECTED_TILES_2.add(new Tile(2, 1));
-		EXPECTED_TILES_2.add(new Tile(1, 0));
-
-		EXPECTED_TILES_3.add(new Tile(5, 3));
-		EXPECTED_TILES_3.add(new Tile(3, 2));
-		EXPECTED_TILES_3.add(new Tile(6, 6));
-		EXPECTED_TILES_3.add(new Tile(6, 5));
-		EXPECTED_TILES_3.add(new Tile(6, 4));
-		EXPECTED_TILES_3.add(new Tile(4, 2));
-		EXPECTED_TILES_3.add(new Tile(4, 0));
+		initExpectedTiles1();
+		initExpectedTiles2();
+		initExpectedTiles3();
+		initExpectedTiles4();
+		initExpectedTiles5();
 	}
 
 	@Test
 	public void testGetTiles() {
-		List<Tile> resultTiles1 = tilesDetector.getTiles(SRC_IMAGE_PATH_1);
-		Assert.assertEquals(EXPECTED_TILES_1.size(), resultTiles1.size());
-		for (int i = 0; i < EXPECTED_TILES_1.size() ; i++) {
-			Assert.assertEquals(EXPECTED_TILES_1.get(i), resultTiles1.get(i));
+		for (Map.Entry<Integer, String> entry : imagePathMap.entrySet()) {
+			List<Tile> resultTiles = tilesDetector.getTiles(entry.getValue());
+			List<Tile> expectedTiles = expectedTilesMap.get(entry.getKey());
+			Assert.assertEquals(expectedTiles.size(), resultTiles.size());
+			for (int i = 0; i < expectedTiles.size() ; i++) {
+				Assert.assertEquals(expectedTiles.get(i), resultTiles.get(i));
+			}
 		}
+	}
 
-		List<Tile> resultTiles2 = tilesDetector.getTiles(SRC_IMAGE_PATH_2);
-		Assert.assertEquals(EXPECTED_TILES_2.size(), resultTiles2.size());
-		for (int i = 0; i < EXPECTED_TILES_2.size() ; i++) {
-			Assert.assertEquals(EXPECTED_TILES_2.get(i), resultTiles2.get(i));
+	private static void initPathMap() {
+		for (int i = 1; i <= imageCount; i++) {
+			imagePathMap.put(i, IMAGE_PATH_SUFFIX + i + IMAGE_EXTENSION);
 		}
+	}
 
-		List<Tile> resultTiles3 = tilesDetector.getTiles(SRC_IMAGE_PATH_3);
-		Assert.assertEquals(EXPECTED_TILES_3.size(), resultTiles3.size());
-		for (int i = 0; i < EXPECTED_TILES_3.size() ; i++) {
-			Assert.assertEquals(EXPECTED_TILES_3.get(i), resultTiles3.get(i));
-		}
+	private static void initExpectedTiles1() {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(5, 5));
+		expectedTiles.add(new Tile(5, 1));
+		expectedTiles.add(new Tile(5, 0));
+		expectedTiles.add(new Tile(4, 4));
+		expectedTiles.add(new Tile(4, 2));
+		expectedTiles.add(new Tile(3, 3));
+		expectedTiles.add(new Tile(0, 0));
+		expectedTilesMap.put(1, expectedTiles);
+	}
+
+	private static void initExpectedTiles2() {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(6, 3));
+		expectedTiles.add(new Tile(5, 4));
+		expectedTiles.add(new Tile(4, 1));
+		expectedTiles.add(new Tile(3, 3));
+		expectedTiles.add(new Tile(2, 2));
+		expectedTiles.add(new Tile(2, 1));
+		expectedTiles.add(new Tile(1, 0));
+		expectedTilesMap.put(2, expectedTiles);
+	}
+
+	private static void initExpectedTiles3() {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(5, 3));
+		expectedTiles.add(new Tile(3, 2));
+		expectedTiles.add(new Tile(6, 6));
+		expectedTiles.add(new Tile(6, 5));
+		expectedTiles.add(new Tile(6, 4));
+		expectedTiles.add(new Tile(4, 2));
+		expectedTiles.add(new Tile(4, 0));
+		expectedTilesMap.put(3, expectedTiles);
+	}
+
+	private static void initExpectedTiles4() {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(5, 1));
+		expectedTiles.add(new Tile(6, 6));
+		expectedTiles.add(new Tile(6, 3));
+		expectedTiles.add(new Tile(5, 4));
+		expectedTiles.add(new Tile(4, 4));
+		expectedTiles.add(new Tile(4, 3));
+		expectedTiles.add(new Tile(3, 3));
+		expectedTiles.add(new Tile(3, 2));
+		expectedTilesMap.put(4, expectedTiles);
+	}
+
+	private static void initExpectedTiles5() {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(4, 2));
+		expectedTiles.add(new Tile(6, 6));
+		expectedTiles.add(new Tile(6, 5));
+		expectedTilesMap.put(5, expectedTiles);
 	}
 }

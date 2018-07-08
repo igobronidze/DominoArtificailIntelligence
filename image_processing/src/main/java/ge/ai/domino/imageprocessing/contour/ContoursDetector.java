@@ -18,7 +18,7 @@ public class ContoursDetector {
 
     private boolean[][] checked;
 
-    public List<Contour> detectContours(BufferedImage image) {
+    public List<Contour> detectContours(BufferedImage image, int minArea) {
         initSize(image);
         initMatrix(image);
 
@@ -26,7 +26,10 @@ public class ContoursDetector {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (coloredMatrix[i][j] && !checked[i][j]) {
-                    contours.add(getContour(new Point(i, j)));
+                    Contour contour = getContour(new Point(i, j));
+                    if (getArea(contour) >= minArea) {
+                        contours.add(contour);
+                    }
                 }
             }
         }
@@ -94,5 +97,11 @@ public class ContoursDetector {
     private void initSize(BufferedImage image) {
         this.width = image.getWidth();
         this.height = image.getHeight();
+    }
+
+    private int getArea(Contour contour) {
+        int height = contour.getBottom() - contour.getTop() + 1;
+        int width = contour.getRight() - contour.getLeft() + 1;
+        return height * width;
     }
 }

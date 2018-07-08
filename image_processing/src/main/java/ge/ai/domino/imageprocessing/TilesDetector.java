@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 public class TilesDetector {
 
+	private static final int CONTOUR_MIN_AREA = 200;  //TODO[IG] to attribute
+
 	public List<Tile> getTiles(String imagePath) {
 		opencv_core.Mat srcMat = opencv_imgcodecs.imread(imagePath);
 
@@ -25,7 +27,7 @@ public class TilesDetector {
 		BufferedImage image = ImageCleaner.cleanImage(croppedMat);
 
 		ContoursDetector contoursDetector = new ContoursDetector();
-		List<Contour> contours = contoursDetector.detectContours(image);
+		List<Contour> contours = contoursDetector.detectContours(image, CONTOUR_MIN_AREA);
 
 		return contours.stream().map(this::getTile).collect(Collectors.toList());
 	}
@@ -47,8 +49,8 @@ public class TilesDetector {
 	private int countPoints(List<Contour> contours) {
 		int count = 0;
 		for (Contour contour : contours) {
-			int max = Math.max(contour.getBottom() - contour.getTop(), contour.getRight() - contour.getLeft());
-			int min = Math.min(contour.getBottom() - contour.getTop(), contour.getRight() - contour.getLeft());
+			int max = Math.max(contour.getBottom() - contour.getTop(), contour.getRight() - contour.getLeft()) + 1;
+			int min = Math.min(contour.getBottom() - contour.getTop(), contour.getRight() - contour.getLeft()) + 1;
 			count += Math.round((double) max / min);
 		}
 		return count;

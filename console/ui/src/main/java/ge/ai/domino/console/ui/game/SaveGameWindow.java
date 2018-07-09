@@ -17,7 +17,7 @@ public abstract class SaveGameWindow extends Stage {
 
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
-    public void showWindow() {
+    public void showWindow(boolean specifyWinner) {
         if (AppController.round != null) {
             this.setResizable(false);
             this.setTitle(Messages.get("saveGame"));
@@ -29,7 +29,7 @@ public abstract class SaveGameWindow extends Stage {
             optionsVBox.getChildren().addAll(saveGameCheckBox, saveOpponentPlaysCheckBox);
             TCHButton saveButton = new TCHButton(Messages.get("save"));
             saveButton.setOnAction(event -> {
-                playedGameService.finishGame(AppController.round.getGameInfo().getGameId(), saveGameCheckBox.isSelected(), saveOpponentPlaysCheckBox.isSelected());
+                playedGameService.finishGame(AppController.round.getGameInfo().getGameId(), saveGameCheckBox.isSelected(), saveOpponentPlaysCheckBox.isSelected(), specifyWinner);
                 onSave();
                 this.close();
             });

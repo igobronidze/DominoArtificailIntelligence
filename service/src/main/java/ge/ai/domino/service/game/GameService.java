@@ -23,7 +23,7 @@ public interface GameService {
 
     void specifyOpponentLeftTiles(int gameId, int leftTilesCount);
 
-    Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe);
+    Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe, boolean finishGame);
 
     Round detectAndAddNewTilesForMe(int gameId) throws DAIException;
 

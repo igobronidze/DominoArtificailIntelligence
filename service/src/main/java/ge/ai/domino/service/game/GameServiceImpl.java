@@ -51,8 +51,8 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe) {
-        return gameManager.skipRound(gameId, myPoint, opponentPoint, leftTiles, startMe);
+    public Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe, boolean   finishGame) {
+        return gameManager.skipRound(gameId, myPoint, opponentPoint, leftTiles, startMe, finishGame);
     }
 
     @Override

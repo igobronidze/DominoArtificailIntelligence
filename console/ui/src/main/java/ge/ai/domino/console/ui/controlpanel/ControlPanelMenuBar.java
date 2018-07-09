@@ -127,7 +127,7 @@ public class ControlPanelMenuBar extends MenuBar {
 
                     @Override
                     public void onCancel() {}
-                }.showWindow();
+                }.showWindow(false);
             } else {
                 controlPanel.initComponents();
             }
@@ -144,7 +144,7 @@ public class ControlPanelMenuBar extends MenuBar {
 
                     @Override
                     public void onCancel() {}
-                }.showWindow();
+                }.showWindow(false);
             }
         });
         fileMenu.getItems().addAll(newItem, closeItem);

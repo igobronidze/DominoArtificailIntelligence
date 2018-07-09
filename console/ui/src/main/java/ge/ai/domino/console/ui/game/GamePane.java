@@ -92,7 +92,7 @@ public class GamePane extends BorderPane {
 
         showDetectTilesWindow(true);
 
-        reload(false);
+        reload(false, false);
 
         initKeyboardListener();
         initFocusLoseListener();
@@ -107,7 +107,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), null);
                     controlPanel.getStage().setIconified(false);
-                    reload(false);
+                    reload(false, false);
                 });
             }
 
@@ -116,7 +116,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), true);
                     controlPanel.getStage().setIconified(false);
-                    reload(false);
+                    reload(false, false);
                 });
             }
 
@@ -125,7 +125,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), false);
                     controlPanel.getStage().setIconified(false);
-                    reload(false);
+                    reload(false, false);
                 });
             }
 
@@ -145,7 +145,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     AppController.round = gameService.detectAndAddNewTilesForMe(AppController.round.getGameInfo().getGameId());
                     controlPanel.getStage().setIconified(false);
-                    reload(false);
+                    reload(false, false);
                 });
             }
 
@@ -156,7 +156,7 @@ public class GamePane extends BorderPane {
         }.showWindow();
     }
 
-    private void reload(boolean showDetectTilesWindow) {
+    private void reload(boolean showDetectTilesWindow, boolean specifyWinner) {
         this.setPadding(new Insets(8));
         initTopPane();
         this.setCenter(getOpponentTilesPane());
@@ -171,7 +171,7 @@ public class GamePane extends BorderPane {
 
                 @Override
                 public void onCancel() {}
-            }.showWindow();
+            }.showWindow(specifyWinner);
         }
         if (showDetectTilesWindow && isFirsMove() && AppController.round.getMyTiles().isEmpty()) {
             showDetectTilesWindow(false);
@@ -215,14 +215,14 @@ public class GamePane extends BorderPane {
                             showAddLeftTilesCount(new Tile(move.getLeft(), move.getRight()), move.getDirection());
                         } else {
                             AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(move.getLeft(), move.getRight(), move.getDirection()));
-                            reload(true);
+                            reload(true, false);
                         }
                     });
                 } else if (AppController.round != null && !hasPrediction && AppController.round.getTableInfo().isMyMove() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
                     ServiceExecutor.execute(() -> {
 						Tile tile = new ArrayList<>(AppController.round.getOpponentTiles().keySet()).get(0);
 						AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-						reload(true);
+						reload(true, false);
 					});
                 }
             }
@@ -234,7 +234,7 @@ public class GamePane extends BorderPane {
             Integer secondPressedNumber;
             switch (e.getCode()) {
                 case BACK_SPACE:
-                    reload(true);
+                    reload(true, false);
                     return;
                 case CONTROL:
                     pressedOnCtrl = true;
@@ -310,15 +310,15 @@ public class GamePane extends BorderPane {
 
     private void onUndo() {
         ServiceExecutor.execute(() -> AppController.round = gameService.getLastPlayedRound(AppController.round.getGameInfo().getGameId()));
-        reload(true);
+        reload(true, false);
     }
 
     private void showSkipRoundWindow() {
         new SkipRoundWindow() {
             @Override
-            public void onSkip(int myPoint, int opponentPoint, int leftTilesCount, boolean startMe) {
-                AppController.round = gameService.skipRound(AppController.round.getGameInfo().getGameId(), myPoint, opponentPoint, leftTilesCount, startMe);
-                reload(true);
+            public void onSkip(int myPoint, int opponentPoint, int leftTilesCount, boolean startMe, boolean finishGame) {
+                AppController.round = gameService.skipRound(AppController.round.getGameInfo().getGameId(), myPoint, opponentPoint, leftTilesCount, startMe, finishGame);
+                reload(true, finishGame);
             }
         }.showWindow();
     }
@@ -340,7 +340,7 @@ public class GamePane extends BorderPane {
                     }
                 });
                 showingAddLeftTilesWindow = false;
-                reload(true);
+                reload(true, false);
             }
         }.showWindow();
     }
@@ -352,7 +352,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
                     AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                    reload(true);
+                    reload(true, false);
                 });
             }
 
@@ -361,7 +361,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
                     AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                    reload(true);
+                    reload(true, false);
                 });
             }
         }.showWindow();
@@ -559,7 +559,7 @@ public class GamePane extends BorderPane {
                 showAddLeftTilesCount(tile, direction);
             } else {
                 AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), TileAndMoveHelper.getMove(tile, direction));
-                reload(true);
+                reload(true, false);
             }
         });
     }
@@ -574,12 +574,12 @@ public class GamePane extends BorderPane {
             } else {
                 ServiceExecutor.execute(() -> {
                     AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
-                    reload(true);
+                    reload(true, false);
                 });
             }
         } else {
             ServiceExecutor.execute(() -> AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), TileAndMoveHelper.getMove(tile, direction)));
-            reload(true);
+            reload(true, false);
         }
     }
 
@@ -623,6 +623,6 @@ public class GamePane extends BorderPane {
                 AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
             }
         });
-        reload(true);
+        reload(true, false);
     }
 }

@@ -22,7 +22,7 @@ public class PlayedGameServiceImpl implements PlayedGameService {
     }
 
     @Override
-    public void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays) {
-        playedGameManager.finishGame(gameId, saveGame, saveOpponentPlays);
+    public void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays, boolean specifyWinner) {
+        playedGameManager.finishGame(gameId, saveGame, saveOpponentPlays, specifyWinner);
     }
 }

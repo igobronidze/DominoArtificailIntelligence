@@ -33,9 +33,12 @@ abstract class SkipRoundWindow {
 		CheckBox startMeCheckBox = new CheckBox();
 		TCHFieldLabel startMeFieldLabel = new TCHFieldLabel(Messages.get("startMe"), startMeCheckBox);
 
+		CheckBox finishGameCheckBox = new CheckBox();
+		TCHFieldLabel finishGameFieldLabel = new TCHFieldLabel(Messages.get("finishGame"), finishGameCheckBox);
+
 		TCHButton skipButton = new TCHButton(Messages.get("skip"));
 		skipButton.setOnAction(event -> {
-			onSkip(myPointField.getNumber().intValue(), opponentPointField.getNumber().intValue(), leftTilesField.getNumber().intValue(), startMeCheckBox.isSelected());
+			onSkip(myPointField.getNumber().intValue(), opponentPointField.getNumber().intValue(), leftTilesField.getNumber().intValue(), startMeCheckBox.isSelected(), finishGameCheckBox.isSelected());
 			stage.close();
 		});
 		TCHButton cancelButton = new TCHButton(Messages.get("cancel"));
@@ -47,13 +50,13 @@ abstract class SkipRoundWindow {
 		VBox vBox = new VBox(15);
 		vBox.setPadding(new Insets(20));
 		vBox.setAlignment(Pos.TOP_CENTER);
-		vBox.getChildren().addAll(myPointFieldLabel, opponentPointFieldLabel, leftTilesFieldLabel, startMeFieldLabel, hBox);
+		vBox.getChildren().addAll(myPointFieldLabel, opponentPointFieldLabel, leftTilesFieldLabel, startMeFieldLabel, finishGameFieldLabel, hBox);
 
 		stage.setScene(new Scene(vBox));
 		stage.setWidth(400);
-		stage.setHeight(350);
+		stage.setHeight(400);
 		stage.showAndWait();
 	}
 
-	public abstract void onSkip(int myPoint, int opponentPoint, int leftTilesCount, boolean startMe);
+	public abstract void onSkip(int myPoint, int opponentPoint, int leftTilesCount, boolean startMe, boolean finishGame);
 }

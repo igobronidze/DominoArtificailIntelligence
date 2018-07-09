@@ -12,5 +12,5 @@ public interface PlayedGameService {
 
     List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin);
 
-    void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays);
+    void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays, boolean specifyWinner);
 }

@@ -48,12 +48,12 @@ public class PlayedGameManager {
         return playedGameDAO.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByWebsite, groupedByPointForWin);
     }
 
-    public void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays) {
+    public void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays, boolean specifyWinner) {
         if (saveGame) {
             Round round = CachedGames.getCurrentRound(gameId, true);
             GameInfo gameInfo = round.getGameInfo();
             PlayedGame playedGame = new PlayedGame();
-            if ((round.getTableInfo().getOpponentTilesCount() == 0.0 || round.getMyTiles().isEmpty()) && round.getTableInfo().getLeft() != null) {
+            if (specifyWinner || ((round.getTableInfo().getOpponentTilesCount() == 0.0 || round.getMyTiles().isEmpty()) && round.getTableInfo().getLeft() != null)) {
                 if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
                     playedGame.setResult(GameResult.I_WIN);
                 } else {

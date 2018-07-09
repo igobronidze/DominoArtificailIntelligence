@@ -55,7 +55,7 @@ public class ControlPanel extends Application {
                     public void onCancel() {
                         we.consume();
                     }
-                }.showWindow();
+                }.showWindow(false);
             }
         });
     }

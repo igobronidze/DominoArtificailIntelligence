@@ -29,7 +29,9 @@ public class GameLoggingProcessor {
 
     public static final String NOT = "N";
 
-    public static final NumberFormat formatter = new DecimalFormat("#0.0000");
+    public static final String NOT_WITH_SPACES = "N                 ";
+
+    public static final NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
 
     private static final Logger logger = Logger.getLogger(GameLoggingProcessor.class);
 
@@ -111,7 +113,7 @@ public class GameLoggingProcessor {
             for (int j = 6; j >= i ; j--) {
                 Tile tile = new Tile(j, i);
                 Double prob = tiles.get(tile);
-                info.append(tile).append(EQUAL_CHARACTER_WITH_SPACE).append(prob == null ? "N     " : formatter.format(prob));
+                info.append(tile).append(EQUAL_CHARACTER_WITH_SPACE).append(prob == null ? NOT_WITH_SPACES : formatter.format(prob));
                 if (j != i) {
                     info.append(DELIMITER_WITH_SPACES);
                 }

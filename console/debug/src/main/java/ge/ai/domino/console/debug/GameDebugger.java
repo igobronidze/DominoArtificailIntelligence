@@ -77,14 +77,18 @@ public class GameDebugger {
                         int left = Integer.parseInt(scanner.nextLine());
                         System.out.println("Right:");
                         int right = Integer.parseInt(scanner.nextLine());
+                        System.out.println("Virtual:");
+                        boolean virtual = Boolean.valueOf(scanner.nextLine());
                         AddForMeProcessor addForMeProcessor = new AddForMeProcessor();
-                        round = addForMeProcessor.move(round, new Move(left, right, null), false);
+                        round = addForMeProcessor.move(round, new Move(left, right, null), virtual);
                         logger.info("Added for me successfully");
                         break;
                     }
                     case "4" : {
+                        System.out.println("Virtual:");
+                        boolean virtual = Boolean.valueOf(scanner.nextLine());
                         AddForOpponentProcessor addForOpponentProcessor = new AddForOpponentProcessor();
-                        round = addForOpponentProcessor.move(round, new Move(0, 0, null), false);
+                        round = addForOpponentProcessor.move(round, new Move(0, 0, null), virtual);
                         logger.info("Added for opponent successfully");
                         break;
                     }
@@ -95,8 +99,10 @@ public class GameDebugger {
                         int right = Integer.parseInt(scanner.nextLine());
                         System.out.println("Direction:");
                         MoveDirection direction = MoveDirection.valueOf(scanner.nextLine());
+                        System.out.println("Virtual:");
+                        boolean virtual = Boolean.valueOf(scanner.nextLine());
                         PlayForMeProcessor playForMeProcessor = new PlayForMeProcessor();
-                        round = playForMeProcessor.move(round, new Move(left, right, direction), false);
+                        round = playForMeProcessor.move(round, new Move(left, right, direction), virtual);
                         logger.info("Played fot me successfully");
                         break;
                     }
@@ -107,8 +113,10 @@ public class GameDebugger {
                         int right = Integer.parseInt(scanner.nextLine());
                         System.out.println("Direction:");
                         MoveDirection direction = MoveDirection.valueOf(scanner.nextLine());
+                        System.out.println("Virtual:");
+                        boolean virtual = Boolean.valueOf(scanner.nextLine());
                         PlayForOpponentProcessor playForOpponentProcessor = new PlayForOpponentProcessor();
-                        round = playForOpponentProcessor.move(round, new Move(left, right, direction), false);
+                        round = playForOpponentProcessor.move(round, new Move(left, right, direction), virtual);
                         logger.info("Played fot opponent successfully");
                         break;
                     }

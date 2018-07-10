@@ -196,6 +196,6 @@ public class RoundParserTest {
 
     private static String opponentTileToLog(Tile tile) {
         Double prob = opponentTiles.get(tile);
-        return tile + ": " + (prob == null ? "N     " : GameLoggingProcessor.formatter.format(prob));
+        return tile + ": " + (prob == null ? GameLoggingProcessor.NOT_WITH_SPACES : GameLoggingProcessor.formatter.format(prob));
     }
 }

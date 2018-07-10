@@ -107,6 +107,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), null);
                     controlPanel.getStage().setIconified(false);
+                    controlPanel.getStage().requestFocus();
                     reload(false, false);
                 });
             }
@@ -116,6 +117,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), true);
                     controlPanel.getStage().setIconified(false);
+                    controlPanel.getStage().requestFocus();
                     reload(false, false);
                 });
             }
@@ -125,6 +127,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), false);
                     controlPanel.getStage().setIconified(false);
+                    controlPanel.getStage().requestFocus();
                     reload(false, false);
                 });
             }
@@ -145,6 +148,7 @@ public class GamePane extends BorderPane {
                 ServiceExecutor.execute(() -> {
                     AppController.round = gameService.detectAndAddNewTilesForMe(AppController.round.getGameInfo().getGameId());
                     controlPanel.getStage().setIconified(false);
+                    controlPanel.getStage().requestFocus();
                     reload(false, false);
                 });
             }

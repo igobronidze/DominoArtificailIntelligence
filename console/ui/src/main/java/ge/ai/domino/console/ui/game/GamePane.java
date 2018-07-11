@@ -203,9 +203,13 @@ public class GamePane extends BorderPane {
         skipImage.setCursor(Cursor.HAND);
         skipImage.setOnMouseClicked(event -> showSkipRoundWindow());
 
+        ImageView editImage = new ImageView(ImageFactory.getImage("edit_green.png"));
+        editImage.setCursor(Cursor.HAND);
+        editImage.setOnMouseClicked(event -> showEditNameWindow());
+
         FlowPane flowPane = new FlowPane(30, 10);
         flowPane.setPadding(new Insets(0, 4, 8, 4));
-        flowPane.getChildren().addAll(myPointsLabel, opponentPointLabel, bazaarCountLabel, opponentLabel, pointWorWinLabel, undoImage, skipImage);
+        flowPane.getChildren().addAll(myPointsLabel, opponentPointLabel, bazaarCountLabel, opponentLabel, pointWorWinLabel, undoImage, skipImage, editImage);
         this.setTop(flowPane);
     }
 
@@ -300,6 +304,9 @@ public class GamePane extends BorderPane {
                     case B:
                         showSkipRoundWindow();
                         break;
+                    case E:
+                        showEditNameWindow();
+                        break;
                 }
             }
         });
@@ -324,6 +331,21 @@ public class GamePane extends BorderPane {
                 AppController.round = gameService.skipRound(AppController.round.getGameInfo().getGameId(), myPoint, opponentPoint, leftTilesCount, startMe, finishGame);
                 reload(true, finishGame);
             }
+        }.showWindow();
+    }
+
+    private void showEditNameWindow() {
+        new EditNameWindow() {
+
+            @Override
+            public void onSave(String opponentName) {
+                gameService.editOpponentNameInCache(AppController.round.getGameInfo().getGameId(), opponentName);
+                gameProperties.setOpponentName(opponentName);
+                reload(false, false);
+            }
+
+            @Override
+            public void onCancel() {}
         }.showWindow();
     }
 

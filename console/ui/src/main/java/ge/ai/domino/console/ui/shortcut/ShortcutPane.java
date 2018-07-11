@@ -54,6 +54,7 @@ public class ShortcutPane extends HBox {
         shortcuts.add(new ShortcutProperty("ctrl_+", Messages.get("ctrl_+")));
         shortcuts.add(new ShortcutProperty("ctrl_Z", Messages.get("ctrl_Z")));
         shortcuts.add(new ShortcutProperty("ctrl_B", Messages.get("ctrl_B")));
+        shortcuts.add(new ShortcutProperty("ctrl_N", Messages.get("ctrl_N")));
         ObservableList<ShortcutProperty> data = FXCollections.observableArrayList(shortcuts);
         tableView.setItems(data);
     }

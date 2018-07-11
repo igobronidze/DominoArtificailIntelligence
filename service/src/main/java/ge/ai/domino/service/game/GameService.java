@@ -28,4 +28,6 @@ public interface GameService {
     Round detectAndAddNewTilesForMe(int gameId) throws DAIException;
 
     Round detectAnsAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException;
+
+    void editOpponentNameInCache(int gameId, String opponentName);
 }

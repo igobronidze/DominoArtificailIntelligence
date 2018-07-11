@@ -1,6 +1,5 @@
 package ge.ai.domino.console.ui.game;
 
-import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
 import ge.ai.domino.console.ui.tchcomponents.TCHFieldLabel;

@@ -212,6 +212,10 @@ public class GameManager {
         return CachedGames.getCurrentRound(gameId, false);
     }
 
+    public void editOpponentNameInCache(int gameId, String name) {
+        CachedGames.getGameProperties(gameId).setOpponentName(name);
+    }
+
     private void logImage(int gameId, String imagePath) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss");

@@ -50,7 +50,7 @@ public class GamePropertiesPane extends VBox {
     private void initComponents() {
         TCHTextField websiteField = new TCHTextField(TCHComponentSize.MEDIUM);
         TCHFieldLabel websiteFieldLabel = new TCHFieldLabel(Messages.get("website"), websiteField);
-        TCHTextField nameField = new TCHTextField(TCHComponentSize.MEDIUM);
+        TCHTextField nameField = new TCHTextField("tmp", TCHComponentSize.MEDIUM);
         TCHFieldLabel nameFieldLabel = new TCHFieldLabel(Messages.get("name"), nameField);
         List<Integer> points = systemParameterService.getIntegerListParameterValue(possiblePoints);
         List<Object> objPoints = new ArrayList<>(points);

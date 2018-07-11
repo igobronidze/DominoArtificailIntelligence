@@ -89,8 +89,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     public void updatePlayedGame(PlayedGame game) {
         try {
             logger.info("Start editGame method id[" + game.getId() + "]");
-            String sql = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?",
-                    PLAYED_GAME_TABLE_NAME, RESULT_COLUMN_NAME, DATE_COLUMN_NAME, TIME_COLUMN_NAME, MY_POINT_COLUMN_NAME, OPPONENT_POINT_COLUMN_NAME, GAME_HISTORY_COLUMN_NAME, ID_COLUMN_NAME);
+            String sql = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?",
+                    PLAYED_GAME_TABLE_NAME, RESULT_COLUMN_NAME, DATE_COLUMN_NAME, TIME_COLUMN_NAME, MY_POINT_COLUMN_NAME, OPPONENT_POINT_COLUMN_NAME, GAME_HISTORY_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, ID_COLUMN_NAME);
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, game.getResult().name());
             pstmt.setDate(2, new Date(game.getEndDate().getTime()));
@@ -98,7 +98,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             pstmt.setInt(4, game.getMyPoint());
             pstmt.setInt(5, game.getOpponentPoint());
             pstmt.setString(6, GameHistoryMarshaller.getMarshalledHistory(game.getGameHistory()));
-            pstmt.setInt(7, game.getId());
+            pstmt.setString(7, game.getOpponentName());
+            pstmt.setInt(8, game.getId());
             pstmt.executeUpdate();
             logger.info("Updated game id[" + game.getId() + "]");
         } catch (SQLException ex) {

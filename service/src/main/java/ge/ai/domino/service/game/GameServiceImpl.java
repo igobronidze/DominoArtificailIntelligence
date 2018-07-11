@@ -64,4 +64,9 @@ public class GameServiceImpl implements GameService {
     public Round detectAnsAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException {
         return gameManager.detectAndAddInitialTilesForMe(gameId, startMe);
     }
+
+    @Override
+    public void editOpponentNameInCache(int gameId, String opponentName) {
+        gameManager.editOpponentNameInCache(gameId, opponentName);
+    }
 }

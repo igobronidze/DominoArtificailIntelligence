@@ -67,6 +67,7 @@ public class PlayedGameManager {
             playedGame.setId(gameInfo.getGameId());
             playedGame.setEndDate(new Date());
             playedGame.setGameHistory(CachedGames.getGameHistory(playedGame.getId()));
+            playedGame.setOpponentName(CachedGames.getGameProperties(gameId).getOpponentName());
             playedGameDAO.updatePlayedGame(playedGame);
         } else {
             playedGameDAO.deletePlayedGame(gameId);

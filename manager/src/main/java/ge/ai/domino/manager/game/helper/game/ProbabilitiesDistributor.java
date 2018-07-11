@@ -68,16 +68,7 @@ public class ProbabilitiesDistributor {
         if (!ComparisonHelper.equal(remainingProbability, 0.0)) {
             distributeProbabilitiesOpponentProportional(tiles, remainingProbability);
         } else {
-            OpponentTilesFilter newFilter = new OpponentTilesFilter()
-                    .notBazaar(true)
-                    .valueLessThan(1 - remainingProbability);
-            for (Map.Entry<Tile, Double> entry : tiles.entrySet()) {
-                if (newFilter.filter(entry)) {
-                    count++;
-                }
-            }
-            double probForAdd = remainingProbability / count;
-            tiles.entrySet().stream().filter(newFilter::filter).forEach(entry -> entry.setValue(entry.getValue() + probForAdd));
+            addProbabilitiesEqually(tiles, remainingProbability);
         }
     }
 
@@ -102,15 +93,35 @@ public class ProbabilitiesDistributor {
         if (ComparisonHelper.equal(probability, sum)) {
             setStaticProbabilities(tiles, opponentTilesFilter, 1.0);
         } else {
+            double fullSome = 0.0;
             for (Map.Entry<Tile, Double> entry : tiles.entrySet()) {
                 if (opponentTilesFilter.filter(entry)) {
                     double add = probability * (1 - entry.getValue()) / sum;
                     entry.setValue(entry.getValue() + add);
                 }
+                fullSome += entry.getValue();
+            }
+            double opponentTilesCount = round.getTableInfo().getOpponentTilesCount();
+            if (ComparisonHelper.equal(fullSome, opponentTilesCount) && opponentTilesCount > fullSome) {
+                addProbabilitiesEqually(tiles, opponentTilesCount - fullSome);
             }
         }
 
         round.getTableInfo().setTilesFromBazaar(0);
+    }
+
+    private static void addProbabilitiesEqually(Map<Tile, Double> tiles, double prob) {
+        int count = 0;
+        OpponentTilesFilter newFilter = new OpponentTilesFilter()
+                .notBazaar(true)
+                .valueLessThan(1 - prob);
+        for (Map.Entry<Tile, Double> entry : tiles.entrySet()) {
+            if (newFilter.filter(entry)) {
+                count++;
+            }
+        }
+        double probForAdd = prob / count;
+        tiles.entrySet().stream().filter(newFilter::filter).forEach(entry -> entry.setValue(entry.getValue() + probForAdd));
     }
 
     private static void setStaticProbabilities(Map<Tile, Double> tiles, OpponentTilesFilter opponentTilesFilter, double prob) {

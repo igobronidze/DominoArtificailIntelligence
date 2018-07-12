@@ -4,7 +4,7 @@ import ge.ai.domino.imageprocessing.crop.CropImageParams;
 
 public class TilesDetectorParamsCreator {
 
-	private static final double TILES_HEIGHT_PERCENTAGE = 20;
+	private static final double TILES_HEIGHT_PERCENTAGE = 15;
 
 	private static final double TILES_MARGIN_BOTTOM_PERCENTAGE = 5;
 

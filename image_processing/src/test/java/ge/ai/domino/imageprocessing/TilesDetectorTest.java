@@ -16,7 +16,7 @@ public class TilesDetectorTest {
 
 	private static final String IMAGE_EXTENSION = ".png";
 
-	private static final int imageCount = 5;
+	private static final int imageCount = 6;
 
 	private static final Map<Integer, String> imagePathMap = new HashMap<>();
 
@@ -33,6 +33,7 @@ public class TilesDetectorTest {
 		initExpectedTiles3();
 		initExpectedTiles4();
 		initExpectedTiles5();
+		initExpectedTiles6();
 	}
 
 	@Test
@@ -108,5 +109,14 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(6, 6));
 		expectedTiles.add(new Tile(6, 5));
 		expectedTilesMap.put(5, expectedTiles);
+	}
+
+	private static void initExpectedTiles6() {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(5, 5));
+		expectedTiles.add(new Tile(6, 1));
+		expectedTiles.add(new Tile(4, 2));
+		expectedTiles.add(new Tile(3, 3));
+		expectedTilesMap.put(6, expectedTiles);
 	}
 }

@@ -205,15 +205,15 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 first = false;
             }
             if (groupByOpponentName) {
-                QueryUtil.addParameter(sb, OPPONENT_NAME_COLUMN_NAME, first);
+                QueryUtil.addParameter(sb, OPPONENT_NAME_COLUMN_NAME, !first);
                 first = false;
             }
             if (groupByWebsite) {
-                QueryUtil.addParameter(sb, WEBSITE_COLUMN_NAME, first);
+                QueryUtil.addParameter(sb, WEBSITE_COLUMN_NAME, !first);
                 first = false;
             }
             if (groupedByPointForWin) {
-                QueryUtil.addParameter(sb, POINT_FOR_WIN_COLUMN_NAME, first);
+                QueryUtil.addParameter(sb, POINT_FOR_WIN_COLUMN_NAME, !first);
                 first = false;
             }
             if (!first) {

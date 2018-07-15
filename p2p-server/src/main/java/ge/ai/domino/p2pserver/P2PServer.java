@@ -1,6 +1,5 @@
 package ge.ai.domino.p2pserver;
 
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameProperties;
 import org.apache.log4j.Logger;
 
@@ -18,7 +17,7 @@ public class P2PServer {
 
     private boolean open;
 
-    public void startServer(GameProperties gameProperties) throws DAIException {
+    public void startServer(GameProperties gameProperties) {
         try {
             server = new ServerSocket(PORT);
             open = true;
@@ -29,22 +28,21 @@ public class P2PServer {
                 Socket secondPlayer = server.accept();
                 logger.info("Accepted second player");
                 new Thread(new P2PGame(firstPlayer, secondPlayer, gameProperties)).start();
-                logger.info("Started p2p game");
+                logger.info("Started p2p game, pointOfWin[" + gameProperties.getPointsForWin() + "]");
             }
         } catch (IOException ex) {
-            logger.error("Can't p2p start server, port[" + PORT + "]", ex);
-            throw new DAIException("canNotStartP2PServer");
+            logger.error("Can't start p2p server, port[" + PORT + "]", ex);
         }
     }
 
-    public void stopService() throws DAIException {
+    public void stopService() {
         try {
             if (server != null) {
                 server.close();
                 open = false;
             }
         } catch (IOException ex) {
-            throw new DAIException("canNotCloseP2PServer");
+            logger.error("Can't stop p2p server, port[" + PORT + "]", ex);
         }
     }
 }

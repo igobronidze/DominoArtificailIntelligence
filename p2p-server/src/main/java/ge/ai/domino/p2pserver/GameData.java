@@ -16,6 +16,8 @@ public class GameData {
 
     private Set<Tile> tiles2 = new HashSet<>();
 
+    private Tile lastDeletedTile;
+
     public synchronized Set<Tile> getTiles1() {
         return tiles1;
     }
@@ -35,14 +37,18 @@ public class GameData {
     public synchronized Tile getRandomTileAndAddInSet(boolean first) {
         Random random = new Random();
         int index = random.nextInt(bazaar.size());
-        Tile tile = bazaar.get(index);
+        lastDeletedTile = bazaar.get(index);
         bazaar.remove(index);
         if (first) {
-            tiles1.add(tile);
+            tiles1.add(lastDeletedTile);
         } else {
-            tiles2.add(tile);
+            tiles2.add(lastDeletedTile);
         }
-        return tile;
+        return lastDeletedTile;
+    }
+
+    public synchronized void addLastDeletedTile() {
+        bazaar.add(lastDeletedTile);
     }
 
     public synchronized boolean isFirstStarter() {

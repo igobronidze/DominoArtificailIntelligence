@@ -1,6 +1,7 @@
 package ge.ai.domino.p2pclient;
 
 import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
@@ -45,7 +46,7 @@ public class P2PGame {
         functionManager.initFunctions();
     }
 
-    public void start() throws DAIException {
+    public GameInfo start() throws DAIException {
         try {
             createRound();
 
@@ -125,6 +126,7 @@ public class P2PGame {
             logger.error("Error occurred while play p2p game", ex);
             throw new DAIException("p2pGameError");
         }
+        return round.getGameInfo();
     }
 
     private void addRandomTileForMe() throws DAIException, IOException, ClassNotFoundException {
@@ -182,12 +184,18 @@ public class P2PGame {
     }
 
     private Tile getRandomTile(Map<Tile, Double> opponentTiles) throws IOException, ClassNotFoundException {
+        boolean first = true;
         while (true) {
-            oos.writeObject(Command.GET_RANDOM_TILE);
+            if (first) {
+                oos.writeObject(Command.GET_RANDOM_TILE);
+            } else {
+                oos.writeObject(Command.GET_RANDOM_TILE_ADDITIONAL_TRY);
+            }
             Tile tile = (Tile) ois.readObject();
             if (opponentTiles.get(tile) != 1.0) {
                 return tile;
             }
+            first = false;
         }
     }
 

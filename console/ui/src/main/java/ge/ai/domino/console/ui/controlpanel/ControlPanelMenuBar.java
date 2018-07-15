@@ -1,5 +1,7 @@
 package ge.ai.domino.console.ui.controlpanel;
 
+import ge.ai.domino.console.ui.controlpanel.p2p.P2PClientWindow;
+import ge.ai.domino.console.ui.controlpanel.p2p.P2PServerWindow;
 import ge.ai.domino.console.ui.game.SaveGameWindow;
 import ge.ai.domino.console.ui.opponentplays.GroupedOpponentPlaysPane;
 import ge.ai.domino.console.ui.played.GroupedPlayedGamePane;
@@ -8,6 +10,13 @@ import ge.ai.domino.console.ui.shortcut.ShortcutPane;
 import ge.ai.domino.console.ui.sysparam.SystemParametersPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
+import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.game.GameProperties;
+import ge.ai.domino.service.p2p.P2PClientService;
+import ge.ai.domino.service.p2p.P2PClientServiceImpl;
+import ge.ai.domino.service.p2p.P2PServerService;
+import ge.ai.domino.service.p2p.P2PServerServiceImpl;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -18,6 +27,16 @@ import javafx.stage.Stage;
 public class ControlPanelMenuBar extends MenuBar {
 
     private final ControlPanel controlPanel;
+
+    private static final String P2P_GAME_WEBSITE = "p2pGame";
+
+    private static final String P2P_GAME_OPPONENT_NAME = "p2pOpponent";
+
+    private static final int SLEEP_BETWEEN_P2P_GAME = 30_000;
+
+    private final P2PServerService p2PServerService = new P2PServerServiceImpl();
+
+    private final P2PClientService p2PClientService = new P2PClientServiceImpl();
 
     ControlPanelMenuBar(ControlPanel controlPanel) {
         this.controlPanel = controlPanel;
@@ -31,10 +50,11 @@ public class ControlPanelMenuBar extends MenuBar {
 
     private void initMenu() {
         Menu fileMenu = getFileMenu();
-        Menu sysParamMenu = getSysParamMenu();
+        Menu controlPanelMenu = getControlPanelMenu();
+        Menu p2pMenu = getP2PMenu();
         Menu langMenu = getLangMenu();
         Menu helpMenu = getHelpMenu();
-        this.getMenus().addAll(fileMenu, sysParamMenu, langMenu, helpMenu);
+        this.getMenus().addAll(fileMenu, controlPanelMenu, p2pMenu, langMenu, helpMenu);
     }
 
     private Menu getHelpMenu() {
@@ -74,7 +94,7 @@ public class ControlPanelMenuBar extends MenuBar {
         return langMenu;
     }
 
-    private Menu getSysParamMenu() {
+    private Menu getControlPanelMenu() {
         Menu controlPanelMenu = new Menu(Messages.get("controlPanel"));
         MenuItem sysParamsItem = new MenuItem(Messages.get("systemParameters"));
         sysParamsItem.setOnAction(e -> {
@@ -111,6 +131,54 @@ public class ControlPanelMenuBar extends MenuBar {
         });
         controlPanelMenu.getItems().addAll(sysParamsItem, playedGameItem, groupedPlayedGameItem, groupedOpponentPlaysItem);
         return controlPanelMenu;
+    }
+
+    private Menu getP2PMenu() {
+        Menu p2pMenu = new Menu(Messages.get("p2p"));
+        MenuItem serverMenuItem = new MenuItem(Messages.get("p2pServer"));
+        serverMenuItem.setOnAction(e -> {
+            new P2PServerWindow() {
+
+                @Override
+                public void onStart(int pointOfWin) {
+                    GameProperties gameProperties = new GameProperties();
+                    gameProperties.setOpponentName(P2P_GAME_OPPONENT_NAME);
+                    gameProperties.setWebsite(P2P_GAME_WEBSITE);
+                    gameProperties.setPointsForWin(pointOfWin);
+                    new Thread(() -> ServiceExecutor.execute(() -> p2PServerService.startServer(gameProperties))).start();
+                }
+
+                @Override
+                public void onStop() {
+                    ServiceExecutor.execute(p2PServerService::stopServer);
+                }
+            }.showWindow(controlPanel.getStage());
+        });
+
+        MenuItem clientMenuItem = new MenuItem(Messages.get("p2pClient"));
+        clientMenuItem.setOnAction(e -> {
+            new P2PClientWindow() {
+
+                @Override
+                public void onStart(int count) {
+                    for (int i = 0; i < count; i++) {
+                        ServiceExecutor.execute(() -> {
+                            GameInfo gameInfo = p2PClientService.startClient();
+                            this.addGameInfo(gameInfo);
+                        });
+                        try {
+                            Thread.sleep(SLEEP_BETWEEN_P2P_GAME);
+                        } catch (InterruptedException ignore) {}
+                    }
+                }
+
+                @Override
+                public void onClose() { }
+            }.showWindow(controlPanel.getStage());
+        });
+
+        p2pMenu.getItems().addAll(serverMenuItem, clientMenuItem);
+        return p2pMenu;
     }
 
     private Menu getFileMenu() {

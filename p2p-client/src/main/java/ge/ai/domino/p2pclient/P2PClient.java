@@ -1,6 +1,7 @@
 package ge.ai.domino.p2pclient;
 
 import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import org.apache.log4j.Logger;
 
@@ -20,7 +21,7 @@ public class P2PClient {
 
     private static final int TIMEOUT = 3_000;
 
-    public void startClient() throws DAIException {
+    public GameInfo startClient() throws DAIException {
         try {
             Socket socket = new Socket();
             socket.connect(new InetSocketAddress(HOST, PORT), TIMEOUT);
@@ -29,9 +30,10 @@ public class P2PClient {
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
-            new P2PGame(ois, oos).start();
+            GameInfo gameInfo = new P2PGame(ois, oos).start();
 
             socket.close();
+            return gameInfo;
         } catch (IOException ex) {
             logger.error("Can't connect p2p server, host[" + HOST + "], port" + PORT + "], timeout[" + TIMEOUT + "]", ex);
             throw new DAIException("cantConnectP2PServer");

@@ -66,65 +66,93 @@ public class P2PGame implements Runnable {
                     logger.info("Get command " + command.name());
                     switch (command) {
                         case GET_GAME_PROPERTIES:
-                            myOutputStream.writeObject(gameProperties);
-                            break;
+                            synchronized (Command.GET_GAME_PROPERTIES) {
+                                myOutputStream.writeObject(gameProperties);
+                                break;
+                            }
                         case CAN_NOT_LISTEN_PLAY_COMMAND:
-                            if (firstPlayer) {
-                                firstPlayerCanListenPlayCommand = false;
-                            } else {
-                                secondPlayerCanListenPlayCommand = false;
+                            synchronized (Command.CAN_NOT_LISTEN_PLAY_COMMAND) {
+                                if (firstPlayer) {
+                                    firstPlayerCanListenPlayCommand = false;
+                                } else {
+                                    secondPlayerCanListenPlayCommand = false;
+                                }
                             }
                             break;
                         case CAN_LISTEN_PLAY_COMMAND:
-                            if (firstPlayer) {
-                                firstPlayerCanListenPlayCommand = true;
-                            } else {
-                                secondPlayerCanListenPlayCommand = true;
+                            synchronized (Command.CAN_LISTEN_PLAY_COMMAND) {
+                                if (firstPlayer) {
+                                    firstPlayerCanListenPlayCommand = true;
+                                } else {
+                                    secondPlayerCanListenPlayCommand = true;
+                                }
                             }
                             break;
                         case PLAY:
-                            sleepWhileCantListen(firstPlayer);
-                            MoveType moveType = (MoveType) ois.readObject();
-                            Move move = (Move) ois.readObject();
-                            opponentOutputStream.writeObject(moveType);
-                            opponentOutputStream.writeObject(move);
+                            synchronized (Command.PLAY) {
+                                sleepWhileCantListen(firstPlayer);
+                                MoveType moveType = (MoveType) ois.readObject();
+                                Move move = (Move) ois.readObject();
+                                opponentOutputStream.writeObject(moveType);
+                                opponentOutputStream.writeObject(move);
+                            }
                             break;
                         case GET_RANDOM_TILE:
-                            Tile tile = gameData.getRandomTileAndAddInSet(firstPlayer);
-                            logger.info("Random tile is " + tile);
-                            myOutputStream.writeObject(tile);
+                            synchronized (Command.GET_RANDOM_TILE) {
+                                Tile tile = gameData.getRandomTileAndAddInSet(firstPlayer);
+                                logger.info("Random tile is " + tile);
+                                myOutputStream.writeObject(tile);
+                            }
+                            break;
+                        case GET_RANDOM_TILE_ADDITIONAL_TRY:
+                            synchronized (Command.GET_RANDOM_TILE_ADDITIONAL_TRY) {
+                                gameData.addLastDeletedTile();
+                                Tile tileForAdd = gameData.getRandomTileAndAddInSet(firstPlayer);
+                                logger.info("Random tile is " + tileForAdd);
+                                myOutputStream.writeObject(tileForAdd);
+                            }
                             break;
                         case GET_GAME_BEGINNER:
-                            boolean isFirstStarter = gameData.isFirstStarter();
-                            if (firstPlayer) {
-                                myOutputStream.writeObject(isFirstStarter);
-                            } else {
-                                myOutputStream.writeObject(!isFirstStarter);
+                            synchronized (Command.GET_GAME_BEGINNER) {
+                                boolean isFirstStarter = gameData.isFirstStarter();
+                                if (firstPlayer) {
+                                    myOutputStream.writeObject(isFirstStarter);
+                                } else {
+                                    myOutputStream.writeObject(!isFirstStarter);
+                                }
                             }
                             break;
                         case RESET_GAME_DATA_BAZAAR:
-                            gameData.initTiles();
+                            synchronized (Command.RESET_GAME_DATA_BAZAAR) {
+                                gameData.initTiles();
+                            }
                             break;
                         case RESET_GAME_DATA_OPPONENT_TILES:
-                            if (firstPlayer) {
-                                gameData.setTiles2(new HashSet<>());
-                            } else {
-                                gameData.setTiles1(new HashSet<>());
+                            synchronized (Command.RESET_GAME_DATA_OPPONENT_TILES) {
+                                if (firstPlayer) {
+                                    gameData.setTiles2(new HashSet<>());
+                                } else {
+                                    gameData.setTiles1(new HashSet<>());
+                                }
                             }
                             break;
                         case GET_OPPONENT_TILES:
-                            if (firstPlayer) {
-                                myOutputStream.writeObject(gameData.getTiles2());
-                            } else {
-                                myOutputStream.writeObject(gameData.getTiles1());
+                            synchronized (Command.GET_OPPONENT_TILES) {
+                                if (firstPlayer) {
+                                    myOutputStream.writeObject(gameData.getTiles2());
+                                } else {
+                                    myOutputStream.writeObject(gameData.getTiles1());
+                                }
                             }
                             break;
                         case FINISH:
-                            finished = true;
-                            if (firstPlayer) {
-                                closeConnection(player1, ois1, oos1);
-                            } else {
-                                closeConnection(player2, ois2, oos2);
+                            synchronized (Command.FINISH) {
+                                finished = true;
+                                if (firstPlayer) {
+                                    closeConnection(player1, ois1, oos1);
+                                } else {
+                                    closeConnection(player2, ois2, oos2);
+                                }
                             }
                             break;
                     }

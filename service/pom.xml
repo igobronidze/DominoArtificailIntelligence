@@ -26,5 +26,10 @@
             <artifactId>p2p-server</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ge.ai.domino</groupId>
+            <artifactId>p2p-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

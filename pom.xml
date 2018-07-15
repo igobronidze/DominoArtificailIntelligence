@@ -41,6 +41,8 @@
                 <module>server-util</module>
                 <module>service</module>
                 <module>image_processing</module>
+                <module>p2p-server</module>
+                <module>p2p-client</module>
             </modules>
         </profile>
     </profiles>

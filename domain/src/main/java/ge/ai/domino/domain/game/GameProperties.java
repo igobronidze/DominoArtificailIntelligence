@@ -1,6 +1,8 @@
 package ge.ai.domino.domain.game;
 
-public class GameProperties {
+import java.io.Serializable;
+
+public class GameProperties implements Serializable {
 
     private String opponentName;
 

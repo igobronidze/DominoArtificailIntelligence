@@ -32,6 +32,8 @@ public abstract class MinMax implements AiSolver {
 
 	protected final SysParam useMinMaxPredictor = new SysParam("useMinMaxPredictor", "false");
 
+	protected static final SysParam bestMoveAutoPlay = new SysParam("bestMoveAutoPlay", "true");
+
 	private NodeRound notValidRound;
 
 	private String errorMsg;

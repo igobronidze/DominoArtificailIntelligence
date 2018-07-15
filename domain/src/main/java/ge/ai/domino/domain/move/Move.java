@@ -1,6 +1,8 @@
 package ge.ai.domino.domain.move;
 
-public class Move {
+import java.io.Serializable;
+
+public class Move implements Serializable {
 
     private final int left;
 

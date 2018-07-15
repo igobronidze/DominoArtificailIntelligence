@@ -7,15 +7,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>service</artifactId>
-    <name>Service</name>
+    <artifactId>p2p-client</artifactId>
+    <name>P2P Client</name>
 
     <dependencies>
-        <dependency>
-            <groupId>ge.ai.domino</groupId>
-            <artifactId>dao</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>ge.ai.domino</groupId>
             <artifactId>manager</artifactId>
@@ -23,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>ge.ai.domino</groupId>
-            <artifactId>p2p-server</artifactId>
+            <artifactId>domain</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

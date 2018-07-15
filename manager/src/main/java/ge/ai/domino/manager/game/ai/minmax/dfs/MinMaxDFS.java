@@ -103,7 +103,7 @@ public class MinMaxDFS extends MinMax {
 			logger.info("No AIPrediction");
 			return null;
 		}
-		if (moves.size() == 1) {
+		if (moves.size() == 1 && systemParameterManager.getBooleanParameterValue(bestMoveAutoPlay)) {
 			if (systemParameterManager.getBooleanParameterValue(useMinMaxPredictor)) {
 				new Thread(() -> {
 					try {

@@ -1,6 +1,8 @@
 package ge.ai.domino.domain.game;
 
-public class Tile {
+import java.io.Serializable;
+
+public class Tile implements Serializable {
 
 	public static final String DELIMITER = "-";
 

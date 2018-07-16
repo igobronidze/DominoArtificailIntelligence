@@ -34,6 +34,8 @@ public abstract class MinMax implements AiSolver {
 
 	protected static final SysParam bestMoveAutoPlay = new SysParam("bestMoveAutoPlay", "true");
 
+	protected static final SysParam roundHeuristicType = new SysParam("roundHeuristicType", "POINT_DIFF_ROUND_HEURISTIC");
+
 	private NodeRound notValidRound;
 
 	private String errorMsg;

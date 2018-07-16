@@ -1,5 +1,6 @@
 package ge.ai.domino.manager.game.ai.minmax.bfs;
 
+import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
@@ -8,24 +9,23 @@ import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.caching.game.CachedGames;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicHelper;
-import ge.ai.domino.manager.game.ai.minmax.MinMax;
-import ge.ai.domino.manager.game.helper.ComparisonHelper;
-import ge.ai.domino.manager.game.helper.game.MoveHelper;
-import ge.ai.domino.manager.game.move.AddForMeProcessor;
-import ge.ai.domino.manager.game.move.PlayForMeProcessor;
-import ge.ai.domino.manager.sysparam.SystemParameterManager;
-import ge.ai.domino.manager.game.ai.heuristic.ComplexRoundHeuristic;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
+import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicFactory;
+import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicHelper;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
+import ge.ai.domino.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.manager.game.helper.filter.OpponentTilesFilter;
+import ge.ai.domino.manager.game.helper.game.MoveHelper;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
+import ge.ai.domino.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.manager.game.move.MoveProcessor;
+import ge.ai.domino.manager.game.move.PlayForMeProcessor;
 import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.serverutil.CloneUtil;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
@@ -45,8 +45,6 @@ public class MinMaxBFS extends MinMax {
 
     private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
-    private final RoundHeuristic roundHeuristic = new ComplexRoundHeuristic();
-
     private final SysParam minMaxIteration = new SysParam("minMaxIteration", "100000");
 
     private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
@@ -56,6 +54,8 @@ public class MinMaxBFS extends MinMax {
     private final MoveProcessor addForMeProcessor = new AddForMeProcessor();
 
     private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
+
+    private final RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
 
     private int iteration;
 

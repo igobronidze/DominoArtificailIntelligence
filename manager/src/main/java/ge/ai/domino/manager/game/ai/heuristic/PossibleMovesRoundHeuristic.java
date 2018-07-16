@@ -8,7 +8,7 @@ import ge.ai.domino.manager.sysparam.SystemParameterManager;
 
 import java.util.Map;
 
-public class ComplexRoundHeuristic implements RoundHeuristic {
+public class PossibleMovesRoundHeuristic implements RoundHeuristic {
 
     private final SystemParameterManager sysParamManager = new SystemParameterManager();
 

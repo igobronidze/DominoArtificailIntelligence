@@ -1,5 +1,6 @@
 package ge.ai.domino.service.played;
 
+import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.GroupedPlayedGame;
 import ge.ai.domino.domain.played.PlayedGame;
@@ -24,5 +25,15 @@ public class PlayedGameServiceImpl implements PlayedGameService {
     @Override
     public void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays, boolean specifyWinner) {
         playedGameManager.finishGame(gameId, saveGame, saveOpponentPlays, specifyWinner);
+    }
+
+    @Override
+    public int getLastPlayedGameId() {
+        return playedGameManager.getLastPlayedGameId();
+    }
+
+    @Override
+    public List<GameInfo> getGameInfosBeforeId(long gameId) {
+        return playedGameManager.getGameInfosBeforeId(gameId);
     }
 }

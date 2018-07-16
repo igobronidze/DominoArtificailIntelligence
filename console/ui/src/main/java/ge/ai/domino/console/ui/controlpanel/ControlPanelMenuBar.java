@@ -11,18 +11,22 @@ import ge.ai.domino.console.ui.sysparam.SystemParametersPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.service.ServiceExecutor;
-import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.service.p2p.P2PClientService;
 import ge.ai.domino.service.p2p.P2PClientServiceImpl;
 import ge.ai.domino.service.p2p.P2PServerService;
 import ge.ai.domino.service.p2p.P2PServerServiceImpl;
+import ge.ai.domino.service.played.PlayedGameService;
+import ge.ai.domino.service.played.PlayedGameServiceImpl;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ControlPanelMenuBar extends MenuBar {
 
@@ -34,9 +38,17 @@ public class ControlPanelMenuBar extends MenuBar {
 
     private static final int SLEEP_BETWEEN_P2P_GAME = 30_000;
 
+    private static final int P2P_GAME_RELOAD_INTERVAL = 10_000;
+
     private final P2PServerService p2PServerService = new P2PServerServiceImpl();
 
     private final P2PClientService p2PClientService = new P2PClientServiceImpl();
+
+    private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
+
+    private P2PClientWindow p2PClientWindow = null;
+
+    private int lastPlayedGameId;
 
     ControlPanelMenuBar(ControlPanel controlPanel) {
         this.controlPanel = controlPanel;
@@ -157,24 +169,36 @@ public class ControlPanelMenuBar extends MenuBar {
 
         MenuItem clientMenuItem = new MenuItem(Messages.get("p2pClient"));
         clientMenuItem.setOnAction(e -> {
-            new P2PClientWindow() {
+
+            Timer timer = new Timer();
+            TimerTask task = new TimerTask() {
+
+                public void run() {
+                    p2PClientWindow.setGameInfos(playedGameService.getGameInfosBeforeId(lastPlayedGameId));
+                }
+            };
+            p2PClientWindow = new P2PClientWindow() {
 
                 @Override
                 public void onStart(int count) {
-                    for (int i = 0; i < count; i++) {
-                        ServiceExecutor.execute(() -> {
-                            GameInfo gameInfo = p2PClientService.startClient();
-                            this.addGameInfo(gameInfo);
-                        });
-                        try {
-                            Thread.sleep(SLEEP_BETWEEN_P2P_GAME);
-                        } catch (InterruptedException ignore) {}
-                    }
+                    new Thread(() -> {
+                        lastPlayedGameId = playedGameService.getLastPlayedGameId();
+
+						for (int i = 0; i < count; i++) {
+							ServiceExecutor.execute(p2PClientService::startClient);
+							try {
+								Thread.sleep(SLEEP_BETWEEN_P2P_GAME);
+							} catch (InterruptedException ignore) {}
+						}
+					}).start();
+
+                    timer.schedule(task, P2P_GAME_RELOAD_INTERVAL, P2P_GAME_RELOAD_INTERVAL);
                 }
 
                 @Override
                 public void onClose() { }
-            }.showWindow(controlPanel.getStage());
+            };
+            p2PClientWindow.showWindow(controlPanel.getStage());
         });
 
         p2pMenu.getItems().addAll(serverMenuItem, clientMenuItem);

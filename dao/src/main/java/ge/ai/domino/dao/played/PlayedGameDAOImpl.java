@@ -1,12 +1,13 @@
 package ge.ai.domino.dao.played;
 
-import ge.ai.domino.domain.played.GameHistory;
-import ge.ai.domino.domain.played.GroupedPlayedGame;
-import ge.ai.domino.domain.played.PlayedGame;
-import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.dao.connection.ConnectionUtil;
 import ge.ai.domino.dao.query.FilterCondition;
 import ge.ai.domino.dao.query.QueryUtil;
+import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.played.GameHistory;
+import ge.ai.domino.domain.played.GameResult;
+import ge.ai.domino.domain.played.GroupedPlayedGame;
+import ge.ai.domino.domain.played.PlayedGame;
 import ge.ai.domino.util.string.StringUtil;
 import org.apache.log4j.Logger;
 
@@ -103,7 +104,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             pstmt.executeUpdate();
             logger.info("Updated game id[" + game.getId() + "]");
         } catch (SQLException ex) {
-            logger.error("Error occurred while edit game game", ex);
+            logger.error("Error occurred while edit game", ex);
         } finally {
             ConnectionUtil.closeConnection();
         }
@@ -277,5 +278,66 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             ConnectionUtil.closeConnection();
         }
         return games;
+    }
+
+    @Override
+    public int getLastPlayedGameId() {
+        try {
+            pstmt = ConnectionUtil.getConnection().prepareStatement(String.format("SELECT max(%s) FROM %s", ID_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            } else {
+                return 0;
+            }
+        } catch (SQLException ex) {
+            logger.error("Error occurred while getting last played game id", ex);
+        } finally {
+            ConnectionUtil.closeConnection();
+        }
+        return 0;
+    }
+
+    @Override
+    public List<GameInfo> getGameInfosBeforeId(long gameId) {
+        List<GameInfo> gameInfos = new ArrayList<>();
+        try {
+            StringBuilder sql = new StringBuilder(String.format("SELECT %s, %s, %s FROM %s WHERE 1 = 1 ",
+                    ID_COLUMN_NAME, MY_POINT_COLUMN_NAME, OPPONENT_POINT_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
+            QueryUtil.addFilter(sql, ID_COLUMN_NAME, String.valueOf(gameId), FilterCondition.GREAT, false);
+            pstmt = ConnectionUtil.getConnection().prepareStatement(sql.toString());
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                GameInfo gameInfo = new GameInfo();
+                gameInfo.setGameId(rs.getInt(ID_COLUMN_NAME));
+                gameInfo.setMyPoint(rs.getInt(MY_POINT_COLUMN_NAME));
+                gameInfo.setOpponentPoint(rs.getInt(OPPONENT_POINT_COLUMN_NAME));
+                gameInfos.add(gameInfo);
+            }
+        } catch (SQLException ex) {
+            logger.error("Error occurred while getting game infos before id", ex);
+        } finally {
+            ConnectionUtil.closeConnection();
+        }
+        return gameInfos;
+    }
+
+    @Override
+    public void updateGameInfo(GameInfo gameInfo) {
+        try {
+            logger.info("Start updateGameInfo method id[" + gameInfo.getGameId() + "]");
+            String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?",
+                    PLAYED_GAME_TABLE_NAME, MY_POINT_COLUMN_NAME, OPPONENT_POINT_COLUMN_NAME, ID_COLUMN_NAME);
+            pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
+            pstmt.setInt(1, gameInfo.getMyPoint());
+            pstmt.setInt(2, gameInfo.getOpponentPoint());
+            pstmt.setInt(3, gameInfo.getGameId());
+            pstmt.executeUpdate();
+            logger.info("Updated game info id[" + gameInfo.getGameId() + "]");
+        } catch (SQLException ex) {
+            logger.error("Error occurred while edit game info", ex);
+        } finally {
+            ConnectionUtil.closeConnection();
+        }
     }
 }

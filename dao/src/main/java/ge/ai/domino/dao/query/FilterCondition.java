@@ -3,7 +3,8 @@ package ge.ai.domino.dao.query;
 public enum  FilterCondition {
 
 	EQUAL("="),
-	LIKE("LIKE");
+	LIKE("LIKE"),
+	GREAT(">");
 
 	private String value;
 

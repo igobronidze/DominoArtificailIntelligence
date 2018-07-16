@@ -12,6 +12,7 @@ import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.p2p.Command;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.GameManager;
+import ge.ai.domino.manager.played.PlayedGameManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -27,9 +28,13 @@ public class P2PGame {
 
     private static final int SLEEP_INTERVAL_BETWEEN_MOVES = 3_000;
 
+    private static final int UPDATE_GAME_PER_ITERATION = 10;
+
     private static final GameManager gameManager = new GameManager();
 
     private static final FunctionManager functionManager = new FunctionManager();
+
+    private static final PlayedGameManager playedGameManager = new PlayedGameManager();
 
     private ObjectInputStream ois;
 
@@ -54,7 +59,13 @@ public class P2PGame {
 
             boolean firstPlay = specifyRoundBeginner();
 
+            int iteration = 0;
+
             while (true) {
+                iteration++;
+                if (iteration % UPDATE_GAME_PER_ITERATION == 0) {
+                    playedGameManager.updateGameInfo(round.getGameInfo());
+                }
                 if (round.getTableInfo().isMyMove()) {
                     if (firstPlay) {
                         Tile firstTile = getStarterTile(round.getMyTiles());
@@ -115,6 +126,7 @@ public class P2PGame {
                 }
 
                 if (round.getGameInfo().isFinished()) {
+                    playedGameManager.finishGame(gameId, true, true, false);
                     oos.writeObject(Command.FINISH);
                     closeConnection();
                     break;

@@ -80,6 +80,18 @@ public class PlayedGameManager {
         }
     }
 
+    public int getLastPlayedGameId() {
+        return playedGameDAO.getLastPlayedGameId();
+    }
+
+    public List<GameInfo> getGameInfosBeforeId(long gameId) {
+        return playedGameDAO.getGameInfosBeforeId(gameId);
+    }
+
+    public void updateGameInfo(GameInfo gameInfo) {
+        playedGameDAO.updateGameInfo(gameInfo);
+    }
+
     private List<OpponentPlay> removeExtraPlays(List<OpponentPlay> opponentPlays) {
         List<OpponentPlay> result = new ArrayList<>();
         boolean lastAdd = false;

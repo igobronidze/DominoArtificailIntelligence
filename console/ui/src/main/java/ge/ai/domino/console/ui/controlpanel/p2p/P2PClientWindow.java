@@ -7,6 +7,7 @@ import ge.ai.domino.console.ui.tchcomponents.TCHLabel;
 import ge.ai.domino.console.ui.tchcomponents.TCHNumberTextField;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.domain.game.GameInfo;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,6 +21,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class P2PClientWindow {
 
@@ -78,10 +81,13 @@ public abstract class P2PClientWindow {
         tableView.getColumns().addAll(gameIdColumn, myPointColumn, opponentPointColumn);
     }
 
-    public void addGameInfo(GameInfo gameInfo) {
-        ObservableList<GameInfoProperty> gameInfoProperties = tableView.getItems();
-        gameInfoProperties.add(new GameInfoProperty(gameInfo));
-        tableView.setItems(gameInfoProperties);
+    public void setGameInfos(List<GameInfo> gameInfos) {
+        List<GameInfoProperty> gameInfoProperties = new ArrayList<>();
+        for (GameInfo gameInfo : gameInfos) {
+            gameInfoProperties.add(new GameInfoProperty(gameInfo));
+        }
+        ObservableList<GameInfoProperty> data = FXCollections.observableArrayList(gameInfoProperties);
+        tableView.setItems(data);
     }
 
     public abstract void onStart(int count);

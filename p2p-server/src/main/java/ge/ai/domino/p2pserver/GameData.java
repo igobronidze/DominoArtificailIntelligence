@@ -1,6 +1,7 @@
 package ge.ai.domino.p2pserver;
 
 import ge.ai.domino.domain.game.Tile;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,6 +10,8 @@ import java.util.Random;
 import java.util.Set;
 
 public class GameData {
+
+    private final Logger logger = Logger.getLogger(GameData.class);
 
     private List<Tile> bazaar = new ArrayList<>();
 
@@ -36,9 +39,10 @@ public class GameData {
 
     public synchronized Tile getRandomTileAndAddInSet(boolean first) {
         Random random = new Random();
+        logger.info("Bazaar size is " + bazaar.size());
         int index = random.nextInt(bazaar.size());
-        lastDeletedTile = bazaar.get(index);
-        bazaar.remove(index);
+        logger.info("Index is " + index);
+        lastDeletedTile = bazaar.remove(index);
         if (first) {
             tiles1.add(lastDeletedTile);
         } else {

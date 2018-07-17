@@ -28,7 +28,7 @@ public class P2PGame {
 
     private static final int SLEEP_INTERVAL_BETWEEN_MOVES = 3_000;
 
-    private static final int UPDATE_GAME_PER_ITERATION = 10;
+    private static final int UPDATE_GAME_PER_ITERATION = 5;
 
     private static final GameManager gameManager = new GameManager();
 
@@ -55,14 +55,13 @@ public class P2PGame {
         try {
             createRound();
 
-            addInitialSevenTile(true);
-
-            boolean firstPlay = specifyRoundBeginner();
+            boolean firstPlay = addInitialSevenTile(true);
 
             int iteration = 0;
 
             while (true) {
                 iteration++;
+                logger.info("P2PGame, Start iteration " + iteration);
                 if (iteration % UPDATE_GAME_PER_ITERATION == 0) {
                     playedGameManager.updateGameInfo(round.getGameInfo());
                 }
@@ -132,6 +131,7 @@ public class P2PGame {
                     break;
                 }
                 Thread.sleep(SLEEP_INTERVAL_BETWEEN_MOVES);
+                logger.info("P2PGame, Finished iteration " + iteration);
             }
 
         }  catch (ClassNotFoundException | IOException | InterruptedException ex) {
@@ -166,16 +166,18 @@ public class P2PGame {
         oos.writeObject(move);
     }
 
-    private void addInitialSevenTile(boolean withSpecifyBeginner) throws DAIException, ClassNotFoundException, IOException {
+    private boolean addInitialSevenTile(boolean withSpecifyBeginner) throws DAIException, ClassNotFoundException, IOException {
+        boolean start = false;
         oos.writeObject(Command.CAN_NOT_LISTEN_PLAY_COMMAND);
         for (int i = 0; i < 7; i++) {
             Tile tile = getRandomTile(round.getOpponentTiles());
             if (withSpecifyBeginner && i == 6) {
-                specifyRoundBeginner();
+                start = specifyRoundBeginner();
             }
             round = gameManager.addTileForMe(gameId, tile.getLeft(), tile.getRight());
         }
         oos.writeObject(Command.CAN_LISTEN_PLAY_COMMAND);
+        return start;
     }
 
     private boolean specifyRoundBeginner() throws IOException, ClassNotFoundException {

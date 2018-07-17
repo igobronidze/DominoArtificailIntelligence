@@ -15,6 +15,10 @@ public class P2PServer {
 
     private ServerSocket server = null;
 
+    private Socket firstPlayer = null;
+
+    private Socket secondPlayer = null;
+
     private boolean open;
 
     public void startServer(GameProperties gameProperties) {
@@ -23,9 +27,9 @@ public class P2PServer {
             open = true;
             logger.info("Started p2p server, port[" + PORT + "]");
             while (open) {
-                Socket firstPlayer = server.accept();
+                firstPlayer = server.accept();
                 logger.info("Accepted first player");
-                Socket secondPlayer = server.accept();
+                secondPlayer = server.accept();
                 logger.info("Accepted second player");
                 new Thread(new P2PGame(firstPlayer, secondPlayer, gameProperties)).start();
                 logger.info("Started p2p game, pointOfWin[" + gameProperties.getPointsForWin() + "]");
@@ -40,6 +44,12 @@ public class P2PServer {
             if (server != null) {
                 server.close();
                 open = false;
+            }
+            if (firstPlayer != null) {
+                firstPlayer.close();
+            }
+            if (secondPlayer != null) {
+                secondPlayer.close();
             }
         } catch (IOException ex) {
             logger.error("Can't stop p2p server, port[" + PORT + "]", ex);

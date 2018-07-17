@@ -183,13 +183,14 @@ public class ControlPanelMenuBar extends MenuBar {
                 public void onStart(int count) {
                     new Thread(() -> {
                         lastPlayedGameId = playedGameService.getLastPlayedGameId();
-
-						for (int i = 0; i < count; i++) {
-							ServiceExecutor.execute(p2PClientService::startClient);
-							try {
-								Thread.sleep(SLEEP_BETWEEN_P2P_GAME);
-							} catch (InterruptedException ignore) {}
-						}
+                        try {
+                            for (int i = 0; i < count; i++) {
+                                p2PClientService.startClient();
+                                Thread.sleep(SLEEP_BETWEEN_P2P_GAME);
+                            }
+                        } catch (Exception ignore) {
+                            timer.cancel();
+                        }
 					}).start();
 
                     timer.schedule(task, P2P_GAME_RELOAD_INTERVAL, P2P_GAME_RELOAD_INTERVAL);

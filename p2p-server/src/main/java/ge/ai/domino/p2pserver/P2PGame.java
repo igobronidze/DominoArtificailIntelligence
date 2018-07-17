@@ -114,6 +114,7 @@ public class P2PGame implements Runnable {
                             break;
                         case GET_GAME_BEGINNER:
                             synchronized (Command.GET_GAME_BEGINNER) {
+                                sleepWhileNotPickAllInitialTile();
                                 boolean isFirstStarter = gameData.isFirstStarter();
                                 if (firstPlayer) {
                                     myOutputStream.writeObject(isFirstStarter);
@@ -164,6 +165,12 @@ public class P2PGame implements Runnable {
                 closeConnection(player2, ois2, oos2);
             }
         }).start();
+    }
+
+    private void sleepWhileNotPickAllInitialTile() throws InterruptedException {
+        while (gameData.getTiles1().size() != 7 || gameData.getTiles2().size() != 7) {
+            Thread.sleep(100);
+        }
     }
 
     private void sleepWhileCantListen(boolean firstPlayer) throws InterruptedException {

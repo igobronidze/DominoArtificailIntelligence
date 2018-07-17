@@ -140,11 +140,15 @@ public class GameManager {
     }
 
     public void specifyRoundBeginner(int gameId, boolean startMe) {
+        logger.info("Start specifyRoundBeginner method, gameId[" + gameId + "], startMe[" + startMe +"]");
         CachedGames.changeNextRoundBeginner(gameId, startMe);
+        logger.info("specified round beginner, gameId[" + gameId + "]");
     }
 
     public void specifyOpponentLeftTiles(int gameId, int leftTilesCount) {
+        logger.info("Start specifyOpponentLeftTiles method, gameId[" + gameId + "], leftTilesCount[" + leftTilesCount +"]");
         CachedGames.specifyOpponentLeftTilesCount(gameId, leftTilesCount);
+        logger.info("specified opponent left tiles, gameId[" + gameId + "]");
     }
 
     public Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe, boolean finishGame) {
@@ -213,7 +217,9 @@ public class GameManager {
     }
 
     public void editOpponentNameInCache(int gameId, String name) {
+        logger.info("Start editOpponentNameInCache method, gameId[" + gameId + "], name[" + name +"]");
         CachedGames.getGameProperties(gameId).setOpponentName(name);
+        logger.info("Edited opponent name in cache, gameId[" + gameId + "]");
     }
 
     private void logImage(int gameId, String imagePath) {

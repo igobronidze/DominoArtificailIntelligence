@@ -39,3 +39,23 @@ CREATE TABLE arg_and_value (
   value REAL NOT NULL,
   function_name VARCHAR(100) NOT NULL
 );
+
+INSERT INTO system_parameter (key, value) VALUES('checkOpponentProbabilities', 'true');
+INSERT INTO system_parameter (key, value) VALUES('epsilonForProbabilities', '0.0001');
+INSERT INTO system_parameter (key, value) VALUES('minMaxOnFirstTile', 'true');
+INSERT INTO system_parameter (key, value) VALUES('minMaxTreeHeight', '7');
+INSERT INTO system_parameter (key, value) VALUES('minMaxType', 'BFS');
+INSERT INTO system_parameter (key, value) VALUES('useMinMaxPredictor', 'true');
+INSERT INTO system_parameter (key, value) VALUES('opponentPlayHeuristicsDiffsFunctionName', 'opponentPlayHeuristicsDiffsFunction_M');
+INSERT INTO system_parameter (key, value) VALUES('coefficientForComplexHeuristic', '12');
+INSERT INTO system_parameter (key, value) VALUES('heuristicValueForStartNextRound', '15');
+INSERT INTO system_parameter (key, value) VALUES('rateForFinishedGameHeuristic', '1.0');
+INSERT INTO system_parameter (key, value) VALUES('distributedProbabilityMaxRate', '0.75');
+INSERT INTO system_parameter (key, value) VALUES('logTilesAfterMethod', 'true');
+INSERT INTO system_parameter (key, value) VALUES('logOnVirtualMode', 'false');
+INSERT INTO system_parameter (key, value) VALUES('bestMoveAutoPlay', 'true');
+INSERT INTO system_parameter (key, value) VALUES('detectAddedTiles', 'true');
+INSERT INTO system_parameter (key, value) VALUES('possiblePoints', '75,155,175,255,355');
+INSERT INTO system_parameter (key, value) VALUES('systemLanguageCode', 'ka');
+INSERT INTO system_parameter (key, value) VALUES('minMaxIteration', '150000');
+INSERT INTO system_parameter (key, value) VALUES('roundHeuristicType', 'POINT_DIFF_ROUND_HEURISTIC');

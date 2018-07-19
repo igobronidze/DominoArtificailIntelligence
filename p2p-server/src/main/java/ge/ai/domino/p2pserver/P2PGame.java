@@ -63,7 +63,7 @@ public class P2PGame implements Runnable {
                 boolean finished = false;
                 while (!finished) {
                     Command command = (Command) ois.readObject();
-                    logger.info("Get command " + command.name());
+                    logger.info("Get command " + command.name() + ", firstPlayer[" + firstPlayer + "]");
                     switch (command) {
                         case GET_GAME_PROPERTIES:
                             synchronized (Command.GET_GAME_PROPERTIES) {
@@ -99,7 +99,14 @@ public class P2PGame implements Runnable {
                             break;
                         case GET_RANDOM_TILE:
                             synchronized (Command.GET_RANDOM_TILE) {
-                                Tile tile = gameData.getRandomTileAndAddInSet(firstPlayer);
+                                Tile tile = gameData.getRandomTileAndAddInSet(firstPlayer, false);
+                                logger.info("Random tile is " + tile);
+                                myOutputStream.writeObject(tile);
+                            }
+                            break;
+                        case GET_RANDOM_TILE_WITHOUT_DELETE:
+                            synchronized (Command.GET_RANDOM_TILE_WITHOUT_DELETE) {
+                                Tile tile = gameData.getRandomTileAndAddInSet(firstPlayer, true);
                                 logger.info("Random tile is " + tile);
                                 myOutputStream.writeObject(tile);
                             }
@@ -107,7 +114,7 @@ public class P2PGame implements Runnable {
                         case GET_RANDOM_TILE_ADDITIONAL_TRY:
                             synchronized (Command.GET_RANDOM_TILE_ADDITIONAL_TRY) {
                                 gameData.addLastDeletedTile();
-                                Tile tileForAdd = gameData.getRandomTileAndAddInSet(firstPlayer);
+                                Tile tileForAdd = gameData.getRandomTileAndAddInSet(firstPlayer, false);
                                 logger.info("Random tile is " + tileForAdd);
                                 myOutputStream.writeObject(tileForAdd);
                             }
@@ -157,7 +164,7 @@ public class P2PGame implements Runnable {
                             }
                             break;
                     }
-                    logger.info("Processed command " + command.name());
+                    logger.info("Processed command " + command.name() + ", firstPlayer[" + firstPlayer + "]");
                 }
             } catch (ClassNotFoundException | IOException | InterruptedException ex) {
                 logger.error("Error occurred while play p2p game", ex);

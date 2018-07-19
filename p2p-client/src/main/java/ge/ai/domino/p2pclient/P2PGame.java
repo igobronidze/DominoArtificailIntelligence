@@ -66,22 +66,24 @@ public class P2PGame {
                     playedGameManager.updateGameInfo(round.getGameInfo());
                 }
                 if (round.getTableInfo().isMyMove()) {
+                    logger.info("My move");
                     if (firstPlay) {
                         Tile firstTile = getStarterTile(round.getMyTiles());
                         playMove(new Move(firstTile.getLeft(), firstTile.getRight(), MoveDirection.LEFT));
                         firstPlay = false;
                     } else {
                         if (round.getAiPredictions() == null || round.getAiPredictions().getAiPredictions().isEmpty()) {
+                            boolean withoutDelete = round.getTableInfo().getBazaarTilesCount() == 2;
                             if (round.getTableInfo().getRoundBlockingInfo().isOmitOpponent()) {
                                 specifyLeftTiles(gameId, round);
-                                addRandomTileForMe();
+                                addRandomTileForMe(withoutDelete);
                                 if (!round.getGameInfo().isFinished()) {
                                     oos.writeObject(Command.RESET_GAME_DATA_OPPONENT_TILES);
                                     oos.writeObject(Command.RESET_GAME_DATA_BAZAAR);
                                     addInitialSevenTile(false);
                                 }
                             } else {
-                                addRandomTileForMe();
+                                addRandomTileForMe(withoutDelete);
                             }
                         } else {
                             if (round.getMyTiles().size() == 1) {
@@ -98,6 +100,7 @@ public class P2PGame {
                         }
                     }
                 } else {
+                    logger.info("Opponent move");
                     MoveType moveType = (MoveType) ois.readObject();
                     Move move = (Move) ois.readObject();
                     if (moveType == MoveType.PLAY_FOR_ME) {
@@ -141,8 +144,8 @@ public class P2PGame {
         return round.getGameInfo();
     }
 
-    private void addRandomTileForMe() throws DAIException, IOException, ClassNotFoundException {
-        Tile tile = getRandomTile(round.getOpponentTiles());
+    private void addRandomTileForMe(boolean withoutDelete) throws DAIException, IOException, ClassNotFoundException {
+        Tile tile = getRandomTile(round.getOpponentTiles(), withoutDelete);
         round = gameManager.addTileForMe(gameId, tile.getLeft(), tile.getRight());
         oos.writeObject(Command.PLAY);
         oos.writeObject(MoveType.ADD_FOR_ME);
@@ -166,11 +169,12 @@ public class P2PGame {
         oos.writeObject(move);
     }
 
-    private boolean addInitialSevenTile(boolean withSpecifyBeginner) throws DAIException, ClassNotFoundException, IOException {
+    private boolean addInitialSevenTile(boolean withSpecifyBeginner) throws DAIException, ClassNotFoundException, IOException, InterruptedException {
+        Thread.sleep(SLEEP_INTERVAL_BETWEEN_MOVES);
         boolean start = false;
         oos.writeObject(Command.CAN_NOT_LISTEN_PLAY_COMMAND);
         for (int i = 0; i < 7; i++) {
-            Tile tile = getRandomTile(round.getOpponentTiles());
+            Tile tile = getRandomTile(round.getOpponentTiles(), false);
             if (withSpecifyBeginner && i == 6) {
                 start = specifyRoundBeginner();
             }
@@ -197,19 +201,24 @@ public class P2PGame {
         gameId = round.getGameInfo().getGameId();
     }
 
-    private Tile getRandomTile(Map<Tile, Double> opponentTiles) throws IOException, ClassNotFoundException {
-        boolean first = true;
-        while (true) {
-            if (first) {
-                oos.writeObject(Command.GET_RANDOM_TILE);
-            } else {
-                oos.writeObject(Command.GET_RANDOM_TILE_ADDITIONAL_TRY);
+    private Tile getRandomTile(Map<Tile, Double> opponentTiles, boolean withoutDelete) throws IOException, ClassNotFoundException {
+        if (withoutDelete) {
+            oos.writeObject(Command.GET_RANDOM_TILE_WITHOUT_DELETE);
+            return (Tile) ois.readObject();
+        } else {
+            boolean first = true;
+            while (true) {
+                if (first) {
+                    oos.writeObject(Command.GET_RANDOM_TILE);
+                } else {
+                    oos.writeObject(Command.GET_RANDOM_TILE_ADDITIONAL_TRY);
+                }
+                Tile tile = (Tile) ois.readObject();
+                if (opponentTiles.get(tile) != 1.0) {
+                    return tile;
+                }
+                first = false;
             }
-            Tile tile = (Tile) ois.readObject();
-            if (opponentTiles.get(tile) != 1.0) {
-                return tile;
-            }
-            first = false;
         }
     }
 

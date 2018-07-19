@@ -11,6 +11,7 @@ import ge.ai.domino.console.ui.sysparam.SystemParametersPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.service.ServiceExecutor;
+import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.service.p2p.P2PClientService;
 import ge.ai.domino.service.p2p.P2PClientServiceImpl;
@@ -25,6 +26,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -174,7 +177,9 @@ public class ControlPanelMenuBar extends MenuBar {
             TimerTask task = new TimerTask() {
 
                 public void run() {
-                    p2PClientWindow.setGameInfos(playedGameService.getGameInfosBeforeId(lastPlayedGameId));
+                    List<GameInfo> gameInfos = playedGameService.getGameInfosBeforeId(lastPlayedGameId);
+                    Collections.sort(gameInfos, (o1, o2) -> o1.getGameId() - o2.getGameId());
+                    p2PClientWindow.setGameInfos(gameInfos);
                 }
             };
             p2PClientWindow = new P2PClientWindow() {
@@ -188,7 +193,7 @@ public class ControlPanelMenuBar extends MenuBar {
                                 p2PClientService.startClient();
                                 Thread.sleep(SLEEP_BETWEEN_P2P_GAME);
                             }
-                        } catch (Exception ignore) {
+                        } catch (Exception ignore) {} finally {
                             timer.cancel();
                         }
 					}).start();

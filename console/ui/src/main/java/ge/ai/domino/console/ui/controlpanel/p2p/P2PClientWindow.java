@@ -61,8 +61,8 @@ public abstract class P2PClientWindow {
         vBox.getChildren().addAll(label, countField, hBox, tableView);
 
         stage.setScene(new Scene(vBox));
-        stage.setWidth(450);
-        stage.setHeight(550);
+        stage.setWidth(600);
+        stage.setHeight(670);
         stage.showAndWait();
     }
 
@@ -78,7 +78,10 @@ public abstract class P2PClientWindow {
         TableColumn<GroupedPlayedGameProperty, Boolean> opponentPointColumn = new TableColumn<>(Messages.get("opponentPoint"));
         opponentPointColumn.setCellValueFactory(new PropertyValueFactory<>("opponentPoint"));
         opponentPointColumn.setPrefWidth(150);
-        tableView.getColumns().addAll(gameIdColumn, myPointColumn, opponentPointColumn);
+        TableColumn<GroupedPlayedGameProperty, Boolean> winnerColumn = new TableColumn<>(Messages.get("winner"));
+        winnerColumn.setCellValueFactory(new PropertyValueFactory<>("winner"));
+        winnerColumn.setPrefWidth(150);
+        tableView.getColumns().addAll(gameIdColumn, myPointColumn, opponentPointColumn, winnerColumn);
     }
 
     public void setGameInfos(List<GameInfo> gameInfos) {

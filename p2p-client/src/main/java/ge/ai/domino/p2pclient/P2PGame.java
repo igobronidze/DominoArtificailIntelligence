@@ -73,17 +73,17 @@ public class P2PGame {
                         firstPlay = false;
                     } else {
                         if (round.getAiPredictions() == null || round.getAiPredictions().getAiPredictions().isEmpty()) {
-                            boolean withoutDelete = round.getTableInfo().getBazaarTilesCount() == 2;
+                            boolean omit = round.getTableInfo().getBazaarTilesCount() == 2;
                             if (round.getTableInfo().getRoundBlockingInfo().isOmitOpponent()) {
                                 specifyLeftTiles(gameId, round);
-                                addRandomTileForMe(withoutDelete);
+                                addRandomTileForMe(omit);
                                 if (!round.getGameInfo().isFinished()) {
                                     oos.writeObject(Command.RESET_GAME_DATA_OPPONENT_TILES);
                                     oos.writeObject(Command.RESET_GAME_DATA_BAZAAR);
                                     addInitialSevenTile(false);
                                 }
                             } else {
-                                addRandomTileForMe(withoutDelete);
+                                addRandomTileForMe(omit);
                             }
                         } else {
                             if (round.getMyTiles().size() == 1) {
@@ -144,8 +144,8 @@ public class P2PGame {
         return round.getGameInfo();
     }
 
-    private void addRandomTileForMe(boolean withoutDelete) throws DAIException, IOException, ClassNotFoundException {
-        Tile tile = getRandomTile(round.getOpponentTiles(), withoutDelete);
+    private void addRandomTileForMe(boolean omit) throws DAIException, IOException, ClassNotFoundException {
+        Tile tile = getRandomTile(round.getOpponentTiles(), omit);
         round = gameManager.addTileForMe(gameId, tile.getLeft(), tile.getRight());
         oos.writeObject(Command.PLAY);
         oos.writeObject(MoveType.ADD_FOR_ME);
@@ -201,10 +201,9 @@ public class P2PGame {
         gameId = round.getGameInfo().getGameId();
     }
 
-    private Tile getRandomTile(Map<Tile, Double> opponentTiles, boolean withoutDelete) throws IOException, ClassNotFoundException {
-        if (withoutDelete) {
-            oos.writeObject(Command.GET_RANDOM_TILE_WITHOUT_DELETE);
-            return (Tile) ois.readObject();
+    private Tile getRandomTile(Map<Tile, Double> opponentTiles, boolean omit) throws IOException, ClassNotFoundException {
+        if (omit) {
+            return opponentTiles.keySet().stream().findAny().get();
         } else {
             boolean first = true;
             while (true) {
@@ -228,8 +227,12 @@ public class P2PGame {
         int count = 0;
         for (Tile tile : initTiles) {
             if (round.getOpponentTiles().containsKey(tile)) {
+                logger.info("Add tile in left tiles count " + tile);
                 count += tile.getLeft() + tile.getRight();
             }
+        }
+        if (count == 0) {
+            count = 10;
         }
         gameManager.specifyOpponentLeftTiles(gameId, count);
     }

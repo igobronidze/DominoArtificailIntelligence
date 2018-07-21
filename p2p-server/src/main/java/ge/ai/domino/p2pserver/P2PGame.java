@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.Set;
 
 public class P2PGame implements Runnable {
 
@@ -99,14 +100,7 @@ public class P2PGame implements Runnable {
                             break;
                         case GET_RANDOM_TILE:
                             synchronized (Command.GET_RANDOM_TILE) {
-                                Tile tile = gameData.getRandomTileAndAddInSet(firstPlayer, false);
-                                logger.info("Random tile is " + tile);
-                                myOutputStream.writeObject(tile);
-                            }
-                            break;
-                        case GET_RANDOM_TILE_WITHOUT_DELETE:
-                            synchronized (Command.GET_RANDOM_TILE_WITHOUT_DELETE) {
-                                Tile tile = gameData.getRandomTileAndAddInSet(firstPlayer, true);
+                                Tile tile = gameData.getRandomTileAndAddInSet(firstPlayer);
                                 logger.info("Random tile is " + tile);
                                 myOutputStream.writeObject(tile);
                             }
@@ -114,7 +108,7 @@ public class P2PGame implements Runnable {
                         case GET_RANDOM_TILE_ADDITIONAL_TRY:
                             synchronized (Command.GET_RANDOM_TILE_ADDITIONAL_TRY) {
                                 gameData.addLastDeletedTile();
-                                Tile tileForAdd = gameData.getRandomTileAndAddInSet(firstPlayer, false);
+                                Tile tileForAdd = gameData.getRandomTileAndAddInSet(firstPlayer);
                                 logger.info("Random tile is " + tileForAdd);
                                 myOutputStream.writeObject(tileForAdd);
                             }
@@ -146,11 +140,14 @@ public class P2PGame implements Runnable {
                             break;
                         case GET_OPPONENT_TILES:
                             synchronized (Command.GET_OPPONENT_TILES) {
+                                Set<Tile> tiles;
                                 if (firstPlayer) {
-                                    myOutputStream.writeObject(gameData.getTiles2());
+                                    tiles = gameData.getTiles2();
                                 } else {
-                                    myOutputStream.writeObject(gameData.getTiles1());
+                                    tiles = gameData.getTiles1();
                                 }
+                                logger.info("Opponent tiles: " + tiles + ", firstPlayer: " + firstPlayer);
+                                myOutputStream.writeObject(tiles);
                             }
                             break;
                         case FINISH:

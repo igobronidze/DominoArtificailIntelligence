@@ -37,16 +37,12 @@ public class GameData {
         this.tiles2 = tiles2;
     }
 
-    public synchronized Tile getRandomTileAndAddInSet(boolean first, boolean withoutDelete) {
+    public synchronized Tile getRandomTileAndAddInSet(boolean first) {
         Random random = new Random();
         logger.info("Bazaar size is " + bazaar.size());
         int index = random.nextInt(bazaar.size());
         logger.info("Index is " + index);
-        if (withoutDelete) {
-            lastDeletedTile = bazaar.get(index);
-        } else {
-            lastDeletedTile = bazaar.remove(index);
-        }
+        lastDeletedTile = bazaar.remove(index);
         if (first) {
             tiles1.add(lastDeletedTile);
         } else {

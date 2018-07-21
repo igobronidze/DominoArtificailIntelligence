@@ -19,6 +19,8 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import ge.ai.domino.service.game.GameService;
 import ge.ai.domino.service.game.GameServiceImpl;
+import ge.ai.domino.service.heuristic.HeuristicService;
+import ge.ai.domino.service.heuristic.HeuristicServiceImpl;
 import ge.ai.domino.service.sysparam.SystemParameterService;
 import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
 import javafx.geometry.Insets;
@@ -54,6 +56,8 @@ public class GamePane extends BorderPane {
 
     private final GameService gameService = new GameServiceImpl();
 
+    private final HeuristicService heuristicService = new HeuristicServiceImpl();
+
     private final ControlPanel controlPanel;
 
     private ImageView upArrow;
@@ -85,6 +89,8 @@ public class GamePane extends BorderPane {
     private boolean hasPrediction;
 
     private boolean showingAddLeftTilesWindow;
+
+    private boolean showingHeuristic;
 
     public GamePane(ControlPanel controlPanel, GameProperties gameProperties) {
         this.controlPanel = controlPanel;
@@ -207,15 +213,20 @@ public class GamePane extends BorderPane {
         editImage.setCursor(Cursor.HAND);
         editImage.setOnMouseClicked(event -> showEditNameWindow());
 
+        ImageView calculatorImage = new ImageView(ImageFactory.getImage("calculator.png"));
+        calculatorImage.setCursor(Cursor.HAND);
+        calculatorImage.setOnMouseClicked(event -> showHeuristicsWindow());
+
         FlowPane flowPane = new FlowPane(30, 10);
         flowPane.setPadding(new Insets(0, 4, 8, 4));
-        flowPane.getChildren().addAll(myPointsLabel, opponentPointLabel, bazaarCountLabel, opponentLabel, pointWorWinLabel, undoImage, skipImage, editImage);
+        flowPane.getChildren().addAll(myPointsLabel, opponentPointLabel, bazaarCountLabel, opponentLabel, pointWorWinLabel,
+                undoImage, skipImage, editImage, calculatorImage);
         this.setTop(flowPane);
     }
 
     private void initFocusLoseListener() {
         controlPanel.getStage().focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (systemParameterService.getBooleanParameterValue(bestMoveAutoPlay) && oldValue) {
+            if (systemParameterService.getBooleanParameterValue(bestMoveAutoPlay) && oldValue && !showingHeuristic) {
                 if (hasPrediction && bestAiPrediction != null && !showingAddLeftTilesWindow) {
                     ServiceExecutor.execute(() -> {
                         Move move = bestAiPrediction.getMove();
@@ -307,6 +318,9 @@ public class GamePane extends BorderPane {
                     case E:
                         showEditNameWindow();
                         break;
+                    case H:
+                        showHeuristicsWindow();
+                        break;
                 }
             }
         });
@@ -347,6 +361,17 @@ public class GamePane extends BorderPane {
             @Override
             public void onCancel() {}
         }.showWindow();
+    }
+
+    private void showHeuristicsWindow() {
+        showingHeuristic = true;
+        Map<String, Double> heuristics = heuristicService.getHeuristics(AppController.round.getGameInfo().getGameId());
+        new HeuristicsWindow() {
+            @Override
+            public void onClose() {
+                showingHeuristic = false;
+            }
+        }.showWindow(heuristics);
     }
 
     private void showAddLeftTilesCount(final Tile playedTile, final MoveDirection direction) {

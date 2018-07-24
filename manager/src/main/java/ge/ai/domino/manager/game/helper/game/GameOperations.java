@@ -62,14 +62,16 @@ public class GameOperations {
 		int gameId = gameInfo.getGameId();
 		addLeftTiles(gameInfo, leftTilesCount, addForMe, gameId, virtual);
 		int scoreForWin = CachedGames.getGameProperties(gameId).getPointsForWin();
-		if (gameInfo.getMyPoint() >= scoreForWin && gameInfo.getMyPoint() >= gameInfo.getOpponentPoint()) {
-			GameLoggingProcessor.logInfoAboutMove("I won the game", virtual);
-			round.getGameInfo().setFinished(true);
-			return round;
-		} else if (gameInfo.getOpponentPoint() >= scoreForWin) {
-			round.getGameInfo().setFinished(true);
-			GameLoggingProcessor.logInfoAboutMove("He won the game", virtual);
-			return round;
+		if (gameInfo.getMyPoint() >= scoreForWin || gameInfo.getOpponentPoint() >= scoreForWin) {
+			if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
+				GameLoggingProcessor.logInfoAboutMove("I won the game", virtual);
+				round.getGameInfo().setFinished(true);
+				return round;
+			} else if (gameInfo.getOpponentPoint() > gameInfo.getMyPoint()) {
+				round.getGameInfo().setFinished(true);
+				GameLoggingProcessor.logInfoAboutMove("He won the game", virtual);
+				return round;
+			}
 		}
 
 		Round newRound = InitialUtil.getInitialRound(0, false);

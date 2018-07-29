@@ -86,7 +86,7 @@ public class MinMaxBFS extends MinMax {
         nodeRound.setTreeHeight(1);
         addInQueue(nodeRound);
 
-        while (!nodeRoundsQueue.isEmpty() && iteration <= systemParameterManager.getIntegerParameterValue(minMaxIteration)) {
+        while (!nodeRoundsQueue.isEmpty()) {
             NodeRound nr = nodeRoundsQueue.remove();
             processRoundNode(nr);
         }
@@ -161,7 +161,7 @@ public class MinMaxBFS extends MinMax {
             addInQueue(nextNodeRound);
         }
 
-        while (!nodeRoundsQueue.isEmpty() && iteration <= systemParameterManager.getIntegerParameterValue(minMaxIteration)) {
+        while (!nodeRoundsQueue.isEmpty()) {
             NodeRound nr = nodeRoundsQueue.remove();
             processRoundNode(nr);
         }

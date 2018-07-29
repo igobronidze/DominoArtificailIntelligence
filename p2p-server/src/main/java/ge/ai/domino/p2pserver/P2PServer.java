@@ -1,6 +1,8 @@
 package ge.ai.domino.p2pserver;
 
 import ge.ai.domino.domain.game.GameProperties;
+import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -9,9 +11,11 @@ import java.net.Socket;
 
 public class P2PServer {
 
-    private static final int PORT = 8080;
-
     private static final Logger logger = Logger.getLogger(P2PServer.class);
+
+    private final SystemParameterManager sysParamManager = new SystemParameterManager();
+
+    private final SysParam p2pServerPort = new SysParam("p2pServerPort", "8080");
 
     private ServerSocket server = null;
 
@@ -22,10 +26,11 @@ public class P2PServer {
     private boolean open;
 
     public void startServer(GameProperties gameProperties) {
+        int port = sysParamManager.getIntegerParameterValue(p2pServerPort);
         try {
-            server = new ServerSocket(PORT);
+            server = new ServerSocket(port);
             open = true;
-            logger.info("Started p2p server, port[" + PORT + "]");
+            logger.info("Started p2p server, port[" + port + "]");
             while (open) {
                 firstPlayer = server.accept();
                 logger.info("Accepted first player");
@@ -35,7 +40,7 @@ public class P2PServer {
                 logger.info("Started p2p game, pointOfWin[" + gameProperties.getPointsForWin() + "]");
             }
         } catch (IOException ex) {
-            logger.error("Can't start p2p server, port[" + PORT + "]", ex);
+            logger.error("Can't start p2p server, port[" + port + "]", ex);
         }
     }
 
@@ -52,7 +57,7 @@ public class P2PServer {
                 secondPlayer.close();
             }
         } catch (IOException ex) {
-            logger.error("Can't stop p2p server, port[" + PORT + "]", ex);
+            logger.error("Can't stop p2p server, port[" + sysParamManager.getIntegerParameterValue(p2pServerPort) + "]", ex);
         }
     }
 }

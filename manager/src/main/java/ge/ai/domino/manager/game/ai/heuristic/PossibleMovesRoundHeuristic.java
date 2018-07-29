@@ -5,22 +5,29 @@ import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
 public class PossibleMovesRoundHeuristic implements RoundHeuristic {
+
+    private static Logger logger = Logger.getLogger(PossibleMovesRoundHeuristic.class);
 
     private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
     private final SysParam coefficientForComplexHeuristic = new SysParam("coefficientForComplexHeuristic", "12");
 
     @Override
-    public double getHeuristic(Round round) {
-        double heuristic = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
+    public double getHeuristic(Round round, boolean logTrace) {
+        double pointDiff = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
+        RoundHeuristic.logInfo(logger, "Point diff is " + pointDiff, logTrace);
+
         int myTilesCount = round.getMyTiles().size();
-        heuristic += sysParamManager.getIntegerParameterValue(coefficientForComplexHeuristic) * (countPossibleMoves(round, true) / myTilesCount / myTilesCount -
+        double movesDiff = sysParamManager.getIntegerParameterValue(coefficientForComplexHeuristic) * (countPossibleMoves(round, true) / myTilesCount / myTilesCount -
                 countPossibleMoves(round, false) / round.getTableInfo().getOpponentTilesCount() / round.getTableInfo().getOpponentTilesCount());
-        return heuristic;
+        RoundHeuristic.logInfo(logger, "Moves diff is " + movesDiff, logTrace);
+
+        return pointDiff + movesDiff;
     }
 
     private double countPossibleMoves(Round round, boolean me) {

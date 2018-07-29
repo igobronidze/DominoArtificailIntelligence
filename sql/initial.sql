@@ -59,3 +59,5 @@ INSERT INTO system_parameter (key, value) VALUES('possiblePoints', '75,155,175,2
 INSERT INTO system_parameter (key, value) VALUES('systemLanguageCode', 'ka');
 INSERT INTO system_parameter (key, value) VALUES('minMaxIteration', '150000');
 INSERT INTO system_parameter (key, value) VALUES('roundHeuristicType', 'POINT_DIFF_ROUND_HEURISTIC');
+INSERT INTO system_parameter (key, value) VALUES('p2pServerPort', '8080');
+INSERT INTO system_parameter (key, value) VALUES('logAboutRoundHeuristic', 'false');

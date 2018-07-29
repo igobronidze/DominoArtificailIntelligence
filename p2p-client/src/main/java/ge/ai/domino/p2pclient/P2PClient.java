@@ -1,6 +1,8 @@
 package ge.ai.domino.p2pclient;
 
 import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -13,17 +15,20 @@ public class P2PClient {
 
     private static final Logger logger = Logger.getLogger(P2PClient.class);
 
-    private static final String HOST = "localhost";
+    private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-    private static final int PORT = 8080;
+    private final SysParam p2pServerPort = new SysParam("p2pServerPort", "8080");
+
+    private static final String HOST = "localhost";
 
     private static final int TIMEOUT = 3_000;
 
     public void startClient() throws DAIException {
+        int port = sysParamManager.getIntegerParameterValue(p2pServerPort);
         try {
             Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(HOST, PORT), TIMEOUT);
-            logger.info("Connected to server, host[" + HOST + "], port[" + PORT + "]");
+            socket.connect(new InetSocketAddress(HOST, port), TIMEOUT);
+            logger.info("Connected to server, host[" + HOST + "], port[" + port + "]");
 
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
@@ -32,7 +37,7 @@ public class P2PClient {
 
             socket.close();
         } catch (IOException ex) {
-            logger.error("Can't connect p2p server, host[" + HOST + "], port" + PORT + "], timeout[" + TIMEOUT + "]", ex);
+            logger.error("Can't connect p2p server, host[" + HOST + "], port" + port + "], timeout[" + TIMEOUT + "]", ex);
             throw new DAIException("cantConnectP2PServer");
         }
     }

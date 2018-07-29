@@ -200,7 +200,7 @@ public class MinMaxDFS extends MinMax {
 			return nodeRound.getHeuristic();
 		}
 		if (height == treeHeight) {
-			nodeRound.setHeuristic(roundHeuristic.getHeuristic(round));
+			nodeRound.setHeuristic(getHeuristic(round, roundHeuristic));
 			return nodeRound.getHeuristic();
 		}
 

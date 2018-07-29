@@ -324,6 +324,7 @@ public class MinMaxBFS extends MinMax {
                             remainingProbability -= prob * remainingProbability;
                         }
                         if (nodeRound.getBazaarNodeRound() != null && !ComparisonHelper.equal(remainingProbability, 0.0)) {
+                            nodeRound.getBazaarNodeRound().setLastPlayedProbability(remainingProbability);
                             heuristic += nodeRound.getBazaarNodeRound().getHeuristic() * remainingProbability;
                         }
                         nodeRound.setHeuristic(heuristic);
@@ -348,7 +349,8 @@ public class MinMaxBFS extends MinMax {
         if (isNewRound(round)) {
             return RoundHeuristicHelper.getFinishedRoundHeuristic(round.getGameInfo(), round.getTableInfo().isMyMove());
         }
-        return roundHeuristic.getHeuristic(round);
+
+        return getHeuristic(round, roundHeuristic);
     }
 
     private void addInQueue(NodeRound nodeRound) {

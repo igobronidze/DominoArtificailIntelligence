@@ -141,6 +141,7 @@ public class GamePane extends BorderPane {
             @Override
             public void onNo() {
                 controlPanel.getStage().setIconified(false);
+                reload(false, false);
             }
         }.showWindow(firstRound);
     }

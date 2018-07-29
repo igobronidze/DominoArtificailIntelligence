@@ -17,7 +17,7 @@ public class HeuristicManager {
 		Map<String, Double> result = new HashMap<>();
 		for (RoundHeuristicType type : RoundHeuristicType.values()) {
 			RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(type.name());
-			result.put(type.name(), roundHeuristic.getHeuristic(round));
+			result.put(type.name(), roundHeuristic.getHeuristic(round, true));
 		}
 		return result;
 	}

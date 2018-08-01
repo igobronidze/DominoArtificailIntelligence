@@ -12,9 +12,11 @@ import ge.ai.domino.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.manager.game.move.PlayForMeProcessor;
 import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
+import ge.ai.domino.manager.heuristic.HeuristicManager;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
+import java.util.Map;
 import java.util.Scanner;
 
 public class GameDebugger {
@@ -26,6 +28,8 @@ public class GameDebugger {
     private static final int GAME_ID = -1;
 
     private static final SystemParameterManager sysParamManager = new SystemParameterManager();
+
+    private static final HeuristicManager heuristicManager = new HeuristicManager();
 
     private static Round round;
 
@@ -40,6 +44,7 @@ public class GameDebugger {
             System.out.println("5. Play for me");
             System.out.println("6. Play for opponent");
             System.out.println("7. Change sys param(only in this session)");
+            System.out.println("8. Get heuristics");
             String line = scanner.nextLine();
 
             try {
@@ -127,6 +132,14 @@ public class GameDebugger {
                         String value = scanner.nextLine();
                         sysParamManager.changeParameterOnlyInCache(key, value);
                         logger.info("Sys param changed successfully");
+                        break;
+                    }
+                    case "8" : {
+                        Map<String, Double> result = heuristicManager.getHeuristics(round);
+                        for (Map.Entry<String, Double> entry : result.entrySet()) {
+                            System.out.println(entry.getKey() + ": " + entry.getValue());
+                        }
+                        logger.info("Heuristics counted successfully");
                         break;
                     }
 

@@ -35,38 +35,11 @@ public class PossibleMovesRoundHeuristic implements RoundHeuristic {
         TableInfo tableInfo = round.getTableInfo();
         if (me) {
             for (Tile tile : round.getMyTiles()) {
-                count += countMove(tile, tableInfo);
+                count += RoundHeuristicHelper.countMoveOnTable(tile, tableInfo);
             }
         } else {
             for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
-                count += entry.getValue() * countMove(entry.getKey(), tableInfo);
-            }
-        }
-        return count;
-    }
-
-    private int countMove(Tile tile, TableInfo tableInfo) {
-        int count = 0;
-        int left = tile.getLeft();
-        int right = tile.getRight();
-        if (tableInfo.getLeft() != null) {
-            if (tableInfo.getLeft().getOpenSide() == left || tableInfo.getLeft().getOpenSide() == right) {
-                count++;
-            }
-        }
-        if (tableInfo.getRight() != null) {
-            if (tableInfo.getRight().getOpenSide() == left || tableInfo.getRight().getOpenSide() == right) {
-                count++;
-            }
-        }
-        if (tableInfo.getTop() != null) {
-            if (tableInfo.getTop().getOpenSide() == left || tableInfo.getTop().getOpenSide() == right) {
-                count++;
-            }
-        }
-        if (tableInfo.getBottom() != null) {
-            if (tableInfo.getBottom().getOpenSide() == left || tableInfo.getBottom().getOpenSide() == right) {
-                count++;
+                count += entry.getValue() * RoundHeuristicHelper.countMoveOnTable(entry.getKey(), tableInfo);
             }
         }
         return count;

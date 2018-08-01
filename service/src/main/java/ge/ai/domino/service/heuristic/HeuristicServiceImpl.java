@@ -1,5 +1,6 @@
 package ge.ai.domino.service.heuristic;
 
+import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.manager.heuristic.HeuristicManager;
 
 import java.util.Map;
@@ -10,6 +11,6 @@ public class HeuristicServiceImpl implements HeuristicService {
 
 	@Override
 	public Map<String, Double> getHeuristics(int gameId) {
-		return heuristicManager.getHeuristics(gameId);
+		return heuristicManager.getHeuristics(CachedGames.getCurrentRound(gameId, true));
 	}
 }

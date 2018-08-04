@@ -21,6 +21,8 @@ public class RoundHeuristicFactory {
                 return new PossibleMovesRoundHeuristic();
             case TEST_HEURISTIC:
                 return new TestRoundHeuristic();
+            case TEST_TEST_TEST:
+                return new TestTestTest();
         }
         return new PointDiffRoundHeuristic();
     }

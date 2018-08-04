@@ -94,7 +94,7 @@ public class MinMaxBFS extends MinMax {
 
         applyBottomUpMinMax();
         CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, false);
-        logger.info("MinMaxBFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + "ms");
+        logger.info("MinMaxBFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + " ms");
     }
 
     @Override
@@ -149,6 +149,7 @@ public class MinMaxBFS extends MinMax {
     }
 
     private AiPredictionsWrapper minMaxForMoves(List<Move> moves, NodeRound nodeRound, long ms) throws DAIException {
+        long inlineMs = System.currentTimeMillis();
         for (Move move : moves) {
             Round nextRound = playForMeProcessor.move(CloneUtil.getClone(nodeRound.getRound()), move, true);
             NodeRound nextNodeRound = new NodeRound();
@@ -160,14 +161,20 @@ public class MinMaxBFS extends MinMax {
             validateOpponentTiles(nextNodeRound, "playForMe");
             addInQueue(nextNodeRound);
         }
+        logger.info("Initial node round processing took " + (System.currentTimeMillis() - inlineMs) + " ms");
+        inlineMs = System.currentTimeMillis();
 
         while (!nodeRoundsQueue.isEmpty()) {
             NodeRound nr = nodeRoundsQueue.remove();
             processRoundNode(nr);
         }
         nodeRoundsQueue = null;
+        logger.info("Processing node round took " + (System.currentTimeMillis() - inlineMs) + " ms");
+        inlineMs = System.currentTimeMillis();
 
         applyBottomUpMinMax();
+        logger.info("Button up MinMax took " + (System.currentTimeMillis() - inlineMs) + " ms");
+        inlineMs = System.currentTimeMillis();
 
         AiPrediction bestAiPrediction = null;
         NodeRound bestNodeRound = null;
@@ -193,9 +200,10 @@ public class MinMaxBFS extends MinMax {
             }
             logger.info("PlayedMove: " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + nr.getHeuristic());
         }
+        logger.info("Best move recognition took " + (System.currentTimeMillis() - inlineMs) + " ms");
 
         double tookMs = System.currentTimeMillis() - ms;
-        logger.info("MinMaxBFS took " + tookMs + "ms, iteration " + iteration + ", average " + (tookMs / iteration));
+        logger.info("MinMaxBFS took " + tookMs + " ms, iteration " + iteration + ", average " + (tookMs / iteration));
         iteration = 0;
         nodeRound.setHeuristic(bestAiPrediction.getHeuristicValue());
         logger.info("AIPrediction is [" + bestAiPrediction.getMove().getLeft() + "-" + bestAiPrediction.getMove().getRight() + " " +
@@ -211,7 +219,7 @@ public class MinMaxBFS extends MinMax {
         nodeRoundsByHeight.computeIfAbsent(nodeRound.getTreeHeight(), k -> new ArrayList<>());
         nodeRoundsByHeight.get(nodeRound.getTreeHeight()).add(nodeRound);
 
-        if (iteration >= systemParameterManager.getIntegerParameterValue(minMaxIteration)) {
+        if (iteration > systemParameterManager.getIntegerParameterValue(minMaxIteration)) {
             return;
         }
         Round round = nodeRound.getRound();
@@ -286,7 +294,10 @@ public class MinMaxBFS extends MinMax {
     }
 
     private void applyBottomUpMinMax() {
-        for (List<NodeRound> nodeRounds : nodeRoundsByHeight.values()) {
+        for (Map.Entry<Integer, List<NodeRound>> entry : nodeRoundsByHeight.entrySet()) {
+            long ms = System.currentTimeMillis();
+            List<NodeRound> nodeRounds = entry.getValue();
+
             for (NodeRound nodeRound : nodeRounds) {
                 if (!isLeafNodeRound(nodeRound)) {
                     if (nodeRound.getRound().getTableInfo().isMyMove()) {
@@ -333,6 +344,7 @@ public class MinMaxBFS extends MinMax {
                     nodeRound.setHeuristic(getHeuristic(nodeRound.getRound()));
                 }
             }
+            logger.info("Button up MinMax for height " + entry.getKey() + " took " + (System.currentTimeMillis() - ms) + " ms");
         }
     }
 

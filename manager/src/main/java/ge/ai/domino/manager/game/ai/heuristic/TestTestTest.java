@@ -24,41 +24,52 @@ public class TestTestTest implements RoundHeuristic {
 
 	private final SysParam testRoundHeuristicParam5 = new SysParam("testRoundHeuristicParam5", "0.1");
 
+	private final double testRoundHeuristicParam1Value = sysParamManager.getDoubleParameterValue(testRoundHeuristicParam1);
+
+	private final double testRoundHeuristicParam2Value = sysParamManager.getDoubleParameterValue(testRoundHeuristicParam2);
+
+	private final double testRoundHeuristicParam3Value = sysParamManager.getDoubleParameterValue(testRoundHeuristicParam3);
+
+	private final double testRoundHeuristicParam4Value = sysParamManager.getDoubleParameterValue(testRoundHeuristicParam4);
+
+	private final double testRoundHeuristicParam5Value = sysParamManager.getDoubleParameterValue(testRoundHeuristicParam5);
+
 	@Override
 	public double getHeuristic(Round round, boolean logTrace) {
 		double pointDiff = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
 
-		double tilesDiff = sysParamManager.getDoubleParameterValue(testRoundHeuristicParam1) * (round.getTableInfo().getOpponentTilesCount() - round.getMyTiles().size());
+		double tilesDiff = testRoundHeuristicParam1Value * (round.getTableInfo().getOpponentTilesCount() - round.getMyTiles().size());
 
 		TilesStatistic tilesStatistic = getTilesStatistic(round);
 		double myMovesCount = countPossibleMoves(round.getMyTiles(), tilesStatistic);
-		double opponentMovesCount = countPossibleMoves(round.getOpponentTiles(), round.getTableInfo().getOpponentTilesCount(), round.getTableInfo().getBazaarTilesCount(), tilesStatistic);
-		double movesDiff = sysParamManager.getDoubleParameterValue(testRoundHeuristicParam2) *
-				(myMovesCount / round.getMyTiles().size() - opponentMovesCount / round.getTableInfo().getOpponentTilesCount());
+		double opponentMovesCount = countPossibleMoves(round.getOpponentTiles(), round.getTableInfo().getOpponentTilesCount(), tilesStatistic);
+		double movesDiff = testRoundHeuristicParam2Value * (myMovesCount / round.getMyTiles().size() - opponentMovesCount / round.getTableInfo().getOpponentTilesCount());
 
 		return pointDiff + tilesDiff + movesDiff;
 	}
 
-	private double countPossibleMoves(Map<Tile, Double> opponentTiles, double opponentTilesCount, double bazaarTilesCount, TilesStatistic tilesStatistic) {
+	private double countPossibleMoves(Map<Tile, Double> opponentTiles, double opponentTilesCount, TilesStatistic tilesStatistic) {
 		double result = 0.0;
 		for (Map.Entry<Tile, Double> entry : opponentTiles.entrySet()) {
 			Tile tile = entry.getKey();
-
 			double countForTile = 0.0;
+
 			countForTile += tilesStatistic.getOnTable().get(tile.getLeft());
-			countForTile += tilesStatistic.getForMe().get(tile.getLeft()) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam4);
-			countForTile += ((tilesStatistic.getForOpponent().get(tile.getLeft()) - entry.getValue()) / opponentTilesCount * (opponentTilesCount  -1))
-					* sysParamManager.getDoubleParameterValue(testRoundHeuristicParam3);
-			countForTile += ((tilesStatistic.getForBazaar().get(tile.getLeft()) - (1 - entry.getValue())) / bazaarTilesCount * (bazaarTilesCount - 1))
-					* sysParamManager.getDoubleParameterValue(testRoundHeuristicParam5);
+			countForTile += tilesStatistic.getForMe().get(tile.getLeft()) * testRoundHeuristicParam4Value;
+			double opponentTileNewValueLeft = (tilesStatistic.getForOpponent().get(tile.getLeft()) - entry.getValue()) / (opponentTilesCount - entry.getValue()) * (opponentTilesCount  -1);
+			countForTile += opponentTileNewValueLeft * testRoundHeuristicParam3Value;
+			countForTile += (tilesStatistic.getForBazaar().get(tile.getLeft()) + (tilesStatistic.getForOpponent().get(tile.getLeft()) - opponentTileNewValueLeft) - 1)
+					* testRoundHeuristicParam5Value;
+
 			if (tile.getLeft() != tile.getRight()) {
 				countForTile += tilesStatistic.getOnTable().get(tile.getRight());
-				countForTile += tilesStatistic.getForMe().get(tile.getRight()) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam4);
-				countForTile += ((tilesStatistic.getForOpponent().get(tile.getRight()) - entry.getValue()) / opponentTilesCount * (opponentTilesCount  -1))
-						* sysParamManager.getDoubleParameterValue(testRoundHeuristicParam3);
-				countForTile += ((tilesStatistic.getForBazaar().get(tile.getRight()) - (1 - entry.getValue())) / bazaarTilesCount * (bazaarTilesCount - 1))
-						* sysParamManager.getDoubleParameterValue(testRoundHeuristicParam5);
+				countForTile += tilesStatistic.getForMe().get(tile.getRight()) * testRoundHeuristicParam4Value;
+				double opponentTileNewValueRight = (tilesStatistic.getForOpponent().get(tile.getRight()) - entry.getValue()) / (opponentTilesCount - entry.getValue()) * (opponentTilesCount  -1);
+				countForTile += opponentTileNewValueRight * testRoundHeuristicParam3Value;
+				countForTile += (tilesStatistic.getForBazaar().get(tile.getRight()) + (tilesStatistic.getForOpponent().get(tile.getRight()) - opponentTileNewValueRight) - 1)
+						* testRoundHeuristicParam5Value;
 			}
+
 			result += countForTile * entry.getValue();
 		}
 		return result;
@@ -69,14 +80,14 @@ public class TestTestTest implements RoundHeuristic {
 		for (Tile tile : myTiles) {
 			double countForTile = 0.0;
 			countForTile += tilesStatistic.getOnTable().get(tile.getLeft());
-			countForTile += (tilesStatistic.getForMe().get(tile.getLeft()) - 1) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam3);
-			countForTile += tilesStatistic.getForOpponent().get(tile.getLeft()) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam4);
-			countForTile += tilesStatistic.getForBazaar().get(tile.getLeft()) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam5);
+			countForTile += (tilesStatistic.getForMe().get(tile.getLeft()) - 1) * testRoundHeuristicParam3Value;
+			countForTile += tilesStatistic.getForOpponent().get(tile.getLeft()) * testRoundHeuristicParam4Value;
+			countForTile += tilesStatistic.getForBazaar().get(tile.getLeft()) * testRoundHeuristicParam5Value;
 			if (tile.getLeft() != tile.getRight()) {
 				countForTile += tilesStatistic.getOnTable().get(tile.getRight());
-				countForTile += (tilesStatistic.getForMe().get(tile.getRight()) - 1) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam3);
-				countForTile += tilesStatistic.getForOpponent().get(tile.getRight()) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam4);
-				countForTile += tilesStatistic.getForBazaar().get(tile.getRight()) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam5);
+				countForTile += (tilesStatistic.getForMe().get(tile.getRight()) - 1) * testRoundHeuristicParam3Value;
+				countForTile += tilesStatistic.getForOpponent().get(tile.getRight()) * testRoundHeuristicParam4Value;
+				countForTile += tilesStatistic.getForBazaar().get(tile.getRight()) * testRoundHeuristicParam5Value;
 			}
 			result += countForTile;
 		}

@@ -57,7 +57,7 @@ public class TestRoundHeuristic implements RoundHeuristic {
 			for (Tile tile : round.getMyTiles()) {
 				RoundHeuristic.logInfo(logger, "Tile: " + tile + ", myTurn: true", logTrace);
 				int countOnTable = RoundHeuristicHelper.countMoveOnTable(tile, tableInfo);
-				double countFutureMoves = countFuturePossibleMoves(tile, round.getMyTiles(), round.getOpponentTiles(), true);
+				double countFutureMoves = countFuturePossibleMoves(tile, round.getMyTiles(), round.getOpponentTiles(), true, logTrace);
 				RoundHeuristic.logInfo(logger, "countOnTable: " + countOnTable, logTrace);
 				RoundHeuristic.logInfo(logger, "countFutureMoves: " + countFutureMoves, logTrace);
 				count += countOnTable + countFutureMoves;
@@ -71,7 +71,7 @@ public class TestRoundHeuristic implements RoundHeuristic {
 				double prob = opponentTilesClone.get(entry.getKey());
 				opponentTilesClone.put(entry.getKey(), 0.0);
 				ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTilesClone, prob - 1);
-				double countFutureMoves = countFuturePossibleMoves(entry.getKey(), round.getMyTiles(), opponentTilesClone, false);
+				double countFutureMoves = countFuturePossibleMoves(entry.getKey(), round.getMyTiles(), opponentTilesClone, false, logTrace);
 				RoundHeuristic.logInfo(logger, "countOnTable: " + countOnTable, logTrace);
 				RoundHeuristic.logInfo(logger, "countFutureMoves: " + countFutureMoves, logTrace);
 
@@ -83,22 +83,29 @@ public class TestRoundHeuristic implements RoundHeuristic {
 		return count;
 	}
 
-	private double countFuturePossibleMoves(Tile tileForPlay, Set<Tile> myTiles, Map<Tile, Double> opponentTiles, boolean myTurn) {
-		double count = 0.0;
+	private double countFuturePossibleMoves(Tile tileForPlay, Set<Tile> myTiles, Map<Tile, Double> opponentTiles, boolean myTurn, boolean logTrace) {
+		double count;
+		double countFromMyTiles = 0.0;
+		double countFromOpponentTiles = 0.0;
+		double countFromBazaar = 0.0;
 		for (int i = 6; i >= 0; i--) {
 			for (int j = i; j >= 0; j--) {
 				Tile tile = new Tile(i, j);
 				if (!tile.equals(tileForPlay) && isAdjacentTiles(tile, tileForPlay)) {
 					if (myTiles.contains(tile)) {
-						count += sysParamManager.getDoubleParameterValue(myTurn ? testRoundHeuristicParam3 : testRoundHeuristicParam4);
+						countFromMyTiles += sysParamManager.getDoubleParameterValue(myTurn ? testRoundHeuristicParam3 : testRoundHeuristicParam4);
 					} else if (opponentTiles.containsKey(tile)) {
 						double prob = opponentTiles.get(tile);
-						count += prob * sysParamManager.getDoubleParameterValue(myTurn ? testRoundHeuristicParam4 : testRoundHeuristicParam3);
-						count += (1 - prob) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam5);
+						countFromOpponentTiles += prob * sysParamManager.getDoubleParameterValue(myTurn ? testRoundHeuristicParam4 : testRoundHeuristicParam3);
+						countFromBazaar += (1 - prob) * sysParamManager.getDoubleParameterValue(testRoundHeuristicParam5);
 					}
 				}
 			}
 		}
+		RoundHeuristic.logInfo(logger, "countFromMyTiles: " + countFromMyTiles, logTrace);
+		RoundHeuristic.logInfo(logger, "countFromOpponentTiles: " + countFromOpponentTiles, logTrace);
+		RoundHeuristic.logInfo(logger, "countFromBazaar: " + countFromBazaar, logTrace);
+		count = countFromMyTiles + countFromOpponentTiles + countFromBazaar;
 		return count;
 	}
 

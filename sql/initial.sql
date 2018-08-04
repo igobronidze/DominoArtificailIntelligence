@@ -61,3 +61,8 @@ INSERT INTO system_parameter (key, value) VALUES('minMaxIteration', '150000');
 INSERT INTO system_parameter (key, value) VALUES('roundHeuristicType', 'POINT_DIFF_ROUND_HEURISTIC');
 INSERT INTO system_parameter (key, value) VALUES('p2pServerPort', '8080');
 INSERT INTO system_parameter (key, value) VALUES('logAboutRoundHeuristic', 'false');
+INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam1', '2');
+INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam2', '10');
+INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam3', '0.4');
+INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam4', '0.2');
+INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam5', '0.1');

@@ -11,8 +11,8 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.AiSolver;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
+import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
-import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
@@ -145,12 +145,12 @@ public abstract class MinMax implements AiSolver {
 				parentRounds.add(notValidRound);
 				notValidRound = notValidRound.getParent();
 			}
-			GameLoggingProcessor.logRoundFullInfo(notValidRound.getRound(), false); // Still print if virtual
+			RoundLogger.logRoundFullInfo(notValidRound.getRound());
 			for (int i = parentRounds.size() - 1; i >= 0; i--) {
 				notValidRound = parentRounds.get(i);
 				logger.info("ID: " + notValidRound.getId() + ", Height: " + notValidRound.getTreeHeight());
 				logger.info("Play move with probability[" + notValidRound.getLastPlayedProbability() + "], move[" + notValidRound.getLastPlayedMove() + "]");
-				GameLoggingProcessor.logRoundFullInfo(notValidRound.getRound(), false); // Still print if virtual
+				RoundLogger.logRoundFullInfo(notValidRound.getRound());
 			}
 
 			logger.info(System.lineSeparator() + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
@@ -165,7 +165,7 @@ public abstract class MinMax implements AiSolver {
 		boolean logHeuristicInfo = (r < (1.0 / 1000)) && systemParameterManager.getBooleanParameterValue(logAboutRoundHeuristic);
 		if (logHeuristicInfo) {
 			logger.info("******************************RoundHeuristic(" + roundHeuristic.getClass().getSimpleName() + ")******************************");
-			GameLoggingProcessor.logRoundFullInfo(round, false);
+			RoundLogger.logRoundFullInfo(round);
 		}
 
 		double heuristic = roundHeuristic.getHeuristic(round, logHeuristicInfo);

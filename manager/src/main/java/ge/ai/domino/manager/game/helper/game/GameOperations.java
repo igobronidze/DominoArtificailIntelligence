@@ -1,21 +1,23 @@
 package ge.ai.domino.manager.game.helper.game;
 
+import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.PlayedTile;
-import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.manager.game.helper.filter.OpponentTilesFilter;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
-import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
+import org.apache.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class GameOperations {
+
+	protected static final Logger logger = Logger.getLogger(GameOperations.class);
 
 	public static int countLeftTiles(Round round, boolean countMine, boolean virtual) {
 		int gameId = round.getGameInfo().getGameId();
@@ -35,10 +37,11 @@ public class GameOperations {
 			}
 		}
 		if (count == 0) {
-			GameLoggingProcessor.logInfoAboutMove("Left tiles count is " + 10 + "(0,0), gameId[" + gameId + "]", virtual);
-			return 10;
+			count = 10;
 		}
-		GameLoggingProcessor.logInfoAboutMove("Left tiles count is " + count + ", gameId[" + gameId + "]", virtual);
+		if (!virtual) {
+			logger.info("Left tiles count is " + count + ", gameId[" + gameId + "]");
+		}
 		return (int)count;
 	}
 
@@ -64,12 +67,16 @@ public class GameOperations {
 		int scoreForWin = CachedGames.getGameProperties(gameId).getPointsForWin();
 		if (gameInfo.getMyPoint() >= scoreForWin || gameInfo.getOpponentPoint() >= scoreForWin) {
 			if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
-				GameLoggingProcessor.logInfoAboutMove("I won the game", virtual);
 				round.getGameInfo().setFinished(true);
+				if (!virtual) {
+					logger.info("I won the game");
+				}
 				return round;
 			} else if (gameInfo.getOpponentPoint() > gameInfo.getMyPoint()) {
 				round.getGameInfo().setFinished(true);
-				GameLoggingProcessor.logInfoAboutMove("He won the game", virtual);
+				if (!virtual) {
+					logger.info("He won the game");
+				}
 				return round;
 			}
 		}
@@ -87,7 +94,9 @@ public class GameOperations {
 			}
 		}
 
-		GameLoggingProcessor.logInfoAboutMove("Finished round and start new one, gameId[" + gameId + "]", virtual);
+		if (!virtual) {
+			logger.info("Finished round and start new one, gameId[" + gameId + "]");
+		}
 		return newRound;
 	}
 
@@ -116,7 +125,9 @@ public class GameOperations {
 			CachedGames.changeNextRoundBeginner(gameId, false);
 		}
 
-		GameLoggingProcessor.logInfoAboutMove("Finished(blocked) round and start new one, gameId[" + gameId + "]", virtual);
+		if (!virtual) {
+			logger.info("Finished(blocked) round and start new one, gameId[" + gameId + "]");
+		}
 		return newRound;
 	}
 

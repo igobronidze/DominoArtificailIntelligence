@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class GameLoggingProcessor {
+public class RoundLogger {
 
     public static final String DELIMITER = "|";
 
@@ -33,26 +33,22 @@ public class GameLoggingProcessor {
 
     public static final NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
 
-    private static final Logger logger = Logger.getLogger(GameLoggingProcessor.class);
+    private static final Logger logger = Logger.getLogger(RoundLogger.class);
 
     private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
     private static final SysParam logTilesAfterMethod = new SysParam("logTilesAfterMethod", "true");
 
-    private static final SysParam logOnVirtualMode = new SysParam("logOnVirtualMode", "false");
-
-    public static void logRoundFullInfo(Round round, boolean virtualMode) {
+    public static void logRoundFullInfo(Round round) {
         if (systemParameterManager.getBooleanParameterValue(logTilesAfterMethod)) {
-            if (!virtualMode || systemParameterManager.getBooleanParameterValue(logOnVirtualMode)) {
-                StringBuilder log = new StringBuilder(END_LINE);
-                log.append("____________________________________________Round Info____________________________________________").append(END_LINE);
-                log.append(gameInfoToString(round.getGameInfo()));
-                log.append(tableInfoToString(round.getTableInfo()));
-                log.append(myTileToString(new ArrayList<>(round.getMyTiles())));
-                log.append(opponentTileToString(round.getOpponentTiles()));
-                log.append("_________________________________________________________________________________________________");
-                logger.info(log);
-            }
+            StringBuilder log = new StringBuilder(END_LINE);
+            log.append("____________________________________________Round Info____________________________________________").append(END_LINE);
+            log.append(gameInfoToString(round.getGameInfo()));
+            log.append(tableInfoToString(round.getTableInfo()));
+            log.append(myTileToString(new ArrayList<>(round.getMyTiles())));
+            log.append(opponentTileToString(round.getOpponentTiles()));
+            log.append("_________________________________________________________________________________________________");
+            logger.info(log);
         }
     }
 
@@ -121,11 +117,5 @@ public class GameLoggingProcessor {
             info.append(END_LINE);
         }
         return info;
-    }
-
-    public static void logInfoAboutMove(String text, boolean virtualMode) {
-        if (!virtualMode || systemParameterManager.getBooleanParameterValue(logOnVirtualMode)) {
-            logger.info(text);
-        }
     }
 }

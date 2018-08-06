@@ -7,7 +7,7 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.caching.game.CachedGames;
-import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.manager.game.move.PlayForMeProcessor;
@@ -70,7 +70,7 @@ public class GameDebugger {
                         String s;
                         StringBuilder log = new StringBuilder();
                         while (!(s = scanner.nextLine()).equals(LOG_END)) {
-                            log.append(s).append(GameLoggingProcessor.END_LINE);
+                            log.append(s).append(RoundLogger.END_LINE);
                         }
                         round = RoundParser.parseRound(log.toString());
                         round.getGameInfo().setGameId(GAME_ID);
@@ -85,7 +85,7 @@ public class GameDebugger {
                         System.out.println("Virtual:");
                         boolean virtual = Boolean.valueOf(scanner.nextLine());
                         AddForMeProcessor addForMeProcessor = new AddForMeProcessor();
-                        round = addForMeProcessor.move(round, new Move(left, right, null), virtual);
+                        round = addForMeProcessor.move(round, new Move(left, right, null));
                         logger.info("Added for me successfully");
                         break;
                     }
@@ -93,7 +93,7 @@ public class GameDebugger {
                         System.out.println("Virtual:");
                         boolean virtual = Boolean.valueOf(scanner.nextLine());
                         AddForOpponentProcessor addForOpponentProcessor = new AddForOpponentProcessor();
-                        round = addForOpponentProcessor.move(round, new Move(0, 0, null), virtual);
+                        round = addForOpponentProcessor.move(round, new Move(0, 0, null));
                         logger.info("Added for opponent successfully");
                         break;
                     }
@@ -107,7 +107,7 @@ public class GameDebugger {
                         System.out.println("Virtual:");
                         boolean virtual = Boolean.valueOf(scanner.nextLine());
                         PlayForMeProcessor playForMeProcessor = new PlayForMeProcessor();
-                        round = playForMeProcessor.move(round, new Move(left, right, direction), virtual);
+                        round = playForMeProcessor.move(round, new Move(left, right, direction));
                         logger.info("Played fot me successfully");
                         break;
                     }
@@ -121,7 +121,7 @@ public class GameDebugger {
                         System.out.println("Virtual:");
                         boolean virtual = Boolean.valueOf(scanner.nextLine());
                         PlayForOpponentProcessor playForOpponentProcessor = new PlayForOpponentProcessor();
-                        round = playForOpponentProcessor.move(round, new Move(left, right, direction), virtual);
+                        round = playForOpponentProcessor.move(round, new Move(left, right, direction));
                         logger.info("Played fot opponent successfully");
                         break;
                     }

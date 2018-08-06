@@ -20,11 +20,11 @@ import ge.ai.domino.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.manager.game.helper.filter.OpponentTilesFilter;
 import ge.ai.domino.manager.game.helper.game.MoveHelper;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
-import ge.ai.domino.manager.game.move.AddForMeProcessor;
-import ge.ai.domino.manager.game.move.AddForOpponentProcessor;
+import ge.ai.domino.manager.game.move.AddForMeProcessorVirtual;
+import ge.ai.domino.manager.game.move.AddForOpponentProcessorVirtual;
 import ge.ai.domino.manager.game.move.MoveProcessor;
-import ge.ai.domino.manager.game.move.PlayForMeProcessor;
-import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
+import ge.ai.domino.manager.game.move.PlayForMeProcessorVirtual;
+import ge.ai.domino.manager.game.move.PlayForOpponentProcessorVirtual;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.serverutil.CloneUtil;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
@@ -47,13 +47,13 @@ public class MinMaxBFS extends MinMax {
 
     private final SysParam minMaxIteration = new SysParam("minMaxIteration", "100000");
 
-    private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
+    private final MoveProcessor playForMeProcessorVirtual = new PlayForMeProcessorVirtual();
 
-    private final MoveProcessor playForOpponentProcessor = new PlayForOpponentProcessor();
+    private final MoveProcessor playForOpponentProcessorVirtual = new PlayForOpponentProcessorVirtual();
 
-    private final MoveProcessor addForMeProcessor = new AddForMeProcessor();
+    private final MoveProcessor addForMeProcessorVirtual = new AddForMeProcessorVirtual();
 
-    private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
+    private final MoveProcessor addForOpponentProcessorVirtual = new AddForOpponentProcessorVirtual();
 
     private final RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
 
@@ -151,7 +151,7 @@ public class MinMaxBFS extends MinMax {
     private AiPredictionsWrapper minMaxForMoves(List<Move> moves, NodeRound nodeRound, long ms) throws DAIException {
         long inlineMs = System.currentTimeMillis();
         for (Move move : moves) {
-            Round nextRound = playForMeProcessor.move(CloneUtil.getClone(nodeRound.getRound()), move, true);
+            Round nextRound = playForMeProcessorVirtual.move(CloneUtil.getClone(nodeRound.getRound()), move);
             NodeRound nextNodeRound = new NodeRound();
             nextNodeRound.setRound(nextRound);
             nextNodeRound.setLastPlayedMove(MoveHelper.getPlayForMeMove(move));
@@ -232,7 +232,7 @@ public class MinMaxBFS extends MinMax {
         if (round.getTableInfo().isMyMove()) {
             if (!moves.isEmpty()) {
                 for (Move move : moves) {
-                    Round nextRound = playForMeProcessor.move(CloneUtil.getClone(round), move, true);
+                    Round nextRound = playForMeProcessorVirtual.move(CloneUtil.getClone(round), move);
                     NodeRound nextNodeRound = new NodeRound();
                     nextNodeRound.setRound(nextRound);
                     nextNodeRound.setLastPlayedMove(MoveHelper.getPlayForMeMove(move));
@@ -250,7 +250,7 @@ public class MinMaxBFS extends MinMax {
                     if (prob != 1.0) {
                         double probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
                         Move move = TileAndMoveHelper.getMove(tile, MoveDirection.LEFT);
-                        Round nextRound = addForMeProcessor.move(CloneUtil.getClone(round), move, true);
+                        Round nextRound = addForMeProcessorVirtual.move(CloneUtil.getClone(round), move);
                         NodeRound nextNodeRound = new NodeRound();
                         nextNodeRound.setRound(nextRound);
                         nextNodeRound.setLastPlayedMove(MoveHelper.getAddTileForMeMove(move));
@@ -266,7 +266,7 @@ public class MinMaxBFS extends MinMax {
         } else {
             nodeRound.setOpponentTilesClone(CloneUtil.getClone(round.getOpponentTiles()));
             for (Move move : moves) {
-                Round nextRound = playForOpponentProcessor.move(CloneUtil.getClone(round), move, true);
+                Round nextRound = playForOpponentProcessorVirtual.move(CloneUtil.getClone(round), move);
                 NodeRound nextNodeRound = new NodeRound();
                 nextNodeRound.setRound(nextRound);
                 nextNodeRound.setLastPlayedMove(MoveHelper.getPlayForOpponentMove(move));
@@ -280,7 +280,7 @@ public class MinMaxBFS extends MinMax {
             OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter().bazaar(true);
             long bazaarTilesCount = round.getOpponentTiles().entrySet().stream().filter(opponentTilesFilter :: filter).count();
             if (moves.size() + bazaarTilesCount <= round.getTableInfo().getBazaarTilesCount()) {
-                Round nextRound = addForOpponentProcessor.move(CloneUtil.getClone(round), null, true);
+                Round nextRound = addForOpponentProcessorVirtual.move(CloneUtil.getClone(round), null);
                 NodeRound nextNodeRound = new NodeRound();
                 nextNodeRound.setRound(nextRound);
                 nextNodeRound.setLastPlayedMove(MoveHelper.getAddTileForOpponentMove());

@@ -1,10 +1,14 @@
 package ge.ai.domino.console.ui.played;
 
 import ge.ai.domino.domain.played.GroupedPlayedGame;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class GroupedPlayedGameProperty {
+
+    private final NumberFormat formatter = new DecimalFormat("#0.0000");
 
     private SimpleStringProperty version;
 
@@ -28,10 +32,10 @@ public class GroupedPlayedGameProperty {
         opponentName = new SimpleStringProperty(game.getOpponentName());
         website = new SimpleStringProperty(game.getWebsite());
         int sum = game.getWin() + game.getLose() + game.getStopped();
-        winPercent = new SimpleStringProperty("" + game.getWin() + " (" + ((double)game.getWin() / sum * 100) + "%)");
-        losePercent = new SimpleStringProperty("" + game.getLose() + " (" + ((double)game.getLose() / sum * 100) + "%)");
-        stoppedPercent = new SimpleStringProperty("" + game.getStopped() + " (" + ((double)game.getStopped() / sum * 100) + "%)");
-        winPercentForFinished = new SimpleStringProperty("" + (double)game.getWin() / (game.getWin() + game.getLose()) * 100 + "%");
+        winPercent = new SimpleStringProperty("" + game.getWin() + " (" + formatter.format((double)game.getWin() / sum * 100) + "%)");
+        losePercent = new SimpleStringProperty("" + game.getLose() + " (" + formatter.format((double)game.getLose() / sum * 100) + "%)");
+        stoppedPercent = new SimpleStringProperty("" + game.getStopped() + " (" + formatter.format((double)game.getStopped() / sum * 100) + "%)");
+        winPercentForFinished = new SimpleStringProperty("" + formatter.format((double)game.getWin() / (game.getWin() + game.getLose()) * 100) + "%");
     }
 
     public String getVersion() {

@@ -4,7 +4,7 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
-import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
@@ -35,18 +35,18 @@ public class OpponentTilesValidator {
 				int right = entry.getKey().getRight();
 				if (prob > 1.0) {
 					logger.warn("Opponent tile probability is more than one, tile[" + left + "-" + right + "] method[" + msg + "]");
-					GameLoggingProcessor.logRoundFullInfo(round, false);   // Still print if virtual
+					RoundLogger.logRoundFullInfo(round);
 					return "opponentTileProbabilityIsMoreThanOne";
 				} else if (prob < 0.0) {
 					logger.warn("Opponent tile probability is less than zero, tile[" + left + "-" + right + "] method[" + msg + "]");
-					GameLoggingProcessor.logRoundFullInfo(round, false);   // Still print if virtual
+					RoundLogger.logRoundFullInfo(round);
 					return "opponentTileProbabilityIsLessThanZero";
 				}
 				sum += prob;
 			}
 			if (!ComparisonHelper.equal(sum + addProb, round.getTableInfo().getOpponentTilesCount())) {
 				logger.warn("Opponent tile count and probabilities sum is not same... count:" + round.getTableInfo().getOpponentTilesCount() + "  sum:" + sum + "  addProb:" + addProb + ", method[" + msg + "]");
-				GameLoggingProcessor.logRoundFullInfo(round, false);   // Still print if virtual
+				RoundLogger.logRoundFullInfo(round);
 				return "probabilitiesSumIsNoEqualToOpponentTilesCount";
 			}
 		}

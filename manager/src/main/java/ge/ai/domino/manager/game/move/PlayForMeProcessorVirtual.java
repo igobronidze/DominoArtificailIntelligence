@@ -4,14 +4,10 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
-import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
-import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
-import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
-import ge.ai.domino.manager.game.logging.RoundLogger;
 
-public class PlayForMeProcessor extends MoveProcessor {
+public class PlayForMeProcessorVirtual extends MoveProcessor {
 
 	@Override
 	public Round move(Round round, Move move) throws DAIException {
@@ -22,8 +18,6 @@ public class PlayForMeProcessor extends MoveProcessor {
 			round.getTableInfo().getRoundBlockingInfo().setLastNotTwinPlayedTileMy(true);
 		}
 		int gameId = round.getGameInfo().getGameId();
-		logger.info("Start playForMe method for tile [" + move.getLeft() + "-" + move.getRight() + "] direction ["
-				+ move.getDirection().name() + "], gameId[" + gameId + "]");
 
 		// Not played twins case
 		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {
@@ -40,15 +34,8 @@ public class PlayForMeProcessor extends MoveProcessor {
 		round.getTableInfo().setMyMove(false);
 
 		if (round.getMyTiles().size() == 0) {
-			round = GameOperations.finishedLastAndGetNewRound(round, true, GameOperations.countLeftTiles(round, false, false), false);
-		} else if (new MinMaxPredictor().usePredictor()) {
-			if (firstMove && CachedMinMax.getNodeRound(gameId) == null) {
-				MinMaxFactory.getMinMax().minMaxForCachedNodeRound(round);
-			}
+			round = GameOperations.finishedLastAndGetNewRound(round, true, GameOperations.countLeftTiles(round, false, true), true);
 		}
-
-		logger.info("Played tile for me, gameId[" + gameId + "]");
-		RoundLogger.logRoundFullInfo(round);
 
 		return round;
 	}

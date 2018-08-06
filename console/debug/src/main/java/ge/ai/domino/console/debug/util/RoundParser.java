@@ -7,7 +7,7 @@ import ge.ai.domino.domain.game.RoundBlockingInfo;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.played.PlayedTile;
-import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.manager.game.logging.RoundLogger;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
@@ -47,7 +47,7 @@ public class RoundParser {
      * @return Parsed round
      */
     public static Round parseRound(String roundLog) throws DAIException {
-        String[] lines = roundLog.split(Pattern.quote(GameLoggingProcessor.END_LINE));
+        String[] lines = roundLog.split(Pattern.quote(RoundLogger.END_LINE));
 
         Round round = new Round();
         round.setGameInfo(parseGameInfo(lines[1]));
@@ -60,12 +60,12 @@ public class RoundParser {
     private static Map<Tile, Double> parseOpponentTiles(String[] lines) {
         Map<Tile, Double> opponentTiles = new HashMap<>();
         for (String line : lines) {
-            String[] opponentTilesString = line.split(Pattern.quote(GameLoggingProcessor.DELIMITER));
+            String[] opponentTilesString = line.split(Pattern.quote(RoundLogger.DELIMITER));
             for (String opponentTileString : opponentTilesString) {
-                String[] tileAndProb = opponentTileString.trim().split(GameLoggingProcessor.EQUAL_CHARACTER);
+                String[] tileAndProb = opponentTileString.trim().split(RoundLogger.EQUAL_CHARACTER);
                 String tile = tileAndProb[0].trim();
                 String prob = tileAndProb[1].trim();
-                if (!prob.equals(GameLoggingProcessor.NOT)) {
+                if (!prob.equals(RoundLogger.NOT)) {
                     opponentTiles.put(parseTile(tile), Double.valueOf(prob));
                 }
             }
@@ -74,7 +74,7 @@ public class RoundParser {
     }
 
     private static Set<Tile> parseMyTiles(String line) {
-        String[] tileStrings = line.split(Pattern.quote(GameLoggingProcessor.DELIMITER));
+        String[] tileStrings = line.split(Pattern.quote(RoundLogger.DELIMITER));
         Set<Tile> myTiles = new HashSet<>();
         for (String tileString : tileStrings) {
             myTiles.add(parseTile(tileString));
@@ -90,49 +90,49 @@ public class RoundParser {
     private static TableInfo parseTableInfo(String[] lines) {
         TableInfo tableInfo = new TableInfo();
 
-        String[] properties0 = lines[0].split(Pattern.quote(GameLoggingProcessor.DELIMITER));
+        String[] properties0 = lines[0].split(Pattern.quote(RoundLogger.DELIMITER));
         try {
-            tableInfo.setLeft(new PlayedTile(Integer.parseInt(properties0[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
+            tableInfo.setLeft(new PlayedTile(Integer.parseInt(properties0[0].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim())));
         } catch (NumberFormatException ignore) {}
         try {
-            tableInfo.setRight(new PlayedTile(Integer.parseInt(properties0[1].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
+            tableInfo.setRight(new PlayedTile(Integer.parseInt(properties0[1].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim())));
         } catch (NumberFormatException ignore) {}
         try {
-            tableInfo.setTop(new PlayedTile(Integer.parseInt(properties0[2].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
+            tableInfo.setTop(new PlayedTile(Integer.parseInt(properties0[2].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim())));
         } catch (NumberFormatException ignore) {}
         try {
-            tableInfo.setBottom(new PlayedTile(Integer.parseInt(properties0[3].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim())));
+            tableInfo.setBottom(new PlayedTile(Integer.parseInt(properties0[3].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim())));
         } catch (NumberFormatException ignore) {}
 
-        String[] properties1 = lines[1].split(Pattern.quote(GameLoggingProcessor.DELIMITER));
-        tableInfo.setMyMove(Boolean.valueOf(properties1[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-        tableInfo.setWithCenter(Boolean.valueOf(properties1[1].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-        tableInfo.setFirstRound(Boolean.valueOf(properties1[2].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
+        String[] properties1 = lines[1].split(Pattern.quote(RoundLogger.DELIMITER));
+        tableInfo.setMyMove(Boolean.valueOf(properties1[0].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
+        tableInfo.setWithCenter(Boolean.valueOf(properties1[1].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
+        tableInfo.setFirstRound(Boolean.valueOf(properties1[2].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
 
-        String[] properties2 = lines[2].split(Pattern.quote(GameLoggingProcessor.DELIMITER));
+        String[] properties2 = lines[2].split(Pattern.quote(RoundLogger.DELIMITER));
         RoundBlockingInfo roundBlockingInfo = new RoundBlockingInfo();
-        roundBlockingInfo.setOmitMe(Boolean.valueOf(properties2[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-        roundBlockingInfo.setOmitOpponent(Boolean.valueOf(properties2[1].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-        roundBlockingInfo.setLastNotTwinPlayedTileMy(Boolean.valueOf(properties2[2].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
+        roundBlockingInfo.setOmitMe(Boolean.valueOf(properties2[0].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
+        roundBlockingInfo.setOmitOpponent(Boolean.valueOf(properties2[1].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
+        roundBlockingInfo.setLastNotTwinPlayedTileMy(Boolean.valueOf(properties2[2].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
         tableInfo.setRoundBlockingInfo(roundBlockingInfo);
 
-        String[] properties3 = lines[3].split(Pattern.quote(GameLoggingProcessor.DELIMITER));
-        tableInfo.setOpponentTilesCount(Double.valueOf(properties3[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-        tableInfo.setBazaarTilesCount(Double.valueOf(properties3[1].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-        tableInfo.setTilesFromBazaar(Integer.valueOf(properties3[2].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
+        String[] properties3 = lines[3].split(Pattern.quote(RoundLogger.DELIMITER));
+        tableInfo.setOpponentTilesCount(Double.valueOf(properties3[0].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
+        tableInfo.setBazaarTilesCount(Double.valueOf(properties3[1].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
+        tableInfo.setTilesFromBazaar(Integer.valueOf(properties3[2].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
 
         return tableInfo;
     }
 
     private static GameInfo parseGameInfo(String line) throws DAIException {
         try {
-            String[] properties = line.split(Pattern.quote(GameLoggingProcessor.DELIMITER));
+            String[] properties = line.split(Pattern.quote(RoundLogger.DELIMITER));
 
             GameInfo gameInfo = new GameInfo();
-            gameInfo.setGameId(Integer.parseInt(properties[0].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-            gameInfo.setFinished(Boolean.parseBoolean(properties[1].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-            gameInfo.setMyPoint(Integer.parseInt(properties[2].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
-            gameInfo.setOpponentPoint(Integer.parseInt(properties[3].split(Pattern.quote(GameLoggingProcessor.EQUAL_CHARACTER))[1].trim()));
+            gameInfo.setGameId(Integer.parseInt(properties[0].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
+            gameInfo.setFinished(Boolean.parseBoolean(properties[1].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
+            gameInfo.setMyPoint(Integer.parseInt(properties[2].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
+            gameInfo.setOpponentPoint(Integer.parseInt(properties[3].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim()));
             return gameInfo;
         } catch (Exception ex) {
             logger.error("Can't parse Game Info from log", ex);

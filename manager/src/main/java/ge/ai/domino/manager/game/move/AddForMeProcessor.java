@@ -1,18 +1,18 @@
 package ge.ai.domino.manager.game.move;
 
+import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.caching.game.CachedGames;
-import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
-import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.manager.game.logging.RoundLogger;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 
 import java.util.Map;
 
@@ -23,30 +23,24 @@ public class AddForMeProcessor extends MoveProcessor {
 	private final SysParam minMaxOnFirstTile = new SysParam("minMaxOnFirstTile", "false");
 
 	@Override
-	public Round move(Round round, Move move, boolean virtual) throws DAIException {
-		// Logging
-		if (virtual) {
-			GameLoggingProcessor.logInfoAboutMove("<<<<<<<Virtual Mode>>>>>>>", true);
-		} else {
-			GameLoggingProcessor.logInfoAboutMove("<<<<<<<Real Mode<<<<<<<", false);
-		}
+	public Round move(Round round, Move move) throws DAIException {
 		int gameId = round.getGameInfo().getGameId();
-		GameLoggingProcessor.logInfoAboutMove("Start addTileForMe method for tile [" + move.getLeft() + "-" + move.getRight() + "], gameId[" + gameId + "]", virtual);
+		logger.info("Start addTileForMe method for tile [" + move.getLeft() + "-" + move.getRight() + "], gameId[" + gameId + "]");
 		TableInfo tableInfo = round.getTableInfo();
 
 		// If omit -> a) If opponent also has omitted finish b) Make opponent try
 		if (tableInfo.getBazaarTilesCount() == 2) {
 			tableInfo.getRoundBlockingInfo().setOmitMe(true);
 			if (tableInfo.getRoundBlockingInfo().isOmitOpponent()) {
-				round = GameOperations.blockRound(round, virtual ? GameOperations.countLeftTiles(round, false, true) :  CachedGames.getOpponentLeftTilesCount(gameId), virtual);
+				round = GameOperations.blockRound(round, CachedGames.getOpponentLeftTilesCount(gameId), false);
 			} else {
 				round.getTableInfo().setMyMove(false);
-				if (new MinMaxPredictor().usePredictor() && !virtual) {
+				if (new MinMaxPredictor().usePredictor()) {
 					MinMaxFactory.getMinMax().minMaxForCachedNodeRound(round);
 				}
 			}
-			GameLoggingProcessor.logInfoAboutMove("I omitted, gameId[" + gameId + "]", virtual);
-			GameLoggingProcessor.logRoundFullInfo(round, virtual);
+			logger.info("I omitted, gameId[" + gameId + "]");
+			RoundLogger.logRoundFullInfo(round);
 			return round;
 		}
 
@@ -64,18 +58,16 @@ public class AddForMeProcessor extends MoveProcessor {
 
 		// Execute MinMaxDFS
 		if (tableInfo.getLeft() == null && round.getMyTiles().size() == 7) {
-		    if (!virtual) {
-                round.getTableInfo().setMyMove(!CachedGames.isOpponentNextRoundBeginner(gameId));
-                if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove()) {
-					round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
-                }
-            }
-		} else if (round.getTableInfo().getLeft() != null && !virtual) {
+			round.getTableInfo().setMyMove(!CachedGames.isOpponentNextRoundBeginner(gameId));
+			if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove()) {
+				round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
+			}
+		} else if (round.getTableInfo().getLeft() != null) {
 			round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
 		}
 
-		GameLoggingProcessor.logInfoAboutMove("Added tile for me, gameId[" + gameId + "]", virtual);
-		GameLoggingProcessor.logRoundFullInfo(round, virtual);
+		logger.info("Added tile for me, gameId[" + gameId + "]");
+		RoundLogger.logRoundFullInfo(round);
 
 		return round;
 	}

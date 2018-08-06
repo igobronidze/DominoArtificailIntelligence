@@ -19,7 +19,7 @@ import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.helper.game.MoveHelper;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
-import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.manager.game.move.AddForOpponentProcessor;
 import ge.ai.domino.manager.game.move.MoveProcessor;
@@ -69,14 +69,14 @@ public class GameManager {
         logger.info("Opponent Name: " + game.getProperties().getOpponentName() + "     |     " + "WebSite: " + game.getProperties().getWebsite() + "     |     " +
         "Point for win: " + game.getProperties().getPointsForWin());
         Round newRound = CachedGames.getCurrentRound(game.getId(), false);
-        GameLoggingProcessor.logRoundFullInfo(newRound, false);
+        RoundLogger.logRoundFullInfo(newRound);
         return newRound;
     }
 
     public Round addTileForMe(int gameId, int left, int right) throws DAIException {
         Round round = CachedGames.getCurrentRound(gameId, true);
         Move move = getMove(left, right, MoveDirection.LEFT);
-        Round newRound = addForMeProcessor.move(round, move, false);
+        Round newRound = addForMeProcessor.move(round, move);
         newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, 0, "addTileForMe"));
         CachedGames.addRound(gameId, newRound);
         if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() == 1) {
@@ -92,7 +92,7 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId, true);
         CachedGames.addOpponentPlay(gameId, new OpponentPlay(0, gameId, ProjectVersionUtil.getVersion(), MoveType.ADD_FOR_OPPONENT,
                 new Tile(0, 0), getOpponentTilesWrapper(round.getOpponentTiles()), new ArrayList<>(GameOperations.getPossiblePlayNumbers(round.getTableInfo()))));
-        Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT), false);
+        Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT));
         newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, round.getTableInfo().getTilesFromBazaar(), "addTileForOpponent"));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, round.getTableInfo().getRoundBlockingInfo().isOmitOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove());
@@ -104,7 +104,7 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId, true);
         MoveValidator.validateMove(round, move);
         round.setAiPredictions(null);
-        Round newRound = playForMeProcessor.move(round, move, false);
+        Round newRound = playForMeProcessor.move(round, move);
         newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, 0, "playForMe" + move));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move));
@@ -123,7 +123,7 @@ public class GameManager {
         MoveValidator.validateMove(round, move);
         CachedGames.addOpponentPlay(gameId, new OpponentPlay(0, gameId, ProjectVersionUtil.getVersion(), MoveType.PLAY_FOR_OPPONENT,
                 new Tile(move.getLeft(), move.getRight()), getOpponentTilesWrapper(round.getOpponentTiles()), new ArrayList<>()));
-        Round newRound = playForOpponentProcessor.move(round, move, false);
+        Round newRound = playForOpponentProcessor.move(round, move);
         newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, 0, "playForOpponent " + move));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForOpponentMove(move));

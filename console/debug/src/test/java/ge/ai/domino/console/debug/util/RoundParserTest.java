@@ -7,7 +7,7 @@ import ge.ai.domino.domain.game.RoundBlockingInfo;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.played.PlayedTile;
-import ge.ai.domino.manager.game.logging.GameLoggingProcessor;
+import ge.ai.domino.manager.game.logging.RoundLogger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -196,6 +196,6 @@ public class RoundParserTest {
 
     private static String opponentTileToLog(Tile tile) {
         Double prob = opponentTiles.get(tile);
-        return tile + ": " + (prob == null ? GameLoggingProcessor.NOT_WITH_SPACES : GameLoggingProcessor.formatter.format(prob));
+        return tile + ": " + (prob == null ? RoundLogger.NOT_WITH_SPACES : RoundLogger.formatter.format(prob));
     }
 }

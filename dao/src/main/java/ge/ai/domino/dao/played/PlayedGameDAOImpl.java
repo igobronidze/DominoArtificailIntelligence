@@ -79,7 +79,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             logger.info("Added game id [" + id + "]");
             return id;
         } catch (SQLException ex) {
-            logger.error("Error occurred while add game game", ex);
+            logger.error("Error occurred while add game", ex);
         } finally {
             ConnectionUtil.closeConnection();
         }

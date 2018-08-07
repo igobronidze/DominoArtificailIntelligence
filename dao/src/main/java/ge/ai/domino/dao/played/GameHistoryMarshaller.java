@@ -13,13 +13,13 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-public class GameHistoryMarshaller {
+class GameHistoryMarshaller {
 
     private static final Logger logger = Logger.getLogger(GameHistoryMarshaller.class);
 
     private static final JAXBContext JAXB_CONTEXT;
 
-    public static String getMarshalledHistory(GameHistory history) {
+    static String getMarshalledHistory(GameHistory history) {
         StringWriter stringWriter = new StringWriter();
         BufferedWriter bufferedWriter = new BufferedWriter(stringWriter);
         try {
@@ -35,7 +35,7 @@ public class GameHistoryMarshaller {
         return stringWriter.toString();
     }
 
-    public static GameHistory unmarshallGameHistory(String object) {
+    static GameHistory unmarshallGameHistory(String object) {
         StringReader stringReader = new StringReader(object);
         BufferedReader bufferedReader = new BufferedReader(stringReader);
 

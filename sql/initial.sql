@@ -40,6 +40,13 @@ CREATE TABLE arg_and_value (
   function_name VARCHAR(100) NOT NULL
 );
 
+-- Channel
+CREATE TABLE channel (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  params TEXT
+);
+
 INSERT INTO system_parameter (key, value) VALUES('checkOpponentProbabilities', 'true');
 INSERT INTO system_parameter (key, value) VALUES('epsilonForProbabilities', '0.0001');
 INSERT INTO system_parameter (key, value) VALUES('minMaxOnFirstTile', 'true');

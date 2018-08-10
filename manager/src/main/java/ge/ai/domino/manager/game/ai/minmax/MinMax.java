@@ -1,5 +1,6 @@
 package ge.ai.domino.manager.game.ai.minmax;
 
+import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
@@ -27,6 +28,12 @@ import java.util.stream.Collectors;
 public abstract class MinMax implements AiSolver {
 
 	private final Logger logger = Logger.getLogger(super.getClass());
+
+	private static final String MOVE_PRIORITY_KEY = "movePriority";
+
+	private static final String MOVE_PRIORITY_DELIMITER = ",";
+
+	private static final String MOVE_PRIORITY_DEFAULT_VALUE = "LEFT,RIGHT,TOP,BOTTOM";
 
 	private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
@@ -63,37 +70,76 @@ public abstract class MinMax implements AiSolver {
 		} else {
 			if (round.getTableInfo().isMyMove()) {
 				for (Tile tile : round.getMyTiles()) {
-					addPossibleMovesForTile(tile, left, right, top, bottom, moves);
+					addPossibleMovesForTile(round.getGameInfo().getGameId(), tile, left, right, top, bottom, moves);
 				}
 			} else {
 				round.getOpponentTiles().entrySet().stream().filter(entry -> entry.getValue() > 0.0).forEach(
-						entry -> addPossibleMovesForTile(entry.getKey(), left, right, top, bottom, moves));
+						entry -> addPossibleMovesForTile(round.getGameInfo().getGameId(), entry.getKey(), left, right, top, bottom, moves));
 			}
 		}
 		return moves;
 	}
 
-	private void addPossibleMovesForTile(Tile tile, PlayedTile left, PlayedTile right, PlayedTile top, PlayedTile bottom, List<Move> moves) {
+	private void addPossibleMovesForTile(int gameId, Tile tile, PlayedTile left, PlayedTile right, PlayedTile top, PlayedTile bottom, List<Move> moves) {
 		Set<Integer> played = new HashSet<>();
-		// LEFT RIGHT TOP BOTTOM sequence is important
+
+		for (MoveDirection moveDirection : getMovePriority(gameId)) {
+			switch (moveDirection) {
+				case LEFT:
+					addLeftPossibleMove(tile, left, moves, played);
+					break;
+				case RIGHT:
+					addRightPossibleMove(tile, right, moves, played);
+					break;
+				case TOP:
+					addTopPossibleMove(tile, top, left, right, moves, played);
+					break;
+				case BOTTOM:
+					addBottomPossibleMove(tile, bottom, left, right, moves,played);
+					break;
+			}
+		}
+	}
+
+	private List<MoveDirection> getMovePriority(int gameId) {
+		Map<String, String> params = CachedGames.getGameProperties(gameId).getChannel().getParams();
+		String movePriority = params.containsKey(MOVE_PRIORITY_KEY) ? params.get(MOVE_PRIORITY_KEY) : MOVE_PRIORITY_DEFAULT_VALUE;
+
+		List<MoveDirection> moveDirections = new ArrayList<>();
+		for (String direction : movePriority.split(MOVE_PRIORITY_DELIMITER)) {
+			moveDirections.add(MoveDirection.valueOf(direction));
+		}
+		return moveDirections;
+	}
+
+	private void addLeftPossibleMove(Tile tile, PlayedTile left, List<Move> moves, Set<Integer> played) {
 		if (!played.contains(TileAndMoveHelper.hashForPlayedTile(left))) {
 			if (left.getOpenSide() == tile.getLeft() || left.getOpenSide() == tile.getRight()) {
 				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.LEFT));
 				played.add(TileAndMoveHelper.hashForPlayedTile(left));
 			}
 		}
+	}
+
+	private void addRightPossibleMove(Tile tile, PlayedTile right, List<Move> moves, Set<Integer> played) {
 		if (!played.contains(TileAndMoveHelper.hashForPlayedTile(right))) {
 			if (right.getOpenSide() == tile.getLeft() || right.getOpenSide() == tile.getRight()) {
 				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.RIGHT));
 				played.add(TileAndMoveHelper.hashForPlayedTile(right));
 			}
 		}
+	}
+
+	private void addTopPossibleMove(Tile tile, PlayedTile top, PlayedTile left, PlayedTile right, List<Move> moves, Set<Integer> played) {
 		if (top != null && !played.contains(TileAndMoveHelper.hashForPlayedTile(top))) {
 			if ((top.getOpenSide() == tile.getLeft() || top.getOpenSide() == tile.getRight()) && !left.isCenter() && !right.isCenter()) {
 				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.TOP));
 				played.add(TileAndMoveHelper.hashForPlayedTile(top));
 			}
 		}
+	}
+
+	private void addBottomPossibleMove(Tile tile, PlayedTile bottom, PlayedTile left, PlayedTile right, List<Move> moves, Set<Integer> played) {
 		if (bottom != null && !played.contains(TileAndMoveHelper.hashForPlayedTile(bottom))) {
 			if ((bottom.getOpenSide() == tile.getLeft() || bottom.getOpenSide() == tile.getRight()) && !left.isCenter() && !right.isCenter()) {
 				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.BOTTOM));

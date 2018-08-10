@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ChannelParamsMarshaller {
 
-	private static final String DELIMITER = ",";
+	private static final String DELIMITER = "##";
 
 	private static final String EQUAL = "=";
 

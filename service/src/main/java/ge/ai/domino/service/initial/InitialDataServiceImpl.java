@@ -11,4 +11,9 @@ public class InitialDataServiceImpl implements InitialDataService {
     public InitialData getInitialData() {
         return initialDataManager.getInitialData();
     }
+
+    @Override
+    public void playInitialExtraMoves() {
+        initialDataManager.playInitialExtraMoves();
+    }
 }

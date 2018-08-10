@@ -62,7 +62,7 @@ public class GameManager {
 
     public Round startGame(GameProperties gameProperties) {
         logger.info("Preparing new game");
-        Game game = InitialUtil.getInitialGame(gameProperties);
+        Game game = InitialUtil.getInitialGame(gameProperties, true);
         CachedGames.addGame(game);
         CachedGames.addMove(game.getId(), MoveHelper.getStartNewRoundMove());
         logger.info("------------Started new game[" + game.getId() + "]------------");

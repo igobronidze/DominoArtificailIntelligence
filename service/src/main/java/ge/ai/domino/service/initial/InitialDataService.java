@@ -5,4 +5,6 @@ import ge.ai.domino.domain.initial.InitialData;
 public interface InitialDataService {
 
     InitialData getInitialData();
+
+    void playInitialExtraMoves();
 }

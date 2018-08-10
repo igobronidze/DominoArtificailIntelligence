@@ -15,6 +15,8 @@ import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
+import ge.ai.domino.service.initial.InitialDataService;
+import ge.ai.domino.service.initial.InitialDataServiceImpl;
 import ge.ai.domino.service.p2p.P2PClientService;
 import ge.ai.domino.service.p2p.P2PClientServiceImpl;
 import ge.ai.domino.service.p2p.P2PServerService;
@@ -53,6 +55,8 @@ public class ControlPanelMenuBar extends MenuBar {
 
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
+    private InitialDataService initialDataService = new InitialDataServiceImpl();
+
     private P2PClientWindow p2PClientWindow = null;
 
     private int lastPlayedGameId;
@@ -70,10 +74,11 @@ public class ControlPanelMenuBar extends MenuBar {
     private void initMenu() {
         Menu fileMenu = getFileMenu();
         Menu controlPanelMenu = getControlPanelMenu();
+        Menu actionsMenu = getActionsMenu();
         Menu p2pMenu = getP2PMenu();
         Menu langMenu = getLangMenu();
         Menu helpMenu = getHelpMenu();
-        this.getMenus().addAll(fileMenu, controlPanelMenu, p2pMenu, langMenu, helpMenu);
+        this.getMenus().addAll(fileMenu, controlPanelMenu, actionsMenu, p2pMenu, langMenu, helpMenu);
     }
 
     private Menu getHelpMenu() {
@@ -159,6 +164,16 @@ public class ControlPanelMenuBar extends MenuBar {
         });
         controlPanelMenu.getItems().addAll(sysParamsItem, playedGameItem, groupedPlayedGameItem, groupedOpponentPlaysItem, channelsItem);
         return controlPanelMenu;
+    }
+
+    private Menu getActionsMenu() {
+        Menu actionMenu = new Menu(Messages.get("action"));
+        MenuItem initialExtraMovesMenuItem = new MenuItem(Messages.get("executeInitialExtraMoves"));
+        initialExtraMovesMenuItem.setOnAction(e -> {
+            initialDataService.playInitialExtraMoves();
+        });
+        actionMenu.getItems().addAll(initialExtraMovesMenuItem);
+        return actionMenu;
     }
 
     private Menu getP2PMenu() {

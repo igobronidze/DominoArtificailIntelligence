@@ -39,13 +39,22 @@ public class TilesDetectorTest {
 	@Test
 	public void testGetTiles() {
 		for (Map.Entry<Integer, String> entry : imagePathMap.entrySet()) {
-			List<Tile> resultTiles = tilesDetector.getTiles(entry.getValue());
+			List<Tile> resultTiles = tilesDetector.getTiles(entry.getValue(), getTestTilesDetectorParams());
 			List<Tile> expectedTiles = expectedTilesMap.get(entry.getKey());
 			Assert.assertEquals(expectedTiles.size(), resultTiles.size());
 			for (int i = 0; i < expectedTiles.size() ; i++) {
 				Assert.assertEquals(expectedTiles.get(i), resultTiles.get(i));
 			}
 		}
+	}
+
+	private TilesDetectorParams getTestTilesDetectorParams() {
+		return new TilesDetectorParams()
+				.contourMinArea(200)
+				.heightPercentage(15)
+				.marginBottomPercentage(5)
+				.marginLeftPercentage(15)
+				.widthPercentage(70);
 	}
 
 	private static void initPathMap() {

@@ -4,6 +4,8 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.imageprocessing.clean.ImageCleaner;
 import ge.ai.domino.imageprocessing.contour.Contour;
 import ge.ai.domino.imageprocessing.contour.ContoursDetector;
+import ge.ai.domino.imageprocessing.crop.CropImageParams;
+import ge.ai.domino.imageprocessing.crop.CropImageParamsCreator;
 import ge.ai.domino.imageprocessing.crop.ImageCropper;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_imgcodecs;
@@ -15,19 +17,18 @@ import java.util.stream.Collectors;
 
 public class TilesDetector {
 
-	private static final int CONTOUR_MIN_AREA = 200;  //TODO[IG] to attribute
-
-	public List<Tile> getTiles(String imagePath) {
+	public List<Tile> getTiles(String imagePath, TilesDetectorParams tilesDetectorParams) {
 		opencv_core.Mat srcMat = opencv_imgcodecs.imread(imagePath);
 
-		TilesDetectorParams tilesDetectorParams = TilesDetectorParamsCreator.createTilesDetectorParams(srcMat.cols(), srcMat.rows());
+		CropImageParams cropImageParams = CropImageParamsCreator.createCropImageParams(srcMat.cols(), srcMat.rows(), tilesDetectorParams.getHeightPercentage(),
+				tilesDetectorParams.getMarginBottomPercentage(), tilesDetectorParams.getWidthPercentage(), tilesDetectorParams.getMarginLeftPercentage());
 
-		opencv_core.Mat croppedMat = ImageCropper.cropImage(srcMat, tilesDetectorParams.getCropImageParams());
+		opencv_core.Mat croppedMat = ImageCropper.cropImage(srcMat, cropImageParams);
 
 		BufferedImage image = ImageCleaner.cleanImage(croppedMat);
 
 		ContoursDetector contoursDetector = new ContoursDetector();
-		List<Contour> contours = contoursDetector.detectContours(image, CONTOUR_MIN_AREA);
+		List<Contour> contours = contoursDetector.detectContours(image, tilesDetectorParams.getContourMinArea());
 
 		return contours.stream().map(this::getTile).collect(Collectors.toList());
 	}

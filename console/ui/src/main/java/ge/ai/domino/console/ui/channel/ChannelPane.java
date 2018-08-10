@@ -181,8 +181,8 @@ public class ChannelPane extends BorderPane {
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(paramsBox);
-        scrollPane.setPrefHeight(570);
-        scrollPane.setMaxHeight(570);
+        scrollPane.setPrefHeight(500);
+        scrollPane.setMaxHeight(500);
         this.setCenter(scrollPane);
     }
 }

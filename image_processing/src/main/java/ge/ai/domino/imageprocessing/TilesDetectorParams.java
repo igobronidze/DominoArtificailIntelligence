@@ -1,17 +1,59 @@
 package ge.ai.domino.imageprocessing;
 
-import ge.ai.domino.imageprocessing.crop.CropImageParams;
-
 public class TilesDetectorParams {
 
-	private CropImageParams cropImageParams;
+	private double heightPercentage;
 
-	public TilesDetectorParams cropImageParams(CropImageParams cropImageParams) {
-		this.cropImageParams = cropImageParams;
+	private double marginBottomPercentage;
+
+	private double widthPercentage;
+
+	private double marginLeftPercentage;
+
+	private int contourMinArea;
+
+	public TilesDetectorParams heightPercentage(double heightPercentage) {
+		this.heightPercentage = heightPercentage;
 		return this;
 	}
 
-	public CropImageParams getCropImageParams() {
-		return cropImageParams;
+	public TilesDetectorParams marginBottomPercentage(double marginBottomPercentage) {
+		this.marginBottomPercentage = marginBottomPercentage;
+		return this;
+	}
+
+	public TilesDetectorParams widthPercentage(double widthPercentage) {
+		this.widthPercentage = widthPercentage;
+		return this;
+	}
+
+	public TilesDetectorParams marginLeftPercentage(double marginLeftPercentage) {
+		this.marginLeftPercentage = marginLeftPercentage;
+		return this;
+	}
+
+	public TilesDetectorParams contourMinArea(int contourMinArea) {
+		this.contourMinArea = contourMinArea;
+		return this;
+	}
+
+	public double getHeightPercentage() {
+		return heightPercentage;
+	}
+
+	public double getMarginBottomPercentage() {
+		return marginBottomPercentage;
+	}
+
+	public double getWidthPercentage() {
+		return widthPercentage;
+	}
+
+	public double getMarginLeftPercentage() {
+		return marginLeftPercentage;
+	}
+
+	public int getContourMinArea() {
+		return contourMinArea;
 	}
 }

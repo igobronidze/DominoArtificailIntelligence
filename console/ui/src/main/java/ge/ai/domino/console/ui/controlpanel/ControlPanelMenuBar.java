@@ -1,5 +1,6 @@
 package ge.ai.domino.console.ui.controlpanel;
 
+import ge.ai.domino.console.ui.channel.ChannelPane;
 import ge.ai.domino.console.ui.controlpanel.p2p.P2PClientWindow;
 import ge.ai.domino.console.ui.controlpanel.p2p.P2PServerWindow;
 import ge.ai.domino.console.ui.game.SaveGameWindow;
@@ -27,6 +28,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -144,31 +146,39 @@ public class ControlPanelMenuBar extends MenuBar {
             stage.setTitle(Messages.get("groupedOpponentPlays"));
             stage.show();
         });
-        controlPanelMenu.getItems().addAll(sysParamsItem, playedGameItem, groupedPlayedGameItem, groupedOpponentPlaysItem);
+        MenuItem channelsItem = new MenuItem(Messages.get("channels"));
+        channelsItem.setOnAction(e -> {
+            Stage stage = new Stage();
+            stage.setHeight(650);
+            stage.setWidth(900);
+            stage.setScene(new Scene(new ChannelPane()));
+            stage.setMaximized(true);
+            stage.setTitle(Messages.get("channels"));
+            stage.show();
+        });
+        controlPanelMenu.getItems().addAll(sysParamsItem, playedGameItem, groupedPlayedGameItem, groupedOpponentPlaysItem, channelsItem);
         return controlPanelMenu;
     }
 
     private Menu getP2PMenu() {
         Menu p2pMenu = new Menu(Messages.get("p2p"));
         MenuItem serverMenuItem = new MenuItem(Messages.get("p2pServer"));
-        serverMenuItem.setOnAction(e -> {
-            new P2PServerWindow() {
+        serverMenuItem.setOnAction(e -> new P2PServerWindow() {
 
-                @Override
-                public void onStart(int pointOfWin) {
-                    GameProperties gameProperties = new GameProperties();
-                    gameProperties.setOpponentName(P2P_GAME_OPPONENT_NAME);
-                    gameProperties.setWebsite(P2P_GAME_WEBSITE);
-                    gameProperties.setPointsForWin(pointOfWin);
-                    new Thread(() -> ServiceExecutor.execute(() -> p2PServerService.startServer(gameProperties))).start();
-                }
+            @Override
+            public void onStart(int pointOfWin) {
+                GameProperties gameProperties = new GameProperties();
+                gameProperties.setOpponentName(P2P_GAME_OPPONENT_NAME);
+                gameProperties.setWebsite(P2P_GAME_WEBSITE);
+                gameProperties.setPointsForWin(pointOfWin);
+                new Thread(() -> ServiceExecutor.execute(() -> p2PServerService.startServer(gameProperties))).start();
+            }
 
-                @Override
-                public void onStop() {
-                    ServiceExecutor.execute(p2PServerService::stopServer);
-                }
-            }.showWindow(controlPanel.getStage());
-        });
+            @Override
+            public void onStop() {
+                ServiceExecutor.execute(p2PServerService::stopServer);
+            }
+        }.showWindow(controlPanel.getStage()));
 
         MenuItem clientMenuItem = new MenuItem(Messages.get("p2pClient"));
         clientMenuItem.setOnAction(e -> {
@@ -178,7 +188,7 @@ public class ControlPanelMenuBar extends MenuBar {
 
                 public void run() {
                     List<GameInfo> gameInfos = playedGameService.getGameInfosBeforeId(lastPlayedGameId);
-                    Collections.sort(gameInfos, (o1, o2) -> o1.getGameId() - o2.getGameId());
+                    gameInfos.sort(Comparator.comparingInt(GameInfo::getGameId));
                     p2PClientWindow.setGameInfos(gameInfos);
                 }
             };

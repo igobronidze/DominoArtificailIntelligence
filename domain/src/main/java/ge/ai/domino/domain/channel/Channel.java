@@ -1,9 +1,10 @@
 package ge.ai.domino.domain.channel;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Channel {
+public class Channel implements Serializable {
 
 	private int id;
 

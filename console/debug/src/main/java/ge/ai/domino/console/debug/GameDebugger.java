@@ -1,12 +1,13 @@
 package ge.ai.domino.console.debug;
 
+import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.console.debug.util.RoundParser;
+import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
-import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.manager.game.move.AddForOpponentProcessor;
@@ -55,8 +56,10 @@ public class GameDebugger {
                         GameProperties gameProperties = new GameProperties();
                         System.out.println("Opponent name:");
                         gameProperties.setOpponentName(scanner.nextLine());
-                        System.out.println("WebSite:");
-                        gameProperties.setWebsite(scanner.nextLine());
+                        System.out.println("Channel:");
+                        Channel channel = new Channel();
+                        channel.setName(scanner.nextLine());
+                        gameProperties.setChannel(channel);
                         System.out.println("Point for win:");
                         gameProperties.setPointsForWin(Integer.parseInt(scanner.nextLine()));
                         Game game = new Game();

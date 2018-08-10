@@ -16,7 +16,7 @@ public class GroupedPlayedGameProperty {
 
     private SimpleStringProperty opponentName;
 
-    private SimpleStringProperty website;
+    private SimpleStringProperty channel;
 
     private SimpleStringProperty winPercent;
 
@@ -30,7 +30,7 @@ public class GroupedPlayedGameProperty {
         version = new SimpleStringProperty(game.getVersion());
         pointForWin = new SimpleStringProperty(game.getPointForWin() == null ? "" : "" + game.getPointForWin());
         opponentName = new SimpleStringProperty(game.getOpponentName());
-        website = new SimpleStringProperty(game.getWebsite());
+        channel = new SimpleStringProperty(game.getChannel() == null ? "" : game.getChannel().getName());
         int sum = game.getWin() + game.getLose() + game.getStopped();
         winPercent = new SimpleStringProperty("" + game.getWin() + " (" + formatter.format((double)game.getWin() / sum * 100) + "%)");
         losePercent = new SimpleStringProperty("" + game.getLose() + " (" + formatter.format((double)game.getLose() / sum * 100) + "%)");
@@ -62,12 +62,12 @@ public class GroupedPlayedGameProperty {
         this.opponentName.set(opponentName);
     }
 
-    public String getWebsite() {
-        return website.get();
+    public String getChannel() {
+        return channel.get();
     }
 
-    public void setWebsite(String website) {
-        this.website.set(website);
+    public void setChannel(String channel) {
+        this.channel.set(channel);
     }
 
     public String getWinPercent() {

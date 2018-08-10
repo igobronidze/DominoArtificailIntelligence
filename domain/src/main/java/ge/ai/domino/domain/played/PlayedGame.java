@@ -1,5 +1,7 @@
 package ge.ai.domino.domain.played;
 
+import ge.ai.domino.domain.channel.Channel;
+
 import java.util.Date;
 
 public class PlayedGame {
@@ -20,7 +22,7 @@ public class PlayedGame {
 
     private String opponentName;
 
-    private String website;
+    private Channel channel;
 
     private GameHistory gameHistory;
 
@@ -88,12 +90,12 @@ public class PlayedGame {
         this.opponentName = opponentName;
     }
 
-    public String getWebsite() {
-        return website;
+    public Channel getChannel() {
+        return channel;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public GameHistory getGameHistory() {

@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface PlayedGameService {
 
-    List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, String website);
+    List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId);
 
-    List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin);
+    List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin);
 
     void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays, boolean specifyWinner);
 

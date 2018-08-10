@@ -14,13 +14,13 @@ public interface PlayedGameDAO {
 
     void updatePlayedGame(PlayedGame game);
 
-    List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, String website);
+    List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId);
 
     GameHistory getGameHistory(int gameId);
 
     void deletePlayedGame(int gameId);
 
-    List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin);
+    List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin);
 
     int getLastPlayedGameId();
 

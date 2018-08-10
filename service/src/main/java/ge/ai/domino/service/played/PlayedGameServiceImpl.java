@@ -13,13 +13,13 @@ public class PlayedGameServiceImpl implements PlayedGameService {
     private final PlayedGameManager playedGameManager = new PlayedGameManager();
 
     @Override
-    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, String website) {
-        return playedGameManager.getPlayedGames(version, result, opponentName, website);
+    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId) {
+        return playedGameManager.getPlayedGames(version, result, opponentName, channelId);
     }
 
     @Override
-    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin) {
-        return playedGameManager.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByWebsite, groupedByPointForWin);
+    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin) {
+        return playedGameManager.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByChannel, groupedByPointForWin);
     }
 
     @Override

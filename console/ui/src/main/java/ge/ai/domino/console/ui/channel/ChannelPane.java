@@ -11,6 +11,7 @@ import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.service.channel.ChannelService;
 import ge.ai.domino.service.channel.ChannelServiceImpl;
+import ge.ai.domino.util.string.StringUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -70,7 +71,7 @@ public class ChannelPane extends BorderPane {
 
             for (Map.Entry<String, TCHTextField> entry : existedFields.entrySet()) {
                 keys.add(entry.getKey());
-                if (entry.getValue().getText() != null && !entry.getValue().getText().isEmpty()) {
+                if (!StringUtil.isEmpty(entry.getValue().getText())) {
                     params.put(entry.getKey(), entry.getValue().getText());
                 } else {
                     WarnDialog.showWarnDialog(Messages.get("pleaseFillAllField"));
@@ -80,8 +81,7 @@ public class ChannelPane extends BorderPane {
             }
             if (valid) {
                 for (Map.Entry<TCHTextField, TCHTextField> entry : newFields.entrySet()) {
-                    if ((entry.getKey().getText() == null || entry.getKey().getText().isEmpty()) ||
-                            (entry.getValue().getText() == null || entry.getValue().getText().isEmpty())) {
+                    if (StringUtil.isEmpty(entry.getKey().getText()) || StringUtil.isEmpty(entry.getValue().getText())) {
                         WarnDialog.showWarnDialog(Messages.get("pleaseFillAllField"));
                         valid = false;
                         break;
@@ -114,10 +114,11 @@ public class ChannelPane extends BorderPane {
         channelsCombo.setOnAction(e -> initChannelPane());
 
         TCHTextField channelNameField = new TCHTextField(TCHComponentSize.SMALL);
+        channelNameField.setPromptText(Messages.get("name"));
 
         TCHButton addChannelButton = new TCHButton(Messages.get("add"));
         addChannelButton.setOnAction(e -> {
-            if (channelNameField.getText() != null && !channelNameField.getText().isEmpty()) {
+            if (!StringUtil.isEmpty(channelNameField.getText())) {
                 Channel channel = new Channel();
                 channel.setName(channelNameField.getText());
                 channelService.addChannel(channel);

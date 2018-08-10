@@ -1,12 +1,16 @@
 package ge.ai.domino.console.ui.played;
 
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
+import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
 import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
 import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.PlayedGame;
+import ge.ai.domino.service.channel.ChannelService;
+import ge.ai.domino.service.channel.ChannelServiceImpl;
 import ge.ai.domino.service.played.PlayedGameService;
 import ge.ai.domino.service.played.PlayedGameServiceImpl;
 import ge.ai.domino.util.string.StringUtil;
@@ -26,10 +30,14 @@ import javafx.util.StringConverter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PlayedGamePane extends BorderPane {
 
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
+
+    private final ChannelService channelService = new ChannelServiceImpl();
 
     private TableView<PlayedGameProperty> tableView;
 
@@ -39,9 +47,11 @@ public class PlayedGamePane extends BorderPane {
 
     private TCHTextField opponentNameField;
 
-    private TCHTextField websiteField;
+    private TCHComboBox channelCombo;
 
     private DoubleBinding doubleBinding;
+
+    private Map<String, Integer> channelsMap;
 
     public PlayedGamePane(DoubleBinding doubleBinding) {
         this.doubleBinding = doubleBinding;
@@ -49,9 +59,15 @@ public class PlayedGamePane extends BorderPane {
     }
 
     private void initUI() {
+        initChannels();
         initFilters();
         initTable();
         loadPlayedGames();
+    }
+
+    private void initChannels() {
+        List<Channel> channels = channelService.getChannels();
+        channelsMap = channels.stream().collect(Collectors.toMap(Channel::getName, Channel::getId));
     }
 
     private void initFilters() {
@@ -79,8 +95,7 @@ public class PlayedGamePane extends BorderPane {
         resultComboBox.setStyle("-fx-font-family: sylfaen; -fx-font-size: 14px;");
         opponentNameField = new TCHTextField(TCHComponentSize.SMALL);
         opponentNameField.setPromptText(Messages.get("opponentName"));
-        websiteField = new TCHTextField(TCHComponentSize.SMALL);
-        websiteField.setPromptText(Messages.get("website"));
+        channelCombo = new TCHComboBox(new ArrayList<>(channelsMap.keySet()));
         TCHButton searchButton = new TCHButton();
         searchButton.setGraphic(new ImageView(ImageFactory.getImage("search.png")));
         searchButton.setOnAction(e -> loadPlayedGames());
@@ -88,7 +103,7 @@ public class PlayedGamePane extends BorderPane {
         flowPane.setVgap(10);
         flowPane.setHgap(10);
         flowPane.setPadding(new Insets(15));
-        flowPane.getChildren().addAll(versionField, resultComboBox, opponentNameField, websiteField, searchButton);
+        flowPane.getChildren().addAll(versionField, resultComboBox, opponentNameField, channelCombo, searchButton);
         this.setTop(flowPane);
     }
 
@@ -120,17 +135,17 @@ public class PlayedGamePane extends BorderPane {
         TableColumn<PlayedGameProperty, Boolean> opponentNameColumn = new TableColumn<>(Messages.get("opponentName"));
         opponentNameColumn.setCellValueFactory(new PropertyValueFactory<>("opponentName"));
         opponentNameColumn.prefWidthProperty().bind(doubleBinding.divide(9));
-        TableColumn<PlayedGameProperty, Boolean> websiteColumn = new TableColumn<>(Messages.get("website"));
-        websiteColumn.setCellValueFactory(new PropertyValueFactory<>("website"));
-        websiteColumn.prefWidthProperty().bind(doubleBinding.divide(9));
+        TableColumn<PlayedGameProperty, Boolean> channelColumn = new TableColumn<>(Messages.get("channel"));
+        channelColumn.setCellValueFactory(new PropertyValueFactory<>("channel"));
+        channelColumn.prefWidthProperty().bind(doubleBinding.divide(9));
         tableView.getColumns().addAll(idColumn, versionColumn, resultColumn, dateColumn, myPointColumn, opponentPointColumn,
-                pointForWinColumn, opponentNameColumn, websiteColumn);
+                pointForWinColumn, opponentNameColumn, channelColumn);
         this.setCenter(tableView);
     }
 
     private void loadPlayedGames() {
         List<PlayedGame> playedGames = playedGameService.getPlayedGames(versionField.getText(), resultComboBox.getValue(),
-                opponentNameField.getText(), websiteField.getText());
+                opponentNameField.getText(), channelsMap.get(channelCombo.getValue()));
         List<PlayedGameProperty> playedGameProperties = new ArrayList<>();
         for (PlayedGame playedGame : playedGames) {
             playedGameProperties.add(new PlayedGameProperty(playedGame));

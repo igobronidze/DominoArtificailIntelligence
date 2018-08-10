@@ -20,6 +20,8 @@ CREATE TABLE played_game (
   website VARCHAR(50) NOT NULL,
   game_history TEXT
 );
+ALTER TABLE played_game ADD COLUMN channel_id INT NOT NULL DEFAULT 0;
+ALTER TABLE played_game DROP COLUMN website;
 
 -- Opponent Plays
 CREATE TABLE opponent_play (

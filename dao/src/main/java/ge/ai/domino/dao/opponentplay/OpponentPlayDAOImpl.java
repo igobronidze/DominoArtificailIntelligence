@@ -108,7 +108,7 @@ public class OpponentPlayDAOImpl implements OpponentPlayDAO {
 
     private List<Integer> splitPossiblePlayNumbers(String text) {
         List<Integer> result = new ArrayList<>();
-        if (text != null && !text.isEmpty()) {
+        if (!StringUtil.isEmpty(text)) {
             for (String str : text.split(POSSIBLE_PLAY_NUMBERS_DELIMITER)) {
                 result.add(Integer.parseInt(str));
             }

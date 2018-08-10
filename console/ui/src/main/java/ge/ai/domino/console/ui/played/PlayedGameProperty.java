@@ -27,7 +27,7 @@ public class PlayedGameProperty {
 
     private SimpleStringProperty opponentName;
 
-    private SimpleStringProperty website;
+    private SimpleStringProperty channel;
 
     public PlayedGameProperty(PlayedGame game) {
         id = new SimpleIntegerProperty(game.getId());
@@ -42,7 +42,7 @@ public class PlayedGameProperty {
         opponentPoint = new SimpleIntegerProperty(game.getOpponentPoint());
         pointForWin = new SimpleIntegerProperty(game.getPointForWin());
         opponentName = new SimpleStringProperty(game.getOpponentName());
-        website = new SimpleStringProperty(game.getWebsite());
+        channel = new SimpleStringProperty(game.getChannel().getName());
     }
 
     public int getId() {
@@ -109,11 +109,11 @@ public class PlayedGameProperty {
         this.opponentName.set(opponentName);
     }
 
-    public String getWebsite() {
-        return website.get();
+    public String getChannel() {
+        return channel.get();
     }
 
-    public void setWebsite(String website) {
-        this.website.set(website);
+    public void setChannel(String channel) {
+        this.channel.set(channel);
     }
 }

@@ -1,12 +1,14 @@
 package ge.ai.domino.domain.game;
 
+import ge.ai.domino.domain.channel.Channel;
+
 import java.io.Serializable;
 
 public class GameProperties implements Serializable {
 
     private String opponentName;
 
-    private String website;
+    private Channel channel;
 
     private int pointsForWin;
 
@@ -18,12 +20,12 @@ public class GameProperties implements Serializable {
         this.opponentName = opponentName;
     }
 
-    public String getWebsite() {
-        return website;
+    public Channel getChannel() {
+        return channel;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public int getPointsForWin() {

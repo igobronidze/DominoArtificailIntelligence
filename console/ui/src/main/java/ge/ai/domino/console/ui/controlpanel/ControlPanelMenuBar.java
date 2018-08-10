@@ -12,6 +12,7 @@ import ge.ai.domino.console.ui.sysparam.SystemParametersPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.service.ServiceExecutor;
+import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.service.p2p.P2PClientService;
@@ -27,7 +28,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
@@ -37,7 +37,9 @@ public class ControlPanelMenuBar extends MenuBar {
 
     private final ControlPanel controlPanel;
 
-    private static final String P2P_GAME_WEBSITE = "p2pGame";
+    private static final int P2P_GAME_CHANNEL_ID = 0;
+
+    private static final String P2P_GAME_CHANNEL_NAME = "p2pGame";
 
     private static final String P2P_GAME_OPPONENT_NAME = "p2pOpponent";
 
@@ -168,7 +170,10 @@ public class ControlPanelMenuBar extends MenuBar {
             public void onStart(int pointOfWin) {
                 GameProperties gameProperties = new GameProperties();
                 gameProperties.setOpponentName(P2P_GAME_OPPONENT_NAME);
-                gameProperties.setWebsite(P2P_GAME_WEBSITE);
+                Channel channel = new Channel();
+                channel.setId(P2P_GAME_CHANNEL_ID);
+                channel.setName(P2P_GAME_CHANNEL_NAME);
+                gameProperties.setChannel(channel);
                 gameProperties.setPointsForWin(pointOfWin);
                 new Thread(() -> ServiceExecutor.execute(() -> p2PServerService.startServer(gameProperties))).start();
             }

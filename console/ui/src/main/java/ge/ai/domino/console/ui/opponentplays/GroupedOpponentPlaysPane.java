@@ -10,6 +10,7 @@ import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.domain.game.opponentplay.GroupedOpponentPlay;
 import ge.ai.domino.service.opponentplays.GroupedOpponentPlaysService;
 import ge.ai.domino.service.opponentplays.GroupedOpponentPlaysServiceImpl;
+import ge.ai.domino.util.string.StringUtil;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -115,7 +116,7 @@ public class GroupedOpponentPlaysPane extends BorderPane {
 
     private Integer getGameIdFieldValue() {
         String text = gameIdField.getText();
-        if (text != null && !text.isEmpty()) {
+        if (!StringUtil.isEmpty(text)) {
             try {
                 return Integer.parseInt(text);
             } catch (NumberFormatException ex) {

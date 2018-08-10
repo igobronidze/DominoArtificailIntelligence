@@ -6,6 +6,7 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.sysparam.SystemParameter;
 import ge.ai.domino.domain.sysparam.SystemParameterType;
 import ge.ai.domino.dao.connection.ConnectionUtil;
+import ge.ai.domino.util.string.StringUtil;
 import org.apache.log4j.Logger;
 
 import java.sql.PreparedStatement;
@@ -104,7 +105,7 @@ public class SystemParameterDAOImpl implements SystemParameterDAO {
         List<SystemParameter> systemParameterList = new ArrayList<>();
         try {
             StringBuilder sql = new StringBuilder(String.format("SELECT * FROM %s WHERE 1 = 1 ", SYSTEM_PARAMETER_TABLE_NAME));
-            if (key != null && !key.isEmpty()) {
+            if (!StringUtil.isEmpty(key)) {
                 QueryUtil.addFilter(sql, KEY_COLUMN_NAME, key, FilterCondition.LIKE, true);
             }
             if (type != null) {

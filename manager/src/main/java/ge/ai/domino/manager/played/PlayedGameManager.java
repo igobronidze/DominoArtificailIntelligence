@@ -30,22 +30,22 @@ public class PlayedGameManager {
         PlayedGame playedGame = new PlayedGame();
         playedGame.setOpponentName(gameProperties.getOpponentName());
         playedGame.setPointForWin(gameProperties.getPointsForWin());
-        playedGame.setWebsite(gameProperties.getWebsite());
+        playedGame.setChannel(gameProperties.getChannel());
         playedGame.setVersion(ProjectVersionUtil.getVersion());
         playedGame.setResult(GameResult.RUNS);
         return playedGameDAO.addPlayedGame(playedGame);
     }
 
-    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, String website) {
-        return playedGameDAO.getPlayedGames(version, result, opponentName, website);
+    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId) {
+        return playedGameDAO.getPlayedGames(version, result, opponentName, channelId);
     }
 
     public GameHistory getGameHistory(int gameId) {
         return playedGameDAO.getGameHistory(gameId);
     }
 
-    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin) {
-        return playedGameDAO.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByWebsite, groupedByPointForWin);
+    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin) {
+        return playedGameDAO.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByChannel, groupedByPointForWin);
     }
 
     public void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays, boolean specifyWinner) {

@@ -1,8 +1,11 @@
 package ge.ai.domino.dao.played;
 
+import ge.ai.domino.dao.channel.ChannelDAO;
+import ge.ai.domino.dao.channel.ChannelDAOImpl;
 import ge.ai.domino.dao.connection.ConnectionUtil;
 import ge.ai.domino.dao.query.FilterCondition;
 import ge.ai.domino.dao.query.QueryUtil;
+import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.GameResult;
@@ -18,7 +21,9 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 public class PlayedGameDAOImpl implements PlayedGameDAO {
 
@@ -36,7 +41,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
     private static final String OPPONENT_POINT_COLUMN_NAME = "opponent_point";
 
-    private static final String WEBSITE_COLUMN_NAME = "website";
+    private static final String CHANNEL_ID_COLUMN_NAME = "channel_id";
 
     private static final String RESULT_COLUMN_NAME = "result";
 
@@ -54,6 +59,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
     private static final String STOPPED = "stopped";
 
+    private final ChannelDAO channelDAO = new ChannelDAOImpl();
+
     private PreparedStatement pstmt;
 
     @Override
@@ -61,12 +68,12 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
         try {
             logger.info("Start addGame method");
             String sql = String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?,?,?,?,?);",
-                    PLAYED_GAME_TABLE_NAME, VERSION_COLUMN_NAME, POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, WEBSITE_COLUMN_NAME, RESULT_COLUMN_NAME);
+                    PLAYED_GAME_TABLE_NAME, VERSION_COLUMN_NAME, POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, RESULT_COLUMN_NAME);
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, game.getVersion());
             pstmt.setInt(2, game.getPointForWin());
             pstmt.setString(3, game.getOpponentName());
-            pstmt.setString(4, game.getWebsite());
+            pstmt.setInt(4, game.getChannel().getId());
             pstmt.setString(5, game.getResult().name());
             pstmt.executeUpdate();
 
@@ -111,12 +118,15 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     }
 
     @Override
-    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, String website) {
+    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId) {
+        List<Channel> channels = channelDAO.getChannels();
+        Map<Integer, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getId, channel -> channel));
+
         List<PlayedGame> games = new ArrayList<>();
         try {
             StringBuilder sql = new StringBuilder(String.format("SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s, %s FROM %s WHERE 1 = 1 ",
                     ID_COLUMN_NAME, VERSION_COLUMN_NAME, RESULT_COLUMN_NAME, DATE_COLUMN_NAME, TIME_COLUMN_NAME, MY_POINT_COLUMN_NAME, OPPONENT_POINT_COLUMN_NAME,
-                    POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, WEBSITE_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
+                    POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
             if (!StringUtil.isEmpty(version)) {
                 QueryUtil.addFilter(sql, VERSION_COLUMN_NAME, version, FilterCondition.EQUAL, true);
             }
@@ -126,8 +136,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             if (!StringUtil.isEmpty(opponentName)) {
                 QueryUtil.addFilter(sql, OPPONENT_NAME_COLUMN_NAME, opponentName, FilterCondition.EQUAL, true);
             }
-            if (!StringUtil.isEmpty(website)) {
-                QueryUtil.addFilter(sql, WEBSITE_COLUMN_NAME, website, FilterCondition.EQUAL, true);
+            if (channelId != null) {
+                QueryUtil.addFilter(sql, CHANNEL_ID_COLUMN_NAME, String.valueOf(channelId), FilterCondition.EQUAL, false);
             }
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql.toString());
             ResultSet rs = pstmt.executeQuery();
@@ -146,7 +156,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 game.setOpponentPoint(rs.getInt(OPPONENT_POINT_COLUMN_NAME));
                 game.setPointForWin(rs.getInt(POINT_FOR_WIN_COLUMN_NAME));
                 game.setOpponentName(rs.getString(OPPONENT_NAME_COLUMN_NAME));
-                game.setWebsite(rs.getString(WEBSITE_COLUMN_NAME));
+                game.setChannel(channelsMap.get(rs.getInt(CHANNEL_ID_COLUMN_NAME)));
                 games.add(game);
             }
         } catch (SQLException ex) {
@@ -196,7 +206,10 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByWebsite, boolean groupedByPointForWin) {
+    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin) {
+        List<Channel> channels = channelDAO.getChannels();
+        Map<Integer, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getId, channel -> channel));
+
         List<GroupedPlayedGame> games = new ArrayList<>();
         try {
             StringBuilder sb = new StringBuilder("SELECT ");
@@ -209,8 +222,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 QueryUtil.addParameter(sb, OPPONENT_NAME_COLUMN_NAME, !first);
                 first = false;
             }
-            if (groupByWebsite) {
-                QueryUtil.addParameter(sb, WEBSITE_COLUMN_NAME, !first);
+            if (groupByChannel) {
+                QueryUtil.addParameter(sb, CHANNEL_ID_COLUMN_NAME, !first);
                 first = false;
             }
             if (groupedByPointForWin) {
@@ -236,11 +249,11 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 }
                 first = false;
             }
-            if (groupByWebsite) {
+            if (groupByChannel) {
                 if (!first) {
-                    sb.append(", ").append(WEBSITE_COLUMN_NAME);
+                    sb.append(", ").append(CHANNEL_ID_COLUMN_NAME);
                 } else {
-                    sb.append("GROUP BY ").append(WEBSITE_COLUMN_NAME);
+                    sb.append("GROUP BY ").append(CHANNEL_ID_COLUMN_NAME);
                 }
                 first = false;
             }
@@ -261,8 +274,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 if (groupByOpponentName) {
                     game.setOpponentName(rs.getString(OPPONENT_NAME_COLUMN_NAME));
                 }
-                if (groupByWebsite) {
-                    game.setWebsite(rs.getString(WEBSITE_COLUMN_NAME));
+                if (groupByChannel) {
+                    game.setChannel(channelsMap.get(rs.getInt(CHANNEL_ID_COLUMN_NAME)));
                 }
                 if (groupedByPointForWin) {
                     game.setPointForWin(rs.getInt(POINT_FOR_WIN_COLUMN_NAME));

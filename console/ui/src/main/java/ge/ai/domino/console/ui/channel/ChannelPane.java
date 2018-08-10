@@ -13,6 +13,7 @@ import ge.ai.domino.service.channel.ChannelService;
 import ge.ai.domino.service.channel.ChannelServiceImpl;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -54,6 +55,7 @@ public class ChannelPane extends BorderPane {
     }
 
     private void initUI() {
+        this.setPadding(new Insets(5));
         initTopPane();
         initChannelPane();
         initBottomPane();
@@ -101,15 +103,17 @@ public class ChannelPane extends BorderPane {
         });
 
         HBox hBox = new HBox(20);
+        hBox.setPadding(new Insets(15));
+        hBox.setAlignment(Pos.TOP_CENTER);
         hBox.getChildren().add(saveButton);
-        this.setCenter(hBox);
+        this.setBottom(hBox);
     }
 
     private void initTopPane() {
         channelsCombo = new TCHComboBox(new ArrayList<>(channels.keySet()));
         channelsCombo.setOnAction(e -> initChannelPane());
 
-        TCHTextField channelNameField = new TCHTextField(Messages.get("name"), TCHComponentSize.SMALL);
+        TCHTextField channelNameField = new TCHTextField(TCHComponentSize.SMALL);
 
         TCHButton addChannelButton = new TCHButton(Messages.get("add"));
         addChannelButton.setOnAction(e -> {
@@ -117,21 +121,29 @@ public class ChannelPane extends BorderPane {
                 Channel channel = new Channel();
                 channel.setName(channelNameField.getText());
                 channelService.addChannel(channel);
+
+                channelNameField.setText("");
                 initChannels();
+                initUI();
             } else {
                 WarnDialog.showWarnDialog(Messages.get("pleaseFillAllField"));
             }
         });
+
+        HBox hBox = new HBox(15);
+        hBox.getChildren().addAll(channelNameField, addChannelButton);
+
         FlowPane flowPane = new FlowPane(Orientation.HORIZONTAL);
         flowPane.setVgap(10);
-        flowPane.setHgap(10);
+        flowPane.setHgap(140);
         flowPane.setPadding(new Insets(15));
-        flowPane.getChildren().addAll(channelsCombo, channelNameField, addChannelButton);
+        flowPane.getChildren().addAll(channelsCombo, hBox);
         this.setTop(flowPane);
     }
 
     private void initChannelPane() {
         VBox paramsBox = new VBox(10);
+        paramsBox.setPadding(new Insets(15));
 
         if (channelsCombo.getValue() != null) {
             selectedChannel = channels.get(channelsCombo.getValue());
@@ -141,22 +153,25 @@ public class ChannelPane extends BorderPane {
 
                 TCHButton addParamButton = new TCHButton();
                 addParamButton.setGraphic(new ImageView(ImageFactory.getImage("add_green.png")));
+                paramsBox.getChildren().add(addParamButton);
+
                 addParamButton.setOnAction(e -> {
                     TCHTextField keyField = new TCHTextField(TCHComponentSize.MEDIUM);
                     TCHTextField valueField = new TCHTextField(TCHComponentSize.MEDIUM);
                     newFields.put(keyField, valueField);
 
-                    HBox hBox = new HBox(20);
+                    HBox hBox = new HBox(30);
                     hBox.getChildren().addAll(keyField, valueField);
                     paramsBox.getChildren().add(hBox);
                 });
 
                 for (Map.Entry<String, String> entry : selectedChannel.getParams().entrySet()) {
                     TCHLabel label = new TCHLabel(entry.getKey());
-                    TCHTextField textField = new TCHTextField(TCHComponentSize.MEDIUM);
+                    label.setPrefWidth(300);
+                    TCHTextField textField = new TCHTextField(entry.getValue(), TCHComponentSize.MEDIUM);
                     existedFields.put(entry.getKey(), textField);
 
-                    HBox hBox = new HBox(20);
+                    HBox hBox = new HBox(30);
                     hBox.getChildren().addAll(label, textField);
                     paramsBox.getChildren().add(hBox);
                 }
@@ -165,7 +180,8 @@ public class ChannelPane extends BorderPane {
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(paramsBox);
-        scrollPane.setPrefHeight(300);
+        scrollPane.setPrefHeight(570);
+        scrollPane.setMaxHeight(570);
         this.setCenter(scrollPane);
     }
 }

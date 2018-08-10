@@ -149,10 +149,9 @@ public class ControlPanelMenuBar extends MenuBar {
         MenuItem channelsItem = new MenuItem(Messages.get("channels"));
         channelsItem.setOnAction(e -> {
             Stage stage = new Stage();
-            stage.setHeight(650);
-            stage.setWidth(900);
+            stage.setHeight(750);
+            stage.setWidth(700);
             stage.setScene(new Scene(new ChannelPane()));
-            stage.setMaximized(true);
             stage.setTitle(Messages.get("channels"));
             stage.show();
         });

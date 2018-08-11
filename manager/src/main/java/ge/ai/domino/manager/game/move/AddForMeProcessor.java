@@ -13,6 +13,7 @@ import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
+import ge.ai.domino.serverutil.CloneUtil;
 
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public class AddForMeProcessor extends MoveProcessor {
 				round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
 			}
 		} else if (round.getTableInfo().getLeft() != null) {
-			round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
+			round.setAiPredictions(MinMaxFactory.getMinMax().solve(CloneUtil.getClone(round))); // TODO[IG] Clone may fix mystical bug
 		}
 
 		logger.info("Added tile for me, gameId[" + gameId + "]");

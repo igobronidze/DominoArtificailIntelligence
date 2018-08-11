@@ -21,6 +21,8 @@ public class InitialDataManager {
 
     private static final Logger logger = Logger.getLogger(GameManager.class);
 
+    private static final String INITIAL_EXTA_TILES_IMAGE_PATH = "../properties/domino.png";
+
     private final GameManager gameManager = new GameManager();
 
     private final TilesDetector tilesDetector = new TilesDetector();
@@ -64,7 +66,7 @@ public class InitialDataManager {
 
     private void detectTiles() {
         logger.info("Start extra tiles detect method");
-        File file = new File(getClass().getClassLoader().getResource("domino.png").getFile());
+        File file = new File(INITIAL_EXTA_TILES_IMAGE_PATH);
         tilesDetector.getTiles(file.getAbsolutePath(), getTestTilesDetectorParams());
         logger.info("Finished extra tiles detect method");
     }

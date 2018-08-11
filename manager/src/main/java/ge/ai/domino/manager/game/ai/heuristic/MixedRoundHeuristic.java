@@ -56,7 +56,10 @@ public class MixedRoundHeuristic implements RoundHeuristic {
 
 			countForTile += tilesStatistic.getOnTable().get(tile.getLeft());
 			countForTile += tilesStatistic.getForMe().get(tile.getLeft()) * mixedRoundHeuristicParam4Value;
-			double opponentTileNewValueLeft = (tilesStatistic.getForOpponent().get(tile.getLeft()) - entry.getValue()) / (opponentTilesCount - entry.getValue()) * (opponentTilesCount  -1);
+			double opponentTileNewValueLeft = 0;
+			if (opponentTilesCount != entry.getValue()) {
+				opponentTileNewValueLeft = (tilesStatistic.getForOpponent().get(tile.getLeft()) - entry.getValue()) / (opponentTilesCount - entry.getValue()) * (opponentTilesCount - 1);
+			}
 			countForTile += opponentTileNewValueLeft * mixedRoundHeuristicParam3Value;
 			countForTile += (tilesStatistic.getForBazaar().get(tile.getLeft()) + (tilesStatistic.getForOpponent().get(tile.getLeft()) - opponentTileNewValueLeft) - 1)
 					* mixedRoundHeuristicParam5Value;
@@ -64,7 +67,10 @@ public class MixedRoundHeuristic implements RoundHeuristic {
 			if (tile.getLeft() != tile.getRight()) {
 				countForTile += tilesStatistic.getOnTable().get(tile.getRight());
 				countForTile += tilesStatistic.getForMe().get(tile.getRight()) * mixedRoundHeuristicParam4Value;
-				double opponentTileNewValueRight = (tilesStatistic.getForOpponent().get(tile.getRight()) - entry.getValue()) / (opponentTilesCount - entry.getValue()) * (opponentTilesCount  -1);
+				double opponentTileNewValueRight = 0;
+				if (opponentTilesCount != entry.getValue()) {
+					opponentTileNewValueRight = (tilesStatistic.getForOpponent().get(tile.getRight()) - entry.getValue()) / (opponentTilesCount - entry.getValue()) * (opponentTilesCount - 1);
+				}
 				countForTile += opponentTileNewValueRight * mixedRoundHeuristicParam3Value;
 				countForTile += (tilesStatistic.getForBazaar().get(tile.getRight()) + (tilesStatistic.getForOpponent().get(tile.getRight()) - opponentTileNewValueRight) - 1)
 						* mixedRoundHeuristicParam5Value;

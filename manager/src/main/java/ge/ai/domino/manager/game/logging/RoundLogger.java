@@ -41,15 +41,19 @@ public class RoundLogger {
 
     public static void logRoundFullInfo(Round round) {
         if (systemParameterManager.getBooleanParameterValue(logTilesAfterMethod)) {
-            StringBuilder log = new StringBuilder(END_LINE);
-            log.append("____________________________________________Round Info____________________________________________").append(END_LINE);
-            log.append(gameInfoToString(round.getGameInfo()));
-            log.append(tableInfoToString(round.getTableInfo()));
-            log.append(myTileToString(new ArrayList<>(round.getMyTiles())));
-            log.append(opponentTileToString(round.getOpponentTiles()));
-            log.append("_________________________________________________________________________________________________");
-            logger.info(log);
+            logger.info(getRoundFullInfo(round));
         }
+    }
+
+    public static String getRoundFullInfo(Round round) {
+        StringBuilder info = new StringBuilder(END_LINE);
+        info.append("____________________________________________Round Info____________________________________________").append(END_LINE);
+        info.append(gameInfoToString(round.getGameInfo()));
+        info.append(tableInfoToString(round.getTableInfo()));
+        info.append(myTileToString(new ArrayList<>(round.getMyTiles())));
+        info.append(opponentTileToString(round.getOpponentTiles()));
+        info.append("_________________________________________________________________________________________________");
+        return info.toString();
     }
 
     private static StringBuilder gameInfoToString(GameInfo gameInfo) {

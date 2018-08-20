@@ -1,6 +1,8 @@
 package ge.ai.domino.dao.played;
 
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.GroupedPlayedGame;
 import ge.ai.domino.domain.played.PlayedGame;
@@ -16,7 +18,7 @@ public interface PlayedGameDAO {
 
     List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId);
 
-    GameHistory getGameHistory(int gameId);
+    GameHistory getGameHistory(int gameId) throws DAIException;
 
     void deletePlayedGame(int gameId);
 
@@ -27,4 +29,6 @@ public interface PlayedGameDAO {
     List<GameInfo> getGameInfosBeforeId(long gameId);
 
     void updateGameInfo(GameInfo gameInfo);
+
+    GameProperties getGameProperties(int gameId) throws DAIException;
 }

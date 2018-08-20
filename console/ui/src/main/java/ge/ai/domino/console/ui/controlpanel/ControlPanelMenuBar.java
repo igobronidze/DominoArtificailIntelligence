@@ -7,6 +7,7 @@ import ge.ai.domino.console.ui.game.SaveGameWindow;
 import ge.ai.domino.console.ui.opponentplays.GroupedOpponentPlaysPane;
 import ge.ai.domino.console.ui.played.GroupedPlayedGamePane;
 import ge.ai.domino.console.ui.played.PlayedGamePane;
+import ge.ai.domino.console.ui.replaygame.ReplayGamePane;
 import ge.ai.domino.console.ui.shortcut.ShortcutPane;
 import ge.ai.domino.console.ui.sysparam.SystemParametersPane;
 import ge.ai.domino.console.ui.util.ImageFactory;
@@ -162,17 +163,29 @@ public class ControlPanelMenuBar extends MenuBar {
             stage.setTitle(Messages.get("channels"));
             stage.show();
         });
-        controlPanelMenu.getItems().addAll(sysParamsItem, playedGameItem, groupedPlayedGameItem, groupedOpponentPlaysItem, channelsItem);
+        controlPanelMenu.getItems().addAll(sysParamsItem, channelsItem, playedGameItem, groupedPlayedGameItem, groupedOpponentPlaysItem);
         return controlPanelMenu;
     }
 
     private Menu getActionsMenu() {
         Menu actionMenu = new Menu(Messages.get("action"));
+
         MenuItem initialExtraMovesMenuItem = new MenuItem(Messages.get("executeInitialExtraMoves"));
         initialExtraMovesMenuItem.setOnAction(e -> {
             initialDataService.playInitialExtraMoves();
         });
-        actionMenu.getItems().addAll(initialExtraMovesMenuItem);
+
+        MenuItem replayGameMenuItem = new MenuItem(Messages.get("replayGame"));
+        replayGameMenuItem.setOnAction(e -> {
+            Stage stage = new Stage();
+            stage.setHeight(690);
+            stage.setWidth(900);
+            stage.setScene(new Scene(new ReplayGamePane()));
+            stage.setTitle(Messages.get("replayGame"));
+            stage.show();
+        });
+
+        actionMenu.getItems().addAll(replayGameMenuItem, initialExtraMovesMenuItem);
         return actionMenu;
     }
 

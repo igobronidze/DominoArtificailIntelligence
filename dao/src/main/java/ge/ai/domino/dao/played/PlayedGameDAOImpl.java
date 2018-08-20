@@ -6,7 +6,9 @@ import ge.ai.domino.dao.connection.ConnectionUtil;
 import ge.ai.domino.dao.query.FilterCondition;
 import ge.ai.domino.dao.query.QueryUtil;
 import ge.ai.domino.domain.channel.Channel;
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.GroupedPlayedGame;
@@ -168,7 +170,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     }
 
     @Override
-    public GameHistory getGameHistory(int gameId) {
+    public GameHistory getGameHistory(int gameId) throws DAIException {
         try {
             StringBuilder sql = new StringBuilder(String.format("SELECT %s FROM %s WHERE 1 = 1 ", GAME_HISTORY_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
             QueryUtil.addFilter(sql, ID_COLUMN_NAME, String.valueOf(gameId), FilterCondition.EQUAL, false);
@@ -178,10 +180,10 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 String history = rs.getString(GAME_HISTORY_COLUMN_NAME);
                 return GameHistoryMarshaller.unmarshallGameHistory(history);
             } else {
-                return null;
+                throw new DAIException("noPlayedGame");
             }
         } catch (SQLException ex) {
-            logger.error("Error occurred while getting game history", ex);
+            logger.error("Error occurred while getting game history id[" + gameId + "]", ex);
         } finally {
             ConnectionUtil.closeConnection();
         }
@@ -352,5 +354,27 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
         } finally {
             ConnectionUtil.closeConnection();
         }
+    }
+
+    @Override
+    public GameProperties getGameProperties(int gameId) throws DAIException {
+        try {
+            StringBuilder sql = new StringBuilder(String.format("SELECT %s FROM %s WHERE 1 = 1 ", POINT_FOR_WIN_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
+            QueryUtil.addFilter(sql, ID_COLUMN_NAME, String.valueOf(gameId), FilterCondition.EQUAL, false);
+            pstmt = ConnectionUtil.getConnection().prepareStatement(sql.toString());
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                GameProperties gameProperties = new GameProperties();
+                gameProperties.setPointsForWin(rs.getInt(POINT_FOR_WIN_COLUMN_NAME));
+                return gameProperties;
+            } else {
+                throw new DAIException("noPlayedGame");
+            }
+        } catch (SQLException ex) {
+            logger.error("Error occurred while getting game property id[" + gameId + "]", ex);
+        } finally {
+            ConnectionUtil.closeConnection();
+        }
+        return null;
     }
 }

@@ -163,7 +163,7 @@ public class GameManager {
         CachedGames.setLeftTilesCountFromLastRound(gameId, leftTiles);
 
         CachedGames.addRound(gameId, newRound);
-        CachedGames.addMove(gameId, MoveHelper.getSkipRoundMove());
+        CachedGames.addMove(gameId, MoveHelper.getSkipRoundMove(myPoint, opponentPoint, leftTiles, startMe, finishGame));
         logger.info("Skipped round, gameId[" + gameId + "]");
         return newRound;
     }
@@ -220,6 +220,10 @@ public class GameManager {
         logger.info("Start editOpponentNameInCache method, gameId[" + gameId + "], name[" + name +"]");
         CachedGames.getGameProperties(gameId).setOpponentName(name);
         logger.info("Edited opponent name in cache, gameId[" + gameId + "]");
+    }
+
+    public String getCurrentRoundInfoInString(int gameId) {
+        return RoundLogger.getRoundFullInfo(CachedGames.getCurrentRound(gameId, true));
     }
 
     private void logImage(int gameId, String imagePath) {

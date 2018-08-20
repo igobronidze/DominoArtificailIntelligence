@@ -81,8 +81,6 @@ public class InitialDataManager {
     }
 
     private int initGame() {
-        int gameId = 0;
-
         GameProperties gameProperties = new GameProperties();
         gameProperties.setOpponentName("Test");
         gameProperties.setPointsForWin(175);
@@ -91,6 +89,8 @@ public class InitialDataManager {
         gameProperties.setChannel(channel);
 
         Game game = InitialUtil.getInitialGame(gameProperties, false);
+        int gameId = game.getId();
+
         game.setId(gameId);
         CachedGames.addGame(game);
         return gameId;

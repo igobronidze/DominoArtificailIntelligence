@@ -22,8 +22,22 @@ public class CachedGames {
 
     private static final Map<Integer, Game> cachedGames = new HashMap<>();
 
+    private static final Map<Integer, GameHistory> createdGameHistory = new HashMap<>();
+
+    public static void addCreatedGameHistory(int gameId, GameHistory gameHistory) {
+        createdGameHistory.put(gameId, gameHistory);
+    }
+
+    public static GameHistory getCreatedGameHistory(int gameId) {
+        return createdGameHistory.get(gameId);
+    }
+
     public static void addGame(Game game) {
         cachedGames.put(game.getId(), game);
+    }
+
+    public static void removeGame(int gameId) {
+        cachedGames.remove(gameId);
     }
 
     public static GameProperties getGameProperties(int gameId) {

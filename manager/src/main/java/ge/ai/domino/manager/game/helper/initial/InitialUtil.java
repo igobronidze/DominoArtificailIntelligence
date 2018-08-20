@@ -7,11 +7,11 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.played.GameHistory;
-import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.manager.played.PlayedGameManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class InitialUtil {
 
@@ -28,6 +28,8 @@ public class InitialUtil {
         game.setProperties(gameProperties);
         if (addPlayedGame) {
             game.setId(playedGameManager.addPlayedGame(game.getProperties()));
+        } else {
+            game.setId(new Random().nextInt());
         }
         game.getRounds().push(getInitialRound(game.getId(), true));
         game.setGameHistory(new GameHistory());

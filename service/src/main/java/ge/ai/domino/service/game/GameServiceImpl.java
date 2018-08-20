@@ -69,4 +69,9 @@ public class GameServiceImpl implements GameService {
     public void editOpponentNameInCache(int gameId, String opponentName) {
         gameManager.editOpponentNameInCache(gameId, opponentName);
     }
+
+    @Override
+    public String getCurrentRoundInfoInString(int gameId) {
+        return gameManager.getCurrentRoundInfoInString(gameId);
+    }
 }

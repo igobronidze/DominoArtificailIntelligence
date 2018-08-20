@@ -16,6 +16,8 @@ public class PlayedMove {
 
     private int right;
 
+    private SkipRoundInfo skipRoundInfo;
+
     public MoveType getType() {
         return type;
     }
@@ -48,11 +50,20 @@ public class PlayedMove {
         this.right = right;
     }
 
+    public SkipRoundInfo getSkipRoundInfo() {
+        return skipRoundInfo;
+    }
+
+    public void setSkipRoundInfo(SkipRoundInfo skipRoundInfo) {
+        this.skipRoundInfo = skipRoundInfo;
+    }
+
     @Override
     public String toString() {
         return  "type=" + (type == null ? "N" : type) +
                 ", direction=" + (direction == null ? "N" : direction) +
                 ", left=" + left +
-                ", right=" + right;
+                ", right=" + right +
+                ((skipRoundInfo == null) ? "" : ", " + skipRoundInfo.toString());
     }
 }

@@ -1,9 +1,9 @@
 package ge.ai.domino.service.played;
 
 import ge.ai.domino.domain.game.GameInfo;
+import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.GroupedPlayedGame;
 import ge.ai.domino.domain.played.PlayedGame;
-import ge.ai.domino.domain.played.GameResult;
 
 import java.util.List;
 

@@ -30,4 +30,6 @@ public interface GameService {
     Round detectAnsAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException;
 
     void editOpponentNameInCache(int gameId, String opponentName);
+
+    String getCurrentRoundInfoInString(int gameId);
 }

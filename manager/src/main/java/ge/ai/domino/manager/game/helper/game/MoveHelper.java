@@ -3,6 +3,7 @@ package ge.ai.domino.manager.game.helper.game;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.PlayedMove;
+import ge.ai.domino.domain.played.SkipRoundInfo;
 
 public class MoveHelper {
 
@@ -64,9 +65,18 @@ public class MoveHelper {
         return playedMove;
     }
 
-    public static PlayedMove getSkipRoundMove() {
+    public static PlayedMove getSkipRoundMove(int myPoint, int opponentPoint, int leftTiles, boolean startMe, boolean finishGame) {
         PlayedMove playedMove = new PlayedMove();
         playedMove.setType(MoveType.SKIP_ROUND);
+
+        SkipRoundInfo skipRoundInfo = new SkipRoundInfo();
+        skipRoundInfo.setMyPoint(myPoint);
+        skipRoundInfo.setOpponentPoint(opponentPoint);
+        skipRoundInfo.setLeftTiles(leftTiles);
+        skipRoundInfo.setStartMe(startMe);
+        skipRoundInfo.setFinishGame(finishGame);
+        playedMove.setSkipRoundInfo(skipRoundInfo);
+
         return playedMove;
     }
 }

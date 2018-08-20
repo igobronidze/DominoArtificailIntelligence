@@ -1,5 +1,6 @@
 package ge.ai.domino.manager.played;
 
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
@@ -40,8 +41,12 @@ public class PlayedGameManager {
         return playedGameDAO.getPlayedGames(version, result, opponentName, channelId);
     }
 
-    public GameHistory getGameHistory(int gameId) {
+    public GameHistory getGameHistory(int gameId) throws DAIException {
         return playedGameDAO.getGameHistory(gameId);
+    }
+
+    public GameProperties getGameProperties(int gameId) throws DAIException {
+        return playedGameDAO.getGameProperties(gameId);
     }
 
     public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin) {
@@ -78,6 +83,7 @@ public class PlayedGameManager {
                 opponentPlayDAO.addOpponentPlays(opponentPlays);
             }
         }
+        CachedGames.removeGame(gameId);
     }
 
     public int getLastPlayedGameId() {

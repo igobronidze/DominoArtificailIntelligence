@@ -100,6 +100,20 @@ public class ReplayGameManager {
 		return replayMoveInfo;
 	}
 
+	public ReplayMoveInfo undoReplayedMove(int gameId, int moveIndex) throws DAIException {
+		gameManager.getLastPlayedRound(gameId);
+
+		GameHistory gameHistory = CachedGames.getCreatedGameHistory(gameId);
+		List<PlayedMove> playedMoves = new ArrayList<>(gameHistory.getPlayedMoves());
+
+		ReplayMoveInfo replayMoveInfo = new ReplayMoveInfo();
+		replayMoveInfo.setGameId(gameId);
+		replayMoveInfo.setMoveIndex(moveIndex - 1);
+		replayMoveInfo.setNextMove(playedMoves.get(replayMoveInfo.getMoveIndex()));
+		replayMoveInfo.setPreviousMove(playedMoves.get(replayMoveInfo.getMoveIndex() - 1));
+		return replayMoveInfo;
+	}
+
 	private boolean amINextRoundBeginner(List<PlayedMove> playedMoves, int moveIndex) {
 		for (int i = moveIndex; i < playedMoves.size(); i++) {
 			if (playedMoves.get(i).getType() == MoveType.PLAY_FOR_ME) {

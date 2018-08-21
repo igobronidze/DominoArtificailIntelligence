@@ -20,6 +20,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
@@ -74,9 +75,21 @@ public class ReplayGamePane extends BorderPane {
             replayMoveInfo = replayGameService.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
             initMainPane();
         }));
+        ImageView undoImage = new ImageView(ImageFactory.getImage("undo.png"));
+        undoImage.setCursor(Cursor.HAND);
+        undoImage.setOnMouseClicked(event -> ServiceExecutor.execute(() -> {
+            replayMoveInfo = replayGameService.undoReplayedMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
+            initMainPane();
+        }));
+
+        HBox hBox = new HBox(20);
         if (replayMoveInfo != null && replayMoveInfo.getNextMove() != null) {
-            mainVBox.getChildren().add(replayImage);
+            hBox.getChildren().add(replayImage);
         }
+        if (replayMoveInfo != null && replayMoveInfo.getMoveIndex() != 0) {
+            hBox.getChildren().add(undoImage);
+        }
+        mainVBox.getChildren().add(hBox);
 
         ScrollPane scrollPane = new ScrollPane();
         TCHLabel gameInfoLabel = new TCHLabel(replayMoveInfo == null ? "" : gameService.getCurrentRoundInfoInString(replayMoveInfo.getGameId()));

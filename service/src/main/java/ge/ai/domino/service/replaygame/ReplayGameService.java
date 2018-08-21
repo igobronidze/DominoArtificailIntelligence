@@ -8,4 +8,6 @@ public interface ReplayGameService {
 	ReplayMoveInfo startReplayGame(int gameId) throws DAIException;
 
 	ReplayMoveInfo replayMove(int gameId, int moveIndex) throws DAIException;
+
+	ReplayMoveInfo undoReplayedMove(int gameId, int moveIndex) throws DAIException;
 }

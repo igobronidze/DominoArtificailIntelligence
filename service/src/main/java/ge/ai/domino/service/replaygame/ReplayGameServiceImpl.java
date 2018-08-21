@@ -15,6 +15,11 @@ public class ReplayGameServiceImpl implements ReplayGameService {
 
 	@Override
 	public ReplayMoveInfo replayMove(int gameId, int moveIndex) throws DAIException {
-		return  replayGameManager.replayMove(gameId, moveIndex);
+		return replayGameManager.replayMove(gameId, moveIndex);
+	}
+
+	@Override
+	public ReplayMoveInfo undoReplayedMove(int gameId, int moveIndex) throws DAIException {
+		return replayGameManager.undoReplayedMove(gameId, moveIndex);
 	}
 }

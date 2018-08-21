@@ -32,11 +32,13 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class MinMaxBFS extends MinMax {
@@ -279,7 +281,7 @@ public class MinMaxBFS extends MinMax {
 
             OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter().bazaar(true);
             long bazaarTilesCount = round.getOpponentTiles().entrySet().stream().filter(opponentTilesFilter :: filter).count();
-            if (moves.size() + bazaarTilesCount <= round.getTableInfo().getBazaarTilesCount()) {
+            if (countTilesInMoves(moves) + bazaarTilesCount <= round.getTableInfo().getBazaarTilesCount()) {
                 Round nextRound = addForOpponentProcessorVirtual.move(CloneUtil.getClone(round), null);
                 NodeRound nextNodeRound = new NodeRound();
                 nextNodeRound.setRound(nextRound);
@@ -346,6 +348,14 @@ public class MinMaxBFS extends MinMax {
             }
             logger.info("Button up MinMax for height " + entry.getKey() + " took " + (System.currentTimeMillis() - ms) + " ms");
         }
+    }
+
+    private int countTilesInMoves(List<Move> moves) {
+        Set<Tile> tiles = new HashSet<>();
+        for (Move move : moves) {
+            tiles.add(new Tile(move.getLeft(), move.getRight()));
+        }
+        return tiles.size();
     }
 
     private boolean isLeafNodeRound(NodeRound nodeRound) {

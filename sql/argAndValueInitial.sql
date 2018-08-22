@@ -1,6 +1,30 @@
 DELETE FROM arg_and_value;
 
 INSERT INTO arg_and_value (function_name, arg, value)
+VALUES ('opponentPlayHeuristicsDiffsFunction_XXL', 500, 0.9999),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 100, 0.98),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 50, 0.95),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 40, 0.85),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 30, 0.75),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 20, 0.63),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 15, 0.49),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 10, 0.42),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 8, 0.35),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 5, 0.29),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 2, 0.22),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 1, 0.15),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 0.5, 0.12),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', 0, 0.1),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', -0.5, 0.08),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', -1, 0.06),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', -2, 0.04),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', -5, 0.02),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', -10, 0.01),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', -100, 0.0005),
+  ('opponentPlayHeuristicsDiffsFunction_XXL', -500, 0.00002);
+
+
+INSERT INTO arg_and_value (function_name, arg, value)
 VALUES ('opponentPlayHeuristicsDiffsFunction_XL', 500, 0.9999),
   ('opponentPlayHeuristicsDiffsFunction_XL', 100, 0.95),
   ('opponentPlayHeuristicsDiffsFunction_XL', 50, 0.85),
@@ -14,7 +38,7 @@ VALUES ('opponentPlayHeuristicsDiffsFunction_XL', 500, 0.9999),
   ('opponentPlayHeuristicsDiffsFunction_XL', 2, 0.15),
   ('opponentPlayHeuristicsDiffsFunction_XL', 1, 0.12),
   ('opponentPlayHeuristicsDiffsFunction_XL', 0.5, 0.1),
-  ('opponentPlayHeuristicsDiffsFunction_XL', 0, 0.8),
+  ('opponentPlayHeuristicsDiffsFunction_XL', 0, 0.08),
   ('opponentPlayHeuristicsDiffsFunction_XL', -0.5, 0.06),
   ('opponentPlayHeuristicsDiffsFunction_XL', -1, 0.05),
   ('opponentPlayHeuristicsDiffsFunction_XL', -2, 0.03),

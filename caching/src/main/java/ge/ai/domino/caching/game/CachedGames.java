@@ -32,6 +32,10 @@ public class CachedGames {
         return createdGameHistory.get(gameId);
     }
 
+    public static void removeCreatedGameHistory(int gameId) {
+        createdGameHistory.remove(gameId);
+    }
+
     public static void addGame(Game game) {
         cachedGames.put(game.getId(), game);
     }

@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface GroupedOpponentPlaysService {
 
-	List<GroupedOpponentPlay> getGroupedOpponentPlays(Integer gameId, String version, boolean groupByGame, boolean groupByVersion);
+	List<GroupedOpponentPlay> getGroupedOpponentPlays(Integer gameId, String version, boolean groupByGame, boolean groupByVersion, boolean groupInOneResult);
 }

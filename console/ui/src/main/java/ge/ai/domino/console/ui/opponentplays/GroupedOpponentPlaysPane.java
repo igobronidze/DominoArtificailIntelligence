@@ -38,6 +38,8 @@ public class GroupedOpponentPlaysPane extends BorderPane {
 
     private TCHCheckBox groupByVersionCheckBox;
 
+    private TCHCheckBox groupInOneResultCheckBox;
+
     private TCHTextField gameIdField;
 
     private TCHTextField versionField;
@@ -64,6 +66,7 @@ public class GroupedOpponentPlaysPane extends BorderPane {
         groupByOpponentGameIdCheckBox = new TCHCheckBox(Messages.get("groupByGameId"));
         groupByOpponentGameIdCheckBox.setSelected(true);
         groupByVersionCheckBox = new TCHCheckBox(Messages.get("groupByVersion"));
+        groupInOneResultCheckBox = new TCHCheckBox(Messages.get("groupInOneResult"));
         TCHButton searchButton = new TCHButton();
         searchButton.setGraphic(new ImageView(ImageFactory.getImage("search.png")));
         searchButton.setOnAction(e -> {
@@ -74,7 +77,7 @@ public class GroupedOpponentPlaysPane extends BorderPane {
         flowPane.setVgap(10);
         flowPane.setHgap(10);
         flowPane.setPadding(new Insets(15));
-        flowPane.getChildren().addAll(gameIdFieldLabel, versionFieldLabel, groupByOpponentGameIdCheckBox, groupByVersionCheckBox, searchButton);
+        flowPane.getChildren().addAll(gameIdFieldLabel, versionFieldLabel, groupByOpponentGameIdCheckBox, groupByVersionCheckBox, groupInOneResultCheckBox, searchButton);
         this.setTop(flowPane);
     }
 
@@ -110,7 +113,8 @@ public class GroupedOpponentPlaysPane extends BorderPane {
     }
 
     private void loadPlayedGames() {
-        List<GroupedOpponentPlay> opponentPlays = groupedOpponentPlaysService.getGroupedOpponentPlays(getGameIdFieldValue(), versionField.getText(), groupByOpponentGameIdCheckBox.isSelected(), groupByVersionCheckBox.isSelected());
+        List<GroupedOpponentPlay> opponentPlays = groupedOpponentPlaysService.getGroupedOpponentPlays(getGameIdFieldValue(), versionField.getText(),
+                groupByOpponentGameIdCheckBox.isSelected(), groupByVersionCheckBox.isSelected(), groupInOneResultCheckBox.isSelected());
         data = GroupedOpponentPlaysProperty.generateDataInMap(opponentPlays);
     }
 

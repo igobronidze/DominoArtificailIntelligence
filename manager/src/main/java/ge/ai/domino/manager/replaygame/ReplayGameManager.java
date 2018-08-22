@@ -34,7 +34,6 @@ public class ReplayGameManager {
 	public ReplayMoveInfo startReplayGame(int gameId) throws DAIException {
 		GameHistory gameHistory = playedGameManager.getGameHistory(gameId);
 		GameProperties gameProperties = playedGameManager.getGameProperties(gameId);
-		gameProperties.setChannel(new Channel());
 
 		Game game = InitialUtil.getInitialGame(gameProperties, false);
 		CachedGames.addGame(game);

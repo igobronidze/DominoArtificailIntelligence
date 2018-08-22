@@ -359,13 +359,18 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     @Override
     public GameProperties getGameProperties(int gameId) throws DAIException {
         try {
-            StringBuilder sql = new StringBuilder(String.format("SELECT %s FROM %s WHERE 1 = 1 ", POINT_FOR_WIN_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
+            StringBuilder sql = new StringBuilder(String.format("SELECT %s, %s FROM %s WHERE 1 = 1 ", POINT_FOR_WIN_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
             QueryUtil.addFilter(sql, ID_COLUMN_NAME, String.valueOf(gameId), FilterCondition.EQUAL, false);
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql.toString());
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 GameProperties gameProperties = new GameProperties();
                 gameProperties.setPointsForWin(rs.getInt(POINT_FOR_WIN_COLUMN_NAME));
+
+                List<Channel> channels = channelDAO.getChannels();
+                Map<Integer, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getId, channel -> channel));
+                gameProperties.setChannel(channelsMap.get(rs.getInt(CHANNEL_ID_COLUMN_NAME)));
+
                 return gameProperties;
             } else {
                 throw new DAIException("noPlayedGame");

@@ -13,6 +13,13 @@ public class CachedMinMax {
 
 	private static Map<Integer, Boolean> useFirstChildMap = new HashMap<>();
 
+	public static void cleanUp(int gameId) {
+		lastNodeRounds.remove(gameId);
+		needChangesMap.remove(gameId);
+		minMaxInProgressMap.remove(gameId);
+		useFirstChildMap.remove(gameId);
+	}
+
 	public synchronized static void setLastNodeRound(int gameId, NodeRound nodeRound, boolean needChange) {
 		lastNodeRounds.put(gameId, nodeRound);
 		needChangesMap.put(gameId, needChange);

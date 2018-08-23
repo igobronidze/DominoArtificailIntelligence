@@ -15,6 +15,7 @@ import ge.ai.domino.dao.opponentplay.OpponentPlayDAO;
 import ge.ai.domino.dao.opponentplay.OpponentPlayDAOImpl;
 import ge.ai.domino.dao.played.PlayedGameDAO;
 import ge.ai.domino.dao.played.PlayedGameDAOImpl;
+import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
 
 import java.util.ArrayList;
@@ -84,6 +85,7 @@ public class PlayedGameManager {
             }
         }
         CachedGames.removeGame(gameId);
+        CachedMinMax.cleanUp(gameId);
     }
 
     public int getLastPlayedGameId() {

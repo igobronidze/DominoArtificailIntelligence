@@ -11,6 +11,7 @@ import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.imageprocessing.TilesDetector;
 import ge.ai.domino.imageprocessing.TilesDetectorParams;
 import ge.ai.domino.manager.game.GameManager;
+import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
 import org.apache.log4j.Logger;
@@ -61,6 +62,10 @@ public class InitialDataManager {
         } catch (DAIException ex) {
             logger.error("Error occurred while play initial extra moves");
         }
+
+        CachedGames.removeGame(gameId);
+        CachedMinMax.cleanUp(gameId);
+
         logger.info("Finished extra moves");
     }
 

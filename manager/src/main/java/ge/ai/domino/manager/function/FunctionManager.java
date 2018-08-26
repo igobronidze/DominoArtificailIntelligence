@@ -30,6 +30,13 @@ public class FunctionManager {
 				.collect(Collectors.toMap(Map.Entry::getKey, e -> getPolynomialFunctionLagrangeForm(e.getValue()))));
 	}
 
+	public void setFunctions(Map<String, FunctionArgsAndValues> functionArgsAndValuesMap) {
+		CachedFunctions.putOpponentPlayHeuristicsDiffsFunctions(functionArgsAndValuesMap
+				.entrySet()
+				.stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> getPolynomialFunctionLagrangeForm(e.getValue()))));
+	}
+
 	public double getOpponentPlayHeuristicsDiffsFunctionValue(double x) {
 		return CachedFunctions.getOpponentPlayHeuristicsDiffsFunction(systemParameterManager.getStringParameterValue(opponentPlayHeuristicsDiffsFunctionName)).value(x);
 	}

@@ -43,6 +43,7 @@
                 <module>image_processing</module>
                 <module>p2p-server</module>
                 <module>p2p-client</module>
+                <module>math</module>
             </modules>
         </profile>
     </profiles>

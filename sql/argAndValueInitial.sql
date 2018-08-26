@@ -118,3 +118,21 @@ VALUES ('opponentPlayHeuristicsDiffsFunction_S', 500, 0.9999),
   ('opponentPlayHeuristicsDiffsFunction_S', -10, 0.00001),
   ('opponentPlayHeuristicsDiffsFunction_S', -100, 0.000001),
   ('opponentPlayHeuristicsDiffsFunction_S', -500, 0.0000001);
+
+
+INSERT INTO arg_and_value (function_name, arg, value)
+VALUES ('initialForOptimization', 500, 1),
+  ('initialForOptimization', 100, 0.98),
+  ('initialForOptimization', 40, 0.85),
+  ('initialForOptimization', 20, 0.63),
+  ('initialForOptimization', 15, 0.49),
+  ('initialForOptimization', 10, 0.42),
+  ('initialForOptimization', 8, 0.35),
+  ('initialForOptimization', 5, 0.29),
+  ('initialForOptimization', 2, 0.22),
+  ('initialForOptimization', 1, 0.15),
+  ('initialForOptimization', 0, 0.1),
+  ('initialForOptimization', -1, 0.06),
+  ('initialForOptimization', -5, 0.02),
+  ('initialForOptimization', -100, 0.0005),
+  ('initialForOptimization', -500, 0);

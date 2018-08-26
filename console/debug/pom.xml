@@ -16,5 +16,10 @@
             <artifactId>manager</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ge.ai.domino</groupId>
+            <artifactId>math</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

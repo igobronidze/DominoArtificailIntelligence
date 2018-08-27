@@ -5,6 +5,7 @@ import ge.ai.domino.math.optimization.unimodal.oneparam.IntervalDivisionUnimodal
 import ge.ai.domino.math.optimization.unimodal.oneparam.UnimodalOptimization;
 import ge.ai.domino.math.optimization.unimodal.oneparam.UnimodalOptimizationType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -27,8 +28,9 @@ public abstract class UnimodalOptimizationWithMultipleParams {
                     UnimodalOptimization unimodalOptimization = new IntervalDivisionUnimodalOptimization(optimizationDirection) {
                         @Override
                         public double getValue(double x) {
-                            params.set(index, x);
-                            return UnimodalOptimizationWithMultipleParams.this.getValue(params);
+                            List<Double> paramsClone = new ArrayList<>(params);
+                            paramsClone.set(index, x);
+                            return UnimodalOptimizationWithMultipleParams.this.getValue(paramsClone);
                         }
                     };
                     params.set(index, unimodalOptimization.getExtremaPoint(paramIntervals.get(index).getLeft(), paramIntervals.get(index).getRight(), iteration));

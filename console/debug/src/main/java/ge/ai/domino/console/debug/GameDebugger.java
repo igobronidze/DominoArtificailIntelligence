@@ -16,7 +16,6 @@ import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
-import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.AddForMeProcessor;
@@ -38,7 +37,7 @@ import ge.ai.domino.math.optimization.unimodal.oneparam.UnimodalOptimizationType
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -136,13 +135,15 @@ public class GameDebugger {
     private static void executeMinMaxPredictorOptimization(Scanner scanner) {
         List<Integer> idsForProcess = getIdsForProcess(scanner);
 
-        SysParam opponentPlayHeuristicsDiffsFunctionName = new SysParam("opponentPlayHeuristicsDiffsFunctionName", "initialForOptimization");
-        String functionName = sysParamManager.getStringParameterValue(opponentPlayHeuristicsDiffsFunctionName);
+        String functionName = "initialForOptimization";
+        sysParamManager.changeParameterOnlyInCache("opponentPlayHeuristicsDiffsFunctionName", functionName);
 
         FunctionDAO functionDAO = new FunctionDAOImpl();
         FunctionManager functionManager = new FunctionManager();
         Map<String, FunctionArgsAndValues> functionArgsAndValuesMap = functionDAO.getFunctionArgsAndValues(functionName);
         FunctionArgsAndValues functionArgsAndValues = functionArgsAndValuesMap.get(functionName);
+        Collections.reverse(functionArgsAndValues.getArgs());
+        Collections.reverse(functionArgsAndValues.getValues());
 
         System.out.println("Optimization iteration:");
         Integer optimizationIteration = Integer.parseInt(scanner.nextLine());
@@ -155,9 +156,9 @@ public class GameDebugger {
                     public double getValue(List<Double> params) {
                         functionArgsAndValues.setValues(params);
                         functionArgsAndValuesMap.put(functionName, functionArgsAndValues);
-                        functionManager.setFunctions(functionArgsAndValuesMap);
+                        functionManager.setFunctions(functionArgsAndValuesMap, false);
 
-                        return getAverageGuess(idsForProcess, "BalancedGuessRateCounter");
+                        return getAverageGuess(idsForProcess, "BalancedGuessRateCounter", params);
                     }
                 };
 
@@ -174,13 +175,14 @@ public class GameDebugger {
     private static List<ParamInterval> getParamIntervals(List<Double> params) {
         List<ParamInterval> paramIntervals = new ArrayList<>();
         for (int i = 0; i < params.size(); i++) {
-            ParamInterval paramInterval = new ParamInterval(i == 0 ? 0 : params.get(i - 1), i == params.size() - 1 ? 1 : params.get(i + 1));
+            ParamInterval paramInterval = new ParamInterval(i == 0 ? 0 : params.get(i - 1) + 0.000001,
+                    i == params.size() - 1 ? 1 : params.get(i + 1) - 0.000001);
             paramIntervals.add(paramInterval);
         }
         return paramIntervals;
     }
 
-    private static double getAverageGuess(List<Integer> idsForProcess, String guessRateCounterClassName) {
+    private static double getAverageGuess(List<Integer> idsForProcess, String guessRateCounterClassName, List<Double> params) {
         List<OpponentPlay> fullOpponentPlays = new ArrayList<>();
         for (int id : idsForProcess) {
             logger.info("Starting game for replay id[" + id + "]");
@@ -202,7 +204,7 @@ public class GameDebugger {
         }
 
         GroupedOpponentPlay groupedOpponentPlay = opponentPlaysManager.getGroupedOpponentPlays(fullOpponentPlays, false, false, true).get(0);
-        logger.info("Opponent plays grouped in one result");
+        logger.info("Opponent plays grouped in one result for params: " + params);
         logger.info(groupedOpponentPlay.getAverageGuess());
         return groupedOpponentPlay.getAverageGuess().get(guessRateCounterClassName);
     }

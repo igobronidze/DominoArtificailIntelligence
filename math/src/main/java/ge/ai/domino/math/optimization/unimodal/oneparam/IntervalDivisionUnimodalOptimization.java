@@ -1,8 +1,11 @@
 package ge.ai.domino.math.optimization.unimodal.oneparam;
 
 import ge.ai.domino.math.optimization.OptimizationDirection;
+import org.apache.log4j.Logger;
 
 public abstract class IntervalDivisionUnimodalOptimization extends UnimodalOptimization {
+
+    private static final Logger logger = Logger.getLogger(IntervalDivisionUnimodalOptimization.class);
 
     public IntervalDivisionUnimodalOptimization(OptimizationDirection optimizationDirection) {
         super(optimizationDirection);
@@ -10,6 +13,7 @@ public abstract class IntervalDivisionUnimodalOptimization extends UnimodalOptim
 
     @Override
     public double getExtremaPoint(double a, double b, int iteration) {
+        logger.info("Starting IntervalDivisionUnimodalOptimization getExtremaPoint method, a[" + a + "], b[" + b + "], iteration[" + iteration + "]");
         double l = b - a;
         double xMiddle = (a + b) / 2;
         double xMiddleValue = getRealValue(xMiddle);
@@ -17,6 +21,7 @@ public abstract class IntervalDivisionUnimodalOptimization extends UnimodalOptim
         double xLeft, xRight;
         double xLeftValue, xRightValue;
         for (int i = 0 ; i < iteration; i++) {
+            logger.info("Starting getExtremaPoint iteration[" + (i + 1) + "]");
             xLeft = a + l / 4;
             xRight = b - l / 4;
 

@@ -27,23 +27,25 @@ public class FunctionManager {
 		CachedFunctions.putOpponentPlayHeuristicsDiffsFunctions(functionDAO.getFunctionArgsAndValues(OPPONENT_PLAY_HEURISTICS_DIFFS_FUNCTION_NAME_PREFIX)
 				.entrySet()
 				.stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> getPolynomialFunctionLagrangeForm(e.getValue()))));
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> getPolynomialFunctionLagrangeForm(e.getValue(), true))));
 	}
 
-	public void setFunctions(Map<String, FunctionArgsAndValues> functionArgsAndValuesMap) {
+	public void setFunctions(Map<String, FunctionArgsAndValues> functionArgsAndValuesMap, boolean reverse) {
 		CachedFunctions.putOpponentPlayHeuristicsDiffsFunctions(functionArgsAndValuesMap
 				.entrySet()
 				.stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> getPolynomialFunctionLagrangeForm(e.getValue()))));
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> getPolynomialFunctionLagrangeForm(e.getValue(), reverse))));
 	}
 
 	public double getOpponentPlayHeuristicsDiffsFunctionValue(double x) {
 		return CachedFunctions.getOpponentPlayHeuristicsDiffsFunction(systemParameterManager.getStringParameterValue(opponentPlayHeuristicsDiffsFunctionName)).value(x);
 	}
 
-	private PolynomialSplineFunction getPolynomialFunctionLagrangeForm(FunctionArgsAndValues functionArgsAndValues) {
-		Collections.reverse(functionArgsAndValues.getArgs());
-		Collections.reverse(functionArgsAndValues.getValues());
+	private PolynomialSplineFunction getPolynomialFunctionLagrangeForm(FunctionArgsAndValues functionArgsAndValues, boolean reverse) {
+		if (reverse) {
+			Collections.reverse(functionArgsAndValues.getArgs());
+			Collections.reverse(functionArgsAndValues.getValues());
+		}
 
 		double [] args = new double[functionArgsAndValues.getArgs().size()];
 		for (int i = 0; i < functionArgsAndValues.getArgs().size(); i++) {

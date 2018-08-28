@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GamePane extends BorderPane {
+public abstract class GamePane extends BorderPane {
 
     private static final int IMAGE_WIDTH = 65;
 
@@ -177,6 +177,7 @@ public class GamePane extends BorderPane {
                 @Override
                 public void onSave() {
                     AppController.round = null;
+                    onNewGame();
                     controlPanel.getRoot().setCenter(new GamePropertiesPane(controlPanel));
                 }
 
@@ -192,6 +193,8 @@ public class GamePane extends BorderPane {
             showAddedTilesDetectWindow();
         }
     }
+
+    public abstract void onNewGame();
 
     private void initTopPane() {
         TableInfo tableInfo = AppController.round.getTableInfo();

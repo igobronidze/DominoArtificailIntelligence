@@ -33,9 +33,11 @@ import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -233,11 +235,23 @@ public class GameManager {
             File folder = new File(LOG_IMAGES_DIRECTORY_PATH);
             folder.mkdirs();
             String destPath = folder.getPath() + "/" + sdf.format(new Date()) + TilesDetectorManager.TMP_IMAGE_EXTENSION;
-            Files.copy(Paths.get(imagePath), Paths.get(destPath));
+            copyFiles(new File(imagePath), new File(destPath));
             new File(imagePath).delete();
             logger.info("Save log image");
         } catch (IOException ex) {
             logger.error("Can't save log image, gameId[" + gameId + "]");
+        }
+    }
+
+    private void copyFiles(File source, File dest) throws IOException {
+        try (InputStream is = new FileInputStream(source); OutputStream os = new FileOutputStream(dest);){
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) > 0) {
+                os.write(buffer, 0, length);
+            }
+        } catch (Exception ex) {
+            logger.error("Can't copy image", ex);
         }
     }
 

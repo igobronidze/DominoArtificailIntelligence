@@ -1,3 +1,5 @@
+-- SysParam Name -> opponentPlayHeuristicsDiffsFunctionName
+
 DELETE FROM arg_and_value;
 
 INSERT INTO arg_and_value (function_name, arg, value)
@@ -121,18 +123,20 @@ VALUES ('opponentPlayHeuristicsDiffsFunction_S', 500, 0.9999),
 
 
 INSERT INTO arg_and_value (function_name, arg, value)
-VALUES ('initialForOptimization', 500, 1),
-  ('initialForOptimization', 100, 0.98),
-  ('initialForOptimization', 40, 0.85),
-  ('initialForOptimization', 20, 0.63),
-  ('initialForOptimization', 15, 0.49),
-  ('initialForOptimization', 10, 0.42),
-  ('initialForOptimization', 8, 0.35),
-  ('initialForOptimization', 5, 0.29),
-  ('initialForOptimization', 2, 0.22),
-  ('initialForOptimization', 1, 0.15),
-  ('initialForOptimization', 0, 0.1),
-  ('initialForOptimization', -1, 0.06),
-  ('initialForOptimization', -5, 0.02),
-  ('initialForOptimization', -100, 0.0005),
-  ('initialForOptimization', -500, 0);
+VALUES ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 400, 0.9986863897561036),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 100, 0.9789812360976562),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 30, 0.93),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 20, 0.8309680254375),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 15, 0.824364934375),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 10, 0.777365685),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 8, 0.76335041925),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 5, 0.721306622),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 2, 0.7137240846249999),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 1.5, 0.7012602988984374),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 1, 0.514317513),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 0, 0.4922470848486812),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -0.5, 0.3267258705),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -1, 0.16120466257890054),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -5, 0.09349423930804869),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -10, 0.09),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -400, 0.0882436295404358)

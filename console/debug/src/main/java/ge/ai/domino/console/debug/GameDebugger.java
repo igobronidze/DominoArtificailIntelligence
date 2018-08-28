@@ -17,6 +17,7 @@ import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.manager.function.FunctionManager;
+import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.manager.game.move.AddForMeProcessorVirtual;
@@ -135,7 +136,7 @@ public class GameDebugger {
     private static void executeMinMaxPredictorOptimization(Scanner scanner) {
         List<Integer> idsForProcess = getIdsForProcess(scanner);
 
-        String functionName = "initialForOptimization";
+        String functionName = "opponentPlayHeuristicsDiffsFunction_initialForOptimization";
         sysParamManager.changeParameterOnlyInCache("opponentPlayHeuristicsDiffsFunctionName", functionName);
 
         FunctionDAO functionDAO = new FunctionDAOImpl();
@@ -145,6 +146,8 @@ public class GameDebugger {
         Collections.reverse(functionArgsAndValues.getArgs());
         Collections.reverse(functionArgsAndValues.getValues());
 
+        System.out.println("Games amount:");
+        Integer gamesAmount = Integer.parseInt(scanner.nextLine());
         System.out.println("Optimization iteration:");
         Integer optimizationIteration = Integer.parseInt(scanner.nextLine());
         System.out.println("Optimization inner iteration:");
@@ -158,17 +161,25 @@ public class GameDebugger {
                         functionArgsAndValuesMap.put(functionName, functionArgsAndValues);
                         functionManager.setFunctions(functionArgsAndValuesMap, false);
 
-                        return getAverageGuess(idsForProcess, "BalancedGuessRateCounter", params);
+                        return getAverageGuess(idsForProcess.subList(0, gamesAmount), "BalancedGuessRateCounter", params);
                     }
                 };
 
         for (int i = 1; i <= optimizationIteration; i++) {
             logger.info("Starting MinMaxPredictor optimization iteration[" + i + "]");
+
+            Collections.shuffle(idsForProcess);
+
             List<Double> newValues = unimodalOptimizationWithMultipleParams.getExtremaVector(functionArgsAndValues.getValues(),
                     getParamIntervals(functionArgsAndValues.getValues()), optimizationInnerIteration);
             functionArgsAndValues.setValues(newValues);
             logger.info("Finished MinMaxPredictor optimization iteration[" + i + "]");
             logger.info("New values: " + newValues);
+            try {
+                Thread.sleep(5 * 60 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -187,17 +198,22 @@ public class GameDebugger {
         for (int id : idsForProcess) {
             logger.info("Starting game for replay id[" + id + "]");
 
+            int gameId = 0;
             try {
                 ReplayMoveInfo replayMoveInfo = replayGameManager.startReplayGame(id);
+                gameId = replayMoveInfo.getGameId();
+
                 while (replayMoveInfo.getNextMove() != null) {
                     replayMoveInfo = replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
                 }
 
                 fullOpponentPlays.addAll(removeExtraPlays(CachedGames.getOpponentPlays(replayMoveInfo.getGameId())));
-
-                CachedGames.removeCreatedGameHistory(replayMoveInfo.getGameId());
             } catch (Exception ex) {
                 logger.error("Error occurred while replay game id[" + id + "]", ex);
+            } finally {
+                CachedGames.removeGame(gameId);
+                CachedGames.removeCreatedGameHistory(gameId);
+                CachedMinMax.cleanUp(gameId);
             }
 
             logger.info("Finished game for replay id[" + id + "]");
@@ -220,8 +236,10 @@ public class GameDebugger {
         for (int id : idsForProcess) {
             logger.info("Starting game for replay id[" + id + "]");
 
+            int gameId = 0;
             try {
                 ReplayMoveInfo replayMoveInfo = replayGameManager.startReplayGame(id);
+                gameId = replayMoveInfo.getGameId();
                 while (replayMoveInfo.getNextMove() != null) {
                     replayMoveInfo = replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
                 }
@@ -236,10 +254,12 @@ public class GameDebugger {
                 for (GroupedOpponentPlay groupedOpponentPlay : groupedOpponentPlays) {
                     logger.info(groupedOpponentPlay.getAverageGuess());
                 }
-
-                CachedGames.removeCreatedGameHistory(replayMoveInfo.getGameId());
             } catch (Exception ex) {
                 logger.error("Error occurred while replay game id[" + id + "]", ex);
+            } finally {
+                CachedGames.removeGame(gameId);
+                CachedGames.removeCreatedGameHistory(gameId);
+                CachedMinMax.cleanUp(gameId);
             }
 
             logger.info("Finished game for replay id[" + id + "]");

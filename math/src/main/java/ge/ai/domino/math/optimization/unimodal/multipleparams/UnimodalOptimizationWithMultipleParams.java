@@ -11,9 +11,15 @@ import java.util.Random;
 
 public abstract class UnimodalOptimizationWithMultipleParams {
 
+    private static final boolean USE_INDEX_CHOOSE_LOGIC = true;
+
+    private static final double INTERVAL_MIN_LENGTH_FOR_INDEX = 0.1;
+
     private UnimodalOptimizationType unimodalOptimizationType;
 
     private OptimizationDirection optimizationDirection;
+
+    private int index;
 
     public UnimodalOptimizationWithMultipleParams(UnimodalOptimizationType unimodalOptimizationType, OptimizationDirection optimizationDirection) {
         this.unimodalOptimizationType = unimodalOptimizationType;
@@ -21,7 +27,12 @@ public abstract class UnimodalOptimizationWithMultipleParams {
     }
 
     public List<Double> getExtremaVector(List<Double> params, List<ParamInterval> paramIntervals, int iteration) {
-        int index = new Random().nextInt(params.size());
+        index = new Random().nextInt(params.size());
+        if (USE_INDEX_CHOOSE_LOGIC) {
+            while (paramIntervals.get(index).getRight() - paramIntervals.get(index).getLeft() < INTERVAL_MIN_LENGTH_FOR_INDEX) {
+                index = new Random().nextInt(params.size());
+            }
+        }
         switch (unimodalOptimizationType) {
             case INTERVAL_DIVISION:
                 default:

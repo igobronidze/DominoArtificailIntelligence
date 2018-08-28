@@ -43,6 +43,8 @@ public class GamePropertiesPane extends VBox {
 
     private final ControlPanel controlPanel;
 
+    private GamePane gamePane;
+
     public GamePropertiesPane(ControlPanel controlPanel) {
         this.controlPanel = controlPanel;
         initComponents();
@@ -78,7 +80,13 @@ public class GamePropertiesPane extends VBox {
                 gameProperties.setOpponentName(nameField.getText());
                 ServiceExecutor.execute(() -> {
                     AppController.round =  GAME_SERVICE.startGame(gameProperties);
-                    controlPanel.getRoot().setCenter(new GamePane(controlPanel, gameProperties));
+                    gamePane = new GamePane(controlPanel, gameProperties) {
+                        @Override
+                        public void onNewGame() {
+                            gamePane = null;
+                        }
+                    };
+                    controlPanel.getRoot().setCenter(gamePane);
                 });
             }
         });

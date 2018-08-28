@@ -25,9 +25,9 @@ public interface GameService {
 
     Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe, boolean finishGame);
 
-    Round detectAndAddNewTilesForMe(int gameId) throws DAIException;
+    Round detectAndAddNewTilesForMe(int gameId, boolean withSecondParams) throws DAIException;
 
-    Round detectAnsAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException;
+    Round detectAndAddInitialTilesForMe(int gameId, Boolean startMe, boolean withSecondParams) throws DAIException;
 
     void editOpponentNameInCache(int gameId, String opponentName);
 

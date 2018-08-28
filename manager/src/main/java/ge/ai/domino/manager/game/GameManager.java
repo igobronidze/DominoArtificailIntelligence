@@ -170,11 +170,11 @@ public class GameManager {
         return newRound;
     }
 
-    public Round detectAndAddNewTilesForMe(int gameId) throws DAIException {
-        logger.info("Start detectAndAddNewTilesForMe method, gameId[" + gameId + "]");
+    public Round detectAndAddNewTilesForMe(int gameId, boolean withSecondParams) throws DAIException {
+        logger.info("Start detectAndAddNewTilesForMe method, gameId[" + gameId + "], withSecondParams[" + withSecondParams + "]");
         Round round = CachedGames.getCurrentRound(gameId, true);
         try {
-            List<Tile> tiles = tilesDetectorManager.detectTiles(gameId);
+            List<Tile> tiles = tilesDetectorManager.detectTiles(gameId, withSecondParams);
             List<Tile> tilesForAdd = getAddedTiles(tiles, round.getMyTiles());
             Tile lastAddedTile = getLastAddedTile(tilesForAdd, round.getTableInfo());
             logger.info("Last added tile: " + lastAddedTile);
@@ -197,10 +197,10 @@ public class GameManager {
         return CachedGames.getCurrentRound(gameId, false);
     }
 
-    public Round detectAndAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException {
-        logger.info("Start detectAndAddInitialTilesForMe method, gameId[" + gameId + "]");
+    public Round detectAndAddInitialTilesForMe(int gameId, Boolean startMe, boolean withSecondParams) throws DAIException {
+        logger.info("Start detectAndAddInitialTilesForMe method, gameId[" + gameId + "], startMe[" + startMe + "], withSecondParams[" + withSecondParams + "]");
         try {
-            List<Tile> tiles = tilesDetectorManager.detectTiles(gameId);
+            List<Tile> tiles = tilesDetectorManager.detectTiles(gameId, withSecondParams);
             for (int i = 0; i < tiles.size() - 1; i++) {
                 Tile tile = tiles.get(i);
                 addTileForMe(gameId, tile.getLeft(), tile.getRight());

@@ -109,9 +109,9 @@ public abstract class GamePane extends BorderPane {
 
         new DetectTilesWindow() {
             @Override
-            public void onYes() {
+            public void onYes(boolean withSecondParams) {
                 ServiceExecutor.execute(() -> {
-                    AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), null);
+                    AppController.round = gameService.detectAndAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), null, withSecondParams);
                     controlPanel.getStage().setIconified(false);
                     controlPanel.getStage().requestFocus();
                     reload(false, false);
@@ -119,9 +119,9 @@ public abstract class GamePane extends BorderPane {
             }
 
             @Override
-            public void onStartMe() {
+            public void onStartMe(boolean withSecondParams) {
                 ServiceExecutor.execute(() -> {
-                    AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), true);
+                    AppController.round = gameService.detectAndAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), true, withSecondParams);
                     controlPanel.getStage().setIconified(false);
                     controlPanel.getStage().requestFocus();
                     reload(false, false);
@@ -129,9 +129,9 @@ public abstract class GamePane extends BorderPane {
             }
 
             @Override
-            public void onStartHe() {
+            public void onStartHe(boolean withSecondParams) {
                 ServiceExecutor.execute(() -> {
-                    AppController.round = gameService.detectAnsAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), false);
+                    AppController.round = gameService.detectAndAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), false, withSecondParams);
                     controlPanel.getStage().setIconified(false);
                     controlPanel.getStage().requestFocus();
                     reload(false, false);
@@ -151,9 +151,9 @@ public abstract class GamePane extends BorderPane {
 
         new AddTilesDetectWindow() {
             @Override
-            public void onYes() {
+            public void onYes(boolean withSecondParams) {
                 ServiceExecutor.execute(() -> {
-                    AppController.round = gameService.detectAndAddNewTilesForMe(AppController.round.getGameInfo().getGameId());
+                    AppController.round = gameService.detectAndAddNewTilesForMe(AppController.round.getGameInfo().getGameId(), withSecondParams);
                     controlPanel.getStage().setIconified(false);
                     controlPanel.getStage().requestFocus();
                     reload(false, false);

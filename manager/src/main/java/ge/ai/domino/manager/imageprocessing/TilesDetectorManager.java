@@ -43,13 +43,15 @@ public class TilesDetectorManager {
 
     public static final String TMP_IMAGE_EXTENSION = ".png";
 
+    public static final String SECOND_PARAM_SUFFIX = "_2";
+
     private static final Logger logger = Logger.getLogger(GameManager.class);
 
     private final TilesDetector tilesDetector = new TilesDetector();
 
     private String tmpImagePath;
 
-    public List<Tile> detectTiles(int gameId) throws DAIException {
+    public List<Tile> detectTiles(int gameId, boolean withSecondParams) throws DAIException {
         try {
             logger.info("Start detectTiles method");
             long ms = System.currentTimeMillis();
@@ -65,7 +67,7 @@ public class TilesDetectorManager {
             logger.info("Save of image took " + (System.currentTimeMillis() - ms) + "ms");
 
             ms = System.currentTimeMillis();
-            List<Tile> tiles = balanceTiles(tilesDetector.getTiles(tempFile.getAbsolutePath(), getTilesDetectorParams(gameId)));
+            List<Tile> tiles = balanceTiles(tilesDetector.getTiles(tempFile.getAbsolutePath(), getTilesDetectorParams(gameId, withSecondParams)));
             logger.info("Detection took " + (System.currentTimeMillis() - ms) + "ms");
             logger.info("Detected tiles: " + tiles);
             return tiles;
@@ -75,15 +77,20 @@ public class TilesDetectorManager {
         }
     }
 
-    private TilesDetectorParams getTilesDetectorParams(int gameId) {
+    private TilesDetectorParams getTilesDetectorParams(int gameId, boolean withSecondParams) {
         Channel channel = CachedGames.getGameProperties(gameId).getChannel();
         Map<String, String> params = channel.getParams();
 
-        int contourMinArea = params.containsKey(CONTOUR_MIN_AREA_KEY) ? Integer.valueOf(params.get(CONTOUR_MIN_AREA_KEY)) : CONTOUR_MIN_AREA;
-        double heightPercentage = params.containsKey(TILES_HEIGHT_PERCENTAGE_KEY) ? Double.valueOf(params.get(TILES_HEIGHT_PERCENTAGE_KEY)) : TILES_HEIGHT_PERCENTAGE;
-        double marginBottomPercentage = params.containsKey(TILES_MARGIN_BOTTOM_PERCENTAGE_KEY) ? Double.valueOf(params.get(TILES_MARGIN_BOTTOM_PERCENTAGE_KEY)) : TILES_MARGIN_BOTTOM_PERCENTAGE;
-        double marginLeftPercentage = params.containsKey(TILES_MARGIN_LEFT_PERCENTAGE_KEY) ? Double.valueOf(params.get(TILES_MARGIN_LEFT_PERCENTAGE_KEY)) : TILES_MARGIN_LEFT_PERCENTAGE;
-        double widthPercentage = params.containsKey(TILES_WIDTH_PERCENTAGE_KEY) ? Double.valueOf(params.get(TILES_WIDTH_PERCENTAGE_KEY)) : TILES_WIDTH_PERCENTAGE;
+        int contourMinArea = params.containsKey(CONTOUR_MIN_AREA_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
+                ? Integer.valueOf(params.get(CONTOUR_MIN_AREA_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : CONTOUR_MIN_AREA;
+        double heightPercentage = params.containsKey(TILES_HEIGHT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
+                ? Double.valueOf(params.get(TILES_HEIGHT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_HEIGHT_PERCENTAGE;
+        double marginBottomPercentage = params.containsKey(TILES_MARGIN_BOTTOM_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
+                ? Double.valueOf(params.get(TILES_MARGIN_BOTTOM_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_MARGIN_BOTTOM_PERCENTAGE;
+        double marginLeftPercentage = params.containsKey(TILES_MARGIN_LEFT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
+                ? Double.valueOf(params.get(TILES_MARGIN_LEFT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_MARGIN_LEFT_PERCENTAGE;
+        double widthPercentage = params.containsKey(TILES_WIDTH_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
+                ? Double.valueOf(params.get(TILES_WIDTH_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_WIDTH_PERCENTAGE;
 
         return new TilesDetectorParams()
                 .contourMinArea(contourMinArea)

@@ -29,6 +29,7 @@ import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.manager.game.move.PlayForOpponentProcessorVirtual;
 import ge.ai.domino.manager.heuristic.HeuristicManager;
 import ge.ai.domino.manager.opponentplay.OpponentPlaysManager;
+import ge.ai.domino.manager.opponentplay.guess.NegativeBalancedGuessRateCounter;
 import ge.ai.domino.manager.replaygame.ReplayGameManager;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.math.optimization.OptimizationDirection;
@@ -161,7 +162,7 @@ public class GameDebugger {
                         functionArgsAndValuesMap.put(functionName, functionArgsAndValues);
                         functionManager.setFunctions(functionArgsAndValuesMap, false);
 
-                        return getAverageGuess(idsForProcess.subList(0, gamesAmount), "BalancedGuessRateCounter", params);
+                        return getAverageGuess(idsForProcess.subList(0, gamesAmount), NegativeBalancedGuessRateCounter.class.getSimpleName(), params);
                     }
                 };
 

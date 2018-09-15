@@ -13,7 +13,7 @@ public abstract class UnimodalOptimizationWithMultipleParams {
 
     private static final boolean USE_INDEX_CHOOSE_LOGIC = true;
 
-    private static final double INTERVAL_MIN_LENGTH_FOR_INDEX = 0.1;
+    private static final double INTERVAL_MIN_LENGTH_FOR_INDEX = 0;
 
     private UnimodalOptimizationType unimodalOptimizationType;
 

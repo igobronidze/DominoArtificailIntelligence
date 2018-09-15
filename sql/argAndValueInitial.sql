@@ -1,4 +1,5 @@
 -- SysParam Name -> opponentPlayHeuristicsDiffsFunctionName
+-- 1-123/6,30,32,61,118
 
 DELETE FROM arg_and_value;
 
@@ -121,22 +122,19 @@ VALUES ('opponentPlayHeuristicsDiffsFunction_S', 500, 0.9999),
   ('opponentPlayHeuristicsDiffsFunction_S', -100, 0.000001),
   ('opponentPlayHeuristicsDiffsFunction_S', -500, 0.0000001);
 
-
 INSERT INTO arg_and_value (function_name, arg, value)
-VALUES ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 400, 0.9986863897561036),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 100, 0.9789812360976562),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 30, 0.93),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 20, 0.9233969415625),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 15, 0.824364934375),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 10, 0.7938576935),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 8, 0.76335041925),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 5, 0.738537252),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 2, 0.72222847275),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 1.5, 0.7012602988984374),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 1, 0.60192624415625),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 0, 0.5847253457714843),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -0.5, 0.3267258705),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -1, 0.16120466257890054),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -5, 0.1567534996),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -10, 0.0888986554828125),
-  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -400, 0.084374065875);
+VALUES ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 400, 0.9920810815287171),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 60, 0.38260144662499995),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 30, 0.34196854875),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 26, 0.306545769125),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 22, 0.269290596),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 15, 0.1695859525625),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 10, 0.162938043),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 6, 0.15981133375),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 3, 0.112924695),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 1, 0.03472576849824219),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 0.5, 0.02072619881402588),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 0, 0.004664956079001617),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -5, 0.00359327323),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -25, 0.001030432924875),
+  ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -400, 1.754861565E-4);

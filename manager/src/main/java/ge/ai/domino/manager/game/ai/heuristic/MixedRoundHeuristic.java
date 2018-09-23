@@ -1,5 +1,7 @@
 package ge.ai.domino.manager.game.ai.heuristic;
 
+import ge.ai.domino.caching.game.CachedGames;
+import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
@@ -24,6 +26,10 @@ public class MixedRoundHeuristic implements RoundHeuristic {
 
 	private final SysParam mixedRoundHeuristicParam5 = new SysParam("testRoundHeuristicParam5", "0.1");
 
+	private final SysParam mixedRoundHeuristicParam6 = new SysParam("testRoundHeuristicParam6", "0.5");
+
+	private final SysParam mixedRoundHeuristicParam7 = new SysParam("testRoundHeuristicParam7", "3");
+
 	private final double mixedRoundHeuristicParam1Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam1);
 
 	private final double mixedRoundHeuristicParam2Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam2);
@@ -34,15 +40,38 @@ public class MixedRoundHeuristic implements RoundHeuristic {
 
 	private final double mixedRoundHeuristicParam5Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam5);
 
+	private final double mixedRoundHeuristicParam6Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam6);
+
+	private final double mixedRoundHeuristicParam7Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam7);
+
 	@Override
 	public double getHeuristic(Round round, boolean logTrace) {
-		double pointDiff = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
+		GameInfo gameInfo = round.getGameInfo();
+		double pointForWin = CachedGames.getGameProperties(round.getGameInfo().getGameId()).getPointsForWin();
+
+		double balancedMyPoint = gameInfo.getMyPoint() * (gameInfo.getMyPoint() >= pointForWin ? (1.0 + mixedRoundHeuristicParam6Value) :
+				(1.0 + mixedRoundHeuristicParam6Value * (gameInfo.getMyPoint() / pointForWin)));
+		double balancedOpponentPoint = gameInfo.getOpponentPoint() * (gameInfo.getOpponentPoint() >= pointForWin ? (1.0 + mixedRoundHeuristicParam6Value) :
+				(1.0 + mixedRoundHeuristicParam6Value * (gameInfo.getOpponentPoint() / pointForWin)));
+		double pointDiff = balancedMyPoint - balancedOpponentPoint;
 
 		double tilesDiff = mixedRoundHeuristicParam1Value * (round.getTableInfo().getOpponentTilesCount() - round.getMyTiles().size());
 
 		TilesStatistic tilesStatistic = getTilesStatistic(round);
 		double myMovesCount = countPossibleMoves(round.getMyTiles(), tilesStatistic);
+		if (gameInfo.getMyPoint() - gameInfo.getOpponentPoint() >= 60) {
+			myMovesCount *= mixedRoundHeuristicParam7Value;
+		} else if (gameInfo.getMyPoint() - gameInfo.getOpponentPoint() >= 30) {
+			myMovesCount *= mixedRoundHeuristicParam7Value / 2;
+		}
+
 		double opponentMovesCount = countPossibleMoves(round.getOpponentTiles(), round.getTableInfo().getOpponentTilesCount(), tilesStatistic);
+		if (gameInfo.getOpponentPoint() - gameInfo.getMyPoint() >= 60) {
+			opponentMovesCount *= mixedRoundHeuristicParam7Value;
+		} else if (gameInfo.getOpponentPoint() - gameInfo.getMyPoint() >= 30) {
+			opponentMovesCount *= mixedRoundHeuristicParam7Value / 2;
+		}
+
 		double movesDiff = mixedRoundHeuristicParam2Value * (myMovesCount / round.getMyTiles().size() - opponentMovesCount / round.getTableInfo().getOpponentTilesCount());
 
 		return pointDiff + tilesDiff + movesDiff;

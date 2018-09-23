@@ -113,7 +113,7 @@ public class MinMaxBFS extends MinMax {
             logger.info("No AIPrediction");
             return null;
         }
-        if (moves.size() == 1 && systemParameterManager.getBooleanParameterValue(bestMoveAutoPlay)) {
+        if (moves.size() == 1 && systemParameterManager.getBooleanParameterValue(bestMoveAutoPlay) && !multithreadingMinMax) {
             if (systemParameterManager.getBooleanParameterValue(useMinMaxPredictor)) {
                 new Thread(() -> {
                     try {
@@ -143,7 +143,7 @@ public class MinMaxBFS extends MinMax {
             return aiPredictionsWrapper;
         } else {
             AiPredictionsWrapper aiPredictionsWrapper = minMaxForMoves(moves, nodeRound, ms);
-            if (new MinMaxPredictor().usePredictor()) {
+            if (new MinMaxPredictor().usePredictor() && !multithreadingMinMax) {
                 CachedMinMax.setLastNodeRound(nodeRound.getRound().getGameInfo().getGameId(), nodeRound, true);
             }
             return aiPredictionsWrapper;
@@ -188,7 +188,18 @@ public class MinMaxBFS extends MinMax {
             aiPrediction.setMove(move);
             aiPrediction.setHeuristicValue(nr.getHeuristic());
             aiPredictions.add(aiPrediction);
-            if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
+
+            boolean better = false;
+            if (nodeRound.getRound().getTableInfo().isMyMove()) {
+                if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
+                    better = true;
+                }
+            } else {
+                if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() > aiPrediction.getHeuristicValue()) {
+                    better = true;
+                }
+            }
+            if (better) {
                 if (bestAiPrediction != null) {
                     bestAiPrediction.setBestMove(false);
                 }
@@ -221,7 +232,7 @@ public class MinMaxBFS extends MinMax {
         nodeRoundsByHeight.computeIfAbsent(nodeRound.getTreeHeight(), k -> new ArrayList<>());
         nodeRoundsByHeight.get(nodeRound.getTreeHeight()).add(nodeRound);
 
-        if (iteration > systemParameterManager.getIntegerParameterValue(minMaxIteration)) {
+        if (iteration > systemParameterManager.getIntegerParameterValue(minMaxIteration) / threadCount) {
             return;
         }
         Round round = nodeRound.getRound();

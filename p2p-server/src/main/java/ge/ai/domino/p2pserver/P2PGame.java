@@ -4,7 +4,7 @@ import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveType;
-import ge.ai.domino.domain.p2p.Command;
+import ge.ai.domino.domain.command.P2PCommand;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -63,16 +63,16 @@ public class P2PGame implements Runnable {
             try {
                 boolean finished = false;
                 while (!finished) {
-                    Command command = (Command) ois.readObject();
+                    P2PCommand command = (P2PCommand) ois.readObject();
                     logger.info("Get command " + command.name() + ", firstPlayer[" + firstPlayer + "]");
                     switch (command) {
                         case GET_GAME_PROPERTIES:
-                            synchronized (Command.GET_GAME_PROPERTIES) {
+                            synchronized (P2PCommand.GET_GAME_PROPERTIES) {
                                 myOutputStream.writeObject(gameProperties);
                                 break;
                             }
                         case CAN_NOT_LISTEN_PLAY_COMMAND:
-                            synchronized (Command.CAN_NOT_LISTEN_PLAY_COMMAND) {
+                            synchronized (P2PCommand.CAN_NOT_LISTEN_PLAY_COMMAND) {
                                 if (firstPlayer) {
                                     firstPlayerCanListenPlayCommand = false;
                                 } else {
@@ -81,7 +81,7 @@ public class P2PGame implements Runnable {
                             }
                             break;
                         case CAN_LISTEN_PLAY_COMMAND:
-                            synchronized (Command.CAN_LISTEN_PLAY_COMMAND) {
+                            synchronized (P2PCommand.CAN_LISTEN_PLAY_COMMAND) {
                                 if (firstPlayer) {
                                     firstPlayerCanListenPlayCommand = true;
                                 } else {
@@ -90,7 +90,7 @@ public class P2PGame implements Runnable {
                             }
                             break;
                         case PLAY:
-                            synchronized (Command.PLAY) {
+                            synchronized (P2PCommand.PLAY) {
                                 sleepWhileCantListen(firstPlayer);
                                 MoveType moveType = (MoveType) ois.readObject();
                                 Move move = (Move) ois.readObject();
@@ -99,14 +99,14 @@ public class P2PGame implements Runnable {
                             }
                             break;
                         case GET_RANDOM_TILE:
-                            synchronized (Command.GET_RANDOM_TILE) {
+                            synchronized (P2PCommand.GET_RANDOM_TILE) {
                                 Tile tile = gameData.getRandomTileAndAddInSet(firstPlayer);
                                 logger.info("Random tile is " + tile);
                                 myOutputStream.writeObject(tile);
                             }
                             break;
                         case GET_RANDOM_TILE_ADDITIONAL_TRY:
-                            synchronized (Command.GET_RANDOM_TILE_ADDITIONAL_TRY) {
+                            synchronized (P2PCommand.GET_RANDOM_TILE_ADDITIONAL_TRY) {
                                 gameData.addLastDeletedTile();
                                 Tile tileForAdd = gameData.getRandomTileAndAddInSet(firstPlayer);
                                 logger.info("Random tile is " + tileForAdd);
@@ -114,7 +114,7 @@ public class P2PGame implements Runnable {
                             }
                             break;
                         case GET_GAME_BEGINNER:
-                            synchronized (Command.GET_GAME_BEGINNER) {
+                            synchronized (P2PCommand.GET_GAME_BEGINNER) {
                                 sleepWhileNotPickAllInitialTile();
                                 boolean isFirstStarter = gameData.isFirstStarter();
                                 if (firstPlayer) {
@@ -125,12 +125,12 @@ public class P2PGame implements Runnable {
                             }
                             break;
                         case RESET_GAME_DATA_BAZAAR:
-                            synchronized (Command.RESET_GAME_DATA_BAZAAR) {
+                            synchronized (P2PCommand.RESET_GAME_DATA_BAZAAR) {
                                 gameData.initTiles();
                             }
                             break;
                         case RESET_GAME_DATA_OPPONENT_TILES:
-                            synchronized (Command.RESET_GAME_DATA_OPPONENT_TILES) {
+                            synchronized (P2PCommand.RESET_GAME_DATA_OPPONENT_TILES) {
                                 if (firstPlayer) {
                                     gameData.setTiles2(new HashSet<>());
                                 } else {
@@ -139,7 +139,7 @@ public class P2PGame implements Runnable {
                             }
                             break;
                         case GET_OPPONENT_TILES:
-                            synchronized (Command.GET_OPPONENT_TILES) {
+                            synchronized (P2PCommand.GET_OPPONENT_TILES) {
                                 Set<Tile> tiles;
                                 if (firstPlayer) {
                                     tiles = gameData.getTiles2();
@@ -151,7 +151,7 @@ public class P2PGame implements Runnable {
                             }
                             break;
                         case FINISH:
-                            synchronized (Command.FINISH) {
+                            synchronized (P2PCommand.FINISH) {
                                 finished = true;
                                 if (firstPlayer) {
                                     closeConnection(player1, ois1, oos1);

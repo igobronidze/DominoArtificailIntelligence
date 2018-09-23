@@ -153,7 +153,17 @@ public class MinMaxDFS extends MinMax {
 			aiPrediction.setMove(move);
 			aiPrediction.setHeuristicValue(heuristic);
 			aiPredictions.add(aiPrediction);
-			if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
+			boolean better = false;
+			if (nodeRound.getRound().getTableInfo().isMyMove()) {
+				if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
+					better = true;
+				}
+			} else {
+				if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() > aiPrediction.getHeuristicValue()) {
+					better = true;
+				}
+			}
+			if (better) {
 				if (bestAiPrediction != null) {
 					bestAiPrediction.setBestMove(false);
 				}

@@ -1,16 +1,25 @@
-package ge.ai.domino.domain.game.ai;
+package ge.ai.domino.manager.game.ai.minmax;
 
 import ge.ai.domino.domain.move.Move;
 
-import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-public class AiPrediction implements Serializable {
+public class CachedPrediction {
+
+    private Map<Move, CachedPrediction> children = new HashMap<>();
 
     private Move move;
 
     private double heuristicValue;
 
-    private boolean bestMove;
+    public Map<Move, CachedPrediction> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Map<Move, CachedPrediction> children) {
+        this.children = children;
+    }
 
     public Move getMove() {
         return move;
@@ -26,13 +35,5 @@ public class AiPrediction implements Serializable {
 
     public void setHeuristicValue(double heuristicValue) {
         this.heuristicValue = heuristicValue;
-    }
-
-    public boolean isBestMove() {
-        return bestMove;
-    }
-
-    public void setBestMove(boolean bestMove) {
-        this.bestMove = bestMove;
     }
 }

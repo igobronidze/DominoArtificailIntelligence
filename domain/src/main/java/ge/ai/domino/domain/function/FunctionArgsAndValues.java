@@ -1,9 +1,10 @@
 package ge.ai.domino.domain.function;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FunctionArgsAndValues {
+public class FunctionArgsAndValues implements Serializable {
 
 	private String name;
 
@@ -37,5 +38,14 @@ public class FunctionArgsAndValues {
 
 	public void setValues(List<Double> values) {
 		this.values = values;
+	}
+
+	@Override
+	public String toString() {
+		return "FunctionArgsAndValues{" +
+				"name='" + name + '\'' +
+				", args=" + args +
+				", values=" + values +
+				'}';
 	}
 }

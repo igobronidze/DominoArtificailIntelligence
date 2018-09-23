@@ -11,17 +11,27 @@ public class MinMaxFactory {
 
 	private static final SysParam minMaxType = new SysParam("minMaxType", "DFS");
 
-	public static MinMax getMinMax() {
+	private static final SysParam useMultithreadingMinMax = new SysParam("useMultithreadingMinMax", "true");
+
+	public static MinMax getMinMax(boolean useMultithreading) {
 		String type = systemParameterManager.getStringParameterValue(minMaxType);
 
 		MinMax minMaxDFS = new MinMaxDFS();
 		MinMax minMaxBFS = new MinMaxBFS();
 
+		MinMax result = minMaxBFS;
+
 		if (type.equals(minMaxDFS.getType())) {
-			return minMaxDFS;
+			result = minMaxDFS;
 		} else if (type.equals(minMaxBFS.getType())) {
-			return minMaxBFS;
+			result = minMaxBFS;
 		}
-		return minMaxBFS;
+
+		if (useMultithreading && systemParameterManager.getBooleanParameterValue(useMultithreadingMinMax)) {
+			result.setMultithreadingMinMax(true);
+			result = new MultithreadedMinMax(result);
+		}
+
+		return result;
 	}
 }

@@ -18,6 +18,8 @@ import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.service.initial.InitialDataService;
 import ge.ai.domino.service.initial.InitialDataServiceImpl;
+import ge.ai.domino.service.multithreading.MultithreadingServerService;
+import ge.ai.domino.service.multithreading.MultithreadingServerServiceImpl;
 import ge.ai.domino.service.p2p.P2PClientService;
 import ge.ai.domino.service.p2p.P2PClientServiceImpl;
 import ge.ai.domino.service.p2p.P2PServerService;
@@ -54,6 +56,8 @@ public class ControlPanelMenuBar extends MenuBar {
 
     private final P2PClientService p2PClientService = new P2PClientServiceImpl();
 
+    private final MultithreadingServerService multithreadingServerService = new MultithreadingServerServiceImpl();
+
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
     private InitialDataService initialDataService = new InitialDataServiceImpl();
@@ -73,13 +77,13 @@ public class ControlPanelMenuBar extends MenuBar {
     }
 
     private void initMenu() {
-        Menu fileMenu = getFileMenu();
-        Menu controlPanelMenu = getControlPanelMenu();
-        Menu actionsMenu = getActionsMenu();
-        Menu p2pMenu = getP2PMenu();
-        Menu langMenu = getLangMenu();
-        Menu helpMenu = getHelpMenu();
-        this.getMenus().addAll(fileMenu, controlPanelMenu, actionsMenu, p2pMenu, langMenu, helpMenu);
+        this.getMenus().addAll(
+                getFileMenu(),
+                getControlPanelMenu(),
+                getActionsMenu(),
+                getP2PMenu(),
+                getLangMenu(),
+                getHelpMenu());
     }
 
     private Menu getHelpMenu() {
@@ -185,7 +189,13 @@ public class ControlPanelMenuBar extends MenuBar {
             stage.show();
         });
 
-        actionMenu.getItems().addAll(replayGameMenuItem, initialExtraMovesMenuItem);
+        MenuItem startServerMenuItem = new MenuItem(Messages.get("startMultithreadingServer"));
+        startServerMenuItem.setOnAction(e -> new Thread(() -> ServiceExecutor.execute(multithreadingServerService::startServer)).start());
+
+        MenuItem stopServerMenuItem = new MenuItem(Messages.get("stopMultithreadingServer"));
+        stopServerMenuItem.setOnAction(e -> new Thread(() -> ServiceExecutor.execute(multithreadingServerService::stopServer)).start());
+
+        actionMenu.getItems().addAll(replayGameMenuItem, initialExtraMovesMenuItem, startServerMenuItem, stopServerMenuItem);
         return actionMenu;
     }
 

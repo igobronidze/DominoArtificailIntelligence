@@ -1,6 +1,8 @@
 package ge.ai.domino.domain.game;
 
-public class RoundBlockingInfo {
+import java.io.Serializable;
+
+public class RoundBlockingInfo implements Serializable {
 
     private boolean omitMe;
 

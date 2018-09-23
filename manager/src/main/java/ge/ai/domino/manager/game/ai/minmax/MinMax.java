@@ -55,7 +55,7 @@ public abstract class MinMax implements AiSolver {
 
 	protected boolean multithreadingMinMax;
 
-	protected int threadCount;
+	protected int threadCount = 1;
 
 	public void setMultithreadingMinMax(boolean multithreadingMinMax) {
 		this.multithreadingMinMax = multithreadingMinMax;

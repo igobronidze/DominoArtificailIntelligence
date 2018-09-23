@@ -82,6 +82,8 @@ public class MultithreadedMinMax extends MinMax {
         }
 
         try {
+            CachedPrediction cachedPrediction = new CachedPrediction();
+
             List<Future<Map.Entry<List<Move>, List<AiPredictionsWrapper>>>> aiPredictionWrappers = executorService.invokeAll(callableList);
 
             AiPredictionsWrapper result = new AiPredictionsWrapper();
@@ -111,6 +113,9 @@ public class MultithreadedMinMax extends MinMax {
                             }
                         }
                     }
+
+                    cachedPrediction.getChildren().put(move, getCachedPrediction(aiPredictionsWrapper, move));
+
                     logger.info("PlayedMove: " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + aiPrediction.getHeuristicValue());
                     result.getAiPredictions().add(aiPrediction);
                 }
@@ -121,11 +126,24 @@ public class MultithreadedMinMax extends MinMax {
             logger.info("AIPrediction is [" + bestPrediction.getMove().getLeft() + "-" + bestPrediction.getMove().getRight() + " " +
                     bestPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestPrediction.getHeuristicValue());
 
+            CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), cachedPrediction, true);
             return result;
         } catch (Exception ex) {
             logger.error("Error occurred while execute multithreaded minmax", ex);
             throw new DAIException("unexpectedError");
         }
+    }
+
+    private CachedPrediction getCachedPrediction(AiPredictionsWrapper aiPredictionsWrapper, Move move) {
+        CachedPrediction cachedPrediction = new CachedPrediction();
+        cachedPrediction.setMove(move);
+        for (AiPrediction aiPrediction : aiPredictionsWrapper.getAiPredictions()) {
+            CachedPrediction prediction = new CachedPrediction();
+            prediction.setMove(aiPrediction.getMove());
+            prediction.setHeuristicValue(aiPrediction.getHeuristicValue());
+            cachedPrediction.getChildren().put(aiPrediction.getMove(), prediction);
+        }
+        return cachedPrediction;
     }
 
     private Map.Entry<List<Move>, List<AiPredictionsWrapper>> getOwnPredictions(List<Move> moves, List<Round> rounds) throws Exception {

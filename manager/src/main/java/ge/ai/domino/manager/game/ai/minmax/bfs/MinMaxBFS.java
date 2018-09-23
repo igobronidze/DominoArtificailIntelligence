@@ -13,6 +13,7 @@ import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicFactory;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicHelper;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
@@ -95,7 +96,7 @@ public class MinMaxBFS extends MinMax {
         nodeRoundsQueue = null;
 
         applyBottomUpMinMax();
-        CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, false);
+        CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 1), false);
         logger.info("MinMaxBFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + " ms");
     }
 
@@ -123,9 +124,9 @@ public class MinMaxBFS extends MinMax {
                             int gameId = nodeRound.getRound().getGameInfo().getGameId();
                             if (CachedMinMax.isUseFirstChild(gameId)) {
                                 CachedMinMax.changeUseFirstChild(gameId, false);
-                                CachedMinMax.setLastNodeRound(gameId, nodeRound.getChildren().get(0), false);
+                                CachedMinMax.setCachedPrediction(gameId, CachedPrediction.getCachedPrediction(nodeRound.getChildren().get(0), 1), false);
                             } else {
-                                CachedMinMax.setLastNodeRound(gameId, nodeRound, true);
+                                CachedMinMax.setCachedPrediction(gameId, CachedPrediction.getCachedPrediction(nodeRound, 2), true);
                             }
                         }
                         CachedMinMax.changeMinMaxInProgress(gameId, false);
@@ -144,7 +145,7 @@ public class MinMaxBFS extends MinMax {
         } else {
             AiPredictionsWrapper aiPredictionsWrapper = minMaxForMoves(moves, nodeRound, ms);
             if (new MinMaxPredictor().usePredictor() && !multithreadingMinMax) {
-                CachedMinMax.setLastNodeRound(nodeRound.getRound().getGameInfo().getGameId(), nodeRound, true);
+                CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
             }
             return aiPredictionsWrapper;
         }

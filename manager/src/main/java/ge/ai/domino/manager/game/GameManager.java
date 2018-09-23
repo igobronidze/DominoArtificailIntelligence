@@ -155,7 +155,7 @@ public class GameManager {
         logger.info("Start getLastPlayedRound method, gameId[" + gameId + "]");
         Round newRound = CachedGames.getAndRemoveLastRound(gameId);
         CachedGames.removeLastMove(gameId);
-        CachedMinMax.setLastNodeRound(gameId, null, false);
+        CachedMinMax.setCachedPrediction(gameId, null, false);
         logger.info("Undo last game round, gameId[" + gameId + "]");
         return newRound;
     }
@@ -320,15 +320,15 @@ public class GameManager {
         if (CachedMinMax.isMinMaxInProgress(gameId)) {
             CachedMinMax.changeUseFirstChild(gameId, true);
         } else if (CachedMinMax.needChange(gameId)) {
-            NodeRound nodeRound = CachedMinMax.getNodeRound(gameId);
-            if (nodeRound != null) {
-                for (NodeRound child : nodeRound.getChildren()) {
-                    if (TileAndMoveHelper.equalWithHash(move, child.getLastPlayedMove(), nodeRound.getRound().getTableInfo())) {
-                        CachedMinMax.setLastNodeRound(gameId, child, false);
+            CachedPrediction cachedPrediction = CachedMinMax.getCachePrediction(gameId);
+            if (cachedPrediction != null) {
+                for (CachedPrediction child : cachedPrediction.getChildren().values()) {
+                    if (child.getMove().equals(move)) {
+                        CachedMinMax.setCachedPrediction(gameId, child, false);
                         return;
                     }
                 }
-                logger.warn("Can't find node round for change in MinMax cache, move[" + move + "]");
+                logger.warn("Can't find cached prediction for change in MinMax cache, move[" + move + "]");
                 throw new DAIException("cantChangeNodeRound");
             }
         }

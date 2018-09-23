@@ -5,12 +5,11 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
-import ge.ai.domino.manager.game.ai.minmax.NodeRound;
+import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
-import ge.ai.domino.serverutil.TileAndMoveHelper;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -28,17 +27,17 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 
 	@Override
 	public void predict(Round round, Move move) throws DAIException {
-		NodeRound nodeRound = CachedMinMax.getNodeRound(round.getGameInfo().getGameId());
-		if (nodeRound == null) {
-			logger.warn("Last node round is null");
+		CachedPrediction cachedPrediction = CachedMinMax.getCachePrediction(round.getGameInfo().getGameId());
+		if (cachedPrediction == null) {
+			logger.warn("Last cached prediction is null");
 			return;
 		}
 
 		double playedHeuristic = 0.0;
 		boolean heuristicFounded = false;
-		for (NodeRound child : nodeRound.getChildren()) {
-			if (TileAndMoveHelper.equalWithHash(move, child.getLastPlayedMove(), nodeRound.getRound().getTableInfo())) {
-				playedHeuristic = child.getHeuristic();
+		for (CachedPrediction child : cachedPrediction.getChildren().values()) {
+			if (move.equals(child.getMove())) {
+				playedHeuristic = child.getHeuristicValue();
 				heuristicFounded = true;
 			}
 		}
@@ -48,9 +47,9 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 		}
 
 		Map<Move, Double> balancedHeuristic = new HashMap<>();
-		for (NodeRound child : nodeRound.getChildren()) {
-			if (!TileAndMoveHelper.equalWithHash(move, child.getLastPlayedMove(), nodeRound.getRound().getTableInfo())) {
-				balancedHeuristic.put(TileAndMoveHelper.getMove(child.getLastPlayedMove()), playedHeuristic - child.getHeuristic());
+		for (CachedPrediction child : cachedPrediction.getChildren().values()) {
+			if (!move.equals(child.getMove())) {
+				balancedHeuristic.put(child.getMove(), playedHeuristic - child.getHeuristicValue());
 			}
 		}
 

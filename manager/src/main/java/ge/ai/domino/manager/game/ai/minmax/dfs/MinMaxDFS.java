@@ -20,6 +20,7 @@ import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
+import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.helper.game.MoveHelper;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
 import ge.ai.domino.manager.game.move.AddForMeProcessorVirtual;
@@ -86,7 +87,7 @@ public class MinMaxDFS extends MinMax {
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
 		nodeRound.setHeuristic(getHeuristicValue(nodeRound, 2));   // height -1
-		CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 1), false);
+		CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), GameOperations.fillCachedPrediction(round, CachedPrediction.getCachedPrediction(nodeRound, 1)), false);
 		logger.info("MinMaxDFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + "ms");
 	}
 
@@ -98,7 +99,7 @@ public class MinMaxDFS extends MinMax {
 	@SuppressWarnings("Duplicates")
 	private AiPredictionsWrapper minMax(NodeRound nodeRound) throws DAIException {
 		long ms = System.currentTimeMillis();
-		List<Move> moves = getPossibleMoves(nodeRound.getRound());
+		List<Move> moves = GameOperations.getPossibleMoves(nodeRound.getRound(), false);
 		logger.info("Ai predictions:");
 		if (moves.isEmpty()) {
 			logger.info("No AIPrediction");
@@ -215,7 +216,7 @@ public class MinMaxDFS extends MinMax {
 			return nodeRound.getHeuristic();
 		}
 
-		List<Move> moves = getPossibleMoves(round);
+		List<Move> moves = GameOperations.getPossibleMoves(round, false);
 		if (round.getTableInfo().isMyMove()) {
 			// Best move for me
 			NodeRound bestNodeRound = null;

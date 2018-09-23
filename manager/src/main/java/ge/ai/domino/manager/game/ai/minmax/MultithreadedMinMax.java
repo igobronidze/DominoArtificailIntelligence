@@ -5,6 +5,7 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.move.Move;
+import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.move.MoveProcessor;
 import ge.ai.domino.manager.game.move.PlayForMeProcessorVirtual;
 import ge.ai.domino.manager.multithreadingserver.Server;
@@ -46,7 +47,7 @@ public class MultithreadedMinMax extends MinMax {
     @Override
     public AiPredictionsWrapper solve(Round round) throws DAIException {
         long ms = System.currentTimeMillis();
-        List<Move> moves = getPossibleMoves(round);
+        List<Move> moves = GameOperations.getPossibleMoves(round, false);
         logger.info("Start MultithreadedMinMax solve method, movesCount[" + moves.size() + "]");
         if (moves.size() == 1) {
             return minMax.solve(round);
@@ -150,6 +151,7 @@ public class MultithreadedMinMax extends MinMax {
         List<AiPredictionsWrapper> aiPredictionsWrappers = new ArrayList<>();
         for (Round round : rounds) {
             MinMax ownMinMax = minMax.getClass().newInstance();
+            ownMinMax.setMultithreadingMinMax(true);
             ownMinMax.setThreadCount(rounds.size());
             aiPredictionsWrappers.add(ownMinMax.solve(round));
         }

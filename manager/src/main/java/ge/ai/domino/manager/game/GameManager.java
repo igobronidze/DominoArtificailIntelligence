@@ -131,7 +131,7 @@ public class GameManager {
         CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move));
 
         if (new MinMaxPredictor().usePredictor()) {
-            changeCachedNodeRound(gameId, move);
+            changeCachedNodeRound(gameId, move, round);
         }
 
         return newRound;
@@ -316,7 +316,7 @@ public class GameManager {
         return opponentTilesWrapper;
     }
 
-    private void changeCachedNodeRound(int gameId, Move move) throws DAIException {
+    private void changeCachedNodeRound(int gameId, Move move, Round round) throws DAIException {
         if (CachedMinMax.isMinMaxInProgress(gameId)) {
             CachedMinMax.changeUseFirstChild(gameId, true);
         } else if (CachedMinMax.needChange(gameId)) {
@@ -324,7 +324,7 @@ public class GameManager {
             if (cachedPrediction != null) {
                 for (CachedPrediction child : cachedPrediction.getChildren().values()) {
                     if (child.getMove().equals(move)) {
-                        CachedMinMax.setCachedPrediction(gameId, child, false);
+                        CachedMinMax.setCachedPrediction(gameId, GameOperations.fillCachedPrediction(round, child), false);
                         return;
                     }
                 }

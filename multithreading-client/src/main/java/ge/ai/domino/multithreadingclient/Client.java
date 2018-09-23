@@ -46,7 +46,7 @@ public class Client {
                 socket.close();
             }
         } catch (IOException ex) {
-            logger.error("Can't connect multithreading server, host[" + host + "], port" + port + "], timeout[" + TIMEOUT + "]", ex);
+            logger.error("Can't connect multithreading server, host[" + host + "], port[" + port + "], timeout[" + TIMEOUT + "]", ex);
             throw new DAIException("cantConnectMultithreadingServer");
         }
     }

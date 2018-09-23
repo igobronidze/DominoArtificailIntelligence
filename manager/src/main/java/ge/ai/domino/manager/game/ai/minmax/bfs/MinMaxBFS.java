@@ -19,6 +19,7 @@ import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.manager.game.helper.filter.OpponentTilesFilter;
+import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.helper.game.MoveHelper;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
 import ge.ai.domino.manager.game.move.AddForMeProcessorVirtual;
@@ -96,7 +97,7 @@ public class MinMaxBFS extends MinMax {
         nodeRoundsQueue = null;
 
         applyBottomUpMinMax();
-        CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 1), false);
+        CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), GameOperations.fillCachedPrediction(round, CachedPrediction.getCachedPrediction(nodeRound, 1)), false);
         logger.info("MinMaxBFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + " ms");
     }
 
@@ -108,7 +109,7 @@ public class MinMaxBFS extends MinMax {
     @SuppressWarnings("Duplicates")
     private AiPredictionsWrapper minMax(NodeRound nodeRound) throws DAIException {
         long ms = System.currentTimeMillis();
-        List<Move> moves = getPossibleMoves(nodeRound.getRound());
+        List<Move> moves = GameOperations.getPossibleMoves(nodeRound.getRound(), false);
         logger.info("Ai predictions:");
         if (moves.isEmpty()) {
             logger.info("No AIPrediction");
@@ -124,7 +125,7 @@ public class MinMaxBFS extends MinMax {
                             int gameId = nodeRound.getRound().getGameInfo().getGameId();
                             if (CachedMinMax.isUseFirstChild(gameId)) {
                                 CachedMinMax.changeUseFirstChild(gameId, false);
-                                CachedMinMax.setCachedPrediction(gameId, CachedPrediction.getCachedPrediction(nodeRound.getChildren().get(0), 1), false);
+                                CachedMinMax.setCachedPrediction(gameId, GameOperations.fillCachedPrediction(nodeRound.getRound(), CachedPrediction.getCachedPrediction(nodeRound.getChildren().get(0), 1)), false);
                             } else {
                                 CachedMinMax.setCachedPrediction(gameId, CachedPrediction.getCachedPrediction(nodeRound, 2), true);
                             }
@@ -242,7 +243,7 @@ public class MinMaxBFS extends MinMax {
             return;
         }
 
-        List<Move> moves = getPossibleMoves(round);
+        List<Move> moves = GameOperations.getPossibleMoves(round, false);
         if (round.getTableInfo().isMyMove()) {
             if (!moves.isEmpty()) {
                 for (Move move : moves) {

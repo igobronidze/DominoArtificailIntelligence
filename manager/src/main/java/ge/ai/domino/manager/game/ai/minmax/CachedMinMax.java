@@ -22,7 +22,7 @@ public class CachedMinMax {
 
 	public synchronized static void setCachedPrediction(int gameId, CachedPrediction cachedPrediction, boolean needChange) {
 		CachedMinMax.cachedPrediction.put(gameId, cachedPrediction);
-		needChangesMap.putIfAbsent(gameId, needChange);
+		needChangesMap.put(gameId, needChange);
 	}
 
 	public synchronized static CachedPrediction getCachePrediction(int gameId) {

@@ -64,7 +64,7 @@ public class ClientManager {
                         logger.info("Get gameInitialData");
 
                         Game game = new Game();
-                        game.setId(gameInitialData.getGameId() + 1000);  //TODO[IG] test
+                        game.setId(gameInitialData.getGameId() + 1000);
                         GameProperties gameProperties = new GameProperties();
                         gameProperties.setPointsForWin(gameInitialData.getPointsForWin());
                         gameProperties.setChannel(new Channel());
@@ -77,7 +77,7 @@ public class ClientManager {
 
                         List<AiPredictionsWrapper> aiPredictionsWrappers = new ArrayList<>();
                         for (Round round : rounds) {
-                            round.getGameInfo().setGameId(round.getGameInfo().getGameId() + 1000); //TODO[IG] test
+                            round.getGameInfo().setGameId(round.getGameInfo().getGameId() + 1000);
                             MinMax minMax = MinMaxFactory.getMinMax(false);
                             minMax.setThreadCount(rounds.size());
                             aiPredictionsWrappers.add(minMax.solve(round));

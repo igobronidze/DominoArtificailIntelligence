@@ -22,15 +22,15 @@ public class TileAndMoveHelper {
 		return (playedTile.getOpenSide() + 1) * (playedTile.isTwin() ? p : 1);
 	}
 
-	public static boolean equalWithHash(Move move, PlayedMove playedMove, TableInfo tableInfo) {
-		if (move.getLeft() != playedMove.getLeft() || move.getRight() != playedMove.getRight()) {
+	public static boolean equalWithHash(Move move1, Move move2, TableInfo tableInfo) {
+		if (move1.getLeft() != move2.getLeft() || move1.getRight() != move2.getRight()) {
 			return false;
 		}
-		if (move.getDirection() == playedMove.getDirection()) {
+		if (move1.getDirection() == move2.getDirection()) {
 			return true;
 		}
-		PlayedTile playedTile = getPlayedTile(tableInfo, playedMove.getDirection());
-		PlayedTile mayBePlayedTile = getPlayedTile(tableInfo, move.getDirection());
+		PlayedTile playedTile = getPlayedTile(tableInfo, move2.getDirection());
+		PlayedTile mayBePlayedTile = getPlayedTile(tableInfo, move1.getDirection());
 		return playedTile != null && mayBePlayedTile != null && hashForPlayedTile(playedTile) == hashForPlayedTile(mayBePlayedTile);
 	}
 

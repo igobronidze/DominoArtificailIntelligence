@@ -18,6 +18,14 @@ public class CachedSystemParameter {
 
     private static Map<String,String> cachedParameters;
 
+    public static Map<String, String> getCachedParameters() {
+        return cachedParameters;
+    }
+
+    public static void setCachedParameters(Map<String, String> cachedParameters) {
+        CachedSystemParameter.cachedParameters = cachedParameters;
+    }
+
     public static String getStringParameterValue(SysParam parameter) {
         if (cachedParameters == null) {
             reloadParams();

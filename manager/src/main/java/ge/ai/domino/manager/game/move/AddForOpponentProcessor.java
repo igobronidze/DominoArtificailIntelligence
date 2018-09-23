@@ -33,7 +33,7 @@ public class AddForOpponentProcessor extends MoveProcessor {
 				if (tableInfo.getTilesFromBazaar() > 0) {
 					ProbabilitiesDistributor.updateProbabilitiesForLastPickedTiles(round, false, false);
 				}
-				round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
+				round.setAiPredictions(MinMaxFactory.getMinMax(true).solve(round));
 			}
 
 			logger.info("Opponent omitted, gameId[" + gameId + "]");

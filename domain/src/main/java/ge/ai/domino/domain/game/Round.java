@@ -2,12 +2,13 @@ package ge.ai.domino.domain.game;
 
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Round {
+public class Round implements Serializable {
 
     private Set<Tile> myTiles = new HashSet<>();
 

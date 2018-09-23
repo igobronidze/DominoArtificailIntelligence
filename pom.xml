@@ -44,6 +44,7 @@
                 <module>p2p-server</module>
                 <module>p2p-client</module>
                 <module>math</module>
+                <module>multithreading-client</module>
             </modules>
         </profile>
     </profiles>

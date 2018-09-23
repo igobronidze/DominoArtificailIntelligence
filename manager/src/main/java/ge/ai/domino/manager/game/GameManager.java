@@ -3,6 +3,7 @@ package ge.ai.domino.manager.game;
 import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
+import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
@@ -13,7 +14,9 @@ import ge.ai.domino.domain.game.opponentplay.OpponentTilesWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
+import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
@@ -28,6 +31,8 @@ import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.manager.game.validator.MoveValidator;
 import ge.ai.domino.manager.game.validator.OpponentTilesValidator;
 import ge.ai.domino.manager.imageprocessing.TilesDetectorManager;
+import ge.ai.domino.manager.multithreadingserver.Server;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
@@ -60,6 +65,10 @@ public class GameManager {
 
     private final TilesDetectorManager tilesDetectorManager = new TilesDetectorManager();
 
+    private final SystemParameterManager systemParameterManager = new SystemParameterManager();
+
+    private final SysParam useMultithreadingMinMax = new SysParam("useMultithreadingMinMax", "true");
+
     private static final String LOG_IMAGES_DIRECTORY_PATH = "log/images";
 
     public Round startGame(GameProperties gameProperties) {
@@ -71,6 +80,16 @@ public class GameManager {
         logger.info("Opponent Name: " + game.getProperties().getOpponentName() + "     |     " + "Channel: " + game.getProperties().getChannel().getName() + "     |     " +
         "Point for win: " + game.getProperties().getPointsForWin());
         Round newRound = CachedGames.getCurrentRound(game.getId(), false);
+
+        if (systemParameterManager.getBooleanParameterValue(useMultithreadingMinMax)) {
+            Server server = Server.getInstance();
+
+            GameInitialData gameInitialData = new GameInitialData();
+            gameInitialData.setGameId(game.getId());
+            gameInitialData.setPointsForWin(gameProperties.getPointsForWin());
+            server.initGame(gameInitialData);
+        }
+
         RoundLogger.logRoundFullInfo(newRound);
         return newRound;
     }
@@ -136,7 +155,7 @@ public class GameManager {
         logger.info("Start getLastPlayedRound method, gameId[" + gameId + "]");
         Round newRound = CachedGames.getAndRemoveLastRound(gameId);
         CachedGames.removeLastMove(gameId);
-        CachedMinMax.setLastNodeRound(gameId, null, false);
+        CachedMinMax.setCachedPrediction(gameId, null, false);
         logger.info("Undo last game round, gameId[" + gameId + "]");
         return newRound;
     }
@@ -301,15 +320,15 @@ public class GameManager {
         if (CachedMinMax.isMinMaxInProgress(gameId)) {
             CachedMinMax.changeUseFirstChild(gameId, true);
         } else if (CachedMinMax.needChange(gameId)) {
-            NodeRound nodeRound = CachedMinMax.getNodeRound(gameId);
-            if (nodeRound != null) {
-                for (NodeRound child : nodeRound.getChildren()) {
-                    if (TileAndMoveHelper.equalWithHash(move, child.getLastPlayedMove(), nodeRound.getRound().getTableInfo())) {
-                        CachedMinMax.setLastNodeRound(gameId, child, false);
+            CachedPrediction cachedPrediction = CachedMinMax.getCachePrediction(gameId);
+            if (cachedPrediction != null) {
+                for (CachedPrediction child : cachedPrediction.getChildren().values()) {
+                    if (child.getMove().equals(move)) {
+                        CachedMinMax.setCachedPrediction(gameId, child, false);
                         return;
                     }
                 }
-                logger.warn("Can't find node round for change in MinMax cache, move[" + move + "]");
+                logger.warn("Can't find cached prediction for change in MinMax cache, move[" + move + "]");
                 throw new DAIException("cantChangeNodeRound");
             }
         }

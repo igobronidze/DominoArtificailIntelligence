@@ -37,7 +37,7 @@ public class AddForMeProcessor extends MoveProcessor {
 			} else {
 				round.getTableInfo().setMyMove(false);
 				if (new MinMaxPredictor().usePredictor()) {
-					MinMaxFactory.getMinMax().minMaxForCachedNodeRound(round);
+					MinMaxFactory.getMinMax(true).minMaxForCachedNodeRound(round);
 				}
 			}
 			logger.info("I omitted, gameId[" + gameId + "]");
@@ -61,10 +61,10 @@ public class AddForMeProcessor extends MoveProcessor {
 		if (tableInfo.getLeft() == null && round.getMyTiles().size() == 7) {
 			round.getTableInfo().setMyMove(!CachedGames.isOpponentNextRoundBeginner(gameId));
 			if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove()) {
-				round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
+				round.setAiPredictions(MinMaxFactory.getMinMax(true).solve(round));
 			}
 		} else if (round.getTableInfo().getLeft() != null) {
-			round.setAiPredictions(MinMaxFactory.getMinMax().solve(CloneUtil.getClone(round))); // TODO[IG] Clone may fix mystical bug
+			round.setAiPredictions(MinMaxFactory.getMinMax(true).solve(CloneUtil.getClone(round)));
 		}
 
 		logger.info("Added tile for me, gameId[" + gameId + "]");

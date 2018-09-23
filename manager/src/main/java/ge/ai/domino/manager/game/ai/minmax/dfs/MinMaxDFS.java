@@ -15,6 +15,7 @@ import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicFactory;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicHelper;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
@@ -85,7 +86,7 @@ public class MinMaxDFS extends MinMax {
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
 		nodeRound.setHeuristic(getHeuristicValue(nodeRound, 2));   // height -1
-		CachedMinMax.setLastNodeRound(round.getGameInfo().getGameId(), nodeRound, false);
+		CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 1), false);
 		logger.info("MinMaxDFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + "ms");
 	}
 
@@ -110,7 +111,7 @@ public class MinMaxDFS extends MinMax {
 						CachedMinMax.changeMinMaxInProgress(gameId, true);
 						minMaxForMoves(moves, nodeRound, ms);
 						if (new MinMaxPredictor().usePredictor()) {
-							CachedMinMax.setLastNodeRound(nodeRound.getRound().getGameInfo().getGameId(), nodeRound, true);
+							CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
 						}
 						CachedMinMax.changeMinMaxInProgress(gameId, false);
 					} catch (DAIException ex) {
@@ -128,7 +129,7 @@ public class MinMaxDFS extends MinMax {
 		} else {
 			AiPredictionsWrapper aiPredictionsWrapper = minMaxForMoves(moves, nodeRound, ms);
 			if (new MinMaxPredictor().usePredictor()) {
-				CachedMinMax.setLastNodeRound(nodeRound.getRound().getGameInfo().getGameId(), nodeRound, true);
+				CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
 			}
 			return aiPredictionsWrapper;
 		}
@@ -153,7 +154,17 @@ public class MinMaxDFS extends MinMax {
 			aiPrediction.setMove(move);
 			aiPrediction.setHeuristicValue(heuristic);
 			aiPredictions.add(aiPrediction);
-			if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
+			boolean better = false;
+			if (nodeRound.getRound().getTableInfo().isMyMove()) {
+				if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
+					better = true;
+				}
+			} else {
+				if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() > aiPrediction.getHeuristicValue()) {
+					better = true;
+				}
+			}
+			if (better) {
 				if (bestAiPrediction != null) {
 					bestAiPrediction.setBestMove(false);
 				}

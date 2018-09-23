@@ -53,6 +53,18 @@ public abstract class MinMax implements AiSolver {
 
 	private String errorMsgKey;
 
+	protected boolean multithreadingMinMax;
+
+	protected int threadCount = 1;
+
+	public void setMultithreadingMinMax(boolean multithreadingMinMax) {
+		this.multithreadingMinMax = multithreadingMinMax;
+	}
+
+	public void setThreadCount(int threadCount) {
+		this.threadCount = threadCount;
+	}
+
 	public abstract void minMaxForCachedNodeRound(Round round) throws DAIException;
 
 	public abstract String getType();

@@ -2,7 +2,9 @@ package ge.ai.domino.domain.game;
 
 import ge.ai.domino.domain.played.PlayedTile;
 
-public class TableInfo {
+import java.io.Serializable;
+
+public class TableInfo implements Serializable {
 
     private PlayedTile top;
 

@@ -1,6 +1,8 @@
 package ge.ai.domino.domain.played;
 
-public class PlayedTile {
+import java.io.Serializable;
+
+public class PlayedTile implements Serializable {
 
     private int openSide;
 

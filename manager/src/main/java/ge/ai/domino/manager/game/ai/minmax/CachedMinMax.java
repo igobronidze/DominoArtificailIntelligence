@@ -5,28 +5,28 @@ import java.util.Map;
 
 public class CachedMinMax {
 
-	private static Map<Integer, NodeRound> lastNodeRounds = new HashMap<>();
-
 	private static Map<Integer, Boolean> needChangesMap = new HashMap<>();
 
 	private static Map<Integer, Boolean> minMaxInProgressMap = new HashMap<>();
 
 	private static Map<Integer, Boolean> useFirstChildMap = new HashMap<>();
 
+	private static Map<Integer, CachedPrediction> cachedPrediction = new HashMap<>();
+
 	public static void cleanUp(int gameId) {
-		lastNodeRounds.remove(gameId);
 		needChangesMap.remove(gameId);
 		minMaxInProgressMap.remove(gameId);
 		useFirstChildMap.remove(gameId);
+		cachedPrediction.remove(gameId);
 	}
 
-	public synchronized static void setLastNodeRound(int gameId, NodeRound nodeRound, boolean needChange) {
-		lastNodeRounds.put(gameId, nodeRound);
-		needChangesMap.put(gameId, needChange);
+	public synchronized static void setCachedPrediction(int gameId, CachedPrediction cachedPrediction, boolean needChange) {
+		CachedMinMax.cachedPrediction.put(gameId, cachedPrediction);
+		needChangesMap.putIfAbsent(gameId, needChange);
 	}
 
-	public synchronized static NodeRound getNodeRound(int gameId) {
-		return lastNodeRounds.get(gameId);
+	public synchronized static CachedPrediction getCachePrediction(int gameId) {
+		return cachedPrediction.get(gameId);
 	}
 
 	public synchronized static boolean needChange(int gameId) {

@@ -2,7 +2,9 @@ package ge.ai.domino.domain.game.ai;
 
 import ge.ai.domino.domain.move.Move;
 
-public class AiPrediction {
+import java.io.Serializable;
+
+public class AiPrediction implements Serializable {
 
     private Move move;
 

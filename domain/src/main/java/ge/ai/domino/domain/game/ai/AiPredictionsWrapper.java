@@ -1,9 +1,10 @@
 package ge.ai.domino.domain.game.ai;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AiPredictionsWrapper {
+public class AiPredictionsWrapper implements Serializable {
 
     private List<AiPrediction> aiPredictions = new ArrayList<>();
 

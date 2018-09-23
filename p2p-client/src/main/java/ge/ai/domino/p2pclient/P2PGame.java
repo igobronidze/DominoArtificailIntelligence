@@ -9,7 +9,7 @@ import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
-import ge.ai.domino.domain.p2p.Command;
+import ge.ai.domino.domain.command.P2PCommand;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.GameManager;
 import ge.ai.domino.manager.played.PlayedGameManager;
@@ -78,8 +78,8 @@ public class P2PGame {
                                 specifyLeftTiles(gameId, round);
                                 addRandomTileForMe(omit);
                                 if (!round.getGameInfo().isFinished()) {
-                                    oos.writeObject(Command.RESET_GAME_DATA_OPPONENT_TILES);
-                                    oos.writeObject(Command.RESET_GAME_DATA_BAZAAR);
+                                    oos.writeObject(P2PCommand.RESET_GAME_DATA_OPPONENT_TILES);
+                                    oos.writeObject(P2PCommand.RESET_GAME_DATA_BAZAAR);
                                     addInitialSevenTile(false);
                                 }
                             } else {
@@ -90,8 +90,8 @@ public class P2PGame {
                                 specifyLeftTiles(gameId, round);
                                 playBestMove();
                                 if (!round.getGameInfo().isFinished()) {
-                                    oos.writeObject(Command.RESET_GAME_DATA_OPPONENT_TILES);
-                                    oos.writeObject(Command.RESET_GAME_DATA_BAZAAR);
+                                    oos.writeObject(P2PCommand.RESET_GAME_DATA_OPPONENT_TILES);
+                                    oos.writeObject(P2PCommand.RESET_GAME_DATA_BAZAAR);
                                     addInitialSevenTile(false);
                                 }
                             } else {
@@ -105,7 +105,7 @@ public class P2PGame {
                     Move move = (Move) ois.readObject();
                     if (moveType == MoveType.PLAY_FOR_ME) {
                         if (round.getTableInfo().getOpponentTilesCount() == 1) {
-                            oos.writeObject(Command.RESET_GAME_DATA_OPPONENT_TILES);
+                            oos.writeObject(P2PCommand.RESET_GAME_DATA_OPPONENT_TILES);
                             round = gameManager.playForOpponent(gameId, move);
                             if (!round.getGameInfo().isFinished()) {
                                 addInitialSevenTile(false);
@@ -116,7 +116,7 @@ public class P2PGame {
                     } else if (moveType == MoveType.ADD_FOR_ME) {
                         if (round.getTableInfo().getRoundBlockingInfo().isOmitMe()) {
                             specifyLeftTiles(gameId, round);
-                            oos.writeObject(Command.RESET_GAME_DATA_OPPONENT_TILES);
+                            oos.writeObject(P2PCommand.RESET_GAME_DATA_OPPONENT_TILES);
                             round = gameManager.addTileForOpponent(gameId);
                             if (!round.getGameInfo().isFinished()) {
                                 addInitialSevenTile(false);
@@ -129,7 +129,7 @@ public class P2PGame {
 
                 if (round.getGameInfo().isFinished()) {
                     playedGameManager.finishGame(gameId, true, true, false);
-                    oos.writeObject(Command.FINISH);
+                    oos.writeObject(P2PCommand.FINISH);
                     closeConnection();
                     break;
                 }
@@ -137,7 +137,7 @@ public class P2PGame {
                 logger.info("P2PGame, Finished iteration " + iteration);
             }
 
-        }  catch (ClassNotFoundException | IOException | InterruptedException ex) {
+        } catch (ClassNotFoundException | IOException | InterruptedException ex) {
             logger.error("Error occurred while play p2p game", ex);
             throw new DAIException("p2pGameError");
         }
@@ -147,7 +147,7 @@ public class P2PGame {
     private void addRandomTileForMe(boolean omit) throws DAIException, IOException, ClassNotFoundException {
         Tile tile = getRandomTile(round.getOpponentTiles(), omit);
         round = gameManager.addTileForMe(gameId, tile.getLeft(), tile.getRight());
-        oos.writeObject(Command.PLAY);
+        oos.writeObject(P2PCommand.PLAY);
         oos.writeObject(MoveType.ADD_FOR_ME);
         oos.writeObject(new Move(tile.getLeft(), tile.getRight(), MoveDirection.LEFT));
     }
@@ -164,7 +164,7 @@ public class P2PGame {
 
     private void playMove(Move move) throws IOException, DAIException {
         round = gameManager.playForMe(gameId, move);
-        oos.writeObject(Command.PLAY);
+        oos.writeObject(P2PCommand.PLAY);
         oos.writeObject(MoveType.PLAY_FOR_ME);
         oos.writeObject(move);
     }
@@ -172,7 +172,7 @@ public class P2PGame {
     private boolean addInitialSevenTile(boolean withSpecifyBeginner) throws DAIException, ClassNotFoundException, IOException, InterruptedException {
         Thread.sleep(SLEEP_INTERVAL_BETWEEN_MOVES);
         boolean start = false;
-        oos.writeObject(Command.CAN_NOT_LISTEN_PLAY_COMMAND);
+        oos.writeObject(P2PCommand.CAN_NOT_LISTEN_PLAY_COMMAND);
         for (int i = 0; i < 7; i++) {
             Tile tile = getRandomTile(round.getOpponentTiles(), false);
             if (withSpecifyBeginner && i == 6) {
@@ -180,21 +180,21 @@ public class P2PGame {
             }
             round = gameManager.addTileForMe(gameId, tile.getLeft(), tile.getRight());
         }
-        oos.writeObject(Command.CAN_LISTEN_PLAY_COMMAND);
+        oos.writeObject(P2PCommand.CAN_LISTEN_PLAY_COMMAND);
         return start;
     }
 
     private boolean specifyRoundBeginner() throws IOException, ClassNotFoundException {
-        oos.writeObject(Command.GET_GAME_BEGINNER);
+        oos.writeObject(P2PCommand.GET_GAME_BEGINNER);
         Boolean startMe = (Boolean) ois.readObject();
         gameManager.specifyRoundBeginner(gameId, startMe);
         return startMe;
     }
 
     private void createRound() throws IOException, ClassNotFoundException {
-        oos.writeObject(Command.CAN_NOT_LISTEN_PLAY_COMMAND);
+        oos.writeObject(P2PCommand.CAN_NOT_LISTEN_PLAY_COMMAND);
 
-        oos.writeObject(Command.GET_GAME_PROPERTIES);
+        oos.writeObject(P2PCommand.GET_GAME_PROPERTIES);
         GameProperties gameProperties = (GameProperties) ois.readObject();
 
         round = gameManager.startGame(gameProperties);
@@ -208,9 +208,9 @@ public class P2PGame {
             boolean first = true;
             while (true) {
                 if (first) {
-                    oos.writeObject(Command.GET_RANDOM_TILE);
+                    oos.writeObject(P2PCommand.GET_RANDOM_TILE);
                 } else {
-                    oos.writeObject(Command.GET_RANDOM_TILE_ADDITIONAL_TRY);
+                    oos.writeObject(P2PCommand.GET_RANDOM_TILE_ADDITIONAL_TRY);
                 }
                 Tile tile = (Tile) ois.readObject();
                 if (opponentTiles.get(tile) != 1.0) {
@@ -222,7 +222,7 @@ public class P2PGame {
     }
 
     private void specifyLeftTiles(int gameId, Round round) throws IOException, ClassNotFoundException {
-        oos.writeObject(Command.GET_OPPONENT_TILES);
+        oos.writeObject(P2PCommand.GET_OPPONENT_TILES);
         Set<Tile> initTiles = (HashSet<Tile>) ois.readObject();
         int count = 0;
         for (Tile tile : initTiles) {

@@ -79,4 +79,11 @@ public class MoveHelper {
 
         return playedMove;
     }
+
+    public static Move getMove(PlayedMove playedMove) {
+        if (playedMove == null) {
+            return null;
+        }
+        return new Move(playedMove.getLeft(), playedMove.getRight(), playedMove.getDirection());
+    }
 }

@@ -60,7 +60,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
             if (!playedFromBazaar && minMaxPredictor.usePredictor() && !firstMove) {
 				minMaxPredictor.predict(round, move);
             }
-            round.setAiPredictions(MinMaxFactory.getMinMax().solve(round));
+            round.setAiPredictions(MinMaxFactory.getMinMax(true).solve(round));
 		}
 
 		logger.info("Played tile for opponent, gameId[" + round.getGameInfo().getGameId() + "]");

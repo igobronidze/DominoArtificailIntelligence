@@ -47,12 +47,14 @@ public class Server {
             while (open) {
                 Socket socket = server.accept();
                 ClientSocket clientSocket = new ClientSocket(socket);
+                clientSocket.specifyClientName();
+
                 clientSocket.sendSysParams();
                 clientSocket.sendFunctionArgsAndValues();
                 clients.add(clientSocket);
-                logger.info("Accepted new client");
+                logger.info("Accepted new client, name[" + clientSocket.getName() + "]");
             }
-        } catch (IOException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             logger.error("Can't start multithreading server, port[" + port + "]", ex);
         }
     }
@@ -86,9 +88,7 @@ public class Server {
                 server.close();
                 open = false;
             }
-            for (ClientSocket clientSocket : clients) {
-                clientSocket.close();
-            }
+            clients.forEach(ClientSocket::close);
         } catch (IOException ex) {
             logger.error("Can't stop multithreading server, port[" + sysParamManager.getIntegerParameterValue(multithreadingServerPort) + "]", ex);
         }

@@ -27,6 +27,7 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 
 	@Override
 	public void predict(Round round, Move move) throws DAIException {
+		logger.info("Start minMaxPredictor for move[" + move + "]");
 		CachedPrediction cachedPrediction = CachedMinMax.getCachePrediction(round.getGameInfo().getGameId());
 		if (cachedPrediction == null) {
 			logger.warn("Last cached prediction is null");
@@ -45,6 +46,7 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 			logger.warn("Can't find played heuristic for predictor, move[" + move + "]");
 			throw new DAIException("cantFindPlayedHeuristic");
 		}
+		logger.info("Founded played heuristic for move[" + move + "], heuristic[" + playedHeuristic + "]");
 
 		Map<Move, Double> balancedHeuristic = new HashMap<>();
 		for (CachedPrediction child : cachedPrediction.getChildren().values()) {
@@ -52,6 +54,7 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 				balancedHeuristic.put(child.getMove(), playedHeuristic - child.getHeuristicValue());
 			}
 		}
+		logger.info("Balanced heuristic for MinMaxPredictor:" + balancedHeuristic);
 
 		Map<Tile, Double> opponentTiles = round.getOpponentTiles();
 		double probForAdd = 0.0;

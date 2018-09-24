@@ -111,6 +111,7 @@ public class SystemParameterDAOImpl implements SystemParameterDAO {
             if (type != null) {
                 QueryUtil.addFilter(sql, TYPE_COLUMN_NAME, type.name(), FilterCondition.EQUAL, true);
             }
+            sql.append(" ORDER BY " + ID_COLUMN_NAME + " ASC");
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql.toString());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {

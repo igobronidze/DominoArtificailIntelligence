@@ -17,41 +17,35 @@ public class Client {
 
     private static final String DEFAULT_HOST = "localhost";
 
+    private static final String DEFAULT_NAME = "Unknown";
+
     private static final int TIMEOUT = 3_000;
 
     private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
     private final SysParam multithreadingServerPort = new SysParam("multithreadingServerPort", "8080");
 
-    private boolean open = true;
-
     public void startClient() throws DAIException {
         int port = sysParamManager.getIntegerParameterValue(multithreadingServerPort);
-        startClient(DEFAULT_HOST, port);
+        startClient(DEFAULT_HOST, port, DEFAULT_NAME);
     }
 
-    public void startClient(String host, int port) throws DAIException {
+    public void startClient(String host, int port, String name) throws DAIException {
         try {
-            while (open) {
-                Socket socket = new Socket();
-                socket.connect(new InetSocketAddress(host, port), TIMEOUT);
-                logger.info("Connected to server, host[" + host + "], port[" + port + "]");
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port), TIMEOUT);
+            logger.info("Connected to server, host[" + host + "], port[" + port + "]");
 
-                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
-                new ClientManager(ois, oos).startListen();
-                oos.close();
-                ois.close();
-                socket.close();
-            }
+            new ClientManager(ois, oos, name == null ? DEFAULT_NAME : name).startListen();
+            oos.close();
+            ois.close();
+            socket.close();
         } catch (IOException ex) {
             logger.error("Can't connect multithreading server, host[" + host + "], port[" + port + "], timeout[" + TIMEOUT + "]", ex);
             throw new DAIException("cantConnectMultithreadingServer");
         }
-    }
-
-    public void stopService() {
-        open = false;
     }
 }

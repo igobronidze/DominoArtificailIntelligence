@@ -14,6 +14,7 @@ import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
+import ge.ai.domino.manager.game.logging.RoundLogger;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -27,15 +28,20 @@ public class ClientManager {
 
     private static final Logger logger = Logger.getLogger(ClientManager.class);
 
+    private static final int GAME_ID_ADDITION = 1000;
+
     private static final FunctionManager functionManager = new FunctionManager();
 
     private ObjectInputStream ois;
 
     private ObjectOutputStream oos;
 
-    public ClientManager(ObjectInputStream ois, ObjectOutputStream oos) {
+    private String name;
+
+    public ClientManager(ObjectInputStream ois, ObjectOutputStream oos, String name) {
         this.ois = ois;
         this.oos = oos;
+        this.name = name;
     }
 
     public void startListen() throws DAIException {
@@ -48,6 +54,9 @@ public class ClientManager {
                 switch (command) {
                     case FINISH:
                         finish = true;
+                        break;
+                    case GET_NAME:
+                        oos.writeObject(name);
                         break;
                     case LOAD_SYS_PARAMS:
                         Map<String, String> sysParams = (Map<String, String>) ois.readObject();
@@ -64,7 +73,7 @@ public class ClientManager {
                         logger.info("Get gameInitialData");
 
                         Game game = new Game();
-                        game.setId(gameInitialData.getGameId() + 1000);
+                        game.setId(gameInitialData.getGameId() + GAME_ID_ADDITION);
                         GameProperties gameProperties = new GameProperties();
                         gameProperties.setPointsForWin(gameInitialData.getPointsForWin());
                         gameProperties.setChannel(new Channel());
@@ -73,15 +82,20 @@ public class ClientManager {
                         break;
                     case EXECUTE_MIN_MAX:
                         List<Round> rounds = (List<Round>) ois.readObject();
-                        logger.info("Get rounds, count[" + rounds.size() + "]");
+                        logger.info("Starting minmax for rounds, count[" + rounds.size() + "]");
 
+                        long ms = System.currentTimeMillis();
                         List<AiPredictionsWrapper> aiPredictionsWrappers = new ArrayList<>();
                         for (Round round : rounds) {
-                            round.getGameInfo().setGameId(round.getGameInfo().getGameId() + 1000);
+                            logger.info("Starting minmax for round:");
+                            RoundLogger.logRoundFullInfo(round);
+                            round.getGameInfo().setGameId(round.getGameInfo().getGameId() + GAME_ID_ADDITION);
                             MinMax minMax = MinMaxFactory.getMinMax(false);
                             minMax.setThreadCount(rounds.size());
                             aiPredictionsWrappers.add(minMax.solve(round));
                         }
+                        logger.info("MinMax for all round took " + (System.currentTimeMillis() - ms) + "ms");
+
                         oos.writeObject(aiPredictionsWrappers);
                         break;
                 }

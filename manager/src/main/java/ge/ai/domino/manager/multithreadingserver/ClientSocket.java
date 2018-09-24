@@ -6,6 +6,7 @@ import ge.ai.domino.dao.function.FunctionDAOImpl;
 import ge.ai.domino.domain.command.MultithreadingCommand;
 import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import org.apache.log4j.Logger;
 
@@ -21,6 +22,8 @@ public class ClientSocket {
 
     private FunctionDAO functionDAO = new FunctionDAOImpl();
 
+    private String name;
+
     private Socket socket;
 
     private ObjectInputStream ois;
@@ -31,6 +34,11 @@ public class ClientSocket {
         this.socket = socket;
         oos = new ObjectOutputStream(socket.getOutputStream());
         ois = new ObjectInputStream(socket.getInputStream());
+    }
+
+    public void specifyClientName() throws IOException, ClassNotFoundException {
+        oos.writeObject(MultithreadingCommand.GET_NAME);
+        name = (String) ois.readObject();
     }
 
     public void sendSysParams() throws IOException {
@@ -49,13 +57,24 @@ public class ClientSocket {
     }
 
     public List<AiPredictionsWrapper> executeMinMax(List<Round> rounds) throws Exception {
+        logger.info("Starting minmax execution, roundsCount[" + rounds.size() + "], clientName[" + name + "]");
+        long ms = System.currentTimeMillis();
+
         oos.writeObject(MultithreadingCommand.EXECUTE_MIN_MAX);
         oos.writeObject(rounds);
-        return (List<AiPredictionsWrapper>) ois.readObject();
+        List<AiPredictionsWrapper> aiPredictionsWrappers =  (List<AiPredictionsWrapper>) ois.readObject();
+        logger.info("MinMax for clientName[" + name + "] took " + (System.currentTimeMillis() - ms) + "ms");
+
+        return aiPredictionsWrappers;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void close() {
         try {
+            oos.writeObject(MultithreadingCommand.FINISH);
             oos.close();
             ois.close();
             socket.close();

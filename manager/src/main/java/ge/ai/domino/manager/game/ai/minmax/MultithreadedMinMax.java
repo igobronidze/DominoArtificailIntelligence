@@ -122,7 +122,7 @@ public class MultithreadedMinMax extends MinMax {
                 }
 
             }
-            logger.info("MultithreadingMinMax took " + (System.currentTimeMillis() - ms) + " ms");
+            logger.info("MultithreadingMinMax took " + (System.currentTimeMillis() - ms) + "ms");
 
             logger.info("AIPrediction is [" + bestPrediction.getMove().getLeft() + "-" + bestPrediction.getMove().getRight() + " " +
                     bestPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestPrediction.getHeuristicValue());

@@ -56,6 +56,7 @@ public class Server {
             }
         } catch (IOException | ClassNotFoundException ex) {
             logger.error("Can't start multithreading server, port[" + port + "]", ex);
+            stopService();
         }
     }
 
@@ -85,10 +86,10 @@ public class Server {
     public void stopService() {
         try {
             if (server != null) {
-                server.close();
                 open = false;
+                clients.forEach(ClientSocket::close);
+                server.close();
             }
-            clients.forEach(ClientSocket::close);
         } catch (IOException ex) {
             logger.error("Can't stop multithreading server, port[" + sysParamManager.getIntegerParameterValue(multithreadingServerPort) + "]", ex);
         }

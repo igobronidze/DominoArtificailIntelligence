@@ -47,7 +47,7 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 			}
 		}
 		if (!heuristicFounded) {
-			logger.warn("Can't find played heuristic for predictor, move[" + move + "]");
+			logger.error("Can't find played heuristic for predictor, move[" + move + "]");
 			throw new DAIException("cantFindPlayedHeuristic");
 		}
 		logger.info("Founded played heuristic for move[" + move + "], heuristic[" + playedHeuristic + "]");

@@ -49,7 +49,7 @@ public class MultithreadedMinMax extends MinMax {
         long ms = System.currentTimeMillis();
         List<Move> moves = GameOperations.getPossibleMoves(round, false);
         logger.info("Start MultithreadedMinMax solve method, movesCount[" + moves.size() + "]");
-        if (moves.size() == 1) {
+        if (moves.size() <= 1) {
             return minMax.solve(round);
         }
 

@@ -9,7 +9,9 @@ import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
+import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
+import ge.ai.domino.serverutil.CloneUtil;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -33,6 +35,8 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 			logger.warn("Last cached prediction is null");
 			return;
 		}
+
+		Round oldRound = CloneUtil.getClone(round);
 
 		double playedHeuristic = 0.0;
 		boolean heuristicFounded = false;
@@ -63,12 +67,17 @@ public class MinMaxPredictor implements OpponentTilesPredictor {
 			if (entry.getKey().getLeft() != move.getLeft() || entry.getKey().getRight() != move.getRight()) {
                 double oldProb = opponentTiles.get(tile);
                 double newProb = oldProb * (1 - functionManager.getOpponentPlayHeuristicsDiffsFunctionValue(entry.getValue()));
+                logger.info("Move: " + entry.getKey() + "   Before predictor: " + oldProb + "  |  After predictor: " + newProb);
                 opponentTiles.put(tile, newProb);
                 probForAdd += oldProb - newProb;
             }
 
 		}
 		ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTiles, probForAdd);
+		logger.info("Opponent tiles before predictor:");
+		logger.info(RoundLogger.opponentTileToString(oldRound.getOpponentTiles()));
+		logger.info("Opponent tiles after predictor:");
+		logger.info(RoundLogger.opponentTileToString(round.getOpponentTiles()));
 	}
 
 	@Override

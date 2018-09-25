@@ -3,6 +3,7 @@ package ge.ai.domino.manager.game.ai.minmax;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.minmax.bfs.MinMaxBFS;
 import ge.ai.domino.manager.game.ai.minmax.dfs.MinMaxDFS;
+import ge.ai.domino.manager.multithreadingserver.Server;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 
 public class MinMaxFactory {
@@ -27,7 +28,7 @@ public class MinMaxFactory {
 			result = minMaxBFS;
 		}
 
-		if (useMultithreading && systemParameterManager.getBooleanParameterValue(useMultithreadingMinMax)) {
+		if (useMultithreading && systemParameterManager.getBooleanParameterValue(useMultithreadingMinMax) && Server.getInstance().getClientsCount() != 0) {
 			result.setMultithreadingMinMax(true);
 			result = new MultithreadedMinMax(result);
 		}

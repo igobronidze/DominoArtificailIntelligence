@@ -106,7 +106,7 @@ public class RoundLogger {
         return info;
     }
 
-    private static StringBuilder opponentTileToString(Map<Tile, Double> tiles) {
+    public static StringBuilder opponentTileToString(Map<Tile, Double> tiles) {
         StringBuilder info = new StringBuilder();
         info.append("__________Opponent Tiles__________").append(END_LINE);
         for (int i = 0; i <= 6; i++) {

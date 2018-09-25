@@ -11,22 +11,22 @@ public class CachedMinMax {
 
 	private static Map<Integer, Boolean> useFirstChildMap = new HashMap<>();
 
-	private static Map<Integer, CachedPrediction> cachedPrediction = new HashMap<>();
+	private static Map<Integer, CachedPrediction> cachedPredictionMap = new HashMap<>();
 
 	public static void cleanUp(int gameId) {
 		needChangesMap.remove(gameId);
 		minMaxInProgressMap.remove(gameId);
 		useFirstChildMap.remove(gameId);
-		cachedPrediction.remove(gameId);
+		cachedPredictionMap.remove(gameId);
 	}
 
 	public synchronized static void setCachedPrediction(int gameId, CachedPrediction cachedPrediction, boolean needChange) {
-		CachedMinMax.cachedPrediction.put(gameId, cachedPrediction);
+		cachedPredictionMap.put(gameId, cachedPrediction);
 		needChangesMap.put(gameId, needChange);
 	}
 
 	public synchronized static CachedPrediction getCachePrediction(int gameId) {
-		return cachedPrediction.get(gameId);
+		return cachedPredictionMap.get(gameId);
 	}
 
 	public synchronized static boolean needChange(int gameId) {

@@ -59,8 +59,6 @@ public class MinMaxBFS extends MinMax {
 
     private final MoveProcessor addForOpponentProcessorVirtual = new AddForOpponentProcessorVirtual();
 
-    private final RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
-
     private int iteration;
 
     private int gameId;

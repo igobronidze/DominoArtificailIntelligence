@@ -56,8 +56,6 @@ public class MinMaxDFS extends MinMax {
 
 	private final MoveProcessor addForOpponentProcessorVirtual = new AddForOpponentProcessorVirtual();
 
-	private final RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
-
 	private int treeHeight;
 
 	private int recursionCount;

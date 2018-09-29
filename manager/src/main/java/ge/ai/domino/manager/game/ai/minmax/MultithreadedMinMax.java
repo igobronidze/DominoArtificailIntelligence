@@ -96,42 +96,54 @@ public class MultithreadedMinMax extends MinMax {
                     Move move = aiPredictionsWrapperEntry.getKey().get(i);
                     AiPredictionsWrapper aiPredictionsWrapper = aiPredictionsWrapperEntry.getValue().get(i);
 
-                    if (aiPredictionsWrapper.getWarnMsgKey() != null) {
-                        result.setWarnMsgKey(aiPredictionsWrapper.getWarnMsgKey());
-                    }
+                    if (aiPredictionsWrapper != null) {
+                        if (aiPredictionsWrapper.getWarnMsgKey() != null) {
+                            result.setWarnMsgKey(aiPredictionsWrapper.getWarnMsgKey());
+                        }
 
-                    AiPrediction aiPrediction = new AiPrediction();
-                    aiPrediction.setMove(move);
-                    for (AiPrediction prediction : aiPredictionsWrapper.getAiPredictions()) {
-                        if (prediction.isBestMove()) {
-                            aiPrediction.setHeuristicValue(prediction.getHeuristicValue());
-                            if (bestPrediction == null || bestPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
-                                if (bestPrediction != null) {
-                                    bestPrediction.setBestMove(false);
+                        AiPrediction aiPrediction = new AiPrediction();
+                        aiPrediction.setMove(move);
+                        for (AiPrediction prediction : aiPredictionsWrapper.getAiPredictions()) {
+                            if (prediction.isBestMove()) {
+                                aiPrediction.setHeuristicValue(prediction.getHeuristicValue());
+                                if (bestPrediction == null || bestPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
+                                    if (bestPrediction != null) {
+                                        bestPrediction.setBestMove(false);
+                                    }
+                                    bestPrediction = aiPrediction;
+                                    bestPrediction.setBestMove(true);
                                 }
-                                bestPrediction = aiPrediction;
-                                bestPrediction.setBestMove(true);
                             }
                         }
+
+                        cachedPrediction.getChildren().put(move, getCachedPrediction(aiPredictionsWrapper, move));
+
+                        logger.info("PlayedMove: " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + aiPrediction.getHeuristicValue());
+                        result.getAiPredictions().add(aiPrediction);
+                    } else {
+                        AiPrediction aiPrediction = new AiPrediction();
+                        aiPrediction.setMove(move);
+                        aiPrediction.setHeuristicValue(roundHeuristic.getHeuristic(round, false));
+                        result.getAiPredictions().add(aiPrediction);
                     }
-
-                    cachedPrediction.getChildren().put(move, getCachedPrediction(aiPredictionsWrapper, move));
-
-                    logger.info("PlayedMove: " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + aiPrediction.getHeuristicValue());
-                    result.getAiPredictions().add(aiPrediction);
                 }
 
             }
             logger.info("MultithreadingMinMax took " + (System.currentTimeMillis() - ms) + "ms");
 
-            logger.info("AIPrediction is [" + bestPrediction.getMove().getLeft() + "-" + bestPrediction.getMove().getRight() + " " +
-                    bestPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestPrediction.getHeuristicValue());
-
-            CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), cachedPrediction, true);
+            if (bestPrediction != null) {
+                logger.info("AIPrediction is [" + bestPrediction.getMove().getLeft() + "-" + bestPrediction.getMove().getRight() + " " +
+                        bestPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestPrediction.getHeuristicValue());
+                CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), cachedPrediction, true);
+            } else {
+                logger.info("No AIPrediction");
+            }
             return result;
         } catch (Exception ex) {
             logger.error("Error occurred while execute multithreaded minmax", ex);
             throw new DAIException("unexpectedError");
+        } finally {
+            executorService.shutdown();
         }
     }
 
@@ -149,12 +161,14 @@ public class MultithreadedMinMax extends MinMax {
 
     private Map.Entry<List<Move>, List<AiPredictionsWrapper>> getOwnPredictions(List<Move> moves, List<Round> rounds) throws Exception {
         List<AiPredictionsWrapper> aiPredictionsWrappers = new ArrayList<>();
+        long ms = System.currentTimeMillis();
         for (Round round : rounds) {
             MinMax ownMinMax = minMax.getClass().newInstance();
             ownMinMax.setMultithreadingMinMax(true);
             ownMinMax.setThreadCount(rounds.size());
             aiPredictionsWrappers.add(ownMinMax.solve(round));
         }
+        logger.info("Own MinMax for " + moves.size() + " move took " + (System.currentTimeMillis() - ms) + "ms");
         return new AbstractMap.SimpleEntry<>(moves, aiPredictionsWrappers);
     }
 }

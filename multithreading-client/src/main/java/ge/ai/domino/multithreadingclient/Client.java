@@ -40,8 +40,8 @@ public class Client {
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
             new ClientManager(ois, oos, name == null ? DEFAULT_NAME : name).startListen();
-            oos.close();
             ois.close();
+            oos.close();
             socket.close();
         } catch (IOException ex) {
             logger.error("Can't connect multithreading server, host[" + host + "], port[" + port + "], timeout[" + TIMEOUT + "]", ex);

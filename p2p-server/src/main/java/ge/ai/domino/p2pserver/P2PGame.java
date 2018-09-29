@@ -191,8 +191,8 @@ public class P2PGame implements Runnable {
 
     private void closeConnection(Socket socket, ObjectInputStream ois, ObjectOutputStream oos) {
         try {
-            oos.close();
             ois.close();
+            oos.close();
             socket.close();
         } catch (IOException ex) {
             logger.error("Can't close connections", ex);

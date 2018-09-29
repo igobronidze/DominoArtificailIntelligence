@@ -75,8 +75,8 @@ public class ClientSocket {
     public void close() {
         try {
             oos.writeObject(MultithreadingCommand.FINISH);
-            oos.close();
             ois.close();
+            oos.close();
             socket.close();
         } catch (IOException ex) {
             logger.error("Can't close connection", ex);

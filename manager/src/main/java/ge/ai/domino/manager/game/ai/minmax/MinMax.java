@@ -6,6 +6,7 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.AiSolver;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
+import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicFactory;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
@@ -30,7 +31,9 @@ public abstract class MinMax implements AiSolver {
 
 	protected static final SysParam bestMoveAutoPlay = new SysParam("bestMoveAutoPlay", "true");
 
-	protected static final SysParam roundHeuristicType = new SysParam("roundHeuristicType", "POINT_DIFF_ROUND_HEURISTIC");
+	private static final SysParam roundHeuristicType = new SysParam("roundHeuristicType", "POINT_DIFF_ROUND_HEURISTIC");
+
+	protected final RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
 
 	private NodeRound notValidRound;
 

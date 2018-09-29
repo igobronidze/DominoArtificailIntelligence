@@ -5,7 +5,10 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.move.Move;
+import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
+import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.multithreadingserver.ClientSocket;
 import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
@@ -45,7 +48,11 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 		applyBottomUpMinMax();
 
 		logger.info("MinMaxBFS took " + (System.currentTimeMillis() - ms) + " ms");
-		return getAiPredictionsWrapper(nodeRound);
+		AiPredictionsWrapper aiPredictionsWrapper = getAiPredictionsWrapper(nodeRound);
+		if (new MinMaxPredictor().usePredictor()) {
+			CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
+		}
+		return aiPredictionsWrapper;
 	}
 
 	@Override

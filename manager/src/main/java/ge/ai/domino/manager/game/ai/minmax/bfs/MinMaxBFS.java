@@ -203,8 +203,12 @@ public class MinMaxBFS extends MinMax {
         }
 
         nodeRound.setHeuristic(bestAiPrediction.getHeuristicValue());
-        logger.info("AIPrediction is [" + bestAiPrediction.getMove().getLeft() + "-" + bestAiPrediction.getMove().getRight() + " " +
-                bestAiPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestAiPrediction.getHeuristicValue());
+        if (bestAiPrediction.getMove().getDirection() != null) {
+            logger.info("AIPrediction is [" + bestAiPrediction.getMove().getLeft() + "-" + bestAiPrediction.getMove().getRight() + " " +
+                    bestAiPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestAiPrediction.getHeuristicValue());
+        } else {
+            logger.info("AIPrediction is add tile, heuristic: " + bestAiPrediction.getHeuristicValue());
+        }
 
         AiPredictionsWrapper aiPredictionsWrapper = new AiPredictionsWrapper();
         aiPredictionsWrapper.setAiPredictions(aiPredictions);
@@ -311,49 +315,51 @@ public class MinMaxBFS extends MinMax {
             List<NodeRound> nodeRounds = entry.getValue();
 
             for (NodeRound nodeRound : nodeRounds) {
-                if (!isLeafNodeRound(nodeRound)) {
-                    if (nodeRound.getRound().getTableInfo().isMyMove()) {
-                        NodeRound bestNodeRound = null;
-                        if (nodeRound.getChildren().isEmpty()) {
-                            bestNodeRound = nodeRound.getBazaarNodeRound();
-                        } else {
-                            for (NodeRound child : nodeRound.getChildren()) {
-                                if (bestNodeRound == null || child.getHeuristic() > bestNodeRound.getHeuristic()) {
-                                    if (bestNodeRound != null) {
-                                        bestNodeRound.setLastPlayedProbability(0.0);
+                if (nodeRound.getHeuristic() == null) {
+                    if (!isLeafNodeRound(nodeRound)) {
+                        if (nodeRound.getRound().getTableInfo().isMyMove()) {
+                            NodeRound bestNodeRound = null;
+                            if (nodeRound.getChildren().isEmpty()) {
+                                bestNodeRound = nodeRound.getBazaarNodeRound();
+                            } else {
+                                for (NodeRound child : nodeRound.getChildren()) {
+                                    if (bestNodeRound == null || child.getHeuristic() > bestNodeRound.getHeuristic()) {
+                                        if (bestNodeRound != null) {
+                                            bestNodeRound.setLastPlayedProbability(0.0);
+                                        }
+                                        bestNodeRound = child;
+                                        bestNodeRound.setLastPlayedProbability(1.0);
                                     }
-                                    bestNodeRound = child;
-                                    bestNodeRound.setLastPlayedProbability(1.0);
                                 }
                             }
-                        }
-                        nodeRound.setHeuristic(bestNodeRound.getHeuristic());
-                    } else {
-                        // Possible node rounds sorted ASC by heuristic
-                        Queue<NodeRound> possibleRounds = new PriorityQueue<>(Comparator.comparingDouble(NodeRound::getHeuristic));
-                        possibleRounds.addAll(nodeRound.getChildren());
-                        double heuristic = 0.0;
-                        double remainingProbability = 1.0;
-                        for (NodeRound child : possibleRounds) {
-                            if (ComparisonHelper.equal(remainingProbability, 0.0)) {
-                                break;
+                            nodeRound.setHeuristic(bestNodeRound.getHeuristic());
+                        } else {
+                            // Possible node rounds sorted ASC by heuristic
+                            Queue<NodeRound> possibleRounds = new PriorityQueue<>(Comparator.comparingDouble(NodeRound::getHeuristic));
+                            possibleRounds.addAll(nodeRound.getChildren());
+                            double heuristic = 0.0;
+                            double remainingProbability = 1.0;
+                            for (NodeRound child : possibleRounds) {
+                                if (ComparisonHelper.equal(remainingProbability, 0.0)) {
+                                    break;
+                                }
+                                Map<Tile, Double> opponentTilesClone = nodeRound.getOpponentTilesClone();
+                                double prob = opponentTilesClone.get(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()));
+                                heuristic += child.getHeuristic() * prob * remainingProbability;
+                                child.setLastPlayedProbability(prob * remainingProbability);
+                                opponentTilesClone.put(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()), 0.0);
+                                ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTilesClone, prob);
+                                remainingProbability -= prob * remainingProbability;
                             }
-                            Map<Tile, Double> opponentTilesClone = nodeRound.getOpponentTilesClone();
-                            double prob = opponentTilesClone.get(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()));
-                            heuristic += child.getHeuristic() * prob * remainingProbability;
-                            child.setLastPlayedProbability(prob * remainingProbability);
-                            opponentTilesClone.put(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()), 0.0);
-                            ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTilesClone, prob);
-                            remainingProbability -= prob * remainingProbability;
+                            if (nodeRound.getBazaarNodeRound() != null && !ComparisonHelper.equal(remainingProbability, 0.0)) {
+                                nodeRound.getBazaarNodeRound().setLastPlayedProbability(remainingProbability);
+                                heuristic += nodeRound.getBazaarNodeRound().getHeuristic() * remainingProbability;
+                            }
+                            nodeRound.setHeuristic(heuristic);
                         }
-                        if (nodeRound.getBazaarNodeRound() != null && !ComparisonHelper.equal(remainingProbability, 0.0)) {
-                            nodeRound.getBazaarNodeRound().setLastPlayedProbability(remainingProbability);
-                            heuristic += nodeRound.getBazaarNodeRound().getHeuristic() * remainingProbability;
-                        }
-                        nodeRound.setHeuristic(heuristic);
+                    } else {
+                        nodeRound.setHeuristic(getHeuristic(nodeRound.getRound()));
                     }
-                } else {
-                    nodeRound.setHeuristic(getHeuristic(nodeRound.getRound()));
                 }
             }
             logger.info("Button up MinMax for height " + entry.getKey() + " took " + (System.currentTimeMillis() - ms) + " ms");

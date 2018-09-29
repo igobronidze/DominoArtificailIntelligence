@@ -88,8 +88,6 @@ public class ClientManager {
                         long ms = System.currentTimeMillis();
                         List<AiPredictionsWrapper> aiPredictionsWrappers = new ArrayList<>();
                         for (Round round : rounds) {
-                            logger.info("Starting minmax for round:");
-                            RoundLogger.logRoundFullInfo(round);
                             round.getGameInfo().setGameId(round.getGameInfo().getGameId() + GAME_ID_ADDITION);
                             MinMax minMax = MinMaxFactory.getMinMax(false);
                             minMax.setThreadCount(rounds.size());

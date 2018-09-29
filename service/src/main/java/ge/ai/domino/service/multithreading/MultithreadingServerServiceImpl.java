@@ -1,10 +1,10 @@
 package ge.ai.domino.service.multithreading;
 
-import ge.ai.domino.manager.multithreadingserver.Server;
+import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
 
 public class MultithreadingServerServiceImpl implements MultithreadingServerService {
 
-    private final Server server = Server.getInstance();
+    private final MultithreadingServer server = MultithreadingServer.getInstance();
 
     @Override
     public void startServer() {

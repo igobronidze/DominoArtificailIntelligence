@@ -14,6 +14,7 @@ import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
+import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import org.apache.log4j.Logger;
 
@@ -92,7 +93,10 @@ public class ClientManager {
                             round.getGameInfo().setGameId(round.getGameInfo().getGameId() + GAME_ID_ADDITION);
                             MinMax minMax = MinMaxFactory.getMinMax(false);
                             minMax.setThreadCount(rounds.size());
-                            aiPredictionsWrappers.add(minMax.solve(round));
+
+                            NodeRound nodeRound = new NodeRound();
+                            nodeRound.setRound(round);
+                            aiPredictionsWrappers.add(minMax.minMaxForNodeRound(nodeRound));
                         }
                         logger.info("MinMax for all round took " + (System.currentTimeMillis() - ms) + "ms");
 

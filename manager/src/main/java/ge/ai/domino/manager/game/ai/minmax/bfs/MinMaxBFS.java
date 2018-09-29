@@ -9,8 +9,6 @@ import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicFactory;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicHelper;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
@@ -63,62 +61,27 @@ public class MinMaxBFS extends MinMax {
 
     private int gameId;
 
-    private Map<Integer, List<NodeRound>> nodeRoundsByHeight = new TreeMap<>((o1, o2) -> Integer.compare(o2, o1));
+    protected Map<Integer, List<NodeRound>> nodeRoundsByHeight = new TreeMap<>((o1, o2) -> Integer.compare(o2, o1));
 
     private Queue<NodeRound> nodeRoundsQueue = new LinkedList<>();
 
     @Override
     public AiPredictionsWrapper solve(Round round) throws DAIException {
-        this.gameId = round.getGameInfo().getGameId();
-        logger.info("Executing MinMaxBFS gameId[" + gameId + "]");
-
         NodeRound nodeRound = new NodeRound();
         nodeRound.setRound(round);
-        return minMax(nodeRound);
-    }
 
-    @Override
-    public void minMaxForCachedNodeRound(Round round) throws DAIException {
-        this.gameId = round.getGameInfo().getGameId();
-        logger.info("Executing MinMaxBFSForCachedNodeRound gameId[" + gameId + "]");
-
-        long ms = System.currentTimeMillis();
-        NodeRound nodeRound = new NodeRound();
-        nodeRound.setRound(round);
-        nodeRound.setTreeHeight(1);
-        addInQueue(nodeRound);
-
-        while (!nodeRoundsQueue.isEmpty()) {
-            NodeRound nr = nodeRoundsQueue.remove();
-            processRoundNode(nr);
-        }
-        nodeRoundsQueue = null;
-
-        applyBottomUpMinMax();
-        CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), GameOperations.fillCachedPrediction(round, CachedPrediction.getCachedPrediction(nodeRound, 1)), false);
-        logger.info("MinMaxBFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + " ms");
-    }
-
-    @Override
-    public String getType() {
-        return "BFS";
-    }
-
-    @SuppressWarnings("Duplicates")
-    private AiPredictionsWrapper minMax(NodeRound nodeRound) throws DAIException {
-        long ms = System.currentTimeMillis();
         List<Move> moves = GameOperations.getPossibleMoves(nodeRound.getRound(), false);
-        logger.info("Ai predictions:");
         if (moves.isEmpty()) {
-            logger.info("No AIPrediction");
+            logger.info("There are no AIPrediction");
             return null;
         }
-        if (moves.size() == 1 && systemParameterManager.getBooleanParameterValue(bestMoveAutoPlay) && !multithreadingMinMax) {
+
+        if (moves.size() == 1 && systemParameterManager.getBooleanParameterValue(bestMoveAutoPlay)) {
             if (systemParameterManager.getBooleanParameterValue(useMinMaxPredictor)) {
                 new Thread(() -> {
                     try {
                         CachedMinMax.changeMinMaxInProgress(gameId, true);
-                        minMaxForMoves(moves, nodeRound, ms);
+                        minMaxForNodeRound(nodeRound);
                         if (new MinMaxPredictor().usePredictor()) {
                             int gameId = nodeRound.getRound().getGameInfo().getGameId();
                             if (CachedMinMax.isUseFirstChild(gameId)) {
@@ -142,29 +105,48 @@ public class MinMaxBFS extends MinMax {
             aiPredictionsWrapper.getAiPredictions().add(aiPrediction);
             return aiPredictionsWrapper;
         } else {
-            AiPredictionsWrapper aiPredictionsWrapper = minMaxForMoves(moves, nodeRound, ms);
-            if (new MinMaxPredictor().usePredictor() && !multithreadingMinMax) {
+            AiPredictionsWrapper aiPredictionsWrapper = minMaxForNodeRound(nodeRound);
+            if (new MinMaxPredictor().usePredictor()) {
                 CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
             }
             return aiPredictionsWrapper;
         }
     }
 
-    private AiPredictionsWrapper minMaxForMoves(List<Move> moves, NodeRound nodeRound, long ms) throws DAIException {
-        long inlineMs = System.currentTimeMillis();
-        for (Move move : moves) {
-            Round nextRound = playForMeProcessorVirtual.move(CloneUtil.getClone(nodeRound.getRound()), move);
-            NodeRound nextNodeRound = new NodeRound();
-            nextNodeRound.setRound(nextRound);
-            nextNodeRound.setLastPlayedMove(MoveHelper.getPlayForMeMove(move));
-            nextNodeRound.setParent(nodeRound);
-            nextNodeRound.setTreeHeight(1);
-            nodeRound.getChildren().add(nextNodeRound);
-            validateOpponentTiles(nextNodeRound, "playForMe");
-            addInQueue(nextNodeRound);
+    @Override
+    public void minMaxForCachedNodeRound(Round round) throws DAIException {
+        logger.info("Executing MinMaxBFSForCachedNodeRound gameId[" + round.getGameInfo().getGameId() + "]");
+
+        NodeRound nodeRound = new NodeRound();
+        nodeRound.setRound(round);
+        nodeRound.setTreeHeight(1);
+        addInQueue(nodeRound);
+
+        while (!nodeRoundsQueue.isEmpty()) {
+            NodeRound nr = nodeRoundsQueue.remove();
+            processRoundNode(nr);
         }
-        logger.info("Initial node round processing took " + (System.currentTimeMillis() - inlineMs) + " ms");
-        inlineMs = System.currentTimeMillis();
+        nodeRoundsQueue = null;
+
+        applyBottomUpMinMax();
+        CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), GameOperations.fillCachedPrediction(round, CachedPrediction.getCachedPrediction(nodeRound, 1)), false);
+    }
+
+    @Override
+    public String getType() {
+        return "BFS";
+    }
+
+    @SuppressWarnings("Duplicates")
+    @Override
+    public AiPredictionsWrapper minMaxForNodeRound(NodeRound nodeRound) throws DAIException {
+        this.gameId = nodeRound.getRound().getGameInfo().getGameId();
+        logger.info("Executing MinMaxBFS minMaxForNodeRound method gameId[" + gameId + "]");
+        long ms = System.currentTimeMillis();
+
+
+        long inlineMs = System.currentTimeMillis();
+        addMyPlaysForNodeRound(nodeRound, true);
 
         while (!nodeRoundsQueue.isEmpty()) {
             NodeRound nr = nodeRoundsQueue.remove();
@@ -176,8 +158,14 @@ public class MinMaxBFS extends MinMax {
 
         applyBottomUpMinMax();
         logger.info("Button up MinMax took " + (System.currentTimeMillis() - inlineMs) + " ms");
-        inlineMs = System.currentTimeMillis();
 
+        double tookMs = System.currentTimeMillis() - ms;
+        logger.info("MinMaxBFS took " + tookMs + " ms, iteration " + iteration + ", average " + (tookMs / iteration));
+
+        return getAiPredictionsWrapper(nodeRound);
+    }
+
+    protected AiPredictionsWrapper getAiPredictionsWrapper(NodeRound nodeRound) {
         AiPrediction bestAiPrediction = null;
         NodeRound bestNodeRound = null;
         List<AiPrediction> aiPredictions = new ArrayList<>();
@@ -213,11 +201,7 @@ public class MinMaxBFS extends MinMax {
             }
             logger.info("PlayedMove: " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + nr.getHeuristic());
         }
-        logger.info("Best move recognition took " + (System.currentTimeMillis() - inlineMs) + " ms");
 
-        double tookMs = System.currentTimeMillis() - ms;
-        logger.info("MinMaxBFS took " + tookMs + " ms, iteration " + iteration + ", average " + (tookMs / iteration));
-        iteration = 0;
         nodeRound.setHeuristic(bestAiPrediction.getHeuristicValue());
         logger.info("AIPrediction is [" + bestAiPrediction.getMove().getLeft() + "-" + bestAiPrediction.getMove().getRight() + " " +
                 bestAiPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestAiPrediction.getHeuristicValue());
@@ -235,78 +219,93 @@ public class MinMaxBFS extends MinMax {
         if (iteration > systemParameterManager.getIntegerParameterValue(minMaxIteration) / threadCount) {
             return;
         }
-        Round round = nodeRound.getRound();
 
+        if (nodeRound.getRound().getTableInfo().isMyMove()) {
+            addMyPlaysForNodeRound(nodeRound, true);
+        } else {
+            addOpponentPlaysForNodeRound(nodeRound);
+        }
+    }
+
+    protected void addOpponentPlaysForNodeRound(NodeRound nodeRound) throws DAIException {
+        Round round = nodeRound.getRound();
         if (round.getGameInfo().isFinished() || isNewRound(round)) {
             return;
         }
 
         List<Move> moves = GameOperations.getPossibleMoves(round, false);
-        if (round.getTableInfo().isMyMove()) {
-            if (!moves.isEmpty()) {
-                for (Move move : moves) {
-                    Round nextRound = playForMeProcessorVirtual.move(CloneUtil.getClone(round), move);
-                    NodeRound nextNodeRound = new NodeRound();
-                    nextNodeRound.setRound(nextRound);
-                    nextNodeRound.setLastPlayedMove(MoveHelper.getPlayForMeMove(move));
-                    nextNodeRound.setParent(nodeRound);
-                    nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
-                    nodeRound.getChildren().add(nextNodeRound);
-                    validateOpponentTiles(nextNodeRound, "playForMe");
-                    addInQueue(nextNodeRound);
-                }
-            } else {
-                double bazaarProbSum = round.getTableInfo().getBazaarTilesCount();
-                for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
-                    Tile tile = entry.getKey();
-                    double prob = entry.getValue();
-                    if (prob != 1.0) {
-                        double probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
-                        Move move = TileAndMoveHelper.getMove(tile, MoveDirection.LEFT);
-                        Round nextRound = addForMeProcessorVirtual.move(CloneUtil.getClone(round), move);
-                        NodeRound nextNodeRound = new NodeRound();
-                        nextNodeRound.setRound(nextRound);
-                        nextNodeRound.setLastPlayedMove(MoveHelper.getAddTileForMeMove(move));
-                        nextNodeRound.setParent(nodeRound);
-                        nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
-                        nextNodeRound.setLastPlayedProbability(probForPickTile);
-                        nodeRound.setBazaarNodeRound(nextNodeRound);
-                        validateOpponentTiles(nextNodeRound, "addForMe");
-                        addInQueue(nextNodeRound);
-                    }
-                }
-            }
-        } else {
-            nodeRound.setOpponentTilesClone(CloneUtil.getClone(round.getOpponentTiles()));
+
+        nodeRound.setOpponentTilesClone(CloneUtil.getClone(round.getOpponentTiles()));
+        for (Move move : moves) {
+            Round nextRound = playForOpponentProcessorVirtual.move(CloneUtil.getClone(round), move);
+            NodeRound nextNodeRound = new NodeRound();
+            nextNodeRound.setRound(nextRound);
+            nextNodeRound.setLastPlayedMove(MoveHelper.getPlayForOpponentMove(move));
+            nextNodeRound.setParent(nodeRound);
+            nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
+            nodeRound.getChildren().add(nextNodeRound);
+            validateOpponentTiles(nextNodeRound, "playForOpponent");
+            addInQueue(nextNodeRound);
+        }
+
+        OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter().bazaar(true);
+        long bazaarTilesCount = round.getOpponentTiles().entrySet().stream().filter(opponentTilesFilter :: filter).count();
+        if (countTilesInMoves(moves) + bazaarTilesCount <= round.getTableInfo().getBazaarTilesCount()) {
+            Round nextRound = addForOpponentProcessorVirtual.move(CloneUtil.getClone(round), null);
+            NodeRound nextNodeRound = new NodeRound();
+            nextNodeRound.setRound(nextRound);
+            nextNodeRound.setLastPlayedMove(MoveHelper.getAddTileForOpponentMove());
+            nextNodeRound.setParent(nodeRound);
+            nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
+            nodeRound.setBazaarNodeRound(nextNodeRound);
+            validateOpponentTiles(nextNodeRound, "addForOpponent");
+            addInQueue(nextNodeRound);
+        }
+    }
+
+    protected void addMyPlaysForNodeRound(NodeRound nodeRound, boolean addBazaarPlay) throws DAIException {
+        Round round = nodeRound.getRound();
+        if (round.getGameInfo().isFinished() || isNewRound(round)) {
+            return;
+        }
+
+        List<Move> moves = GameOperations.getPossibleMoves(round, false);
+        if (!moves.isEmpty()) {
             for (Move move : moves) {
-                Round nextRound = playForOpponentProcessorVirtual.move(CloneUtil.getClone(round), move);
+                Round nextRound = playForMeProcessorVirtual.move(CloneUtil.getClone(round), move);
                 NodeRound nextNodeRound = new NodeRound();
                 nextNodeRound.setRound(nextRound);
-                nextNodeRound.setLastPlayedMove(MoveHelper.getPlayForOpponentMove(move));
+                nextNodeRound.setLastPlayedMove(MoveHelper.getPlayForMeMove(move));
                 nextNodeRound.setParent(nodeRound);
                 nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
                 nodeRound.getChildren().add(nextNodeRound);
-                validateOpponentTiles(nextNodeRound, "playForOpponent");
+                validateOpponentTiles(nextNodeRound, "playForMe");
                 addInQueue(nextNodeRound);
             }
-
-            OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter().bazaar(true);
-            long bazaarTilesCount = round.getOpponentTiles().entrySet().stream().filter(opponentTilesFilter :: filter).count();
-            if (countTilesInMoves(moves) + bazaarTilesCount <= round.getTableInfo().getBazaarTilesCount()) {
-                Round nextRound = addForOpponentProcessorVirtual.move(CloneUtil.getClone(round), null);
-                NodeRound nextNodeRound = new NodeRound();
-                nextNodeRound.setRound(nextRound);
-                nextNodeRound.setLastPlayedMove(MoveHelper.getAddTileForOpponentMove());
-                nextNodeRound.setParent(nodeRound);
-                nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
-                nodeRound.setBazaarNodeRound(nextNodeRound);
-                validateOpponentTiles(nextNodeRound, "addForOpponent");
-                addInQueue(nextNodeRound);
+        } else if (addBazaarPlay) {
+            double bazaarProbSum = round.getTableInfo().getBazaarTilesCount();
+            for (Map.Entry<Tile, Double> entry : round.getOpponentTiles().entrySet()) {
+                Tile tile = entry.getKey();
+                double prob = entry.getValue();
+                if (prob != 1.0) {
+                    double probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
+                    Move move = TileAndMoveHelper.getMove(tile, MoveDirection.LEFT);
+                    Round nextRound = addForMeProcessorVirtual.move(CloneUtil.getClone(round), move);
+                    NodeRound nextNodeRound = new NodeRound();
+                    nextNodeRound.setRound(nextRound);
+                    nextNodeRound.setLastPlayedMove(MoveHelper.getAddTileForMeMove(move));
+                    nextNodeRound.setParent(nodeRound);
+                    nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
+                    nextNodeRound.setLastPlayedProbability(probForPickTile);
+                    nodeRound.setBazaarNodeRound(nextNodeRound);
+                    validateOpponentTiles(nextNodeRound, "addForMe");
+                    addInQueue(nextNodeRound);
+                }
             }
         }
     }
 
-    private void applyBottomUpMinMax() {
+    protected void applyBottomUpMinMax() {
         for (Map.Entry<Integer, List<NodeRound>> entry : nodeRoundsByHeight.entrySet()) {
             long ms = System.currentTimeMillis();
             List<NodeRound> nodeRounds = entry.getValue();

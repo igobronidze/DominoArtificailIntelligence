@@ -3,6 +3,7 @@ package ge.ai.domino.manager.game.ai.minmax;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
+import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.AiSolver;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
@@ -41,19 +42,17 @@ public abstract class MinMax implements AiSolver {
 
 	private String errorMsgKey;
 
-	protected boolean multithreadingMinMax;
-
 	protected int threadCount = 1;
-
-	public void setMultithreadingMinMax(boolean multithreadingMinMax) {
-		this.multithreadingMinMax = multithreadingMinMax;
-	}
 
 	public void setThreadCount(int threadCount) {
 		this.threadCount = threadCount;
 	}
 
 	public abstract void minMaxForCachedNodeRound(Round round) throws DAIException;
+
+	public AiPredictionsWrapper minMaxForNodeRound(NodeRound nodeRound) throws DAIException {
+		return null;
+	}
 
 	public abstract String getType();
 

@@ -6,8 +6,9 @@ import ge.ai.domino.dao.function.FunctionDAOImpl;
 import ge.ai.domino.domain.command.MultithreadingCommand;
 import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
+import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 
 public class ClientSocket {
 
@@ -22,7 +24,13 @@ public class ClientSocket {
 
     private FunctionDAO functionDAO = new FunctionDAOImpl();
 
+    private final SystemParameterManager sysParamManager = new SystemParameterManager();
+
+    private final SysParam multithreadingClientRankSysParam = new SysParam("multithreadingClientRankSysParam", "minMaxIteration");
+
     private String name;
+
+    private int rank;
 
     private Socket socket;
 
@@ -42,8 +50,11 @@ public class ClientSocket {
     }
 
     public void sendSysParams() throws IOException {
+        Map<String, String> sysParams = CachedSystemParameter.getCachedParameters();
         oos.writeObject(MultithreadingCommand.LOAD_SYS_PARAMS);
-        oos.writeObject(CachedSystemParameter.getCachedParameters());
+        oos.writeObject(sysParams);
+
+        rank = Integer.valueOf(sysParams.get(sysParamManager.getStringParameterValue(multithreadingClientRankSysParam)));
     }
 
     public void sendFunctionArgsAndValues() throws IOException {
@@ -70,6 +81,10 @@ public class ClientSocket {
 
     public String getName() {
         return name;
+    }
+
+    public int getRank() {
+        return rank;
     }
 
     public void close() {

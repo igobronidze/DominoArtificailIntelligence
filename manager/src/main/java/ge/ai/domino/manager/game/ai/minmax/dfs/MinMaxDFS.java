@@ -71,31 +71,6 @@ public class MinMaxDFS extends MinMax {
 
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
-		return minMax(nodeRound);
-	}
-
-	@Override
-	public void minMaxForCachedNodeRound(Round round) throws DAIException {
-		this.gameId = round.getGameInfo().getGameId();
-		logger.info("Executing MinMaxDFSForCachedNodeRound gameId[" + gameId + "]");
-		long ms = System.currentTimeMillis();
-
-		treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
-
-		NodeRound nodeRound = new NodeRound();
-		nodeRound.setRound(round);
-		nodeRound.setHeuristic(getHeuristicValue(nodeRound, 2));   // height -1
-		CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), GameOperations.fillCachedPrediction(round, CachedPrediction.getCachedPrediction(nodeRound, 1)), false);
-		logger.info("MinMaxDFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + "ms");
-	}
-
-	@Override
-	public String getType() {
-		return "DFS";
-	}
-
-	@SuppressWarnings("Duplicates")
-	private AiPredictionsWrapper minMax(NodeRound nodeRound) throws DAIException {
 		long ms = System.currentTimeMillis();
 		List<Move> moves = GameOperations.getPossibleMoves(nodeRound.getRound(), false);
 		logger.info("Ai predictions:");
@@ -132,6 +107,26 @@ public class MinMaxDFS extends MinMax {
 			}
 			return aiPredictionsWrapper;
 		}
+	}
+
+	@Override
+	public void minMaxForCachedNodeRound(Round round) throws DAIException {
+		this.gameId = round.getGameInfo().getGameId();
+		logger.info("Executing MinMaxDFSForCachedNodeRound gameId[" + gameId + "]");
+		long ms = System.currentTimeMillis();
+
+		treeHeight = systemParameterManager.getIntegerParameterValue(minMaxTreeHeight);
+
+		NodeRound nodeRound = new NodeRound();
+		nodeRound.setRound(round);
+		nodeRound.setHeuristic(getHeuristicValue(nodeRound, 2));   // height -1
+		CachedMinMax.setCachedPrediction(round.getGameInfo().getGameId(), GameOperations.fillCachedPrediction(round, CachedPrediction.getCachedPrediction(nodeRound, 1)), false);
+		logger.info("MinMaxDFSForCachedNodeRound took " + (System.currentTimeMillis() - ms) + "ms");
+	}
+
+	@Override
+	public String getType() {
+		return "DFS";
 	}
 
 	private AiPredictionsWrapper minMaxForMoves(List<Move> moves, NodeRound nodeRound, long ms) throws DAIException {

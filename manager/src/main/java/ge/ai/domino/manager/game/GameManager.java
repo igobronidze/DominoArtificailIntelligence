@@ -17,7 +17,6 @@ import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
-import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.helper.game.MoveHelper;
@@ -31,10 +30,9 @@ import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.manager.game.validator.MoveValidator;
 import ge.ai.domino.manager.game.validator.OpponentTilesValidator;
 import ge.ai.domino.manager.imageprocessing.TilesDetectorManager;
-import ge.ai.domino.manager.multithreadingserver.Server;
+import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
-import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -82,7 +80,7 @@ public class GameManager {
         Round newRound = CachedGames.getCurrentRound(game.getId(), false);
 
         if (systemParameterManager.getBooleanParameterValue(useMultithreadingMinMax)) {
-            Server server = Server.getInstance();
+            MultithreadingServer server = MultithreadingServer.getInstance();
 
             GameInitialData gameInitialData = new GameInitialData();
             gameInitialData.setGameId(game.getId());

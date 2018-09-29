@@ -1,8 +1,6 @@
 package ge.ai.domino.manager.multithreadingserver;
 
 import ge.ai.domino.domain.game.GameInitialData;
-import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
@@ -13,9 +11,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Server {
+public class MultithreadingServer {
 
-    private static final Logger logger = Logger.getLogger(Server.class);
+    private static final Logger logger = Logger.getLogger(MultithreadingServer.class);
 
     private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
@@ -27,13 +25,13 @@ public class Server {
 
     private boolean open;
 
-    private static Server instance;
+    private static MultithreadingServer instance;
 
-    private Server() {}
+    private MultithreadingServer() {}
 
-    public static Server getInstance() {
+    public static MultithreadingServer getInstance() {
         if (instance == null) {
-            instance = new Server();
+            instance = new MultithreadingServer();
         }
         return instance;
     }
@@ -70,17 +68,8 @@ public class Server {
         }
     }
 
-    public int getClientsCount() {
-        return clients.size();
-    }
-
-    public List<AiPredictionsWrapper> executeMinMax(int index, List<Round> rounds) {
-        try {
-            return clients.get(index).executeMinMax(rounds);
-        } catch (Exception ex) {
-            logger.error("Error occurred while execute minmax", ex);
-        }
-        return null;
+    public List<ClientSocket> getClients() {
+        return clients;
     }
 
     public void stopService() {

@@ -12,10 +12,12 @@ import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.manager.function.FunctionManager;
+import ge.ai.domino.manager.game.GameManager;
+import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
-import ge.ai.domino.manager.game.logging.RoundLogger;
+import ge.ai.domino.manager.game.helper.initial.InitialUtil;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -69,6 +71,9 @@ public class ClientManager {
                         functionManager.setFunctions(functionArgsAndValues, true);
                         logger.info("Load function args and values: " + functionArgsAndValues);
                         break;
+                    case EXECUTE_EXTRA_MIN_MAX:
+                        executeExtraMinMax();
+                        break;
                     case INIT_GAME:
                         GameInitialData gameInitialData = (GameInitialData) ois.readObject();
                         logger.info("Get gameInitialData");
@@ -110,5 +115,57 @@ public class ClientManager {
                 throw new DAIException("unexpectedError");
             }
         }
+    }
+
+    private void executeExtraMinMax() {
+        logger.info("Start extra minmax");
+        int gameId = initGame();
+
+        try {
+            GameManager gameManager = new GameManager();
+
+            gameManager.addTileForMe(gameId, 5, 4);
+            gameManager.addTileForMe(gameId, 6, 3);
+            gameManager.addTileForMe(gameId, 6, 4);
+            gameManager.addTileForMe(gameId, 3, 2);
+            gameManager.addTileForMe(gameId, 2, 0);
+            gameManager.addTileForMe(gameId, 1, 1);
+            gameManager.addTileForMe(gameId, 5, 3);
+
+            gameManager.specifyRoundBeginner(gameId, false);
+
+            NodeRound nodeRound = new NodeRound();
+            nodeRound.setRound(CachedGames.getCurrentRound(gameId, true));
+
+            for (int i = 0; i < 4; i++) {
+                MinMax minMax = MinMaxFactory.getMinMax(false);
+                minMax.minMaxForNodeRound(nodeRound);
+            }
+
+        } catch (DAIException ex) {
+            logger.error("Error occurred while play initial extra minmax");
+        }
+
+        CachedGames.removeGame(gameId);
+        CachedMinMax.cleanUp(gameId);
+
+        logger.info("Finished extra minmax");
+    }
+
+    @SuppressWarnings("Duplicates")
+    private int initGame() {
+        GameProperties gameProperties = new GameProperties();
+        gameProperties.setOpponentName("Test");
+        gameProperties.setPointsForWin(175);
+        Channel channel = new Channel();
+        channel.setName("Test");
+        gameProperties.setChannel(channel);
+
+        Game game = InitialUtil.getInitialGame(gameProperties, false);
+        int gameId = game.getId();
+
+        game.setId(gameId);
+        CachedGames.addGame(game);
+        return gameId;
     }
 }

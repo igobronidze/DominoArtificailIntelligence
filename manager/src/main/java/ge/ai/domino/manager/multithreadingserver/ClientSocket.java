@@ -67,6 +67,10 @@ public class ClientSocket {
         oos.writeObject(gameInitialData);
     }
 
+    public void executeExtraMinMax() throws IOException {
+        oos.writeObject(MultithreadingCommand.EXECUTE_EXTRA_MIN_MAX);
+    }
+
     public List<AiPredictionsWrapper> executeMinMax(List<Round> rounds) throws Exception {
         logger.info("Starting minmax execution, roundsCount[" + rounds.size() + "], clientName[" + name + "]");
         long ms = System.currentTimeMillis();

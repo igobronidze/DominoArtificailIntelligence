@@ -49,6 +49,7 @@ public class MultithreadingServer {
 
                 clientSocket.sendSysParams();
                 clientSocket.sendFunctionArgsAndValues();
+                clientSocket.executeExtraMinMax();
                 clients.add(clientSocket);
                 logger.info("Accepted new client, name[" + clientSocket.getName() + "]");
             }

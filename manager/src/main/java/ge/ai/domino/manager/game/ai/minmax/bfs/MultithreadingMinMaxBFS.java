@@ -72,8 +72,12 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 			for (NodeRound grandchild : child.getChildren()) {
 				nodeRoundsByHeight.putIfAbsent(2, new ArrayList<>());
 				nodeRoundsByHeight.get(2).add(grandchild);
-
 				roundsForProcess.put(grandchild.getId(), grandchild);
+			}
+			if (child.getBazaarNodeRound() != null) {
+				nodeRoundsByHeight.putIfAbsent(2, new ArrayList<>());
+				nodeRoundsByHeight.get(2).add(child.getBazaarNodeRound());
+				roundsForProcess.put(child.getBazaarNodeRound().getId(), child.getBazaarNodeRound());
 			}
 		}
 
@@ -115,7 +119,13 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 				Map.Entry<List<Integer>, List<AiPredictionsWrapper>> aiPredictionsWrapperEntry = future.get();
 
 				for (int i = 0; i < aiPredictionsWrapperEntry.getKey().size(); i++) {
-					roundsForProcess.get(aiPredictionsWrapperEntry.getKey().get(i)).setHeuristic(getHeuristicFromPrediction(aiPredictionsWrapperEntry.getValue().get(i)));
+					NodeRound nodeRound = roundsForProcess.get(aiPredictionsWrapperEntry.getKey().get(i));
+					AiPredictionsWrapper aiPredictionsWrapper = aiPredictionsWrapperEntry.getValue().get(i);
+					if (aiPredictionsWrapper.getAiPredictions().isEmpty()) {
+						nodeRound.setHeuristic(getHeuristic(nodeRound.getRound()));
+					} else {
+						nodeRound.setHeuristic(getHeuristicFromPrediction(aiPredictionsWrapper));
+					}
 				}
 			}
 

@@ -77,11 +77,9 @@ public class ClientManager {
                         functionManager.setFunctions(functionArgsAndValues, true);
                         logger.info("Load function args and values: " + functionArgsAndValues);
                         break;
-                    case EXECUTE_EXTRA_MIN_MAX:
-                        executeExtraMinMax();
-                        break;
                     case RANK_TEST:
                         executeRankTest();
+                        break;
                     case INIT_GAME:
                         GameInitialData gameInitialData = (GameInitialData) ois.readObject();
                         logger.info("Get gameInitialData");
@@ -158,32 +156,6 @@ public class ClientManager {
             CachedGames.removeGame(gameId);
             CachedMinMax.cleanUp(gameId);
         }
-    }
-
-    private void executeExtraMinMax() {
-        logger.info("Start extra minmax");
-
-        int gameId = 0;
-
-        try {
-            gameId = initGame();
-
-            NodeRound nodeRound = new NodeRound();
-            nodeRound.setRound(CachedGames.getCurrentRound(gameId, true));
-
-            for (int i = 0; i < 4; i++) {
-                MinMax minMax = MinMaxFactory.getMinMax(false);
-                minMax.minMaxForNodeRound(nodeRound);
-            }
-
-        } catch (DAIException ex) {
-            logger.error("Error occurred while play initial extra minmax");
-        } finally {
-            CachedGames.removeGame(gameId);
-            CachedMinMax.cleanUp(gameId);
-        }
-
-        logger.info("Finished extra minmax");
     }
 
     @SuppressWarnings("Duplicates")

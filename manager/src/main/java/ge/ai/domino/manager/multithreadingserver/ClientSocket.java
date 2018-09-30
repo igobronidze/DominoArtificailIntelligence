@@ -67,10 +67,6 @@ public class ClientSocket {
         oos.writeObject(gameInitialData);
     }
 
-    public void executeExtraMinMax() throws IOException {
-        oos.writeObject(MultithreadingCommand.EXECUTE_EXTRA_MIN_MAX);
-    }
-
     public void executeRankTest() throws IOException, ClassNotFoundException {
         oos.writeObject(MultithreadingCommand.RANK_TEST);
         List<Long> result = (List<Long>) ois.readObject();

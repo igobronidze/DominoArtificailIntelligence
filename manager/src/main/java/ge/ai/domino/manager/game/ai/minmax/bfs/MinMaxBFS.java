@@ -59,8 +59,6 @@ public class MinMaxBFS extends MinMax {
 
     private int iteration;
 
-    private int gameId;
-
     protected Map<Integer, List<NodeRound>> nodeRoundsByHeight = new TreeMap<>((o1, o2) -> Integer.compare(o2, o1));
 
     private Queue<NodeRound> nodeRoundsQueue = new LinkedList<>();
@@ -80,18 +78,18 @@ public class MinMaxBFS extends MinMax {
             if (systemParameterManager.getBooleanParameterValue(useMinMaxPredictor)) {
                 new Thread(() -> {
                     try {
-                        CachedMinMax.changeMinMaxInProgress(gameId, true);
+                        CachedMinMax.changeMinMaxInProgress(round.getGameInfo().getGameId(), true);
                         minMaxForNodeRound(nodeRound);
                         if (new MinMaxPredictor().usePredictor()) {
                             int gameId = nodeRound.getRound().getGameInfo().getGameId();
                             if (CachedMinMax.isUseFirstChild(gameId)) {
                                 CachedMinMax.changeUseFirstChild(gameId, false);
-                                CachedMinMax.setCachedPrediction(gameId, GameOperations.fillCachedPrediction(nodeRound.getRound(), CachedPrediction.getCachedPrediction(nodeRound.getChildren().get(0), 1)), false);
+                                CachedMinMax.setCachedPrediction(gameId, GameOperations.fillCachedPrediction(nodeRound.getChildren().get(0).getRound(), CachedPrediction.getCachedPrediction(nodeRound.getChildren().get(0), 1)), false);
                             } else {
                                 CachedMinMax.setCachedPrediction(gameId, CachedPrediction.getCachedPrediction(nodeRound, 2), true);
                             }
                         }
-                        CachedMinMax.changeMinMaxInProgress(gameId, false);
+                        CachedMinMax.changeMinMaxInProgress(round.getGameInfo().getGameId(), false);
                     } catch (DAIException ex) {
                         logger.error(ex);
                     }
@@ -140,11 +138,14 @@ public class MinMaxBFS extends MinMax {
     @SuppressWarnings("Duplicates")
     @Override
     public AiPredictionsWrapper minMaxForNodeRound(NodeRound nodeRound) throws DAIException {
-        this.gameId = nodeRound.getRound().getGameInfo().getGameId();
-        logger.info("Executing MinMaxBFS minMaxForNodeRound method gameId[" + gameId + "]");
+        logger.info("Executing MinMaxBFS minMaxForNodeRound method gameId[" +  nodeRound.getRound().getGameInfo().getGameId() + "]");
+
+        if (nodeRound.getRound().getGameInfo().isFinished() || isNewRound(nodeRound.getRound())) {
+            logger.info("Round is finished");
+            return new AiPredictionsWrapper();
+        }
+
         long ms = System.currentTimeMillis();
-
-
         long inlineMs = System.currentTimeMillis();
         addMyPlaysForNodeRound(nodeRound, true);
 
@@ -376,13 +377,15 @@ public class MinMaxBFS extends MinMax {
 
     private boolean isLeafNodeRound(NodeRound nodeRound) {
         List<NodeRound> children = nodeRound.getChildren();
-        return children == null || children.isEmpty() || children.get(children.size() - 1).getHeuristic() == null ||
+        return children == null || (children.isEmpty() &&
+                (nodeRound.getBazaarNodeRound() == null || nodeRound.getBazaarNodeRound().getHeuristic() == null))
+                || (!children.isEmpty() && children.get(children.size() - 1).getHeuristic() == null) ||
                 (nodeRound.getBazaarNodeRound() != null && nodeRound.getBazaarNodeRound().getHeuristic() == null);
     }
 
-    private double getHeuristic(Round round) {
+    protected double getHeuristic(Round round) {
         if (round.getGameInfo().isFinished()) {
-            return RoundHeuristicHelper.getFinishedGameHeuristic(round.getGameInfo(), CachedGames.getGameProperties(gameId).getPointsForWin());
+            return RoundHeuristicHelper.getFinishedGameHeuristic(round.getGameInfo(), CachedGames.getGameProperties(round.getGameInfo().getGameId()).getPointsForWin());
         }
         if (isNewRound(round)) {
             return RoundHeuristicHelper.getFinishedRoundHeuristic(round.getGameInfo(), round.getTableInfo().isMyMove());

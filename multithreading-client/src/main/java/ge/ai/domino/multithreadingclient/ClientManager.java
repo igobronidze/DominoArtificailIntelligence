@@ -11,6 +11,7 @@ import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
+import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.GameManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
@@ -18,6 +19,7 @@ import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -34,6 +36,10 @@ public class ClientManager {
     private static final int GAME_ID_ADDITION = 1000;
 
     private static final FunctionManager functionManager = new FunctionManager();
+
+    private final SystemParameterManager sysParamManager = new SystemParameterManager();
+
+    private final SysParam rankTestCount = new SysParam("rankTestCount", "5");
 
     private ObjectInputStream ois;
 
@@ -74,6 +80,8 @@ public class ClientManager {
                     case EXECUTE_EXTRA_MIN_MAX:
                         executeExtraMinMax();
                         break;
+                    case RANK_TEST:
+                        executeRankTest();
                     case INIT_GAME:
                         GameInitialData gameInitialData = (GameInitialData) ois.readObject();
                         logger.info("Get gameInitialData");
@@ -117,22 +125,48 @@ public class ClientManager {
         }
     }
 
-    private void executeExtraMinMax() {
-        logger.info("Start extra minmax");
-        int gameId = initGame();
+    private void executeRankTest() throws IOException {
+        List<Long> result = new ArrayList<>();
+        int gameId = 0;
 
         try {
-            GameManager gameManager = new GameManager();
+            gameId = initGame();
+            NodeRound nodeRound = new NodeRound();
+            nodeRound.setRound(CachedGames.getCurrentRound(gameId, true));
 
-            gameManager.addTileForMe(gameId, 5, 4);
-            gameManager.addTileForMe(gameId, 6, 3);
-            gameManager.addTileForMe(gameId, 6, 4);
-            gameManager.addTileForMe(gameId, 3, 2);
-            gameManager.addTileForMe(gameId, 2, 0);
-            gameManager.addTileForMe(gameId, 1, 1);
-            gameManager.addTileForMe(gameId, 5, 3);
+            for (int i = 0; i < sysParamManager.getIntegerParameterValue(rankTestCount); i++) {
+                long ms = System.currentTimeMillis();
 
-            gameManager.specifyRoundBeginner(gameId, false);
+                MinMax minMax = MinMaxFactory.getMinMax(false);
+                minMax.minMaxForNodeRound(nodeRound);
+
+                long ans = System.currentTimeMillis() - ms;
+                result.add(ans);
+                logger.info("Rank test MinMax took " + ans + "ms");
+            }
+
+            double average = 0.0;
+            for (Long ms : result) {
+                average += ms;
+            }
+            logger.info("Average for " + result.size() + " try is " + (average / result.size()));
+
+            oos.writeObject(result);
+        } catch (DAIException ex) {
+            logger.error("Error occurred while execute rank test");
+        } finally {
+            CachedGames.removeGame(gameId);
+            CachedMinMax.cleanUp(gameId);
+        }
+    }
+
+    private void executeExtraMinMax() {
+        logger.info("Start extra minmax");
+
+        int gameId = 0;
+
+        try {
+            gameId = initGame();
 
             NodeRound nodeRound = new NodeRound();
             nodeRound.setRound(CachedGames.getCurrentRound(gameId, true));
@@ -144,16 +178,16 @@ public class ClientManager {
 
         } catch (DAIException ex) {
             logger.error("Error occurred while play initial extra minmax");
+        } finally {
+            CachedGames.removeGame(gameId);
+            CachedMinMax.cleanUp(gameId);
         }
-
-        CachedGames.removeGame(gameId);
-        CachedMinMax.cleanUp(gameId);
 
         logger.info("Finished extra minmax");
     }
 
     @SuppressWarnings("Duplicates")
-    private int initGame() {
+    private int initGame() throws DAIException {
         GameProperties gameProperties = new GameProperties();
         gameProperties.setOpponentName("Test");
         gameProperties.setPointsForWin(175);
@@ -166,6 +200,19 @@ public class ClientManager {
 
         game.setId(gameId);
         CachedGames.addGame(game);
+
+        GameManager gameManager = new GameManager();
+
+        gameManager.addTileForMe(gameId, 5, 4);
+        gameManager.addTileForMe(gameId, 6, 3);
+        gameManager.addTileForMe(gameId, 6, 4);
+        gameManager.addTileForMe(gameId, 3, 2);
+        gameManager.addTileForMe(gameId, 2, 0);
+        gameManager.addTileForMe(gameId, 1, 1);
+        gameManager.addTileForMe(gameId, 5, 3);
+
+        gameManager.specifyRoundBeginner(gameId, false);
+
         return gameId;
     }
 }

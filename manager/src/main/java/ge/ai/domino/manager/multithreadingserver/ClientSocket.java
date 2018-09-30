@@ -71,6 +71,20 @@ public class ClientSocket {
         oos.writeObject(MultithreadingCommand.EXECUTE_EXTRA_MIN_MAX);
     }
 
+    public void executeRankTest() throws IOException, ClassNotFoundException {
+        oos.writeObject(MultithreadingCommand.RANK_TEST);
+        List<Long> result = (List<Long>) ois.readObject();
+
+        logger.info("Rank test for client[" + name + "], rank[" + rank + "]");
+        logger.info(result);
+
+        double average = 0.0;
+        for (Long ms : result) {
+            average += ms;
+        }
+        logger.info("Average for " + result.size() + " try is " + (average / result.size()));
+    }
+
     public List<AiPredictionsWrapper> executeMinMax(List<Round> rounds) throws Exception {
         logger.info("Starting minmax execution, roundsCount[" + rounds.size() + "], clientName[" + name + "]");
         long ms = System.currentTimeMillis();

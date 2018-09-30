@@ -19,6 +19,10 @@ public class MultithreadingServer {
 
     private final SysParam multithreadingServerPort = new SysParam("multithreadingServerPort", "8080");
 
+    private final SysParam executeExtraMinMaxForMultithreadingClient = new SysParam("executeExtraMinMaxForMultithreadingClient", "true");
+
+    private final SysParam executeRankTestForMultithreadingClient = new SysParam("executeRankTestForMultithreadingClient", "true");
+
     private ServerSocket server = null;
 
     private static List<ClientSocket> clients = new ArrayList<>();
@@ -49,7 +53,12 @@ public class MultithreadingServer {
 
                 clientSocket.sendSysParams();
                 clientSocket.sendFunctionArgsAndValues();
-                clientSocket.executeExtraMinMax();
+                if (sysParamManager.getBooleanParameterValue(executeExtraMinMaxForMultithreadingClient)) {
+                    clientSocket.executeExtraMinMax();
+                }
+                if (sysParamManager.getBooleanParameterValue(executeRankTestForMultithreadingClient)) {
+                    clientSocket.executeRankTest();
+                }
                 clients.add(clientSocket);
                 logger.info("Accepted new client, name[" + clientSocket.getName() + "]");
             }

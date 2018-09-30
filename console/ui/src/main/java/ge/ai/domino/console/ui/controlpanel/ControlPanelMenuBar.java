@@ -129,7 +129,7 @@ public class ControlPanelMenuBar extends MenuBar {
         sysParamsItem.setOnAction(e -> {
             Stage sysParamStage = new Stage();
             sysParamStage.setHeight(650);
-            sysParamStage.setWidth(1100);
+            sysParamStage.setWidth(1300);
             sysParamStage.setScene(new Scene(new SystemParametersPane(sysParamStage.widthProperty().subtract(10))));
             sysParamStage.setTitle(Messages.get("systemParameters"));
             sysParamStage.show();

@@ -62,20 +62,20 @@ public class SystemParametersPane extends HBox {
 
     @SuppressWarnings("unchecked")
     private void initTable() {
-        doubleBinding = doubleBinding.subtract(250 + 90 + 60 + 50);
+        doubleBinding = doubleBinding.subtract(250 + 90 + 40 + 50);
         tableView = new TableView<>();
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
         TableColumn<SystemParameterProperty, Boolean> idColumn = new TableColumn<>(Messages.get("id"));
-        idColumn.setPrefWidth(60);
+        idColumn.setPrefWidth(40);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         TableColumn<SystemParameterProperty, Boolean> keyColumn = new TableColumn<>(Messages.get("key"));
-        keyColumn.prefWidthProperty().bind(doubleBinding.divide(3));
+        keyColumn.prefWidthProperty().bind(doubleBinding.divide(8).multiply(3));
         keyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
         TableColumn<SystemParameterProperty, Boolean> valueColumn = new TableColumn<>(Messages.get("value"));
-        valueColumn.prefWidthProperty().bind(doubleBinding.divide(3));
+        valueColumn.prefWidthProperty().bind(doubleBinding.divide(8).multiply(3));
         valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
         TableColumn<SystemParameterProperty, Boolean> typeColumn = new TableColumn<>(Messages.get("type"));
-        typeColumn.prefWidthProperty().bind(doubleBinding.divide(3));
+        typeColumn.prefWidthProperty().bind(doubleBinding.divide(8).multiply(2));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         TableColumn deleteColumn = new TableColumn<>("");
         deleteColumn.setCellValueFactory((Callback<TableColumn.CellDataFeatures<SystemParameterProperty, Boolean>, ObservableValue<Boolean>>) p -> new SimpleBooleanProperty(p.getValue() != null));

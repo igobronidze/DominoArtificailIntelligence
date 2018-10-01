@@ -75,3 +75,10 @@ INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam2', '1
 INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam3', '0.4');
 INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam4', '0.2');
 INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam5', '0.1');
+INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam6', '0.5');
+INSERT INTO system_parameter (key, value) VALUES('mixedRoundHeuristicParam7', '3');
+INSERT INTO system_parameter (key, value) VALUES('useMultithreadingMinMax', 'true');
+INSERT INTO system_parameter (key, value) VALUES('multithreadingClientRankSysParam', 'minMaxIteration');
+INSERT INTO system_parameter (key, value) VALUES('multithreadingServerPort', '8080');
+INSERT INTO system_parameter (key, value) VALUES('executeRankTestForMultithreadingClient', 'true');
+INSERT INTO system_parameter (key, value) VALUES('rankTestCount', '2');

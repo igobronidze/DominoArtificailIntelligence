@@ -48,8 +48,8 @@ public class ContoursDetector {
             queue.addAll(getConnectedPoints(curr.getX(), curr.getY()));
         }
 
-        for (int i = contour.getTop(); i <= contour.getBottom(); i++) {
-            for (int j = contour.getLeft(); j <= contour.getRight(); j++) {
+        for (int i = contour.getTop() + 1; i < contour.getBottom(); i++) {
+            for (int j = contour.getLeft() + 1; j < contour.getRight(); j++) {
                 if (coloredMatrix[i][j] && !checked[i][j]) {
                     Contour child = getContour(new Point(i, j));
                     child.setParent(contour);

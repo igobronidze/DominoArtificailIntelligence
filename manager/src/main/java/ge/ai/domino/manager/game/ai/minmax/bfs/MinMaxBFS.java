@@ -79,6 +79,7 @@ public class MinMaxBFS extends MinMax {
                 new Thread(() -> {
                     try {
                         CachedMinMax.changeMinMaxInProgress(round.getGameInfo().getGameId(), true);
+                        threadCount = 3; // For minmax performance time
                         minMaxForNodeRound(nodeRound);
                         if (new MinMaxPredictor().usePredictor()) {
                             int gameId = nodeRound.getRound().getGameInfo().getGameId();

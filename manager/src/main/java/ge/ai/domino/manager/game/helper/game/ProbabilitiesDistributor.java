@@ -16,6 +16,8 @@ public class ProbabilitiesDistributor {
 
     private static final SysParam distributedProbabilityMaxRate = new SysParam("distributedProbabilityMaxRate", "0.75");
 
+    private static final double maxRate = systemParameterManager.getDoubleParameterValue(distributedProbabilityMaxRate);
+
     public static void distributeProbabilitiesOpponentProportional(Map<Tile, Double> tiles, double probability) {
         OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter()
                 .notOpponent(true)
@@ -42,7 +44,6 @@ public class ProbabilitiesDistributor {
             }
         }
 
-        double maxRate = systemParameterManager.getDoubleParameterValue(distributedProbabilityMaxRate);
         double remainingProbability = 0.0;
         for (Map.Entry<Tile, Double> entry : tiles.entrySet()) {
             if (opponentTilesFilter.filter(entry)) {

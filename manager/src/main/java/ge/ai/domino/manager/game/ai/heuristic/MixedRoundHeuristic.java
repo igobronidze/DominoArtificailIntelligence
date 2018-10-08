@@ -18,17 +18,17 @@ public class MixedRoundHeuristic implements RoundHeuristic {
 
 	private final SysParam mixedRoundHeuristicParam1 = new SysParam("mixedRoundHeuristicParam1", "2");
 
-	private final SysParam mixedRoundHeuristicParam2 = new SysParam("testRoundHeuristicParam2", "10");
+	private final SysParam mixedRoundHeuristicParam2 = new SysParam("mixedRoundHeuristicParam2", "10");
 
-	private final SysParam mixedRoundHeuristicParam3 = new SysParam("testRoundHeuristicParam3", "0.4");
+	private final SysParam mixedRoundHeuristicParam3 = new SysParam("mixedRoundHeuristicParam3", "0.4");
 
-	private final SysParam mixedRoundHeuristicParam4 = new SysParam("testRoundHeuristicParam4", "0.2");
+	private final SysParam mixedRoundHeuristicParam4 = new SysParam("mixedRoundHeuristicParam4", "0.2");
 
-	private final SysParam mixedRoundHeuristicParam5 = new SysParam("testRoundHeuristicParam5", "0.1");
+	private final SysParam mixedRoundHeuristicParam5 = new SysParam("mixedRoundHeuristicParam5", "0.1");
 
-	private final SysParam mixedRoundHeuristicParam6 = new SysParam("testRoundHeuristicParam6", "0.5");
+	private final SysParam mixedRoundHeuristicParam6 = new SysParam("mixedRoundHeuristicParam6", "0.3");
 
-	private final SysParam mixedRoundHeuristicParam7 = new SysParam("testRoundHeuristicParam7", "3");
+	private final SysParam mixedRoundHeuristicParam7 = new SysParam("mixedRoundHeuristicParam7", "2.6");
 
 	private final double mixedRoundHeuristicParam1Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam1);
 

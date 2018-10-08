@@ -49,6 +49,8 @@ public class MinMaxBFS extends MinMax {
 
     private final SysParam minMaxIteration = new SysParam("minMaxIteration", "100000");
 
+    private final SysParam minMaxForCachedNodeRoundIterationRate = new SysParam("minMaxForCachedNodeRoundIterationRate", "4");
+
     private final MoveProcessor playForMeProcessorVirtual = new PlayForMeProcessorVirtual();
 
     private final MoveProcessor playForOpponentProcessorVirtual = new PlayForOpponentProcessorVirtual();
@@ -79,7 +81,7 @@ public class MinMaxBFS extends MinMax {
                 new Thread(() -> {
                     try {
                         CachedMinMax.changeMinMaxInProgress(round.getGameInfo().getGameId(), true);
-                        threadCount = 3; // For minmax performance time
+                        threadCount = systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate); // For minmax performance time
                         minMaxForNodeRound(nodeRound);
                         if (new MinMaxPredictor().usePredictor()) {
                             int gameId = nodeRound.getRound().getGameInfo().getGameId();
@@ -115,6 +117,8 @@ public class MinMaxBFS extends MinMax {
     @Override
     public void minMaxForCachedNodeRound(Round round) throws DAIException {
         logger.info("Executing MinMaxBFSForCachedNodeRound gameId[" + round.getGameInfo().getGameId() + "]");
+
+        threadCount = systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate);  // For minmax performance time
 
         NodeRound nodeRound = new NodeRound();
         nodeRound.setRound(round);

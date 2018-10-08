@@ -11,13 +11,10 @@ public class PlayForMeProcessorVirtual extends MoveProcessor {
 
 	@Override
 	public Round move(Round round, Move move) throws DAIException {
-		boolean firstMove = round.getTableInfo().getLeft() == null;
-
 		round.getTableInfo().getRoundBlockingInfo().setOmitMe(false);
 		if (move.getRight() != move.getLeft()) {
 			round.getTableInfo().getRoundBlockingInfo().setLastNotTwinPlayedTileMy(true);
 		}
-		int gameId = round.getGameInfo().getGameId();
 
 		// Not played twins case
 		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {

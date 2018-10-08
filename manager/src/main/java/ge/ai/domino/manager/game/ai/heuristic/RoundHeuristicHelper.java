@@ -8,7 +8,7 @@ public class RoundHeuristicHelper {
 
     private static final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-    private static final SysParam heuristicValueForStartNextRound = new SysParam("heuristicValueForStartNextRound", "15");
+    private static final SysParam heuristicValueForStartNextRound = new SysParam("heuristicValueForStartNextRound", "12");
 
     private static final SysParam rateForFinishedGameHeuristic = new SysParam("rateForFinishedGameHeuristic", "1.0");
 

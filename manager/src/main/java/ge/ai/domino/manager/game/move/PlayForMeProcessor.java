@@ -45,7 +45,6 @@ public class PlayForMeProcessor extends MoveProcessor {
 		} else if (new MinMaxPredictor().usePredictor()) {
 			if (firstMove && CachedMinMax.getCachePrediction(gameId) == null) {
 				MinMax minMax = MinMaxFactory.getMinMax(true);
-				minMax.setThreadCount(3);    // For minmax performance time
 				minMax.minMaxForCachedNodeRound(round);
 			}
 		}

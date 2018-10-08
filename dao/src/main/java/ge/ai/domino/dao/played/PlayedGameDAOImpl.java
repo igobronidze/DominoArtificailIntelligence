@@ -141,6 +141,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             if (channelId != null) {
                 QueryUtil.addFilter(sql, CHANNEL_ID_COLUMN_NAME, String.valueOf(channelId), FilterCondition.EQUAL, false);
             }
+            sql.append(" ORDER BY " + ID_COLUMN_NAME + " DESC");
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql.toString());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -265,6 +266,15 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 } else {
                     sb.append("GROUP BY ").append(POINT_FOR_WIN_COLUMN_NAME);
                 }
+            }
+            if (groupByVersion) {
+                sb.append(" ORDER BY " + VERSION_COLUMN_NAME);
+            } else if (groupedByPointForWin) {
+                sb.append(" ORDER BY " + POINT_FOR_WIN_COLUMN_NAME);
+            } else if (groupByOpponentName) {
+                sb.append(" ORDER BY " + OPPONENT_NAME_COLUMN_NAME);
+            } else if (groupByChannel) {
+                sb.append(" ORDER BY " + CHANNEL_ID_COLUMN_NAME);
             }
             pstmt = ConnectionUtil.getConnection().prepareStatement(sb.toString());
             ResultSet rs = pstmt.executeQuery();

@@ -77,6 +77,7 @@ public abstract class MinMax implements AiSolver {
 					notValidRound = nodeRound;
 					errorMsg = "Opponent tile probability is less than zero, tile[" + left + "-" + right + "] method[" + msg + "]";
 					errorMsgKey = "opponentTileProbabilityIsLessThanZero";
+					break;
 				}
 				sum += prob;
 			}

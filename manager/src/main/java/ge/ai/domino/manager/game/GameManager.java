@@ -79,14 +79,7 @@ public class GameManager {
         "Point for win: " + game.getProperties().getPointsForWin());
         Round newRound = CachedGames.getCurrentRound(game.getId(), false);
 
-        if (systemParameterManager.getBooleanParameterValue(useMultithreadingMinMax)) {
-            MultithreadingServer server = MultithreadingServer.getInstance();
-
-            GameInitialData gameInitialData = new GameInitialData();
-            gameInitialData.setGameId(game.getId());
-            gameInitialData.setPointsForWin(gameProperties.getPointsForWin());
-            server.initGame(gameInitialData);
-        }
+        ifNeedSendInitialData(game, gameProperties);
 
         RoundLogger.logRoundFullInfo(newRound);
         return newRound;
@@ -243,6 +236,17 @@ public class GameManager {
 
     public String getCurrentRoundInfoInString(int gameId) {
         return RoundLogger.getRoundFullInfo(CachedGames.getCurrentRound(gameId, true));
+    }
+
+    public void ifNeedSendInitialData(Game game, GameProperties gameProperties) {
+        if (systemParameterManager.getBooleanParameterValue(useMultithreadingMinMax)) {
+            MultithreadingServer server = MultithreadingServer.getInstance();
+
+            GameInitialData gameInitialData = new GameInitialData();
+            gameInitialData.setGameId(game.getId());
+            gameInitialData.setPointsForWin(gameProperties.getPointsForWin());
+            server.initGame(gameInitialData);
+        }
     }
 
     private void logImage(int gameId, String imagePath) {

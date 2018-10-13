@@ -1,7 +1,6 @@
 package ge.ai.domino.manager.replaygame;
 
 import ge.ai.domino.caching.game.CachedGames;
-import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.GameProperties;
@@ -38,6 +37,8 @@ public class ReplayGameManager {
 		Game game = InitialUtil.getInitialGame(gameProperties, false);
 		CachedGames.addGame(game);
 		CachedGames.addCreatedGameHistory(game.getId(), gameHistory);
+
+		gameManager.ifNeedSendInitialData(game, gameProperties);
 
 		ReplayMoveInfo replayMoveInfo = new ReplayMoveInfo();
 		replayMoveInfo.setGameId(game.getId());

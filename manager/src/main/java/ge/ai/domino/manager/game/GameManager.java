@@ -197,6 +197,7 @@ public class GameManager {
                 addTileForMe(gameId, lastAddedTile.getLeft(), lastAddedTile.getRight());
             } else {
                 Tile tile = round.getOpponentTiles().keySet().stream().findAny().get();
+                logger.info("Random tile for add me is " + tile);
                 addTileForMe(gameId, tile.getLeft(), tile.getRight());
             }
         } catch (Exception ex) {

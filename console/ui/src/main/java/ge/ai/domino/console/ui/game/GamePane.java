@@ -34,6 +34,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.apache.log4j.Logger;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -43,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class GamePane extends BorderPane {
+
+    private static final Logger logger = Logger.getLogger(GamePane.class); // TODO[IG] remove
 
     private static final int IMAGE_WIDTH = 65;
 
@@ -242,6 +245,11 @@ public abstract class GamePane extends BorderPane {
                         }
                     });
                 } else if (AppController.round != null && !hasPrediction && AppController.round.getTableInfo().isMyMove() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
+					// TODO[IG] remove logging
+                    logger.info("hasPrediction = " + hasPrediction);
+                    logger.info("bestAiPrediction = " + bestAiPrediction);
+                    logger.info("showingAddLeftTilesWindow = " + showingAddLeftTilesWindow);
+
                     ServiceExecutor.execute(() -> {
 						Tile tile = new ArrayList<>(AppController.round.getOpponentTiles().keySet()).get(0);
 						AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());

@@ -27,6 +27,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -74,10 +75,7 @@ public class SystemParametersPane extends HBox {
 
         TCHButton searchButton = new TCHButton();
         searchButton.setGraphic(new ImageView(ImageFactory.getImage("search.png")));
-        searchButton.setOnAction(e -> {
-            this.getChildren().removeAll();
-            initUI();
-        });
+        searchButton.setOnAction(e -> loadSystemParameters(false));
         FlowPane flowPane = new FlowPane(Orientation.HORIZONTAL);
         flowPane.setVgap(10);
         flowPane.setHgap(10);
@@ -101,10 +99,10 @@ public class SystemParametersPane extends HBox {
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         TableColumn deleteColumn = new TableColumn<>("");
         deleteColumn.setCellValueFactory((Callback<TableColumn.CellDataFeatures<SystemParameterProperty, Boolean>, ObservableValue<Boolean>>) p -> new SimpleBooleanProperty(p.getValue() != null));
-        deleteColumn.setCellFactory((Callback<TableColumn<SystemParameterProperty, Boolean>, TableCell<SystemParameterProperty, Boolean>>) p -> new DeleteButtonCell());
+        deleteColumn.setCellFactory(p -> new DeleteButtonCell());
         deleteColumn.setPrefWidth(70);
         tableView.getColumns().addAll(idColumn, keyColumn, valueColumn, typeColumn, deleteColumn);
-        loadSystemParameters();
+        loadSystemParameters(true);
         tableView.setRowFactory( tv -> {
             TableRow<SystemParameterProperty> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -119,10 +117,11 @@ public class SystemParametersPane extends HBox {
             return row ;
         });
 
-        VBox vBox = new VBox(10);
-        vBox.getChildren().addAll(flowPane, tableView);
+        BorderPane borderPane = new BorderPane();
+        borderPane.setTop(flowPane);
+        borderPane.setCenter(tableView);
 
-        this.getChildren().add(vBox);
+        this.getChildren().add(borderPane);
     }
 
     private void initParams() {
@@ -154,7 +153,7 @@ public class SystemParametersPane extends HBox {
                         systemParameterService.addSystemParameter(systemParameter);
                     }
                     clearFields();
-                    loadSystemParameters();
+                    loadSystemParameters(true);
                 });
             }
         });
@@ -186,7 +185,7 @@ public class SystemParametersPane extends HBox {
                 SystemParameterProperty systemParameterProperty = DeleteButtonCell.this.getTableView().getItems().get(DeleteButtonCell.this.getIndex());
                 ServiceExecutor.execute(() -> {
                     systemParameterService.deleteSystemParameter(systemParameterProperty.getKey());
-                    loadSystemParameters();
+                    loadSystemParameters(true);
                 });
             });
         }
@@ -199,8 +198,8 @@ public class SystemParametersPane extends HBox {
         }
     }
 
-    private void loadSystemParameters() {
-        List<SystemParameter> systemParameters = systemParameterService.getSystemParameters(keyFilterField.getText(), SystemParameterType.valueOf(typeFilterComboBox.getValue().toString()));
+    private void loadSystemParameters(boolean initialCall) {
+        List<SystemParameter> systemParameters = systemParameterService.getSystemParameters(initialCall ? null : keyFilterField.getText(), initialCall ? null : SystemParameterType.valueOf(typeFilterComboBox.getValue().toString()));
         List<SystemParameterProperty> systemParameterProperties = systemParameters.stream().map(SystemParameterProperty::new).collect(Collectors.toList());
         ObservableList<SystemParameterProperty> data = FXCollections.observableArrayList(systemParameterProperties);
         tableView.setItems(data);

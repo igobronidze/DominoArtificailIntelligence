@@ -48,7 +48,7 @@ public class SystemParameterDAOImpl implements SystemParameterDAO {
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, systemParameter.getKey());
             pstmt.setString(2, systemParameter.getValue());
-            pstmt.setString(3, systemParameter.getType() == null ? SystemParameterType.CONSOLE_PARAMETER.name() : systemParameter.getType().name());
+            pstmt.setString(3, systemParameter.getType() == null ? SystemParameterType.CONTROL_PANEL.name() : systemParameter.getType().name());
             pstmt.executeUpdate();
             logger.info("Added system parameter with key [" + systemParameter.getKey() + "]");
         } catch (SQLException ex) {

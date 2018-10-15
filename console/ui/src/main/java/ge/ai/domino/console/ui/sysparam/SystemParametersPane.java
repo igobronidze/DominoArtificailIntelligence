@@ -18,6 +18,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
@@ -26,6 +27,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
@@ -48,6 +50,10 @@ public class SystemParametersPane extends HBox {
 
     private DoubleBinding doubleBinding;
 
+    private TCHTextField keyFilterField;
+
+    private TCHComboBox typeFilterComboBox;
+
     public SystemParametersPane(DoubleBinding doubleBinding) {
         this.doubleBinding = doubleBinding;
         initUI();
@@ -62,6 +68,22 @@ public class SystemParametersPane extends HBox {
 
     @SuppressWarnings("unchecked")
     private void initTable() {
+        keyFilterField = new TCHTextField(TCHComponentSize.MEDIUM);
+        keyFilterField.setPromptText(Messages.get("key"));
+        typeFilterComboBox = new TCHComboBox(Arrays.asList(SystemParameterType.values()));
+
+        TCHButton searchButton = new TCHButton();
+        searchButton.setGraphic(new ImageView(ImageFactory.getImage("search.png")));
+        searchButton.setOnAction(e -> {
+            this.getChildren().removeAll();
+            initUI();
+        });
+        FlowPane flowPane = new FlowPane(Orientation.HORIZONTAL);
+        flowPane.setVgap(10);
+        flowPane.setHgap(10);
+        flowPane.setPadding(new Insets(15));
+        flowPane.getChildren().addAll(keyFilterField, typeFilterComboBox, searchButton);
+
         doubleBinding = doubleBinding.subtract(250 + 90 + 40 + 50);
         tableView = new TableView<>();
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
@@ -96,7 +118,11 @@ public class SystemParametersPane extends HBox {
             });
             return row ;
         });
-        this.getChildren().add(tableView);
+
+        VBox vBox = new VBox(10);
+        vBox.getChildren().addAll(flowPane, tableView);
+
+        this.getChildren().add(vBox);
     }
 
     private void initParams() {
@@ -174,7 +200,7 @@ public class SystemParametersPane extends HBox {
     }
 
     private void loadSystemParameters() {
-        List<SystemParameter> systemParameters = systemParameterService.getSystemParameters(null, null);
+        List<SystemParameter> systemParameters = systemParameterService.getSystemParameters(keyFilterField.getText(), SystemParameterType.valueOf(typeFilterComboBox.getValue().toString()));
         List<SystemParameterProperty> systemParameterProperties = systemParameters.stream().map(SystemParameterProperty::new).collect(Collectors.toList());
         ObservableList<SystemParameterProperty> data = FXCollections.observableArrayList(systemParameterProperties);
         tableView.setItems(data);

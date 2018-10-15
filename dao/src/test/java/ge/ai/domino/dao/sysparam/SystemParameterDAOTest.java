@@ -21,13 +21,13 @@ public class SystemParameterDAOTest {
 
 	private static final String VALUE_1 = "testValue";
 
-	private static final SystemParameterType TYPE_1 = SystemParameterType.CONSOLE_PARAMETER;
+	private static final SystemParameterType TYPE_1 = SystemParameterType.CONTROL_PANEL;
 
 	private static final String KEY_2 = "otherTestKey";
 
 	private static final String VALUE_2 = "otherTestValue";
 
-	private static final SystemParameterType TYPE_2 = SystemParameterType.CONSOLE_PARAMETER;
+	private static final SystemParameterType TYPE_2 = SystemParameterType.CONTROL_PANEL;
 
 	private static SystemParameterDAO systemParameterDAO;
 
@@ -58,7 +58,7 @@ public class SystemParameterDAOTest {
 			equalSysParam(systemParameters.get(i), result1.get(i));
 		}
 
-		List<SystemParameter> result2 = systemParameterDAO.getSystemParameters("other", SystemParameterType.CONSOLE_PARAMETER);
+		List<SystemParameter> result2 = systemParameterDAO.getSystemParameters("other", SystemParameterType.CONTROL_PANEL);
 		Assert.assertEquals(1, result2.size());
 		equalSysParam(systemParameters.get(1), result2.get(0));
 	}

@@ -1,6 +1,7 @@
 package ge.ai.domino.manager.game.ai.heuristic.statistic;
 
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
@@ -54,10 +55,8 @@ public class RoundStatisticProcessor {
 					roundTilesStatistic = RoundTilesStatisticProcessor.getTilesStatistic(round);
 				}
 				return countOpponentPossibleMoves(roundTilesStatistic);
-			case OPPONENT_TILES_INFO_ACCURACY:
-				return 0; //TODO[IG]
 			case OPEN_TILES_SUM:
-				return 0; //TODO[IG]
+				return getOpenTilesSum();
 			default:
 				return 0;
 		}
@@ -115,5 +114,24 @@ public class RoundStatisticProcessor {
 			result += countForTile;
 		}
 		return result;
+	}
+
+	private double getOpenTilesSum() {
+		TableInfo tableInfo = round.getTableInfo();
+
+		double sum = 0.0;
+		if (tableInfo.getLeft() != null && tableInfo.getLeft().isConsiderInSum()) {
+			sum += tableInfo.getLeft().getOpenSide() * (tableInfo.getLeft().isTwin() ? 2 : 1);
+		}
+		if (tableInfo.getRight() != null && tableInfo.getRight().isConsiderInSum()) {
+			sum += tableInfo.getRight().getOpenSide() * (tableInfo.getRight().isTwin() ? 2 : 1);
+		}
+		if (tableInfo.getTop() != null && tableInfo.getTop().isConsiderInSum()) {
+			sum += tableInfo.getTop().getOpenSide() * (tableInfo.getTop().isTwin() ? 2 : 1);
+		}
+		if (tableInfo.getBottom() != null && tableInfo.getBottom().isConsiderInSum()) {
+			sum += tableInfo.getBottom().getOpenSide() * (tableInfo.getBottom().isTwin() ? 2 : 1);
+		}
+		return sum;
 	}
 }

@@ -1,6 +1,5 @@
 package ge.ai.domino.manager.game.ai.minmax.bfs;
 
-import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
@@ -9,7 +8,6 @@ import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicHelper;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
@@ -364,7 +362,7 @@ public class MinMaxBFS extends MinMax {
                             nodeRound.setHeuristic(heuristic);
                         }
                     } else {
-                        nodeRound.setHeuristic(getHeuristic(nodeRound.getRound()));
+                        nodeRound.setHeuristic(roundHeuristic.getHeuristic(nodeRound.getRound(), false));
                     }
                 }
             }
@@ -386,17 +384,6 @@ public class MinMaxBFS extends MinMax {
                 (nodeRound.getBazaarNodeRound() == null || nodeRound.getBazaarNodeRound().getHeuristic() == null))
                 || (!children.isEmpty() && children.get(children.size() - 1).getHeuristic() == null) ||
                 (nodeRound.getBazaarNodeRound() != null && nodeRound.getBazaarNodeRound().getHeuristic() == null);
-    }
-
-    protected double getHeuristic(Round round) {
-        if (round.getGameInfo().isFinished()) {
-            return RoundHeuristicHelper.getFinishedGameHeuristic(round.getGameInfo(), CachedGames.getGameProperties(round.getGameInfo().getGameId()).getPointsForWin());
-        }
-        if (isNewRound(round)) {
-            return RoundHeuristicHelper.getFinishedRoundHeuristic(round.getGameInfo(), round.getTableInfo().isMyMove());
-        }
-
-        return getHeuristic(round, roundHeuristic);
     }
 
     private void addInQueue(NodeRound nodeRound) {

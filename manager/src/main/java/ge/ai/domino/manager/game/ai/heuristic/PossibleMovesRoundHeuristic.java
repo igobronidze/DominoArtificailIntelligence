@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Map;
 
-public class PossibleMovesRoundHeuristic implements RoundHeuristic {
+public class PossibleMovesRoundHeuristic extends RoundHeuristic {
 
     private static Logger logger = Logger.getLogger(PossibleMovesRoundHeuristic.class);
 
@@ -18,7 +18,7 @@ public class PossibleMovesRoundHeuristic implements RoundHeuristic {
     private final SysParam coefficientForComplexHeuristic = new SysParam("coefficientForComplexHeuristic", "12");
 
     @Override
-    public double getHeuristic(Round round, boolean logTrace) {
+    public double getNotFinishedRoundHeuristic(Round round, boolean logTrace) {
         double pointDiff = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
         RoundHeuristic.logInfo(logger, "Point diff is " + pointDiff, logTrace);
 

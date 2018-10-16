@@ -7,7 +7,7 @@ import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.AiSolver;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicFactory;
+import ge.ai.domino.manager.game.ai.heuristic.factory.RoundHeuristicFactory;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public abstract class MinMax implements AiSolver {
 
@@ -25,8 +24,6 @@ public abstract class MinMax implements AiSolver {
 	private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
 	private final SysParam checkOpponentProbabilities = new SysParam("checkOpponentProbabilities", "false");
-
-	private final SysParam logAboutRoundHeuristic = new SysParam("logAboutRoundHeuristic", "true");
 
 	protected final SysParam useMinMaxPredictor = new SysParam("useMinMaxPredictor", "false");
 
@@ -112,24 +109,5 @@ public abstract class MinMax implements AiSolver {
 			return errorMsgKey;
 		}
 		return null;
-	}
-
-	protected double getHeuristic(Round round, RoundHeuristic roundHeuristic) {
-		Random random = new Random();
-		double r = random.nextDouble();
-		boolean logHeuristicInfo = (r < (1.0 / 1000)) && systemParameterManager.getBooleanParameterValue(logAboutRoundHeuristic);
-		if (logHeuristicInfo) {
-			logger.info("******************************RoundHeuristic(" + roundHeuristic.getClass().getSimpleName() + ")******************************");
-			RoundLogger.logRoundFullInfo(round);
-		}
-
-		double heuristic = roundHeuristic.getHeuristic(round, logHeuristicInfo);
-
-		if (logHeuristicInfo) {
-			logger.info("Heuristic: " + heuristic);
-			logger.info("************************************************************");
-		}
-
-		return heuristic;
 	}
 }

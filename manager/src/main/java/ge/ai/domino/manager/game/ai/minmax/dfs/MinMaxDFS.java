@@ -1,19 +1,13 @@
 package ge.ai.domino.manager.game.ai.minmax.dfs;
 
-import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
-import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicFactory;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicHelper;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
@@ -193,19 +187,9 @@ public class MinMaxDFS extends MinMax {
 		recursionCount++;
 		nodeRound.setId(recursionCount);
 		Round round = nodeRound.getRound();
-		TableInfo tableInfo = round.getTableInfo();
-		GameInfo gameInfo = round.getGameInfo();
 
-		// Recursion end conditions: Game is finished, Started new round, reached tree root
-		if (round.getGameInfo().isFinished()) {
-			nodeRound.setHeuristic(RoundHeuristicHelper.getFinishedGameHeuristic(gameInfo, CachedGames.getGameProperties(gameId).getPointsForWin()));
-		}
-		if (isNewRound(round)) {
-			nodeRound.setHeuristic(RoundHeuristicHelper.getFinishedRoundHeuristic(gameInfo, tableInfo.isMyMove()));
-			return nodeRound.getHeuristic();
-		}
-		if (height == treeHeight) {
-			nodeRound.setHeuristic(getHeuristic(round, roundHeuristic));
+		if (round.getGameInfo().isFinished() || isNewRound(round) || height == treeHeight) {
+			nodeRound.setHeuristic(roundHeuristic.getHeuristic(round, false));
 			return nodeRound.getHeuristic();
 		}
 

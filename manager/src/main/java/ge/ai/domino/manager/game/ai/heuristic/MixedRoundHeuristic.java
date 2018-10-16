@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class MixedRoundHeuristic implements RoundHeuristic {
+public class MixedRoundHeuristic extends RoundHeuristic {
 
 	private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
@@ -45,7 +45,7 @@ public class MixedRoundHeuristic implements RoundHeuristic {
 	private final double mixedRoundHeuristicParam7Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam7);
 
 	@Override
-	public double getHeuristic(Round round, boolean logTrace) {
+	public double getNotFinishedRoundHeuristic(Round round, boolean logTrace) {
 		GameInfo gameInfo = round.getGameInfo();
 		double pointForWin = CachedGames.getGameProperties(round.getGameInfo().getGameId()).getPointsForWin();
 

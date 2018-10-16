@@ -1,4 +1,4 @@
-package ge.ai.domino.manager.game.ai.heuristic;
+package ge.ai.domino.manager.game.ai.heuristic.factory;
 
 public enum RoundHeuristicType {
 

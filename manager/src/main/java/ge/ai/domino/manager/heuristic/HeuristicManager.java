@@ -2,8 +2,8 @@ package ge.ai.domino.manager.heuristic;
 
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicFactory;
-import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristicType;
+import ge.ai.domino.manager.game.ai.heuristic.factory.RoundHeuristicFactory;
+import ge.ai.domino.manager.game.ai.heuristic.factory.RoundHeuristicType;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import org.apache.log4j.Logger;
 

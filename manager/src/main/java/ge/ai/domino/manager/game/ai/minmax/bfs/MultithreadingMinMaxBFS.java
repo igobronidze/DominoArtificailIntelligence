@@ -122,7 +122,7 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 					NodeRound nodeRound = roundsForProcess.get(aiPredictionsWrapperEntry.getKey().get(i));
 					AiPredictionsWrapper aiPredictionsWrapper = aiPredictionsWrapperEntry.getValue().get(i);
 					if (aiPredictionsWrapper.getAiPredictions().isEmpty()) {
-						nodeRound.setHeuristic(getHeuristic(nodeRound.getRound()));
+						nodeRound.setHeuristic(roundHeuristic.getHeuristic(nodeRound.getRound(), false));
 					} else {
 						nodeRound.setHeuristic(getHeuristicFromPrediction(aiPredictionsWrapper));
 					}

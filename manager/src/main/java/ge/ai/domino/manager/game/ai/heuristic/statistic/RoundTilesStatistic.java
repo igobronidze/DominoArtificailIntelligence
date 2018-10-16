@@ -1,9 +1,9 @@
-package ge.ai.domino.manager.game.ai.heuristic;
+package ge.ai.domino.manager.game.ai.heuristic.statistic;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TilesStatistic {
+public class RoundTilesStatistic {
 
 	private Map<Integer, Double> onTable = new HashMap<>();
 

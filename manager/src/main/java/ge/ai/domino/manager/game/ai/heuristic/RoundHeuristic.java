@@ -4,6 +4,7 @@ import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.manager.game.ai.heuristic.statistic.RoundStatisticProcessor;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
@@ -14,6 +15,8 @@ public abstract class RoundHeuristic {
 
     private final Logger logger = Logger.getLogger(RoundHeuristic.class);
 
+    protected static final RoundStatisticProcessor roundStatisticProcessor = new RoundStatisticProcessor();
+
     private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
     private final SysParam logAboutRoundHeuristic = new SysParam("logAboutRoundHeuristic", "true");
@@ -22,7 +25,7 @@ public abstract class RoundHeuristic {
 
     private static final SysParam rateForFinishedGameHeuristic = new SysParam("rateForFinishedGameHeuristic", "1.0");
 
-    abstract double getNotFinishedRoundHeuristic(Round round, boolean logTrace);
+    abstract double getNotFinishedRoundHeuristic(Round round);
 
     public double getHeuristic(Round round, boolean forceLog) {
         if (round.getGameInfo().isFinished()) {
@@ -40,7 +43,7 @@ public abstract class RoundHeuristic {
             RoundLogger.logRoundFullInfo(round);
         }
 
-        double heuristic = getNotFinishedRoundHeuristic(round, logHeuristicInfo);
+        double heuristic = getNotFinishedRoundHeuristic(round);
 
         if (logHeuristicInfo) {
             logger.info("Heuristic: " + heuristic);

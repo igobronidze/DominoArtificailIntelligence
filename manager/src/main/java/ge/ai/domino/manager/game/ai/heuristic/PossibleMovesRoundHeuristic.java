@@ -4,28 +4,29 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.manager.game.ai.heuristic.statistic.RoundStatisticType;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
-import org.apache.log4j.Logger;
 
 import java.util.Map;
 
 public class PossibleMovesRoundHeuristic extends RoundHeuristic {
-
-    private static Logger logger = Logger.getLogger(PossibleMovesRoundHeuristic.class);
 
     private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
     private final SysParam coefficientForComplexHeuristic = new SysParam("coefficientForComplexHeuristic", "12");
 
     @Override
-    public double getNotFinishedRoundHeuristic(Round round, boolean logTrace) {
-        double pointDiff = round.getGameInfo().getMyPoint() - round.getGameInfo().getOpponentPoint();
-        RoundHeuristic.logInfo(logger, "Point diff is " + pointDiff, logTrace);
+    public double getNotFinishedRoundHeuristic(Round round) {
+        roundStatisticProcessor.replaceRound(round);
 
-        int myTilesCount = round.getMyTiles().size();
+        double myPoint = roundStatisticProcessor.getStatistic(RoundStatisticType.MY_POINT);
+        double opponentPoint = roundStatisticProcessor.getStatistic(RoundStatisticType.OPPONENT_POINT);
+        double pointDiff = myPoint - opponentPoint;
+
+        double myTilesCount = roundStatisticProcessor.getStatistic(RoundStatisticType.MY_TILES_COUNT);
+        double opponentTilesCount = roundStatisticProcessor.getStatistic(RoundStatisticType.OPPONENT_TILES_COUNT);
         double movesDiff = sysParamManager.getIntegerParameterValue(coefficientForComplexHeuristic) * (countPossibleMoves(round, true) / myTilesCount / myTilesCount -
-                countPossibleMoves(round, false) / round.getTableInfo().getOpponentTilesCount() / round.getTableInfo().getOpponentTilesCount());
-        RoundHeuristic.logInfo(logger, "Moves diff is " + movesDiff, logTrace);
+                countPossibleMoves(round, false) / opponentTilesCount / opponentTilesCount);
 
         return pointDiff + movesDiff;
     }

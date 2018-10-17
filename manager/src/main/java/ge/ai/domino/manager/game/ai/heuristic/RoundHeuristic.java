@@ -53,12 +53,6 @@ public abstract class RoundHeuristic {
         return heuristic;
     }
 
-    static void logInfo(Logger logger, String text, boolean log) {
-        if (log) {
-            logger.info(text);
-        }
-    }
-
     private double getFinishedGameHeuristic(GameInfo gameInfo, int pointForWin) {
         if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
             return pointForWin * systemParameterManager.getDoubleParameterValue(rateForFinishedGameHeuristic);

@@ -72,7 +72,7 @@ INSERT INTO system_parameter (key, value, type) VALUES('minMaxOnFirstTile', 'tru
 INSERT INTO system_parameter (key, value, type) VALUES('minMaxTreeHeight', '7', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('minMaxType', 'BFS', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('useMinMaxPredictor', 'true', 'MIN_MAX');
-INSERT INTO system_parameter (key, value, type) VALUES('opponentPlayHeuristicsDiffsFunctionName', 'opponentPlayHeuristicsDiffsFunction_M', 'MIN_MAX');
+INSERT INTO system_parameter (key, value, type) VALUES('opponentPlayHeuristicsDiffsFunctionName', 'opponentPlayHeuristicsDiffsFunction_initialForOptimization', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('minMaxIteration', '150000', 'MIN_MAX');
 -- Multithreading
 INSERT INTO system_parameter (key, value, type) VALUES('useMultithreadingMinMax', 'true', 'MIN_MAX');
@@ -87,11 +87,12 @@ INSERT INTO system_parameter (key, value, type) VALUES('minMaxForCachedNodeRound
 INSERT INTO system_parameter (key, value, type) VALUES('coefficientForComplexHeuristic', '12', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('heuristicValueForStartNextRound', '12', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('rateForFinishedGameHeuristic', '1.0', 'HEURISTIC');
-INSERT INTO system_parameter (key, value, type) VALUES('roundHeuristicType', 'POINT_DIFF_ROUND_HEURISTIC', 'HEURISTIC');
+INSERT INTO system_parameter (key, value, type) VALUES('roundHeuristicType', 'MIXED_ROUND_HEURISTIC', 'HEURISTIC');
 -- MixedRoundHeuristic
 INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicTilesDiffRate', '2', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicMovesDiffRate', '10', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicPointsBalancingRate', '0.3', 'HEURISTIC');
+INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicOpenTilesSumBalancingRate', '0.15', 'HEURISTIC');
 -- RoundStatisticsProcessor
 INSERT INTO system_parameter (key, value, type) VALUES('roundStatisticProcessorParam1', '0.4', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('roundStatisticProcessorParam2', '0.2', 'HEURISTIC');

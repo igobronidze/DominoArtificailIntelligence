@@ -12,17 +12,17 @@ public class RoundStatisticProcessor {
 
 	private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-	private final SysParam mixedRoundHeuristicParam3 = new SysParam("mixedRoundHeuristicParam3", "0.4");
+	private final SysParam roundStatisticProcessorParam1 = new SysParam("roundStatisticProcessorParam1", "0.4");
 
-	private final SysParam mixedRoundHeuristicParam4 = new SysParam("mixedRoundHeuristicParam4", "0.2");
+	private final SysParam roundStatisticProcessorParam2 = new SysParam("roundStatisticProcessorParam2", "0.2");
 
-	private final SysParam mixedRoundHeuristicParam5 = new SysParam("mixedRoundHeuristicParam5", "0.1");
+	private final SysParam roundStatisticProcessorParam3 = new SysParam("roundStatisticProcessorParam3", "0.1");
 
-	private final double mixedRoundHeuristicParam3Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam3);
+	private final double roundStatisticProcessorParam1Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam1);
 
-	private final double mixedRoundHeuristicParam4Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam4);
+	private final double roundStatisticProcessorParam2Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam2);
 
-	private final double mixedRoundHeuristicParam5Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam5);
+	private final double roundStatisticProcessorParam3Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam3);
 
 	private Round round;
 
@@ -71,25 +71,25 @@ public class RoundStatisticProcessor {
 			double countForTile = 0.0;
 
 			countForTile += tilesStatistic.getOnTable().get(tile.getLeft());
-			countForTile += tilesStatistic.getForMe().get(tile.getLeft()) * mixedRoundHeuristicParam4Value;
+			countForTile += tilesStatistic.getForMe().get(tile.getLeft()) * roundStatisticProcessorParam2Value;
 			double opponentTileNewValueLeft = 0;
 			if (opponentTilesCount != entry.getValue()) {
 				opponentTileNewValueLeft = (tilesStatistic.getForOpponent().get(tile.getLeft()) - entry.getValue()) / (opponentTilesCount - entry.getValue()) * (opponentTilesCount - 1);
 			}
-			countForTile += opponentTileNewValueLeft * mixedRoundHeuristicParam3Value;
+			countForTile += opponentTileNewValueLeft * roundStatisticProcessorParam1Value;
 			countForTile += (tilesStatistic.getForBazaar().get(tile.getLeft()) + (tilesStatistic.getForOpponent().get(tile.getLeft()) - opponentTileNewValueLeft) - 1)
-					* mixedRoundHeuristicParam5Value;
+					* roundStatisticProcessorParam3Value;
 
 			if (tile.getLeft() != tile.getRight()) {
 				countForTile += tilesStatistic.getOnTable().get(tile.getRight());
-				countForTile += tilesStatistic.getForMe().get(tile.getRight()) * mixedRoundHeuristicParam4Value;
+				countForTile += tilesStatistic.getForMe().get(tile.getRight()) * roundStatisticProcessorParam2Value;
 				double opponentTileNewValueRight = 0;
 				if (opponentTilesCount != entry.getValue()) {
 					opponentTileNewValueRight = (tilesStatistic.getForOpponent().get(tile.getRight()) - entry.getValue()) / (opponentTilesCount - entry.getValue()) * (opponentTilesCount - 1);
 				}
-				countForTile += opponentTileNewValueRight * mixedRoundHeuristicParam3Value;
+				countForTile += opponentTileNewValueRight * roundStatisticProcessorParam1Value;
 				countForTile += (tilesStatistic.getForBazaar().get(tile.getRight()) + (tilesStatistic.getForOpponent().get(tile.getRight()) - opponentTileNewValueRight) - 1)
-						* mixedRoundHeuristicParam5Value;
+						* roundStatisticProcessorParam3Value;
 			}
 
 			result += countForTile * entry.getValue();
@@ -102,14 +102,14 @@ public class RoundStatisticProcessor {
 		for (Tile tile : round.getMyTiles()) {
 			double countForTile = 0.0;
 			countForTile += tilesStatistic.getOnTable().get(tile.getLeft());
-			countForTile += (tilesStatistic.getForMe().get(tile.getLeft()) - 1) * mixedRoundHeuristicParam3Value;
-			countForTile += tilesStatistic.getForOpponent().get(tile.getLeft()) * mixedRoundHeuristicParam4Value;
-			countForTile += tilesStatistic.getForBazaar().get(tile.getLeft()) * mixedRoundHeuristicParam5Value;
+			countForTile += (tilesStatistic.getForMe().get(tile.getLeft()) - 1) * roundStatisticProcessorParam1Value;
+			countForTile += tilesStatistic.getForOpponent().get(tile.getLeft()) * roundStatisticProcessorParam2Value;
+			countForTile += tilesStatistic.getForBazaar().get(tile.getLeft()) * roundStatisticProcessorParam3Value;
 			if (tile.getLeft() != tile.getRight()) {
 				countForTile += tilesStatistic.getOnTable().get(tile.getRight());
-				countForTile += (tilesStatistic.getForMe().get(tile.getRight()) - 1) * mixedRoundHeuristicParam3Value;
-				countForTile += tilesStatistic.getForOpponent().get(tile.getRight()) * mixedRoundHeuristicParam4Value;
-				countForTile += tilesStatistic.getForBazaar().get(tile.getRight()) * mixedRoundHeuristicParam5Value;
+				countForTile += (tilesStatistic.getForMe().get(tile.getRight()) - 1) * roundStatisticProcessorParam1Value;
+				countForTile += tilesStatistic.getForOpponent().get(tile.getRight()) * roundStatisticProcessorParam2Value;
+				countForTile += tilesStatistic.getForBazaar().get(tile.getRight()) * roundStatisticProcessorParam3Value;
 			}
 			result += countForTile;
 		}

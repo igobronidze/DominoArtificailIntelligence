@@ -10,17 +10,17 @@ public class MixedRoundHeuristic extends RoundHeuristic {
 
 	private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-	private final SysParam mixedRoundHeuristicParam1 = new SysParam("mixedRoundHeuristicParam1", "2");
+	private final SysParam mixedRoundHeuristicTilesDiffRate = new SysParam("mixedRoundHeuristicTilesDiffRate", "2");
 
-	private final SysParam mixedRoundHeuristicParam2 = new SysParam("mixedRoundHeuristicParam2", "10");
+	private final SysParam mixedRoundHeuristicMovesDiffRate = new SysParam("mixedRoundHeuristicMovesDiffRate", "10");
 
-	private final SysParam mixedRoundHeuristicParam6 = new SysParam("mixedRoundHeuristicParam6", "0.3");
+	private final SysParam mixedRoundHeuristicPointsBalancingRate = new SysParam("mixedRoundHeuristicPointsBalancingRate", "0.3");
 
-	private final double mixedRoundHeuristicParam1Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam1);
+	private final double mixedRoundHeuristicTilesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicTilesDiffRate);
 
-	private final double mixedRoundHeuristicParam2Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam2);
+	private final double mixedRoundHeuristicMovesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicMovesDiffRate);
 
-	private final double mixedRoundHeuristicParam6Value = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicParam6);
+	private final double mixedRoundHeuristicPointsBalancingRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicPointsBalancingRate);
 
 	@Override
 	public double getNotFinishedRoundHeuristic(Round round) {
@@ -34,23 +34,23 @@ public class MixedRoundHeuristic extends RoundHeuristic {
 		double pointsDiffCoefficient = Math.abs(myPoint - opponentPoint) / pointForWin;
 
 		// Point Diff
-		double balancedMyPoint = myPoint * (myPoint >= pointForWin ? (1.0 + mixedRoundHeuristicParam6Value) :
-				(1.0 + mixedRoundHeuristicParam6Value * (myPoint / pointForWin)));
-		double balancedOpponentPoint = opponentPoint * (opponentPoint >= pointForWin ? (1.0 + mixedRoundHeuristicParam6Value) :
-				(1.0 + mixedRoundHeuristicParam6Value * (opponentPoint / pointForWin)));
+		double balancedMyPoint = myPoint * (myPoint >= pointForWin ? (1.0 + mixedRoundHeuristicPointsBalancingRateValue) :
+				(1.0 + mixedRoundHeuristicPointsBalancingRateValue * (myPoint / pointForWin)));
+		double balancedOpponentPoint = opponentPoint * (opponentPoint >= pointForWin ? (1.0 + mixedRoundHeuristicPointsBalancingRateValue) :
+				(1.0 + mixedRoundHeuristicPointsBalancingRateValue * (opponentPoint / pointForWin)));
 		double pointDiff = balancedMyPoint - balancedOpponentPoint;
 
 		// Tiles Diff
 		double balancedMyTilesCount = myTilesCount - myTilesCount * pointsDiffCoefficient;
 		double balancedOpponentTilesCount = opponentTilesCount - opponentTilesCount * pointsDiffCoefficient;
-		double tilesDiff = mixedRoundHeuristicParam1Value * (balancedOpponentTilesCount - balancedMyTilesCount);
+		double tilesDiff = mixedRoundHeuristicTilesDiffRateValue * (balancedOpponentTilesCount - balancedMyTilesCount);
 
 		// Moves Diff
 		double myMovesCount = roundStatisticProcessor.getStatistic(RoundStatisticType.MY_PLAY_OPTIONS_COUNT) / myTilesCount;
 		double opponentMovesCount = roundStatisticProcessor.getStatistic(RoundStatisticType.OPPONENT_PLAY_OPTIONS_COUNT) / opponentTilesCount;
 		double balancesMyMovesCount =  myMovesCount * pointsDiffCoefficient;
 		double balancedOpponentMovesCount = opponentMovesCount * pointsDiffCoefficient;
-		double movesDiff = mixedRoundHeuristicParam2Value * (balancesMyMovesCount - balancedOpponentMovesCount);
+		double movesDiff = mixedRoundHeuristicMovesDiffRateValue * (balancesMyMovesCount - balancedOpponentMovesCount);
 
 		return pointDiff + tilesDiff + movesDiff;
 	}

@@ -7,6 +7,7 @@ import ge.ai.domino.console.ui.tchcomponents.TCHNumberTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.service.ServiceExecutor;
+import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.PlayedMove;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.service.game.GameService;
@@ -94,9 +95,22 @@ public class ReplayGamePane extends BorderPane {
         ScrollPane scrollPane = new ScrollPane();
         TCHLabel gameInfoLabel = new TCHLabel(replayMoveInfo == null ? "" : gameService.getCurrentRoundInfoInString(replayMoveInfo.getGameId()));
         scrollPane.setContent(gameInfoLabel);
-        scrollPane.setPrefHeight(800);
-        scrollPane.setMaxHeight(540);
+        scrollPane.setPrefHeight(495);
+        scrollPane.setMaxHeight(495);
         mainVBox.getChildren().add(scrollPane);
+
+        if (replayMoveInfo != null && replayMoveInfo.getAiPrediction() != null) {
+            TCHLabel aiPredictionLabel;
+            if (replayMoveInfo.getAiPrediction().equals(
+                    new Move(replayMoveInfo.getNextMove().getLeft(), replayMoveInfo.getNextMove().getRight(), replayMoveInfo.getNextMove().getDirection()))) {
+                aiPredictionLabel = new TCHLabel(Messages.get("newBestMoveIsSameAsPlayed"));
+                aiPredictionLabel.setStyle("-fx-font-family: sylfaen; -fx-font-size: 14px; -fx-text-fill: green");
+            } else {
+                aiPredictionLabel = new TCHLabel(Messages.get("newBestMove") + ": " + replayMoveInfo.getAiPrediction());
+                aiPredictionLabel.setStyle("-fx-font-family: sylfaen; -fx-font-size: 14px; -fx-text-fill: red");
+            }
+            mainVBox.getChildren().add(aiPredictionLabel);
+        }
 
         this.setCenter(mainVBox);
     }

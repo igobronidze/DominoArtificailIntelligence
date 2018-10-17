@@ -28,6 +28,7 @@ import ge.ai.domino.manager.game.move.PlayForMeProcessorVirtual;
 import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.manager.game.move.PlayForOpponentProcessorVirtual;
 import ge.ai.domino.manager.heuristic.HeuristicManager;
+import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
 import ge.ai.domino.manager.opponentplay.OpponentPlaysManager;
 import ge.ai.domino.manager.opponentplay.guess.NegativeBalancedGuessRateCounter;
 import ge.ai.domino.manager.replaygame.ReplayGameManager;
@@ -65,6 +66,8 @@ public class GameDebugger {
 
     private static final FunctionManager functionManager = new FunctionManager();
 
+    private static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
+
     private static Round round;
 
     public static void main(String[] args) {
@@ -81,6 +84,7 @@ public class GameDebugger {
             System.out.println("8. Get heuristics");
             System.out.println("9. Replay games");
             System.out.println("10. MinMaxPredictor Optimization");
+            System.out.println("11. Start MinMax Multithreading server");
             String line = scanner.nextLine();
 
             try {
@@ -127,11 +131,19 @@ public class GameDebugger {
                         executeMinMaxPredictorOptimization(scanner);
                         break;
                     }
+                    case "11": {
+                        startMultithreadingSever();
+                        break;
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private static void startMultithreadingSever() {
+        new Thread(multithreadingServer::startServer).start();
     }
 
     private static void executeMinMaxPredictorOptimization(Scanner scanner) {
@@ -243,6 +255,14 @@ public class GameDebugger {
                 gameId = replayMoveInfo.getGameId();
                 while (replayMoveInfo.getNextMove() != null) {
                     replayMoveInfo = replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
+                    if (replayMoveInfo.getNextMove() != null) {
+                        Move nextMove = new Move(replayMoveInfo.getNextMove().getLeft(), replayMoveInfo.getNextMove().getRight(), replayMoveInfo.getNextMove().getDirection());
+                        if (replayMoveInfo.getAiPrediction() != null && !replayMoveInfo.getAiPrediction().equals(nextMove)) {
+                            logger.info("Next move and best prediction is not same");
+                            logger.info("Next move: " + nextMove);
+                            logger.info("Best prediction: " + replayMoveInfo.getAiPrediction());
+                        }
+                    }
                 }
 
                 List<OpponentPlay> opponentPlays = removeExtraPlays(CachedGames.getOpponentPlays(replayMoveInfo.getGameId()));

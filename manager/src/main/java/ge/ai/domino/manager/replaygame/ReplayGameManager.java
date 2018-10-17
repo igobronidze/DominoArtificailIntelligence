@@ -5,6 +5,8 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.ai.AiPrediction;
+import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.GameHistory;
@@ -89,8 +91,11 @@ public class ReplayGameManager {
 
 			replayMoveInfo.setMoveIndex(moveIndex + 1);
 		} else {
-			replayMove(gameId, playedMove);
+			Round replayedRound = replayMove(gameId, playedMove);
 			replayMoveInfo.setMoveIndex(moveIndex + 1);
+			if (replayedRound.getAiPredictions() != null) {
+				replayMoveInfo.setAiPrediction(getAiPrediction(replayedRound.getAiPredictions()));
+			}
 		}
 
 		if (replayMoveInfo.getMoveIndex() < playedMoves.size()) {
@@ -147,5 +152,14 @@ public class ReplayGameManager {
 			default:
 				return CachedGames.getCurrentRound(gameId, false);
 		}
+	}
+
+	private Move getAiPrediction(AiPredictionsWrapper aiPredictionsWrapper) {
+		for (AiPrediction aiPrediction : aiPredictionsWrapper.getAiPredictions()) {
+			if (aiPrediction.isBestMove()) {
+				return aiPrediction.getMove();
+			}
+		}
+		return null;
 	}
 }

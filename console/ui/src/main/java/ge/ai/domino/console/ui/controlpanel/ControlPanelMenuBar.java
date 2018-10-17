@@ -181,7 +181,7 @@ public class ControlPanelMenuBar extends MenuBar {
         MenuItem replayGameMenuItem = new MenuItem(Messages.get("replayGame"));
         replayGameMenuItem.setOnAction(e -> {
             Stage stage = new Stage();
-            stage.setHeight(690);
+            stage.setHeight(735);
             stage.setWidth(900);
             stage.setScene(new Scene(new ReplayGamePane()));
             stage.setTitle(Messages.get("replayGame"));

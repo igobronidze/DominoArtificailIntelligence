@@ -25,7 +25,9 @@ public class RoundParser {
      * Parse round from log
      *
      * Log Example
-     * __________Game Info__________
+     *
+     ____________________________________________Round Info____________________________________________
+     __________Game Info__________
      Game ID: 121     |     Finished: false     |     My Point: 15     |     Opponent Point: 0
      __________Table Info__________
      Left: 3     |     Right: 5     |     Top: 0     |     Bottom: 6
@@ -48,12 +50,15 @@ public class RoundParser {
      */
     public static Round parseRound(String roundLog) throws DAIException {
         String[] lines = roundLog.split(Pattern.quote(RoundLogger.END_LINE));
+        if (lines[0].isEmpty()) {
+            lines = Arrays.copyOfRange(lines, 1, lines.length);
+        }
 
         Round round = new Round();
-        round.setGameInfo(parseGameInfo(lines[1]));
-        round.setTableInfo(parseTableInfo(Arrays.copyOfRange(lines, 3, 7)));
-        round.setMyTiles(parseMyTiles(lines[8]));
-        round.setOpponentTiles(parseOpponentTiles(Arrays.copyOfRange(lines, 10, 17)));
+        round.setGameInfo(parseGameInfo(lines[2]));
+        round.setTableInfo(parseTableInfo(Arrays.copyOfRange(lines, 4, 8)));
+        round.setMyTiles(parseMyTiles(lines[9]));
+        round.setOpponentTiles(parseOpponentTiles(Arrays.copyOfRange(lines, 11, 18)));
         return round;
     }
 
@@ -92,16 +97,28 @@ public class RoundParser {
 
         String[] properties0 = lines[0].split(Pattern.quote(RoundLogger.DELIMITER));
         try {
-            tableInfo.setLeft(new PlayedTile(Integer.parseInt(properties0[0].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim())));
+            String leftPlayedTile = properties0[0].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim();
+            String[] playedTileElements = leftPlayedTile.split(RoundLogger.INNER_DELIMITER);
+            tableInfo.setLeft(new PlayedTile(Integer.parseInt(playedTileElements[0]), Boolean.valueOf(playedTileElements[1]),
+                    Boolean.valueOf(playedTileElements[2]), Boolean.valueOf(playedTileElements[3])));
         } catch (NumberFormatException ignore) {}
         try {
-            tableInfo.setRight(new PlayedTile(Integer.parseInt(properties0[1].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim())));
+            String leftPlayedTile = properties0[1].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim();
+            String[] playedTileElements = leftPlayedTile.split(RoundLogger.INNER_DELIMITER);
+            tableInfo.setRight(new PlayedTile(Integer.parseInt(playedTileElements[0]), Boolean.valueOf(playedTileElements[1]),
+                    Boolean.valueOf(playedTileElements[2]), Boolean.valueOf(playedTileElements[3])));
         } catch (NumberFormatException ignore) {}
         try {
-            tableInfo.setTop(new PlayedTile(Integer.parseInt(properties0[2].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim())));
+            String leftPlayedTile = properties0[2].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim();
+            String[] playedTileElements = leftPlayedTile.split(RoundLogger.INNER_DELIMITER);
+            tableInfo.setTop(new PlayedTile(Integer.parseInt(playedTileElements[0]), Boolean.valueOf(playedTileElements[1]),
+                    Boolean.valueOf(playedTileElements[2]), Boolean.valueOf(playedTileElements[3])));
         } catch (NumberFormatException ignore) {}
         try {
-            tableInfo.setBottom(new PlayedTile(Integer.parseInt(properties0[3].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim())));
+            String leftPlayedTile = properties0[3].split(Pattern.quote(RoundLogger.EQUAL_CHARACTER))[1].trim();
+            String[] playedTileElements = leftPlayedTile.split(RoundLogger.INNER_DELIMITER);
+            tableInfo.setBottom(new PlayedTile(Integer.parseInt(playedTileElements[0]), Boolean.valueOf(playedTileElements[1]),
+                    Boolean.valueOf(playedTileElements[2]), Boolean.valueOf(playedTileElements[3])));
         } catch (NumberFormatException ignore) {}
 
         String[] properties1 = lines[1].split(Pattern.quote(RoundLogger.DELIMITER));

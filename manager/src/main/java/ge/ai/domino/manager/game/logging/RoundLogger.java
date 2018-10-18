@@ -19,6 +19,8 @@ public class RoundLogger {
 
     public static final String DELIMITER = "|";
 
+    public static final String INNER_DELIMITER = ",";
+
     private static final String DELIMITER_WITH_SPACES = "     |     ";
 
     public static final String EQUAL_CHARACTER = ":";
@@ -87,7 +89,11 @@ public class RoundLogger {
         if (playedTile == null) {
             return NOT;
         }
-        return String.valueOf(playedTile.getOpenSide());
+        String result = "" + playedTile.getOpenSide();
+        result += INNER_DELIMITER + playedTile.isTwin();
+        result += INNER_DELIMITER + playedTile.isConsiderInSum();
+        result += INNER_DELIMITER + playedTile.isCenter();
+        return String.valueOf(result);
     }
 
     private static StringBuilder myTileToString(List<Tile> tiles) {

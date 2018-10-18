@@ -28,13 +28,13 @@ public class RoundParserTest {
 
     private static final int opponentPoint = 25;
 
-    private static final PlayedTile left = new PlayedTile(3);
+    private static final PlayedTile left = new PlayedTile(3, true, true, true);
 
-    private static final PlayedTile right = new PlayedTile(2);
+    private static final PlayedTile right = new PlayedTile(2, true, false, true);
 
-    private static final PlayedTile top = new PlayedTile(3);
+    private static final PlayedTile top = new PlayedTile(3, false, true, false);
 
-    private static final PlayedTile bottom = new PlayedTile(6);
+    private static final PlayedTile bottom = new PlayedTile(6, false, false, false);
 
     private static final boolean myMove = false;
 
@@ -82,28 +82,13 @@ public class RoundParserTest {
         put(new Tile(0, 0), 0.0667);
     }};
 
-    private static final String roundLog = "__________Game Info__________\n" +
-            "Game ID: " + gameId + "     |     Finished: " + finished + "     |     My Point: " + myPoint + "     |     Opponent Point: " + opponentPoint + "\n" +
-            "__________Table Info__________\n" +
-            "Left: " + left.getOpenSide() + "     |     Right: " + right.getOpenSide() + "     |     Top: " + top.getOpenSide() + "     |     Bottom: " + bottom.getOpenSide() + "\n" +
-            "My Move: " + myMove + "     |     With Center: " + withCenter + "     |     First Round: " + firstRound + "\n" +
-            "Omitted Me: " + omittedMe + "     |     Omitted Opponent: " + omittedOpponent + "     |     Last Played Not Twin Tile Is Mine: " + lastNotTwinTileIsMine + "\n" +
-            "Opponent Tiles: " + opponentTilesCount + "     |     Bazaar Tiles: " + bazaarTilesCount + "     |     Tiles From Bazaar: " + tilesFromBazaar + "\n" +
-            "__________My Tiles__________\n" +
-            "" + myTiles.get(0) + "     |     " + myTiles.get(0) + "     |     " + myTiles.get(1) + "     |     " + myTiles.get(2) + "     |     " + myTiles.get(3) + "\n" +
-            "__________Opponent Tiles__________\n" +
-            "" + opponentTileToLog(new Tile(6, 0)) + "     |     " + opponentTileToLog(new Tile(5, 0)) + "     |     " + opponentTileToLog(new Tile(4, 0)) + "     |     " + opponentTileToLog(new Tile(3, 0)) + "     |     " + opponentTileToLog(new Tile(2, 0)) + "     |     " + opponentTileToLog(new Tile(1, 0)) + "     |     " + opponentTileToLog(new Tile(0, 0)) + "\n" +
-            "" + opponentTileToLog(new Tile(6, 1)) + "     |     " + opponentTileToLog(new Tile(5, 1)) + "     |     " + opponentTileToLog(new Tile(4, 1)) + "     |     " + opponentTileToLog(new Tile(3, 1)) + "     |     " + opponentTileToLog(new Tile(2, 1)) + "     |     " + opponentTileToLog(new Tile(1, 1)) + "\n" +
-            "" + opponentTileToLog(new Tile(6, 2)) + "     |     " + opponentTileToLog(new Tile(5, 2)) + "     |     " + opponentTileToLog(new Tile(4, 2)) + "     |     " + opponentTileToLog(new Tile(3, 2)) + "     |     " + opponentTileToLog(new Tile(2, 2)) + "\n" +
-            "" + opponentTileToLog(new Tile(6, 3)) + "     |     " + opponentTileToLog(new Tile(5, 3)) + "     |     " + opponentTileToLog(new Tile(4, 3)) + "     |     " + opponentTileToLog(new Tile(3, 3)) + "\n" +
-            "" + opponentTileToLog(new Tile(6, 4)) + "     |     " + opponentTileToLog(new Tile(5, 4)) + "     |     " + opponentTileToLog(new Tile(4, 4)) + "\n" +
-            "" + opponentTileToLog(new Tile(6, 5)) + "     |     " + opponentTileToLog(new Tile(5, 5)) + "\n" +
-            "" + opponentTileToLog(new Tile(6, 6)) + " ";
-
     @Test
     public void testParseRound() throws DAIException {
         Round mockRound = getMockRound();
-        Round roundFromLog = RoundParser.parseRound(roundLog);
+
+        String log = RoundLogger.getRoundFullInfo(mockRound);
+
+        Round roundFromLog = RoundParser.parseRound(log);
 
         assertEquals(mockRound.getGameInfo(), roundFromLog.getGameInfo());
         assertEquals(mockRound.getTableInfo(), roundFromLog.getTableInfo());
@@ -127,17 +112,25 @@ public class RoundParserTest {
     }
 
     private void assertEquals(TableInfo expected, TableInfo real) {
+        assertEquals(expected.getLeft(), real.getLeft());
+        assertEquals(expected.getRight(), real.getRight());
+        assertEquals(expected.getTop(), real.getTop());
+        assertEquals(expected.getBottom(), real.getBottom());
+
         Assert.assertEquals(expected.getBazaarTilesCount(), real.getBazaarTilesCount(), 0.0);
-        Assert.assertEquals(expected.getBottom().getOpenSide(), real.getBottom().getOpenSide());
-        Assert.assertEquals(expected.getLeft().getOpenSide(), real.getLeft().getOpenSide());
-        Assert.assertEquals(expected.getRight().getOpenSide(), real.getRight().getOpenSide());
-        Assert.assertEquals(expected.getTop().getOpenSide(), real.getTop().getOpenSide());
         Assert.assertEquals(expected.getOpponentTilesCount(), real.getOpponentTilesCount(), 0.0);
         Assert.assertEquals(expected.getTilesFromBazaar(), real.getTilesFromBazaar());
         assertEquals(expected.getRoundBlockingInfo(), real.getRoundBlockingInfo());
         Assert.assertEquals(expected.isFirstRound(), real.isFirstRound());
         Assert.assertEquals(expected.isMyMove(), real.isMyMove());
         Assert.assertEquals(expected.isWithCenter(), real.isWithCenter());
+    }
+
+    private void assertEquals(PlayedTile expected, PlayedTile real) {
+        Assert.assertEquals(expected.getOpenSide(), real.getOpenSide());
+        Assert.assertEquals(expected.isCenter(), real.isCenter());
+        Assert.assertEquals(expected.isConsiderInSum(), real.isConsiderInSum());
+        Assert.assertEquals(expected.isTwin(), real.isTwin());
     }
 
     private void assertEquals(RoundBlockingInfo expected, RoundBlockingInfo real) {
@@ -192,10 +185,5 @@ public class RoundParserTest {
         roundBlockingInfo.setOmitOpponent(omittedOpponent);
         roundBlockingInfo.setOmitMe(omittedMe);
         return roundBlockingInfo;
-    }
-
-    private static String opponentTileToLog(Tile tile) {
-        Double prob = opponentTiles.get(tile);
-        return tile + ": " + (prob == null ? RoundLogger.NOT_WITH_SPACES : RoundLogger.formatter.format(prob));
     }
 }

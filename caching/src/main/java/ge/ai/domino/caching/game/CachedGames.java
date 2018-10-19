@@ -89,6 +89,7 @@ public class CachedGames {
 
     public static void addMove(int gameId, PlayedMove playedMove) {
         cachedGames.get(gameId).getGameHistory().getPlayedMoves().addLast(playedMove);
+        logger.info("Added move in game history, size[" + cachedGames.get(gameId).getGameHistory().getPlayedMoves().size() + "]");
     }
 
     public static void removeLastMove(int gameId) throws DAIException {

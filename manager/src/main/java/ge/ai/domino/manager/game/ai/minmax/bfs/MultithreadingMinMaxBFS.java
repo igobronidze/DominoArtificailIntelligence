@@ -44,7 +44,7 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 		nodeRound.setRound(round);
 		createNodeRoundWithHeightTwo(nodeRound);
 
-		invokeRemoteMinMaxs();
+		invokeRemoteMinMaxes();
 		applyBottomUpMinMax();
 
 		logger.info("MinMaxBFS took " + (System.currentTimeMillis() - ms) + " ms");
@@ -74,17 +74,17 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 				nodeRoundsByHeight.get(2).add(grandchild);
 				roundsForProcess.put(grandchild.getId(), grandchild);
 			}
-			if (child.getBazaarNodeRound() != null) {
+			for (NodeRound grandchild : child.getBazaarNodeRounds()) {
 				nodeRoundsByHeight.putIfAbsent(2, new ArrayList<>());
-				nodeRoundsByHeight.get(2).add(child.getBazaarNodeRound());
-				roundsForProcess.put(child.getBazaarNodeRound().getId(), child.getBazaarNodeRound());
+				nodeRoundsByHeight.get(2).add(grandchild);
+				roundsForProcess.put(grandchild.getId(), grandchild);
 			}
 		}
 
 		return nodeRound;
 	}
 
-	private void invokeRemoteMinMaxs() throws DAIException {
+	private void invokeRemoteMinMaxes() throws DAIException {
 		MultithreadingServer server = MultithreadingServer.getInstance();
 		List<ClientSocket> clients = server.getClients();
 

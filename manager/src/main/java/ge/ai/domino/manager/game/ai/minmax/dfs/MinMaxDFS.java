@@ -123,6 +123,7 @@ public class MinMaxDFS extends MinMax {
 		return "DFS";
 	}
 
+	@SuppressWarnings("Duplicates")
 	private AiPredictionsWrapper minMaxForMoves(List<Move> moves, NodeRound nodeRound, long ms) throws DAIException {
 		List<AiPrediction> aiPredictions = new ArrayList<>();
 		AiPrediction bestAiPrediction = null;
@@ -232,7 +233,7 @@ public class MinMaxDFS extends MinMax {
 						nextNodeRound.setParent(nodeRound);
 						nextNodeRound.setTreeHeight(height);
 						nextNodeRound.setLastPlayedProbability(probForPickTile);
-						nodeRound.setBazaarNodeRound(nextNodeRound);
+						nodeRound.getBazaarNodeRounds().add(nextNodeRound);
 						validateOpponentTiles(nextNodeRound, "addForMe");
 						heuristic += getHeuristicValue(nextNodeRound, height + 1) * probForPickTile;
 					}
@@ -284,7 +285,7 @@ public class MinMaxDFS extends MinMax {
 				nextNodeRound.setParent(nodeRound);
 				nextNodeRound.setTreeHeight(height);
 				nextNodeRound.setLastPlayedProbability(remainingProbability);
-				nodeRound.setBazaarNodeRound(nextNodeRound);
+				nodeRound.getBazaarNodeRounds().add(nextNodeRound);
 				validateOpponentTiles(nextNodeRound, "addForOpponent");
 				heuristic += getHeuristicValue(nextNodeRound, height + 1) * remainingProbability;
 			}

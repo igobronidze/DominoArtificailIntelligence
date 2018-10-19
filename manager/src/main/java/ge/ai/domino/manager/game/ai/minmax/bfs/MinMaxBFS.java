@@ -150,7 +150,11 @@ public class MinMaxBFS extends MinMax {
 
         long ms = System.currentTimeMillis();
         long inlineMs = System.currentTimeMillis();
-        addMyPlaysForNodeRound(nodeRound, true);
+        if (nodeRound.getRound().getTableInfo().isMyMove()) {
+            addMyPlaysForNodeRound(nodeRound, true);
+        } else {
+            addOpponentPlaysForNodeRound(nodeRound);
+        }
 
         while (!nodeRoundsQueue.isEmpty()) {
             NodeRound nr = nodeRoundsQueue.remove();
@@ -169,6 +173,7 @@ public class MinMaxBFS extends MinMax {
         return getAiPredictionsWrapper(nodeRound);
     }
 
+    @SuppressWarnings("Duplicates")
     protected AiPredictionsWrapper getAiPredictionsWrapper(NodeRound nodeRound) {
         AiPrediction bestAiPrediction = null;
         NodeRound bestNodeRound = null;
@@ -265,7 +270,7 @@ public class MinMaxBFS extends MinMax {
             nextNodeRound.setLastPlayedMove(MoveHelper.getAddTileForOpponentMove());
             nextNodeRound.setParent(nodeRound);
             nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
-            nodeRound.setBazaarNodeRound(nextNodeRound);
+            nodeRound.getBazaarNodeRounds().add(nextNodeRound);
             validateOpponentTiles(nextNodeRound, "addForOpponent");
             addInQueue(nextNodeRound);
         }
@@ -305,7 +310,7 @@ public class MinMaxBFS extends MinMax {
                     nextNodeRound.setParent(nodeRound);
                     nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
                     nextNodeRound.setLastPlayedProbability(probForPickTile);
-                    nodeRound.setBazaarNodeRound(nextNodeRound);
+                    nodeRound.getBazaarNodeRounds().add(nextNodeRound);
                     validateOpponentTiles(nextNodeRound, "addForMe");
                     addInQueue(nextNodeRound);
                 }
@@ -322,10 +327,14 @@ public class MinMaxBFS extends MinMax {
                 if (nodeRound.getHeuristic() == null) {
                     if (!isLeafNodeRound(nodeRound)) {
                         if (nodeRound.getRound().getTableInfo().isMyMove()) {
-                            NodeRound bestNodeRound = null;
                             if (nodeRound.getChildren().isEmpty()) {
-                                bestNodeRound = nodeRound.getBazaarNodeRound();
+                                double heuristic = 0;
+                                for (NodeRound bazaarNodeRound : nodeRound.getBazaarNodeRounds()) {
+                                    heuristic += bazaarNodeRound.getHeuristic() * bazaarNodeRound.getLastPlayedProbability();
+                                }
+                                nodeRound.setHeuristic(heuristic);
                             } else {
+                                NodeRound bestNodeRound = null;
                                 for (NodeRound child : nodeRound.getChildren()) {
                                     if (bestNodeRound == null || child.getHeuristic() > bestNodeRound.getHeuristic()) {
                                         if (bestNodeRound != null) {
@@ -335,8 +344,9 @@ public class MinMaxBFS extends MinMax {
                                         bestNodeRound.setLastPlayedProbability(1.0);
                                     }
                                 }
+                                nodeRound.setHeuristic(bestNodeRound.getHeuristic());
                             }
-                            nodeRound.setHeuristic(bestNodeRound.getHeuristic());
+
                         } else {
                             // Possible node rounds sorted ASC by heuristic
                             Queue<NodeRound> possibleRounds = new PriorityQueue<>(Comparator.comparingDouble(NodeRound::getHeuristic));
@@ -355,9 +365,10 @@ public class MinMaxBFS extends MinMax {
                                 ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTilesClone, prob);
                                 remainingProbability -= prob * remainingProbability;
                             }
-                            if (nodeRound.getBazaarNodeRound() != null && !ComparisonHelper.equal(remainingProbability, 0.0)) {
-                                nodeRound.getBazaarNodeRound().setLastPlayedProbability(remainingProbability);
-                                heuristic += nodeRound.getBazaarNodeRound().getHeuristic() * remainingProbability;
+                            if (!nodeRound.getBazaarNodeRounds().isEmpty() && !ComparisonHelper.equal(remainingProbability, 0.0)) {
+                                NodeRound bazaarNodeRound = nodeRound.getBazaarNodeRounds().get(0);
+                                bazaarNodeRound.setLastPlayedProbability(remainingProbability);
+                                heuristic += bazaarNodeRound.getHeuristic() * remainingProbability;
                             }
                             nodeRound.setHeuristic(heuristic);
                         }
@@ -380,10 +391,23 @@ public class MinMaxBFS extends MinMax {
 
     private boolean isLeafNodeRound(NodeRound nodeRound) {
         List<NodeRound> children = nodeRound.getChildren();
-        return children == null || (children.isEmpty() &&
-                (nodeRound.getBazaarNodeRound() == null || nodeRound.getBazaarNodeRound().getHeuristic() == null))
-                || (!children.isEmpty() && children.get(children.size() - 1).getHeuristic() == null) ||
-                (nodeRound.getBazaarNodeRound() != null && nodeRound.getBazaarNodeRound().getHeuristic() == null);
+        List<NodeRound> bazaarNodeRounds = nodeRound.getBazaarNodeRounds();
+
+        if (children.isEmpty() && bazaarNodeRounds.isEmpty()) {
+            return true;
+        }
+        if (!children.isEmpty()) {
+            if (children.get(children.size() - 1).getHeuristic() == null) {
+                return true;
+            }
+        }
+        if (!bazaarNodeRounds.isEmpty()) {
+            if (bazaarNodeRounds.get(bazaarNodeRounds.size() - 1).getHeuristic() == null) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void addInQueue(NodeRound nodeRound) {

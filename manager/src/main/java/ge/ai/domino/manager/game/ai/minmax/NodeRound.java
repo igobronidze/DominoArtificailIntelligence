@@ -18,7 +18,7 @@ public class NodeRound {
 
 	private List<NodeRound> children = new ArrayList<>();
 
-	private NodeRound bazaarNodeRound;
+	private List<NodeRound> bazaarNodeRounds = new ArrayList<>();
 
 	private int treeHeight;
 
@@ -58,8 +58,8 @@ public class NodeRound {
 		return children;
 	}
 
-	public void setChildren(List<NodeRound> children) {
-		this.children = children;
+	public List<NodeRound> getBazaarNodeRounds() {
+		return bazaarNodeRounds;
 	}
 
 	public int getTreeHeight() {
@@ -92,14 +92,6 @@ public class NodeRound {
 
 	public void setLastPlayedProbability(double lastPlayedProbability) {
 		this.lastPlayedProbability = lastPlayedProbability;
-	}
-
-	public NodeRound getBazaarNodeRound() {
-		return bazaarNodeRound;
-	}
-
-	public void setBazaarNodeRound(NodeRound bazaarNodeRound) {
-		this.bazaarNodeRound = bazaarNodeRound;
 	}
 
 	public Map<Tile, Double> getOpponentTilesClone() {

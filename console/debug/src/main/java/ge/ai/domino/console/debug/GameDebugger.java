@@ -164,7 +164,8 @@ public class GameDebugger {
                Round round = RoundParser.parseRound(log.toString());
                logger.info("Round parsed successfully id[" + gameId + "]");
 
-               round.getGameInfo().setGameId(gameId--);
+               round.getGameInfo().setGameId(gameId);
+               gameId--;
                NodeRound nodeRound = new NodeRound();
                nodeRound.setRound(round);
                rounds.add(nodeRound);
@@ -450,6 +451,8 @@ public class GameDebugger {
 
     private static void cachGame(Scanner scanner) {
         GameProperties gameProperties = new GameProperties();
+        System.out.println("Game ID:");
+        int gameId = Integer.parseInt(scanner.nextLine());
         System.out.println("Opponent name:");
         gameProperties.setOpponentName(scanner.nextLine());
         System.out.println("Channel:");
@@ -459,7 +462,7 @@ public class GameDebugger {
         System.out.println("Point for win:");
         gameProperties.setPointsForWin(Integer.parseInt(scanner.nextLine()));
         Game game = new Game();
-        game.setId(GAME_ID);
+        game.setId(gameId);
         game.setProperties(gameProperties);
         CachedGames.addGame(game);
         logger.info("Game cached successfully");

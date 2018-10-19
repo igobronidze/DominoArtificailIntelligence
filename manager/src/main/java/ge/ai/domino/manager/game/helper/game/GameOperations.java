@@ -330,7 +330,7 @@ public class GameOperations {
 
 	private static List<MoveDirection> getMovePriority(int gameId) {
 		Map<String, String> params = CachedGames.getGameProperties(gameId).getChannel().getParams();
-		String movePriority = params.containsKey(MOVE_PRIORITY_KEY) ? params.get(MOVE_PRIORITY_KEY) : MOVE_PRIORITY_DEFAULT_VALUE;
+		String movePriority = params.getOrDefault(MOVE_PRIORITY_KEY, MOVE_PRIORITY_DEFAULT_VALUE);
 
 		List<MoveDirection> moveDirections = new ArrayList<>();
 		for (String direction : movePriority.split(MOVE_PRIORITY_DELIMITER)) {

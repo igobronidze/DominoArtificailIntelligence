@@ -18,6 +18,9 @@ import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.manager.game.ai.minmax.MinMax;
+import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
+import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.manager.game.move.AddForMeProcessorVirtual;
@@ -54,6 +57,8 @@ public class GameDebugger {
 
     private static final String LOG_END = "END";
 
+    private static final String NEXT_LOG = "NEXT";
+
     private static final int GAME_ID = -1;
 
     private static final SystemParameterManager sysParamManager = new SystemParameterManager();
@@ -85,6 +90,7 @@ public class GameDebugger {
             System.out.println("9. Replay games");
             System.out.println("10. MinMaxPredictor Optimization");
             System.out.println("11. Start MinMax Multithreading server");
+            System.out.println("12. Execute MinMaxForNodeRounds");
             String line = scanner.nextLine();
 
             try {
@@ -135,11 +141,44 @@ public class GameDebugger {
                         startMultithreadingSever();
                         break;
                     }
+                    case "12": {
+                        executeMinMaxForNodeRounds(scanner);
+                        break;
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private static void executeMinMaxForNodeRounds(Scanner scanner) throws DAIException {
+        System.out.println("Enter round logs(Pleas type " + NEXT_LOG + " for next log and " + LOG_END + " for finish");
+
+        List<NodeRound> rounds = new ArrayList<>();
+        int gameId = GAME_ID;
+        String s;
+        StringBuilder log = new StringBuilder();
+        while (!(s = scanner.nextLine()).equals(LOG_END)) {
+            if (s.equals(NEXT_LOG)) {
+               Round round = RoundParser.parseRound(log.toString());
+               logger.info("Round parsed successfully id[" + gameId + "]");
+
+               round.getGameInfo().setGameId(gameId--);
+               NodeRound nodeRound = new NodeRound();
+               nodeRound.setRound(round);
+               rounds.add(nodeRound);
+               log = new StringBuilder();
+            } else {
+                log.append(s).append(RoundLogger.END_LINE);
+            }
+        }
+
+        for (NodeRound nodeRound : rounds) {
+            MinMax minMax = MinMaxFactory.getMinMax(false);
+            minMax.minMaxForNodeRound(nodeRound);
+        }
+        logger.info("Executed minMaxForNodeRound for " + rounds.size() + " nodeRounds");
     }
 
     private static void startMultithreadingSever() {

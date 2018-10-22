@@ -488,6 +488,7 @@ public abstract class GamePane extends BorderPane {
             }
         }
         hasPrediction = false;
+        logger.info("hasPrediction become false");  // TODO[IG] remove
         AppController.round.getMyTiles().stream().filter(tile -> AppController.round.getMyTiles().contains(tile)).forEach(tile -> {
             VBox vBox = new VBox();
             vBox.setAlignment(Pos.TOP_CENTER);
@@ -495,13 +496,14 @@ public abstract class GamePane extends BorderPane {
             myTilesImages.put(tile, imageView);
             List<AiPrediction> tilePredictions = getAiPredictionByTile(AppController.round.getAiPredictions() == null ? null : AppController.round.getAiPredictions().getAiPredictions(), tile);
             if (!tilePredictions.isEmpty()) {
+                hasPrediction = true;
+                logger.info("hasPrediction become false");  // TODO[IG] true
                 NumberFormat formatter = new DecimalFormat("#0.0000");
                 for (AiPrediction aiPrediction : tilePredictions) {
                     String heuristic = aiPrediction.getHeuristicValue() == Integer.MIN_VALUE ? "NAN" : formatter.format(aiPrediction.getHeuristicValue());
                     Label label = new Label(aiPrediction.getMove().getDirection().name() + "(" + heuristic + ")");
                     if (aiPrediction.isBestMove()) {
                         bestAiPrediction = aiPrediction;
-                        hasPrediction = true;
                         label.setStyle("-fx-font-size: 14px; -fx-text-fill: green; -fx-font-weight: bold");
                     }
                     vBox.getChildren().add(label);

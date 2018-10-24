@@ -29,15 +29,14 @@ import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class MinMaxBFS extends MinMax {
 
@@ -349,7 +348,7 @@ public class MinMaxBFS extends MinMax {
 
                         } else {
                             // Possible node rounds sorted ASC by heuristic
-                            Queue<NodeRound> possibleRounds = new PriorityQueue<>(Comparator.comparingDouble(NodeRound::getHeuristic));
+                            Set<NodeRound> possibleRounds = new TreeSet<>((NodeRound n1, NodeRound n2) -> (n1.getHeuristic().compareTo(n2.getHeuristic())));
                             possibleRounds.addAll(nodeRound.getChildren());
                             double heuristic = 0.0;
                             double remainingProbability = 1.0;

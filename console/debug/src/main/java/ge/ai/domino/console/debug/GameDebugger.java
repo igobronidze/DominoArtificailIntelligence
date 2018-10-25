@@ -297,10 +297,11 @@ public class GameDebugger {
                     replayMoveInfo = replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
                     if (replayMoveInfo.getNextMove() != null) {
                         Move nextMove = new Move(replayMoveInfo.getNextMove().getLeft(), replayMoveInfo.getNextMove().getRight(), replayMoveInfo.getNextMove().getDirection());
-                        if (replayMoveInfo.getAiPrediction() != null && !replayMoveInfo.getAiPrediction().equals(nextMove)) {
+                        if (replayMoveInfo.getBestAiPrediction() != null && !replayMoveInfo.getBestAiPrediction().equals(nextMove)) {
                             logger.info("Next move and best prediction is not same");
                             logger.info("Next move: " + nextMove);
-                            logger.info("Best prediction: " + replayMoveInfo.getAiPrediction());
+                            logger.info("Best prediction: " + replayMoveInfo.getBestAiPrediction());
+                            replayMoveInfo.getAiPredictions().forEach(logger::info);
                         }
                     }
                 }

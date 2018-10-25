@@ -35,4 +35,13 @@ public class AiPrediction implements Serializable {
     public void setBestMove(boolean bestMove) {
         this.bestMove = bestMove;
     }
+
+    @Override
+    public String toString() {
+        return "AiPrediction{" +
+                "move=" + move +
+                ", heuristicValue=" + heuristicValue +
+                ", bestMove=" + bestMove +
+                '}';
+    }
 }

@@ -99,14 +99,14 @@ public class ReplayGamePane extends BorderPane {
         scrollPane.setMaxHeight(495);
         mainVBox.getChildren().add(scrollPane);
 
-        if (replayMoveInfo != null && replayMoveInfo.getAiPrediction() != null) {
+        if (replayMoveInfo != null && replayMoveInfo.getBestAiPrediction() != null) {
             TCHLabel aiPredictionLabel;
-            if (replayMoveInfo.getAiPrediction().equals(
+            if (replayMoveInfo.getBestAiPrediction().equals(
                     new Move(replayMoveInfo.getNextMove().getLeft(), replayMoveInfo.getNextMove().getRight(), replayMoveInfo.getNextMove().getDirection()))) {
                 aiPredictionLabel = new TCHLabel(Messages.get("newBestMoveIsSameAsPlayed"));
                 aiPredictionLabel.setStyle("-fx-font-family: sylfaen; -fx-font-size: 14px; -fx-text-fill: green");
             } else {
-                aiPredictionLabel = new TCHLabel(Messages.get("newBestMove") + ": " + replayMoveInfo.getAiPrediction());
+                aiPredictionLabel = new TCHLabel(Messages.get("newBestMove") + ": " + replayMoveInfo.getBestAiPrediction());
                 aiPredictionLabel.setStyle("-fx-font-family: sylfaen; -fx-font-size: 14px; -fx-text-fill: red");
             }
             mainVBox.getChildren().add(aiPredictionLabel);

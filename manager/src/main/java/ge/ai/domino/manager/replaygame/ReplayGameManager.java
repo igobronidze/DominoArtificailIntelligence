@@ -94,7 +94,8 @@ public class ReplayGameManager {
 			Round replayedRound = replayMove(gameId, playedMove);
 			replayMoveInfo.setMoveIndex(moveIndex + 1);
 			if (replayedRound.getAiPredictions() != null) {
-				replayMoveInfo.setAiPrediction(getAiPrediction(replayedRound.getAiPredictions()));
+				replayMoveInfo.setBestAiPrediction(getAiPrediction(replayedRound.getAiPredictions()));
+				replayMoveInfo.setAiPredictions(replayedRound.getAiPredictions().getAiPredictions());
 			}
 		}
 

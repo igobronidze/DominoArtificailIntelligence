@@ -1,6 +1,9 @@
 package ge.ai.domino.domain.played;
 
+import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.move.Move;
+
+import java.util.List;
 
 public class ReplayMoveInfo {
 
@@ -12,7 +15,9 @@ public class ReplayMoveInfo {
 
 	private int moveIndex;
 
-	private Move aiPrediction;
+	private Move bestAiPrediction;
+
+	private List<AiPrediction> aiPredictions;
 
 	public int getGameId() {
 		return gameId;
@@ -46,11 +51,19 @@ public class ReplayMoveInfo {
 		this.moveIndex = moveIndex;
 	}
 
-	public Move getAiPrediction() {
-		return aiPrediction;
+	public Move getBestAiPrediction() {
+		return bestAiPrediction;
 	}
 
-	public void setAiPrediction(Move aiPrediction) {
-		this.aiPrediction = aiPrediction;
+	public void setBestAiPrediction(Move bestAiPrediction) {
+		this.bestAiPrediction = bestAiPrediction;
+	}
+
+	public List<AiPrediction> getAiPredictions() {
+		return aiPredictions;
+	}
+
+	public void setAiPredictions(List<AiPrediction> aiPredictions) {
+		this.aiPredictions = aiPredictions;
 	}
 }

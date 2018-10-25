@@ -18,12 +18,6 @@ import ge.ai.domino.manager.game.helper.filter.OpponentTilesFilter;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.helper.game.MoveHelper;
 import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
-import ge.ai.domino.manager.game.move.AddForMeProcessorVirtual;
-import ge.ai.domino.manager.game.move.AddForOpponentProcessorVirtual;
-import ge.ai.domino.manager.game.move.MoveProcessor;
-import ge.ai.domino.manager.game.move.PlayForMeProcessorVirtual;
-import ge.ai.domino.manager.game.move.PlayForOpponentProcessorVirtual;
-import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.serverutil.CloneUtil;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
@@ -42,19 +36,7 @@ public class MinMaxBFS extends MinMax {
 
     private final Logger logger = Logger.getLogger(MinMaxBFS.class);
 
-    private final SystemParameterManager systemParameterManager = new SystemParameterManager();
-
     private final SysParam minMaxIteration = new SysParam("minMaxIteration", "100000");
-
-    private final SysParam minMaxForCachedNodeRoundIterationRate = new SysParam("minMaxForCachedNodeRoundIterationRate", "4");
-
-    private final MoveProcessor playForMeProcessorVirtual = new PlayForMeProcessorVirtual();
-
-    private final MoveProcessor playForOpponentProcessorVirtual = new PlayForOpponentProcessorVirtual();
-
-    private final MoveProcessor addForMeProcessorVirtual = new AddForMeProcessorVirtual();
-
-    private final MoveProcessor addForOpponentProcessorVirtual = new AddForOpponentProcessorVirtual();
 
     private int iteration;
 

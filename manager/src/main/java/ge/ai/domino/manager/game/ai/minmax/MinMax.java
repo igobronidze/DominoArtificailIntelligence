@@ -10,6 +10,11 @@ import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
 import ge.ai.domino.manager.game.ai.heuristic.factory.RoundHeuristicFactory;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.manager.game.logging.RoundLogger;
+import ge.ai.domino.manager.game.move.AddForMeProcessorVirtual;
+import ge.ai.domino.manager.game.move.AddForOpponentProcessorVirtual;
+import ge.ai.domino.manager.game.move.MoveProcessor;
+import ge.ai.domino.manager.game.move.PlayForMeProcessorVirtual;
+import ge.ai.domino.manager.game.move.PlayForOpponentProcessorVirtual;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
@@ -21,23 +26,33 @@ public abstract class MinMax implements AiSolver {
 
 	private final Logger logger = Logger.getLogger(super.getClass());
 
-	private final SystemParameterManager systemParameterManager = new SystemParameterManager();
-
 	private final SysParam checkOpponentProbabilities = new SysParam("checkOpponentProbabilities", "false");
 
-	protected final SysParam useMinMaxPredictor = new SysParam("useMinMaxPredictor", "false");
-
-	protected static final SysParam bestMoveAutoPlay = new SysParam("bestMoveAutoPlay", "true");
-
 	private static final SysParam roundHeuristicType = new SysParam("roundHeuristicType", "POINT_DIFF_ROUND_HEURISTIC");
-
-	protected final RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
 
 	private NodeRound notValidRound;
 
 	private String errorMsg;
 
 	private String errorMsgKey;
+
+	protected final MoveProcessor playForMeProcessorVirtual = new PlayForMeProcessorVirtual();
+
+	protected final MoveProcessor playForOpponentProcessorVirtual = new PlayForOpponentProcessorVirtual();
+
+	protected final MoveProcessor addForMeProcessorVirtual = new AddForMeProcessorVirtual();
+
+	protected final MoveProcessor addForOpponentProcessorVirtual = new AddForOpponentProcessorVirtual();
+
+	protected final SystemParameterManager systemParameterManager = new SystemParameterManager();
+
+	protected static final SysParam bestMoveAutoPlay = new SysParam("bestMoveAutoPlay", "true");
+
+	protected final SysParam minMaxForCachedNodeRoundIterationRate = new SysParam("minMaxForCachedNodeRoundIterationRate", "4");
+
+	protected final SysParam useMinMaxPredictor = new SysParam("useMinMaxPredictor", "false");
+
+	protected final RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
 
 	protected int threadCount = 1;
 

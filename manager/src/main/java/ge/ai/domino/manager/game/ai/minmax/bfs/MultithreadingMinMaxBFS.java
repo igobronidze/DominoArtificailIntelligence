@@ -37,6 +37,7 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 		List<Move> moves = GameOperations.getPossibleMoves(round, false);
 		logger.info("Start MultithreadedMinMaxBFS solve method, movesCount[" + moves.size() + "]");
 		if (moves.size() <= 1) {
+			super.setThreadCount(systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate)); // For minmax performance time);
 			return super.solve(round);
 		}
 

@@ -61,6 +61,13 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 		super.minMaxForCachedNodeRound(round);
 	}
 
+	@Override
+	public AiPredictionsWrapper minMaxForNodeRound(NodeRound nodeRound) throws DAIException {
+		AiPredictionsWrapper aiPredictionsWrapper = solve(nodeRound.getRound());
+		aiPredictionsWrapper.getAiPredictions();
+		return null;
+	}
+
 	private NodeRound createNodeRoundWithHeightTwo(NodeRound nodeRound) throws DAIException {
 		addMyPlaysForNodeRound(nodeRound, false);
 

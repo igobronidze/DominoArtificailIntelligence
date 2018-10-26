@@ -8,6 +8,7 @@ import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.function.FunctionArgsAndValues;
 import ge.ai.domino.domain.game.Game;
+import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.opponentplay.GroupedOpponentPlay;
@@ -91,6 +92,7 @@ public class GameDebugger {
             System.out.println("10. MinMaxPredictor Optimization");
             System.out.println("11. Start MinMax Multithreading server");
             System.out.println("12. Execute MinMaxForNodeRounds");
+            System.out.println("13. Send game to multithreading client");
             String line = scanner.nextLine();
 
             try {
@@ -145,11 +147,26 @@ public class GameDebugger {
                         executeMinMaxForNodeRounds(scanner);
                         break;
                     }
+                    case "13": {
+                        sendGameToMultithreadingClient(scanner);
+                        break;
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private static void sendGameToMultithreadingClient(Scanner scanner) {
+        System.out.println("Game ID:");
+        int gameId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Point for win:");
+        int pointForWin = Integer.parseInt(scanner.nextLine());
+        GameInitialData gameInitialData = new GameInitialData();
+        gameInitialData.setGameId(gameId);
+        gameInitialData.setPointsForWin(pointForWin);
+        multithreadingServer.initGame(gameInitialData);
     }
 
     private static void executeMinMaxForNodeRounds(Scanner scanner) throws DAIException {
@@ -175,8 +192,11 @@ public class GameDebugger {
             }
         }
 
+        System.out.println("Use multithreading:");
+        boolean useMultithreading = Boolean.valueOf(scanner.nextLine());
+
         for (NodeRound nodeRound : rounds) {
-            MinMax minMax = MinMaxFactory.getMinMax(false);
+            MinMax minMax = MinMaxFactory.getMinMax(useMultithreading);
             minMax.minMaxForNodeRound(nodeRound);
         }
         logger.info("Executed minMaxForNodeRound for " + rounds.size() + " nodeRounds");

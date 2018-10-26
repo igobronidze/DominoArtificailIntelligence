@@ -23,6 +23,7 @@ import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +31,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class MinMaxBFS extends MinMax {
 
@@ -329,12 +329,10 @@ public class MinMaxBFS extends MinMax {
                             }
 
                         } else {
-                            // Possible node rounds sorted ASC by heuristic
-                            Set<NodeRound> possibleRounds = new TreeSet<>((NodeRound n1, NodeRound n2) -> (n1.getHeuristic().compareTo(n2.getHeuristic())));
-                            possibleRounds.addAll(nodeRound.getChildren());
+                            Collections.sort(nodeRound.getChildren(), (NodeRound n1, NodeRound n2) -> (n1.getHeuristic().compareTo(n2.getHeuristic())));
                             double heuristic = 0.0;
                             double remainingProbability = 1.0;
-                            for (NodeRound child : possibleRounds) {
+                            for (NodeRound child : nodeRound.getChildren()) {
                                 if (ComparisonHelper.equal(remainingProbability, 0.0)) {
                                     break;
                                 }

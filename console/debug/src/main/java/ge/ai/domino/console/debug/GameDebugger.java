@@ -91,7 +91,7 @@ public class GameDebugger {
             System.out.println("9. Replay games");
             System.out.println("10. MinMaxPredictor Optimization");
             System.out.println("11. Start MinMax Multithreading server");
-            System.out.println("12. Execute MinMaxForNodeRounds");
+            System.out.println("12. Execute MinMax solve");
             System.out.println("13. Send game to multithreading client");
             String line = scanner.nextLine();
 
@@ -144,7 +144,7 @@ public class GameDebugger {
                         break;
                     }
                     case "12": {
-                        executeMinMaxForNodeRounds(scanner);
+                        executeMinMaxSolve(scanner);
                         break;
                     }
                     case "13": {
@@ -169,10 +169,10 @@ public class GameDebugger {
         multithreadingServer.initGame(gameInitialData);
     }
 
-    private static void executeMinMaxForNodeRounds(Scanner scanner) throws DAIException {
+    private static void executeMinMaxSolve(Scanner scanner) throws DAIException {
         System.out.println("Enter round logs(Pleas type " + NEXT_LOG + " for next log and " + LOG_END + " for finish");
 
-        List<NodeRound> rounds = new ArrayList<>();
+        List<Round> rounds = new ArrayList<>();
         int gameId = GAME_ID;
         String s;
         StringBuilder log = new StringBuilder();
@@ -183,9 +183,7 @@ public class GameDebugger {
 
                round.getGameInfo().setGameId(gameId);
                gameId--;
-               NodeRound nodeRound = new NodeRound();
-               nodeRound.setRound(round);
-               rounds.add(nodeRound);
+               rounds.add(round);
                log = new StringBuilder();
             } else {
                 log.append(s).append(RoundLogger.END_LINE);
@@ -195,11 +193,11 @@ public class GameDebugger {
         System.out.println("Use multithreading:");
         boolean useMultithreading = Boolean.valueOf(scanner.nextLine());
 
-        for (NodeRound nodeRound : rounds) {
+        for (Round round : rounds) {
             MinMax minMax = MinMaxFactory.getMinMax(useMultithreading);
-            minMax.minMaxForNodeRound(nodeRound);
+            minMax.solve(round);
         }
-        logger.info("Executed minMaxForNodeRound for " + rounds.size() + " nodeRounds");
+        logger.info("Executed MinMax solve for " + rounds.size() + " nodeRounds");
     }
 
     private static void startMultithreadingSever() {

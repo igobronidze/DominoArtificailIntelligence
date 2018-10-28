@@ -34,7 +34,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.apache.log4j.Logger;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -44,8 +43,6 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class GamePane extends BorderPane {
-
-    private static final Logger logger = Logger.getLogger(GamePane.class); // TODO[IG] remove
 
     private static final int IMAGE_WIDTH = 65;
 
@@ -245,11 +242,6 @@ public abstract class GamePane extends BorderPane {
                         }
                     });
                 } else if (AppController.round != null && !hasPrediction && AppController.round.getTableInfo().isMyMove() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
-					// TODO[IG] remove logging
-                    logger.info("hasPrediction = " + hasPrediction);
-                    logger.info("bestAiPrediction = " + bestAiPrediction);
-                    logger.info("showingAddLeftTilesWindow = " + showingAddLeftTilesWindow);
-
                     ServiceExecutor.execute(() -> {
 						Tile tile = new ArrayList<>(AppController.round.getOpponentTiles().keySet()).get(0);
 						AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
@@ -488,7 +480,6 @@ public abstract class GamePane extends BorderPane {
             }
         }
         hasPrediction = false;
-        logger.info("hasPrediction become false");  // TODO[IG] remove
         AppController.round.getMyTiles().stream().filter(tile -> AppController.round.getMyTiles().contains(tile)).forEach(tile -> {
             VBox vBox = new VBox();
             vBox.setAlignment(Pos.TOP_CENTER);
@@ -497,7 +488,6 @@ public abstract class GamePane extends BorderPane {
             List<AiPrediction> tilePredictions = getAiPredictionByTile(AppController.round.getAiPredictions() == null ? null : AppController.round.getAiPredictions().getAiPredictions(), tile);
             if (!tilePredictions.isEmpty()) {
                 hasPrediction = true;
-                logger.info("hasPrediction become false");  // TODO[IG] true
                 NumberFormat formatter = new DecimalFormat("#0.0000");
                 for (AiPrediction aiPrediction : tilePredictions) {
                     String heuristic = aiPrediction.getHeuristicValue() == Integer.MIN_VALUE ? "NAN" : formatter.format(aiPrediction.getHeuristicValue());
@@ -687,7 +677,7 @@ public abstract class GamePane extends BorderPane {
             } else {
                 AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
             }
+            reload(true, false);
         });
-        reload(true, false);
     }
 }

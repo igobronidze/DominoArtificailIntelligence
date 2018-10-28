@@ -12,6 +12,8 @@ public class TilesDetectorParams {
 
 	private int contourMinArea;
 
+	private int blurCoefficient;
+
 	public TilesDetectorParams heightPercentage(double heightPercentage) {
 		this.heightPercentage = heightPercentage;
 		return this;
@@ -37,6 +39,11 @@ public class TilesDetectorParams {
 		return this;
 	}
 
+	public TilesDetectorParams blurCoefficient(int blurCoefficient) {
+		this.blurCoefficient = blurCoefficient;
+		return this;
+	}
+
 	public double getHeightPercentage() {
 		return heightPercentage;
 	}
@@ -55,5 +62,9 @@ public class TilesDetectorParams {
 
 	public int getContourMinArea() {
 		return contourMinArea;
+	}
+
+	public int getBlurCoefficient() {
+		return blurCoefficient;
 	}
 }

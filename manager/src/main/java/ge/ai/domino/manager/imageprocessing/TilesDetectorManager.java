@@ -39,11 +39,15 @@ public class TilesDetectorManager {
 
     private static final String CONTOUR_MIN_AREA_KEY = "tilesDetectorContour";
 
+    private static final String BLUR_COEFFICIENT_KEY = "blurCoefficient";
+
+    private static final int BLUR_COEFFICIENT = 3;
+
     private static final String TMP_IMAGE_PREFIX = "game_";
 
     public static final String TMP_IMAGE_EXTENSION = ".png";
 
-    public static final String SECOND_PARAM_SUFFIX = "_2";
+    private static final String SECOND_PARAM_SUFFIX = "_2";
 
     private static final Logger logger = Logger.getLogger(GameManager.class);
 
@@ -91,13 +95,16 @@ public class TilesDetectorManager {
                 ? Double.valueOf(params.get(TILES_MARGIN_LEFT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_MARGIN_LEFT_PERCENTAGE;
         double widthPercentage = params.containsKey(TILES_WIDTH_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
                 ? Double.valueOf(params.get(TILES_WIDTH_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_WIDTH_PERCENTAGE;
+        int blurCoefficient = params.containsKey(BLUR_COEFFICIENT_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
+                ? Integer.valueOf(params.get(BLUR_COEFFICIENT_KEY  + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : BLUR_COEFFICIENT;
 
         return new TilesDetectorParams()
                 .contourMinArea(contourMinArea)
                 .heightPercentage(heightPercentage)
                 .marginBottomPercentage(marginBottomPercentage)
                 .marginLeftPercentage(marginLeftPercentage)
-                .widthPercentage(widthPercentage);
+                .widthPercentage(widthPercentage)
+                .blurCoefficient(blurCoefficient);
     }
 
     private List<Tile> balanceTiles(List<Tile> tiles) {

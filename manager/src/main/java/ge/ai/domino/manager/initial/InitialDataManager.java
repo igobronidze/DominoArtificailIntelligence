@@ -82,7 +82,8 @@ public class InitialDataManager {
                 .heightPercentage(15)
                 .marginBottomPercentage(5)
                 .marginLeftPercentage(15)
-                .widthPercentage(70);
+                .widthPercentage(70)
+                .blurCoefficient(3);
     }
 
     private int initGame() {

@@ -25,7 +25,7 @@ public class TilesDetector {
 
 		opencv_core.Mat croppedMat = ImageCropper.cropImage(srcMat, cropImageParams);
 
-		BufferedImage image = ImageCleaner.cleanImage(croppedMat);
+		BufferedImage image = ImageCleaner.cleanImage(croppedMat, tilesDetectorParams.getBlurCoefficient());
 
 		ContoursDetector contoursDetector = new ContoursDetector();
 		List<Contour> contours = contoursDetector.detectContours(image, tilesDetectorParams.getContourMinArea());
@@ -38,9 +38,9 @@ public class TilesDetector {
 		List<Contour> bottomContours = new ArrayList<>();
 		int middle = contour.getTop() + (contour.getBottom() - contour.getTop()) / 2;
 		for (Contour child : contour.getChildren()) {
-			if (child.getTop() < middle) {
+			if (child.getTop() < middle - 3) {
 				topContours.add(child);
-			} else {
+			} else if (child.getTop() > middle + 3) {
 				bottomContours.add(child);
 			}
 		}

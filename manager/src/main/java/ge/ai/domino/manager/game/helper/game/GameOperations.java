@@ -31,6 +31,10 @@ public class GameOperations {
 
 	private static final String MOVE_PRIORITY_DEFAULT_VALUE = "LEFT,RIGHT,TOP,BOTTOM";
 
+	private static final String FIRST_NOT_TWIN_TILE_DIRECTION_KEY = "firstNotTwinTileDirection";
+
+	private static final String FIRST_NOT_TWIN_TILE_DIRECTION_DEFAULT_VALUE = "left";
+
 	public static int countLeftTiles(Round round, boolean countMine, boolean virtual) {
 		int gameId = round.getGameInfo().getGameId();
 
@@ -188,8 +192,15 @@ public class GameOperations {
 				tableInfo.setLeft(new PlayedTile(left, true, true, true));
 				tableInfo.setRight(new PlayedTile(left, true, true, true));
 			} else {
-				tableInfo.setLeft(new PlayedTile(left, false, true, false));
-				tableInfo.setRight(new PlayedTile(right, false, true, false));
+				Map<String, String> params = CachedGames.getGameProperties(round.getGameInfo().getGameId()).getChannel().getParams();
+				String firstNotTwinTileDirection = params.getOrDefault(FIRST_NOT_TWIN_TILE_DIRECTION_KEY, FIRST_NOT_TWIN_TILE_DIRECTION_DEFAULT_VALUE);
+				if (firstNotTwinTileDirection.equals("left")) {
+					tableInfo.setLeft(new PlayedTile(left, false, true, false));
+					tableInfo.setRight(new PlayedTile(right, false, true, false));
+				} else {
+					tableInfo.setLeft(new PlayedTile(right, false, true, false));
+					tableInfo.setRight(new PlayedTile(left, false, true, false));
+				}
 			}
 		} else {
 			switch (move.getDirection()) {

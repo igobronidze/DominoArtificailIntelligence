@@ -1,4 +1,4 @@
-package ge.ai.domino.console.debug.util;
+package ge.ai.domino.manager.parser;
 
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
@@ -8,6 +8,7 @@ import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.manager.game.logging.RoundLogger;
+import ge.ai.domino.manager.parser.RoundParserManager;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RoundParserTest {
+public class RoundParserManagerTest {
+
+    public static final RoundParserManager roundParserManager = new RoundParserManager();
 
     private static final int gameId = 1;
 
@@ -88,7 +91,7 @@ public class RoundParserTest {
 
         String log = RoundLogger.getRoundFullInfo(mockRound);
 
-        Round roundFromLog = RoundParser.parseRound(log);
+        Round roundFromLog = roundParserManager.parseRound(log);
 
         assertEquals(mockRound.getGameInfo(), roundFromLog.getGameInfo());
         assertEquals(mockRound.getTableInfo(), roundFromLog.getTableInfo());

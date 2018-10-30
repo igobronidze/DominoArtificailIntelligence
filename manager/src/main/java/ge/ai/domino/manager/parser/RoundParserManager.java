@@ -1,4 +1,4 @@
-package ge.ai.domino.console.debug.util;
+package ge.ai.domino.manager.parser;
 
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class RoundParser {
+public class RoundParserManager {
 
-    private static final Logger logger = Logger.getLogger(RoundParser.class);
+    private static final Logger logger = Logger.getLogger(RoundParserManager.class);
 
     /**
      * Parse round from log
@@ -48,7 +48,7 @@ public class RoundParser {
      * @param roundLog Round log
      * @return Parsed round
      */
-    public static Round parseRound(String roundLog) throws DAIException {
+    public Round parseRound(String roundLog) throws DAIException {
         String[] lines = roundLog.split(Pattern.quote(RoundLogger.END_LINE));
         if (lines[0].isEmpty()) {
             lines = Arrays.copyOfRange(lines, 1, lines.length);
@@ -62,7 +62,7 @@ public class RoundParser {
         return round;
     }
 
-    private static Map<Tile, Double> parseOpponentTiles(String[] lines) {
+    private Map<Tile, Double> parseOpponentTiles(String[] lines) {
         Map<Tile, Double> opponentTiles = new HashMap<>();
         for (String line : lines) {
             String[] opponentTilesString = line.split(Pattern.quote(RoundLogger.DELIMITER));
@@ -78,7 +78,7 @@ public class RoundParser {
         return opponentTiles;
     }
 
-    private static Set<Tile> parseMyTiles(String line) {
+    private Set<Tile> parseMyTiles(String line) {
         String[] tileStrings = line.split(Pattern.quote(RoundLogger.DELIMITER));
         Set<Tile> myTiles = new HashSet<>();
         for (String tileString : tileStrings) {
@@ -87,12 +87,12 @@ public class RoundParser {
         return myTiles;
     }
 
-    private static Tile parseTile(String tileString) {
+    private Tile parseTile(String tileString) {
         String[] elements = tileString.split(Pattern.quote(Tile.DELIMITER));
         return new Tile(Integer.parseInt(elements[0].trim()), Integer.parseInt(elements[1].trim()));
     }
 
-    private static TableInfo parseTableInfo(String[] lines) {
+    private TableInfo parseTableInfo(String[] lines) {
         TableInfo tableInfo = new TableInfo();
 
         String[] properties0 = lines[0].split(Pattern.quote(RoundLogger.DELIMITER));
@@ -141,7 +141,7 @@ public class RoundParser {
         return tableInfo;
     }
 
-    private static GameInfo parseGameInfo(String line) throws DAIException {
+    private GameInfo parseGameInfo(String line) throws DAIException {
         try {
             String[] properties = line.split(Pattern.quote(RoundLogger.DELIMITER));
 

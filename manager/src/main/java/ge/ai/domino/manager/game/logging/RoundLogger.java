@@ -33,6 +33,8 @@ public class RoundLogger {
 
     public static final String NOT_WITH_SPACES = "N                 ";
 
+    public static final String NO_TILES = "No tiles";
+
     public static final NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
 
     private static final Logger logger = Logger.getLogger(RoundLogger.class);
@@ -100,15 +102,16 @@ public class RoundLogger {
         StringBuilder info = new StringBuilder();
         info.append("__________My Tiles__________").append(END_LINE);
         if (tiles.isEmpty()) {
-            info.append("No tiles").append(END_LINE);
-        }
-        for (int i = 0; i < tiles.size(); i++) {
-            info.append(tiles.get(i));
-            if (i != tiles.size() - 1) {
-                info.append(DELIMITER_WITH_SPACES);
+            info.append(NO_TILES).append(END_LINE);
+        } else {
+            for (int i = 0; i < tiles.size(); i++) {
+                info.append(tiles.get(i));
+                if (i != tiles.size() - 1) {
+                    info.append(DELIMITER_WITH_SPACES);
+                }
             }
+            info.append(END_LINE);
         }
-        info.append(END_LINE);
         return info;
     }
 

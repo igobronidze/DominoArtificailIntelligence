@@ -79,10 +79,12 @@ public class RoundParserManager {
     }
 
     private Set<Tile> parseMyTiles(String line) {
-        String[] tileStrings = line.split(Pattern.quote(RoundLogger.DELIMITER));
         Set<Tile> myTiles = new HashSet<>();
-        for (String tileString : tileStrings) {
-            myTiles.add(parseTile(tileString));
+        if (!line.contains(RoundLogger.NO_TILES)) {
+            String[] tileStrings = line.split(Pattern.quote(RoundLogger.DELIMITER));
+            for (String tileString : tileStrings) {
+                myTiles.add(parseTile(tileString));
+            }
         }
         return myTiles;
     }

@@ -21,6 +21,7 @@ import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.helper.game.MoveHelper;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
+import ge.ai.domino.manager.game.logging.GameLogger;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.AddForMeProcessor;
 import ge.ai.domino.manager.game.move.AddForOpponentProcessor;
@@ -74,9 +75,7 @@ public class GameManager {
         Game game = InitialUtil.getInitialGame(gameProperties, true);
         CachedGames.addGame(game);
         CachedGames.addMove(game.getId(), MoveHelper.getStartNewRoundMove());
-        logger.info("------------Started new game[" + game.getId() + "]------------");
-        logger.info("Opponent Name: " + game.getProperties().getOpponentName() + "     |     " + "Channel: " + game.getProperties().getChannel().getName() + "     |     " +
-        "Point for win: " + game.getProperties().getPointsForWin());
+        GameLogger.logGameInfo(game);
         Round newRound = CachedGames.getCurrentRound(game.getId(), false);
 
         ifNeedSendInitialData(game, gameProperties);

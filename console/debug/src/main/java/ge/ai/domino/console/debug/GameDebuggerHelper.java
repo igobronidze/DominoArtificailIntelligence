@@ -24,8 +24,6 @@ public class GameDebuggerHelper {
 
 	public static final String LOG_END = "END";
 
-	public static final String NEXT_LOG = "NEXT";
-
 	public static final int GAME_ID = -1;
 
 	public static final SystemParameterManager sysParamManager = new SystemParameterManager();
@@ -35,8 +33,6 @@ public class GameDebuggerHelper {
 	public static final ReplayGameManager replayGameManager = new ReplayGameManager();
 
 	public static final OpponentPlaysManager opponentPlaysManager = new OpponentPlaysManager();
-
-	public static final FunctionManager functionManager = new FunctionManager();
 
 	public static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
 

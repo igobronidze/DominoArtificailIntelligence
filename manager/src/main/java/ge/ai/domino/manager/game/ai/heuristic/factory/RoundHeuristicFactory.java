@@ -1,5 +1,6 @@
 package ge.ai.domino.manager.game.ai.heuristic.factory;
 
+import ge.ai.domino.domain.heuristic.RoundHeuristicType;
 import ge.ai.domino.manager.game.ai.heuristic.MixedRoundHeuristic;
 import ge.ai.domino.manager.game.ai.heuristic.PointDiffRoundHeuristic;
 import ge.ai.domino.manager.game.ai.heuristic.PossibleMovesRoundHeuristic;

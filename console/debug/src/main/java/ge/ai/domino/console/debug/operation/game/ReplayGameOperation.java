@@ -8,6 +8,7 @@ import ge.ai.domino.domain.game.opponentplay.GroupedOpponentPlay;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
+import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import org.apache.log4j.Logger;
 
@@ -19,13 +20,15 @@ import java.util.TreeMap;
 
 public class ReplayGameOperation implements GameDebuggerOperation {
 
-	public static final Logger logger = Logger.getLogger(ReplayGameOperation.class);
+	private static final Logger logger = Logger.getLogger(ReplayGameOperation.class);
+
+	private static final FunctionManager functionManager = new FunctionManager();
 
 	@Override
 	public void process(Scanner scanner) throws DAIException {
 		List<Integer> idsForProcess = GameDebuggerHelper.getIdsForProcess(scanner);
 
-		GameDebuggerHelper.functionManager.initFunctions();
+		functionManager.initFunctions();
 
 		Map<Integer, List<GroupedOpponentPlay>> groupOpponentPlaysMap = new TreeMap<>();
 		List<OpponentPlay> fullOpponentPlays = new ArrayList<>();

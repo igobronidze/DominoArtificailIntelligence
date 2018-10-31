@@ -57,7 +57,7 @@ public class AddForMeProcessor extends MoveProcessor {
 
 		tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
 
-		// Execute MinMaxDFS
+		// Execute MinMax
 		if (tableInfo.getLeft() == null && round.getMyTiles().size() == 7) {
 			round.getTableInfo().setMyMove(!CachedGames.isOpponentNextRoundBeginner(gameId));
 			if (sysParamManager.getBooleanParameterValue(minMaxOnFirstTile) && !round.getTableInfo().isFirstRound() && round.getTableInfo().isMyMove()) {

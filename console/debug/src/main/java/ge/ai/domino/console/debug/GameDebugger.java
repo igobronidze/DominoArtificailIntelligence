@@ -5,6 +5,7 @@ import ge.ai.domino.console.debug.operation.game.ChangeSysParamOperation;
 import ge.ai.domino.console.debug.operation.game.ParseRoundOperation;
 import ge.ai.domino.console.debug.operation.game.ReplayGameOperation;
 import ge.ai.domino.console.debug.operation.heuristic.CountHeuristicOperation;
+import ge.ai.domino.console.debug.operation.heuristic.HeuristicOptimizationOperation;
 import ge.ai.domino.console.debug.operation.minmax.MinMaxPredictionOptimizationOperation;
 import ge.ai.domino.console.debug.operation.minmax.MinMaxSolveOperation;
 import ge.ai.domino.console.debug.operation.minmax.SendGameToMultithreadingClientOperation;
@@ -13,6 +14,7 @@ import ge.ai.domino.console.debug.operation.move.AddTileForMeOperation;
 import ge.ai.domino.console.debug.operation.move.AddTileForOpponentOperation;
 import ge.ai.domino.console.debug.operation.move.PlayForMeOperation;
 import ge.ai.domino.console.debug.operation.move.PlayForOpponentOperation;
+import ge.ai.domino.domain.exception.DAIException;
 import org.apache.log4j.Logger;
 
 import java.util.Scanner;
@@ -39,6 +41,7 @@ public class GameDebugger {
             logger.info("11. Start MinMax Multithreading server");
             logger.info("12. Execute MinMax solve");
             logger.info("13. Send game to multithreading client");
+            logger.info("14. Heuristic Optimization");
             String line = scanner.nextLine();
 
             try {
@@ -97,7 +100,13 @@ public class GameDebugger {
                         new SendGameToMultithreadingClientOperation().process(scanner);
                         break;
                     }
+                    case "14": {
+                        new HeuristicOptimizationOperation().process(scanner);
+                        break;
+                    }
                 }
+            } catch (DAIException ex) {
+                logger.error("Error occurred while execute game debugger", ex.getExc());
             } catch (Exception ex) {
                 logger.error("Error occurred while execute game debugger", ex);
             }

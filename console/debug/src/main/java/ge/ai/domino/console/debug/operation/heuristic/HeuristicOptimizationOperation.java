@@ -57,22 +57,8 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 				logger.warn("File not exists[" + filePath + "]");
 			}
 		}
-		logger.info("Parsed " + games.size() + " game");
-
-		logger.info("Enter RoundHeuristicType");
-		for (RoundHeuristicType roundHeuristicType : RoundHeuristicType.values()) {
-			logger.info(roundHeuristicType.name());
-		}
-		String chosenType = scanner.nextLine();
-		GameDebuggerHelper.sysParamManager.changeParameterOnlyInCache(roundHeuristicType.getKey(), chosenType);
-
-		logger.info("Iteration count");
-		int iterationCount = Integer.valueOf(scanner.nextLine());
-
-		logger.info("Rounds count in iteration");
-		int roundCountInIteration = Integer.valueOf(scanner.nextLine());
-
-		List<Round> allRound = new ArrayList<>();
+		List<Round> rounds = new ArrayList<>();
+		int allRoundSize = 0;
 		for (GameFromLog gameFromLog : games) {
 			Game game = new Game();
 			game.setId(gameFromLog.getGameId());
@@ -89,15 +75,45 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 				GameDebuggerHelper.multithreadingServer.initGame(gameInitialData);
 			}
 
-			allRound.addAll(gameFromLog.getRounds());
+			for (Round round : gameFromLog.getRounds()) {
+				if (!round.getTableInfo().isMyMove()) {
+					continue;
+				}
+				if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() != 7) {
+					continue;
+				}
+				if (GameOperations.getPossibleMoves(round, false).isEmpty()) {
+					continue;
+				}
+				rounds.add(round);
+			}
+			allRoundSize += gameFromLog.getRounds().size();
 		}
+
+		logger.info("Parsed games[" + games.size() + "], allRound[" + allRoundSize + "], usefulRounds[" + rounds.size() + "]");
+
+		logger.info("Enter RoundHeuristicType");
+		for (RoundHeuristicType roundHeuristicType : RoundHeuristicType.values()) {
+			logger.info(roundHeuristicType.name());
+		}
+		String chosenType = scanner.nextLine();
+		GameDebuggerHelper.sysParamManager.changeParameterOnlyInCache(roundHeuristicType.getKey(), chosenType);
+
+		logger.info("Iteration count:");
+		int iterationCount = Integer.valueOf(scanner.nextLine());
+
+		logger.info("Optimization inner iteration count:");
+		int optimizationInnerIteration = Integer.valueOf(scanner.nextLine());
+
+		logger.info("Rounds count in iteration:");
+		int roundCountInIteration = Integer.valueOf(scanner.nextLine());
 
 		UnimodalOptimizationWithMultipleParams unimodalOptimizationWithMultipleParams =
 				new UnimodalOptimizationWithMultipleParams(UnimodalOptimizationType.INTERVAL_DIVISION, OptimizationDirection.MIN) {
 			@Override
 			public double getValue(List<Double> params) {
 				try {
-					return getHeuristicsAverage(allRound.subList(0, roundCountInIteration), chosenType, params);
+					return getHeuristicsAverage(rounds.subList(0, roundCountInIteration), chosenType, params);
 				} catch (Exception ex) {
 					logger.error(ex);
 					return 0.0;
@@ -105,19 +121,18 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 			}
 		};
 
-		List<Double> params = new ArrayList<>();  // TODO[IG]
-		// TODO[IG] Use Heuristic change param names
-		List<ParamInterval> intervals = getParamIntervals(params);
+		List<Double> params = getInitialParams();
+		List<ParamInterval> intervals = getInitialParamIntervals();
 
 		for (int i = 1; i <= iterationCount; i++) {
 			logger.info("Starting heuristic optimization iteration[" + i + "]");
 			Collections.shuffle(games);
 
-			params = unimodalOptimizationWithMultipleParams.getExtremaVector(params, intervals, iterationCount);
+			params = new ArrayList<>(unimodalOptimizationWithMultipleParams.getExtremaVector(params, intervals, optimizationInnerIteration));
 			logger.info("Finished heuristic optimization iteration[" + i + "]");
 			logger.info("New values: " + params);
 			try {
-				Thread.sleep(1 * 60 * 1000);
+				Thread.sleep(30 * 1000);
 			} catch (InterruptedException ex) {
 				logger.error(ex);
 			}
@@ -128,19 +143,6 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 		List<Heuristic> heuristics = new ArrayList<>();
 		for (Round round : rounds) {
 			logger.info("Executing check round heuristic");
-			if (!round.getTableInfo().isMyMove()) {
-				logger.info("Not my turn");
-				continue;
-			}
-			if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() != 7) {
-				logger.info("Add initial tile move");
-				continue;
-			}
-			if (GameOperations.getPossibleMoves(round, false).isEmpty()) {
-				logger.info("No possible move");
-				continue;
-			}
-
 			Heuristic heuristic = GameDebuggerHelper.heuristicManager.getHeuristic(round, RoundHeuristicType.valueOf(chosenType), params);
 			heuristics.add(heuristic);
 		}
@@ -157,11 +159,35 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 			sum += Math.abs(heuristic.getValue() - heuristic.getAiValue());
 		}
 		double average = sum / heuristics.size();
-		System.out.println("Average: " + average);
+		System.out.println("Average heuristic diff: " + average);
 		return average;
 	}
 
-	private List<ParamInterval> getParamIntervals(List<Double> params) {
-		return null; //TODO[IG]
+	private List<Double> getInitialParams() {
+		List<Double> params = new ArrayList<>();
+		params.add(0.4);   // roundStatisticProcessorParam1
+		params.add(0.1125);   // roundStatisticProcessorParam2
+		params.add(0.021875);   // roundStatisticProcessorParam3
+		params.add(7.0);   // heuristicValueForStartNextRound
+		params.add(2.1500000000000004);   // rateForFinishedGameHeuristic
+		params.add(2.15625);   // mixedRoundHeuristicTilesDiffRate
+		params.add(8.4375);   // mixedRoundHeuristicMovesDiffRate
+		params.add(0.575);   // mixedRoundHeuristicPointsBalancingRate
+		params.add(0.0625);   // mixedRoundHeuristicOpenTilesSumBalancingRate
+		return params;
+	}
+
+	private List<ParamInterval> getInitialParamIntervals() {
+		List<ParamInterval> params = new ArrayList<>();
+		params.add(new ParamInterval(0.2, 0.6));   // roundStatisticProcessorParam1
+		params.add(new ParamInterval(0.1, 0.3));   // roundStatisticProcessorParam2
+		params.add(new ParamInterval(0.01, 0.2));   // roundStatisticProcessorParam3
+		params.add(new ParamInterval(4.0, 10.0));   // heuristicValueForStartNextRound
+		params.add(new ParamInterval(1.4, 2.2));   // rateForFinishedGameHeuristic
+		params.add(new ParamInterval(1.5, 2.2));   // mixedRoundHeuristicTilesDiffRate
+		params.add(new ParamInterval(8, 15));   // mixedRoundHeuristicMovesDiffRate
+		params.add(new ParamInterval(0.2, 0.6));   // mixedRoundHeuristicPointsBalancingRate
+		params.add(new ParamInterval(0.05, 0.25));   // mixedRoundHeuristicOpenTilesSumBalancingRate
+		return params;
 	}
 }

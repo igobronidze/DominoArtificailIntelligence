@@ -23,22 +23,15 @@ public abstract class RoundHeuristic {
 
     private final SysParam logAboutRoundHeuristic = new SysParam("logAboutRoundHeuristic", "true");
 
-    private static final SysParam heuristicValueForStartNextRound = new SysParam("heuristicValueForStartNextRound", "12");
+    private static final SysParam heuristicValueForStartNextRound = new SysParam("heuristicValueForStartNextRound", "7");
 
-    private static final SysParam rateForFinishedGameHeuristic = new SysParam("rateForFinishedGameHeuristic", "1.0");
+    private static final SysParam rateForFinishedGameHeuristic = new SysParam("rateForFinishedGameHeuristic", "1.6");
 
     private static double heuristicValueForStartNextRoundValue = systemParameterManager.getDoubleParameterValue(heuristicValueForStartNextRound);
 
     private static double rateForFinishedGameHeuristicValue = systemParameterManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
 
     abstract double getNotFinishedRoundHeuristic(Round round);
-
-    public List<String> getParamNames() {
-        List<String> names = new ArrayList<>();
-        names.add(heuristicValueForStartNextRound.getKey());
-        names.add(rateForFinishedGameHeuristic.getKey());
-        return names;
-    }
 
     public void setParams(List<Double> params) {
         roundStatisticProcessor.setParams(params.subList(0, 3));

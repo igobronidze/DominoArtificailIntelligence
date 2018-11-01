@@ -37,7 +37,7 @@ INSERT INTO system_parameter (key, value, type) VALUES('minMaxForCachedNodeRound
 -- Global
 INSERT INTO system_parameter (key, value, type) VALUES('coefficientForComplexHeuristic', '12', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('heuristicValueForStartNextRound', '7', 'HEURISTIC');
-INSERT INTO system_parameter (key, value, type) VALUES('rateForFinishedGameHeuristic', '1.0', 'HEURISTIC');
+INSERT INTO system_parameter (key, value, type) VALUES('rateForFinishedGameHeuristic', '2.0', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('roundHeuristicType', 'MIXED_ROUND_HEURISTIC', 'HEURISTIC');
 -- MixedRoundHeuristic
 INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicTilesDiffRate', '2', 'HEURISTIC');

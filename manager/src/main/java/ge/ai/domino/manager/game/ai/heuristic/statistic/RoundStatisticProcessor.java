@@ -30,14 +30,6 @@ public class RoundStatisticProcessor {
 
 	private RoundTilesStatistic roundTilesStatistic;
 
-	public List<String> getParamNames() {
-		List<String> names = new ArrayList<>();
-		names.add(roundStatisticProcessorParam1.getKey());
-		names.add(roundStatisticProcessorParam2.getKey());
-		names.add(roundStatisticProcessorParam3.getKey());
-		return names;
-	}
-
 	public void setParams(List<Double> params) {
 		roundStatisticProcessorParam1Value = params.get(0);
 		roundStatisticProcessorParam2Value = params.get(1);

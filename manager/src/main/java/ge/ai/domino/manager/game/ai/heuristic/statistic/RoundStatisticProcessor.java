@@ -6,6 +6,8 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class RoundStatisticProcessor {
@@ -18,15 +20,29 @@ public class RoundStatisticProcessor {
 
 	private final SysParam roundStatisticProcessorParam3 = new SysParam("roundStatisticProcessorParam3", "0.1");
 
-	private final double roundStatisticProcessorParam1Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam1);
+	private double roundStatisticProcessorParam1Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam1);
 
-	private final double roundStatisticProcessorParam2Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam2);
+	private double roundStatisticProcessorParam2Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam2);
 
-	private final double roundStatisticProcessorParam3Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam3);
+	private double roundStatisticProcessorParam3Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam3);
 
 	private Round round;
 
 	private RoundTilesStatistic roundTilesStatistic;
+
+	public List<String> getParamNames() {
+		List<String> names = new ArrayList<>();
+		names.add(roundStatisticProcessorParam1.getKey());
+		names.add(roundStatisticProcessorParam2.getKey());
+		names.add(roundStatisticProcessorParam3.getKey());
+		return names;
+	}
+
+	public void setParams(List<Double> params) {
+		roundStatisticProcessorParam1Value = params.get(0);
+		roundStatisticProcessorParam2Value = params.get(1);
+		roundStatisticProcessorParam3Value = params.get(2);
+	}
 
 	public void replaceRound(Round round) {
 		this.round = round;

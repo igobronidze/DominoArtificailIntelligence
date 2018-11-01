@@ -6,6 +6,8 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.heuristic.statistic.RoundStatisticType;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 
+import java.util.List;
+
 public class MixedRoundHeuristic extends RoundHeuristic {
 
 	private final SystemParameterManager sysParamManager = new SystemParameterManager();
@@ -18,13 +20,32 @@ public class MixedRoundHeuristic extends RoundHeuristic {
 
 	private final SysParam mixedRoundHeuristicOpenTilesSumBalancingRate = new SysParam("mixedRoundHeuristicOpenTilesSumBalancingRate", "0.15");
 
-	private final double mixedRoundHeuristicTilesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicTilesDiffRate);
+	private double mixedRoundHeuristicTilesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicTilesDiffRate);
 
-	private final double mixedRoundHeuristicMovesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicMovesDiffRate);
+	private double mixedRoundHeuristicMovesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicMovesDiffRate);
 
-	private final double mixedRoundHeuristicPointsBalancingRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicPointsBalancingRate);
+	private double mixedRoundHeuristicPointsBalancingRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicPointsBalancingRate);
 
-	private final double mixedRoundHeuristicOpenTilesSumBalancingRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicOpenTilesSumBalancingRate);
+	private double mixedRoundHeuristicOpenTilesSumBalancingRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicOpenTilesSumBalancingRate);
+
+	@Override
+	public List<String> getParamNames() {
+		List<String> names = super.getParamNames();
+		names.add(mixedRoundHeuristicTilesDiffRate.getKey());
+		names.add(mixedRoundHeuristicMovesDiffRate.getKey());
+		names.add(mixedRoundHeuristicPointsBalancingRate.getKey());
+		names.add(mixedRoundHeuristicOpenTilesSumBalancingRate.getKey());
+		return names;
+	}
+
+	@Override
+	public void setParams(List<String> params) {
+		super.setParams(params.subList(0, 5));
+		mixedRoundHeuristicTilesDiffRateValue = Double.valueOf(params.get(5));
+		mixedRoundHeuristicMovesDiffRateValue = Double.valueOf(params.get(6));
+		mixedRoundHeuristicPointsBalancingRateValue = Double.valueOf(params.get(7));
+		mixedRoundHeuristicOpenTilesSumBalancingRateValue = Double.valueOf(params.get(8));
+	}
 
 	@Override
 	public double getNotFinishedRoundHeuristic(Round round) {

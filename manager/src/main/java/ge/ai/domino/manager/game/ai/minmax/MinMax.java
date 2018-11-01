@@ -68,6 +68,10 @@ public abstract class MinMax implements AiSolver {
 
 	public abstract String getType();
 
+	public void setRoundHeuristicParams(List<Double> params) {
+		roundHeuristic.setParams(params);
+	}
+
 	protected boolean isNewRound(Round round) {
 		return round.getMyTiles().size() == 0 && round.getTableInfo().getOpponentTilesCount() == 7 && round.getTableInfo().getBazaarTilesCount() == 21;
 	}

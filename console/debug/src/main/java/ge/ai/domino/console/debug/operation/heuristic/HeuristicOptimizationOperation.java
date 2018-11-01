@@ -15,11 +15,16 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.parser.GameParserManager;
+import ge.ai.domino.math.optimization.OptimizationDirection;
+import ge.ai.domino.math.optimization.unimodal.multipleparams.ParamInterval;
+import ge.ai.domino.math.optimization.unimodal.multipleparams.UnimodalOptimizationWithMultipleParams;
+import ge.ai.domino.math.optimization.unimodal.oneparam.UnimodalOptimizationType;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -58,13 +63,17 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 		for (RoundHeuristicType roundHeuristicType : RoundHeuristicType.values()) {
 			logger.info(roundHeuristicType.name());
 		}
-
 		String chosenType = scanner.nextLine();
-
 		GameDebuggerHelper.sysParamManager.changeParameterOnlyInCache(roundHeuristicType.getKey(), chosenType);
-		List<Heuristic> heuristics = new ArrayList<>();
+
+		logger.info("Iteration count");
+		int iterationCount = Integer.valueOf(scanner.nextLine());
+
+		logger.info("Rounds count in iteration");
+		int roundCountInIteration = Integer.valueOf(scanner.nextLine());
+
+		List<Round> allRound = new ArrayList<>();
 		for (GameFromLog gameFromLog : games) {
-			logger.info("Executing round heuristics for gameId[" + gameFromLog.getGameId() + "], roundsSize[" + gameFromLog.getRounds().size() + "]");
 			Game game = new Game();
 			game.setId(gameFromLog.getGameId());
 			GameProperties gameProperties = new GameProperties();
@@ -80,27 +89,63 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 				GameDebuggerHelper.multithreadingServer.initGame(gameInitialData);
 			}
 
-			for (Round round : gameFromLog.getRounds()) {
-				logger.info("Executing check round heuristic");
-				if (!round.getTableInfo().isMyMove()) {
-					logger.info("Not my turn");
-					continue;
-				}
-				if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() != 7) {
-					logger.info("Add initial tile move");
-					continue;
-				}
-				if (GameOperations.getPossibleMoves(round, false).isEmpty()) {
-					logger.info("No possible move");
-					continue;
-				}
-
-				Heuristic heuristic = GameDebuggerHelper.heuristicManager.getHeuristic(round, RoundHeuristicType.valueOf(chosenType));
-				heuristics.add(heuristic);
-			}
+			allRound.addAll(gameFromLog.getRounds());
 		}
 
-		Collections.sort(heuristics, (o1, o2) -> Double.compare(Math.abs(o1.getValue() - o1.getAiValue()), Math.abs(o2.getValue() - o2.getAiValue())));
+		UnimodalOptimizationWithMultipleParams unimodalOptimizationWithMultipleParams =
+				new UnimodalOptimizationWithMultipleParams(UnimodalOptimizationType.INTERVAL_DIVISION, OptimizationDirection.MIN) {
+			@Override
+			public double getValue(List<Double> params) {
+				try {
+					return getHeuristicsAverage(allRound.subList(0, roundCountInIteration), chosenType, params);
+				} catch (Exception ex) {
+					logger.error(ex);
+					return 0.0;
+				}
+			}
+		};
+
+		List<Double> params = new ArrayList<>();  // TODO[IG]
+		// TODO[IG] Use Heuristic change param names
+		List<ParamInterval> intervals = getParamIntervals(params);
+
+		for (int i = 1; i <= iterationCount; i++) {
+			logger.info("Starting heuristic optimization iteration[" + i + "]");
+			Collections.shuffle(games);
+
+			params = unimodalOptimizationWithMultipleParams.getExtremaVector(params, intervals, iterationCount);
+			logger.info("Finished heuristic optimization iteration[" + i + "]");
+			logger.info("New values: " + params);
+			try {
+				Thread.sleep(1 * 60 * 1000);
+			} catch (InterruptedException ex) {
+				logger.error(ex);
+			}
+		}
+	}
+
+	private double getHeuristicsAverage(List<Round> rounds, String chosenType, List<Double> params) throws DAIException {
+		List<Heuristic> heuristics = new ArrayList<>();
+		for (Round round : rounds) {
+			logger.info("Executing check round heuristic");
+			if (!round.getTableInfo().isMyMove()) {
+				logger.info("Not my turn");
+				continue;
+			}
+			if (round.getTableInfo().getLeft() == null && round.getMyTiles().size() != 7) {
+				logger.info("Add initial tile move");
+				continue;
+			}
+			if (GameOperations.getPossibleMoves(round, false).isEmpty()) {
+				logger.info("No possible move");
+				continue;
+			}
+
+			Heuristic heuristic = GameDebuggerHelper.heuristicManager.getHeuristic(round, RoundHeuristicType.valueOf(chosenType), params);
+			heuristics.add(heuristic);
+		}
+
+		heuristics.sort(Comparator.comparingDouble(o -> Math.abs(o.getValue() - o.getAiValue())));
 		for (Heuristic heuristic : heuristics) {
 			RoundLogger.logRoundFullInfo(heuristic.getRound());
 			logger.info("Heuristic value: " + heuristic.getValue());
@@ -113,5 +158,10 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 		}
 		double average = sum / heuristics.size();
 		System.out.println("Average: " + average);
+		return average;
+	}
+
+	private List<ParamInterval> getParamIntervals(List<Double> params) {
+		return null; //TODO[IG]
 	}
 }

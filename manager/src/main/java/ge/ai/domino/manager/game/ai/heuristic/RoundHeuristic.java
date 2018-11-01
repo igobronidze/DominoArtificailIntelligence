@@ -9,6 +9,8 @@ import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public abstract class RoundHeuristic {
@@ -17,7 +19,7 @@ public abstract class RoundHeuristic {
 
     protected static final RoundStatisticProcessor roundStatisticProcessor = new RoundStatisticProcessor();
 
-    private final SystemParameterManager systemParameterManager = new SystemParameterManager();
+    private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
     private final SysParam logAboutRoundHeuristic = new SysParam("logAboutRoundHeuristic", "true");
 
@@ -25,7 +27,24 @@ public abstract class RoundHeuristic {
 
     private static final SysParam rateForFinishedGameHeuristic = new SysParam("rateForFinishedGameHeuristic", "1.0");
 
+    private static double heuristicValueForStartNextRoundValue = systemParameterManager.getDoubleParameterValue(heuristicValueForStartNextRound);
+
+    private static double rateForFinishedGameHeuristicValue = systemParameterManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
+
     abstract double getNotFinishedRoundHeuristic(Round round);
+
+    public List<String> getParamNames() {
+        List<String> names = new ArrayList<>();
+        names.add(heuristicValueForStartNextRound.getKey());
+        names.add(rateForFinishedGameHeuristic.getKey());
+        return names;
+    }
+
+    public void setParams(List<Double> params) {
+        roundStatisticProcessor.setParams(params.subList(0, 3));
+        heuristicValueForStartNextRoundValue = params.get(3);
+        rateForFinishedGameHeuristicValue = params.get(4);
+    }
 
     public double getHeuristic(Round round, boolean forceLog) {
         if (round.getGameInfo().isFinished()) {
@@ -55,15 +74,14 @@ public abstract class RoundHeuristic {
 
     private double getFinishedGameHeuristic(GameInfo gameInfo, int pointForWin) {
         if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
-            return pointForWin * systemParameterManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
+            return pointForWin * rateForFinishedGameHeuristicValue;
         } else {
-            return - 1 * pointForWin * systemParameterManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
+            return - 1 * pointForWin * rateForFinishedGameHeuristicValue;
         }
     }
 
     private double getFinishedRoundHeuristic(GameInfo gameInfo, boolean startMe) {
-        int value = systemParameterManager.getIntegerParameterValue(heuristicValueForStartNextRound);
-        return gameInfo.getMyPoint() - gameInfo.getOpponentPoint() + (startMe ? value : -1 * value);
+        return gameInfo.getMyPoint() - gameInfo.getOpponentPoint() + (startMe ? heuristicValueForStartNextRoundValue : -1 * heuristicValueForStartNextRoundValue);
     }
 
     private boolean isNewRound(Round round) {

@@ -14,6 +14,7 @@ import ge.ai.domino.manager.game.logging.RoundLogger;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HeuristicManager {
@@ -34,7 +35,7 @@ public class HeuristicManager {
 		return result;
 	}
 
-	public Heuristic getHeuristic(Round round, RoundHeuristicType roundHeuristicType) throws DAIException {
+	public Heuristic getHeuristic(Round round, RoundHeuristicType roundHeuristicType, List<Double> params) throws DAIException {
 		Heuristic heuristic = new Heuristic();
 		heuristic.setType(roundHeuristicType);
 		heuristic.setRound(round);
@@ -43,6 +44,7 @@ public class HeuristicManager {
 		heuristic.setValue(roundHeuristic.getHeuristic(round, false));
 
 		MinMax minMax = MinMaxFactory.getMinMax(true);
+		minMax.setRoundHeuristicParams(params);
 		AiPredictionsWrapper aiPredictionsWrapper = minMax.solve(round);
 		for (AiPrediction aiPrediction : aiPredictionsWrapper.getAiPredictions()) {
 			if (aiPrediction.isBestMove()) {

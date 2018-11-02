@@ -165,29 +165,33 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 
 	private List<Double> getInitialParams() {
 		List<Double> params = new ArrayList<>();
-		params.add(0.4);   // roundStatisticProcessorParam1
-		params.add(0.1125);   // roundStatisticProcessorParam2
-		params.add(0.021875);   // roundStatisticProcessorParam3
-		params.add(7.0);   // heuristicValueForStartNextRound
-		params.add(2.1500000000000004);   // rateForFinishedGameHeuristic
-		params.add(2.15625);   // mixedRoundHeuristicTilesDiffRate
-		params.add(8.4375);   // mixedRoundHeuristicMovesDiffRate
-		params.add(0.575);   // mixedRoundHeuristicPointsBalancingRate
-		params.add(0.0625);   // mixedRoundHeuristicOpenTilesSumBalancingRate
+		params.add(0.2125);   // roundStatisticProcessorParam1
+		params.add(0.2);   // roundStatisticProcessorParam2
+		params.add(0.015625);   // roundStatisticProcessorParam3
+		params.add(2.375);   // heuristicValueForStartNextRound
+		params.add(1.33125);   // rateForFinishedGameHeuristic
+		params.add(1.76875);   // mixedRoundHeuristicTilesDiffRate
+		params.add(5.4375);   // mixedRoundHeuristicMovesDiffRate
+		params.add(0.5);   // mixedRoundHeuristicPointsBalancingRate
+		params.add(0.290625);   // mixedRoundHeuristicOpenTilesSumBalancingRate
+		params.add(0.871875);   // mixedRoundHeuristicPointsDiffCoefficientRate
+		params.add(0.3);   // mixedRoundHeuristicPLayTurnRate
 		return params;
 	}
 
 	private List<ParamInterval> getInitialParamIntervals() {
 		List<ParamInterval> params = new ArrayList<>();
-		params.add(new ParamInterval(0.2, 0.6));   // roundStatisticProcessorParam1
+		params.add(new ParamInterval(0.15, 0.4));   // roundStatisticProcessorParam1
 		params.add(new ParamInterval(0.1, 0.3));   // roundStatisticProcessorParam2
-		params.add(new ParamInterval(0.01, 0.2));   // roundStatisticProcessorParam3
-		params.add(new ParamInterval(4.0, 10.0));   // heuristicValueForStartNextRound
-		params.add(new ParamInterval(1.4, 2.2));   // rateForFinishedGameHeuristic
-		params.add(new ParamInterval(1.5, 2.2));   // mixedRoundHeuristicTilesDiffRate
-		params.add(new ParamInterval(8, 15));   // mixedRoundHeuristicMovesDiffRate
-		params.add(new ParamInterval(0.2, 0.6));   // mixedRoundHeuristicPointsBalancingRate
-		params.add(new ParamInterval(0.05, 0.25));   // mixedRoundHeuristicOpenTilesSumBalancingRate
+		params.add(new ParamInterval(0.01, 0.1));   // roundStatisticProcessorParam3
+		params.add(new ParamInterval(2, 8));   // heuristicValueForStartNextRound
+		params.add(new ParamInterval(1.3, 1.8));   // rateForFinishedGameHeuristic
+		params.add(new ParamInterval(1.3, 1.8));   // mixedRoundHeuristicTilesDiffRate
+		params.add(new ParamInterval(5, 12));   // mixedRoundHeuristicMovesDiffRate
+		params.add(new ParamInterval(0.3, 0.7));   // mixedRoundHeuristicPointsBalancingRate
+		params.add(new ParamInterval(0.2, 0.4));   // mixedRoundHeuristicOpenTilesSumBalancingRate
+		params.add(new ParamInterval(0.45, 0.9));   // mixedRoundHeuristicPointsDiffCoefficientRate
+		params.add(new ParamInterval(0.15, 0.45));   // mixedRoundHeuristicPointsDiffCoefficientRate
 		return params;
 	}
 }

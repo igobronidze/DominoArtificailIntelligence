@@ -14,7 +14,10 @@ import ge.ai.domino.domain.heuristic.RoundHeuristicType;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.helper.game.GameOperations;
 import ge.ai.domino.manager.game.logging.RoundLogger;
+import ge.ai.domino.manager.heuristic.HeuristicManager;
+import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
 import ge.ai.domino.manager.parser.GameParserManager;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.math.optimization.OptimizationDirection;
 import ge.ai.domino.math.optimization.unimodal.multipleparams.ParamInterval;
 import ge.ai.domino.math.optimization.unimodal.multipleparams.UnimodalOptimizationWithMultipleParams;
@@ -31,6 +34,12 @@ import java.util.Scanner;
 public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 
 	private static final Logger logger = Logger.getLogger(HeuristicOptimizationOperation.class);
+
+	private static final HeuristicManager heuristicManager = new HeuristicManager();
+
+	private static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
+
+	private static final SystemParameterManager sysParamManager = new SystemParameterManager();
 
 	private static final SysParam roundHeuristicType = new SysParam("roundHeuristicType", "POINT_DIFF_ROUND_HEURISTIC");
 
@@ -68,11 +77,11 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 			game.setProperties(gameProperties);
 			CachedGames.addGame(game);
 
-			if (GameDebuggerHelper.sysParamManager.getBooleanParameterValue(useMultithreadingMinMax)) {
+			if (sysParamManager.getBooleanParameterValue(useMultithreadingMinMax)) {
 				GameInitialData gameInitialData = new GameInitialData();
 				gameInitialData.setGameId(gameFromLog.getGameId());
 				gameInitialData.setPointsForWin(gameFromLog.getPointForWin());
-				GameDebuggerHelper.multithreadingServer.initGame(gameInitialData);
+				multithreadingServer.initGame(gameInitialData);
 			}
 
 			for (Round round : gameFromLog.getRounds()) {
@@ -97,7 +106,7 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 			logger.info(roundHeuristicType.name());
 		}
 		String chosenType = scanner.nextLine();
-		GameDebuggerHelper.sysParamManager.changeParameterOnlyInCache(roundHeuristicType.getKey(), chosenType);
+		sysParamManager.changeParameterOnlyInCache(roundHeuristicType.getKey(), chosenType);
 
 		logger.info("Iteration count:");
 		int iterationCount = Integer.valueOf(scanner.nextLine());
@@ -143,7 +152,7 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 		List<Heuristic> heuristics = new ArrayList<>();
 		for (Round round : rounds) {
 			logger.info("Executing check round heuristic");
-			Heuristic heuristic = GameDebuggerHelper.heuristicManager.getHeuristic(round, RoundHeuristicType.valueOf(chosenType), params);
+			Heuristic heuristic = heuristicManager.getHeuristic(round, RoundHeuristicType.valueOf(chosenType), params);
 			heuristics.add(heuristic);
 		}
 

@@ -5,12 +5,14 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.heuristic.Heuristic;
+import ge.ai.domino.domain.heuristic.RoundHeuristicType;
+import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.heuristic.RoundHeuristic;
 import ge.ai.domino.manager.game.ai.heuristic.factory.RoundHeuristicFactory;
-import ge.ai.domino.domain.heuristic.RoundHeuristicType;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.manager.game.logging.RoundLogger;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -20,6 +22,15 @@ import java.util.Map;
 public class HeuristicManager {
 
 	private final Logger logger = Logger.getLogger(HeuristicManager.class);
+
+	private final SystemParameterManager systemParameterManager = new SystemParameterManager();
+
+	private static final SysParam roundHeuristicType = new SysParam("roundHeuristicType", "POINT_DIFF_ROUND_HEURISTIC");
+
+	public Double getHeuristic(Round round) {
+		RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
+		return roundHeuristic.getHeuristic(round, false);
+	}
 
 	public Map<String, Double> getHeuristics(Round round) {
 		logger.info("Start getHeuristics method");

@@ -4,6 +4,7 @@ import ge.ai.domino.console.debug.operation.game.CachGameOperation;
 import ge.ai.domino.console.debug.operation.game.ChangeSysParamOperation;
 import ge.ai.domino.console.debug.operation.game.ParseRoundOperation;
 import ge.ai.domino.console.debug.operation.game.ReplayGameOperation;
+import ge.ai.domino.console.debug.operation.game.ReplayGameWithDifferenceModeOperation;
 import ge.ai.domino.console.debug.operation.heuristic.CountHeuristicOperation;
 import ge.ai.domino.console.debug.operation.heuristic.HeuristicOptimizationOperation;
 import ge.ai.domino.console.debug.operation.minmax.MinMaxPredictionOptimizationOperation;
@@ -42,6 +43,7 @@ public class GameDebugger {
             logger.info("12. Execute MinMax solve");
             logger.info("13. Send game to multithreading client");
             logger.info("14. Heuristic Optimization");
+            logger.info("15. Replay games with difference modes");
             String line = scanner.nextLine();
 
             try {
@@ -102,6 +104,10 @@ public class GameDebugger {
                     }
                     case "14": {
                         new HeuristicOptimizationOperation().process(scanner);
+                        break;
+                    }
+                    case "15": {
+                        new ReplayGameWithDifferenceModeOperation().process(scanner);
                         break;
                     }
                 }

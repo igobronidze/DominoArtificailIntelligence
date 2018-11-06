@@ -3,13 +3,6 @@ package ge.ai.domino.console.debug;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.move.MoveType;
-import ge.ai.domino.manager.function.FunctionManager;
-import ge.ai.domino.manager.heuristic.HeuristicManager;
-import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
-import ge.ai.domino.manager.opponentplay.OpponentPlaysManager;
-import ge.ai.domino.manager.parser.RoundParserManager;
-import ge.ai.domino.manager.replaygame.ReplayGameManager;
-import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -25,18 +18,6 @@ public class GameDebuggerHelper {
 	public static final String LOG_END = "END";
 
 	public static final int GAME_ID = -1;
-
-	public static final SystemParameterManager sysParamManager = new SystemParameterManager();
-
-	public static final HeuristicManager heuristicManager = new HeuristicManager();
-
-	public static final ReplayGameManager replayGameManager = new ReplayGameManager();
-
-	public static final OpponentPlaysManager opponentPlaysManager = new OpponentPlaysManager();
-
-	public static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
-
-	public static final RoundParserManager roundParserManager = new RoundParserManager();
 
 	public static Round round;
 

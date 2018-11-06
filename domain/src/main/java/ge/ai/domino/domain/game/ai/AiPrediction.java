@@ -12,6 +12,8 @@ public class AiPrediction implements Serializable {
 
     private boolean bestMove;
 
+    private double realHeuristic;
+
     public Move getMove() {
         return move;
     }
@@ -36,11 +38,20 @@ public class AiPrediction implements Serializable {
         this.bestMove = bestMove;
     }
 
+    public double getRealHeuristic() {
+        return realHeuristic;
+    }
+
+    public void setRealHeuristic(double realHeuristic) {
+        this.realHeuristic = realHeuristic;
+    }
+
     @Override
     public String toString() {
         return "AiPrediction{" +
                 "move=" + move +
                 ", heuristicValue=" + heuristicValue +
+                ", realHeuristic=" + realHeuristic +
                 ", bestMove=" + bestMove +
                 '}';
     }

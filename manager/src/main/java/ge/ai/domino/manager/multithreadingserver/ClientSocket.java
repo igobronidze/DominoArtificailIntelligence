@@ -57,6 +57,11 @@ public class ClientSocket {
         rank = Integer.valueOf(sysParams.get(sysParamManager.getStringParameterValue(multithreadingClientRankSysParam)));
     }
 
+    public void updateSysParams(Map<String, String> params) throws IOException {
+        oos.writeObject(MultithreadingCommand.UPDATE_SYS_PARAMS_IN_CACH);
+        oos.writeObject(params);
+    }
+
     public void sendFunctionArgsAndValues() throws IOException {
         oos.writeObject(MultithreadingCommand.LOAD_FUNCTION_ARG_AND_VALUES);
         oos.writeObject(functionDAO.getFunctionArgsAndValues(""));

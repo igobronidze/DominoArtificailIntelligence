@@ -7,6 +7,7 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.manager.game.logging.RoundLogger;
+import ge.ai.domino.manager.parser.RoundParserManager;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.Scanner;
 public class MinMaxSolveOperation implements GameDebuggerOperation {
 
 	private static final Logger logger = Logger.getLogger(MinMaxSolveOperation.class);
+
+	private static final RoundParserManager roundParserManager = new RoundParserManager();
 
 	private static final String NEXT_LOG = "NEXT";
 
@@ -29,7 +32,7 @@ public class MinMaxSolveOperation implements GameDebuggerOperation {
 		StringBuilder log = new StringBuilder();
 		while (!(s = scanner.nextLine()).equals(GameDebuggerHelper.LOG_END)) {
 			if (s.equals(NEXT_LOG)) {
-				Round round = GameDebuggerHelper.roundParserManager.parseRound(log.toString());
+				Round round = roundParserManager.parseRound(log.toString());
 				logger.info("Round parsed successfully id[" + gameId + "]");
 
 				round.getGameInfo().setGameId(gameId);

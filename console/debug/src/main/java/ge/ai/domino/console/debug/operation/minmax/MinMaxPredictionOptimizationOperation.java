@@ -12,7 +12,10 @@ import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.manager.opponentplay.OpponentPlaysManager;
 import ge.ai.domino.manager.opponentplay.guess.NegativeBalancedGuessRateCounter;
+import ge.ai.domino.manager.replaygame.ReplayGameManager;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.math.optimization.OptimizationDirection;
 import ge.ai.domino.math.optimization.unimodal.multipleparams.ParamInterval;
 import ge.ai.domino.math.optimization.unimodal.multipleparams.UnimodalOptimizationWithMultipleParams;
@@ -29,12 +32,18 @@ public class MinMaxPredictionOptimizationOperation implements GameDebuggerOperat
 
 	private static final Logger logger = Logger.getLogger(MinMaxPredictionOptimizationOperation.class);
 
+	private static final ReplayGameManager replayGameManager = new ReplayGameManager();
+
+	private static final OpponentPlaysManager opponentPlaysManager = new OpponentPlaysManager();
+
+	private static final SystemParameterManager sysParamManager = new SystemParameterManager();
+
 	@Override
 	public void process(Scanner scanner) throws DAIException {
 		List<Integer> idsForProcess = GameDebuggerHelper.getIdsForProcess(scanner);
 
 		String functionName = "opponentPlayHeuristicsDiffsFunction_initialForOptimization";
-		GameDebuggerHelper.sysParamManager.changeParameterOnlyInCache("opponentPlayHeuristicsDiffsFunctionName", functionName);
+		sysParamManager.changeParameterOnlyInCache("opponentPlayHeuristicsDiffsFunctionName", functionName);
 
 		FunctionDAO functionDAO = new FunctionDAOImpl();
 		FunctionManager functionManager = new FunctionManager();
@@ -87,11 +96,11 @@ public class MinMaxPredictionOptimizationOperation implements GameDebuggerOperat
 
 			int gameId = 0;
 			try {
-				ReplayMoveInfo replayMoveInfo = GameDebuggerHelper.replayGameManager.startReplayGame(id);
+				ReplayMoveInfo replayMoveInfo = replayGameManager.startReplayGame(id);
 				gameId = replayMoveInfo.getGameId();
 
 				while (replayMoveInfo.getNextMove() != null) {
-					replayMoveInfo = GameDebuggerHelper.replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
+					replayMoveInfo = replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
 				}
 
 				fullOpponentPlays.addAll(GameDebuggerHelper.removeExtraPlays(CachedGames.getOpponentPlays(replayMoveInfo.getGameId())));
@@ -106,7 +115,7 @@ public class MinMaxPredictionOptimizationOperation implements GameDebuggerOperat
 			logger.info("Finished game for replay id[" + id + "]");
 		}
 
-		GroupedOpponentPlay groupedOpponentPlay = GameDebuggerHelper.opponentPlaysManager.getGroupedOpponentPlays(fullOpponentPlays, false, false, true).get(0);
+		GroupedOpponentPlay groupedOpponentPlay = opponentPlaysManager.getGroupedOpponentPlays(fullOpponentPlays, false, false, true).get(0);
 		logger.info("Opponent plays grouped in one result for params: " + params);
 		logger.info(groupedOpponentPlay.getAverageGuess());
 		return groupedOpponentPlay.getAverageGuess().get(guessRateCounterClassName);

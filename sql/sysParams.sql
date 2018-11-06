@@ -44,6 +44,8 @@ INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicTiles
 INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicMovesDiffRate', '10', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicPointsBalancingRate', '0.3', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicOpenTilesSumBalancingRate', '0.15', 'HEURISTIC');
+INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicPointsDiffCoefficientRate', '0.5', 'HEURISTIC');
+INSERT INTO system_parameter (key, value, type) VALUES('mixedRoundHeuristicPLayTurnRate', '0.3', 'HEURISTIC');
 -- RoundStatisticsProcessor
 INSERT INTO system_parameter (key, value, type) VALUES('roundStatisticProcessorParam1', '0.4', 'HEURISTIC');
 INSERT INTO system_parameter (key, value, type) VALUES('roundStatisticProcessorParam2', '0.2', 'HEURISTIC');

@@ -10,6 +10,8 @@ import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
+import ge.ai.domino.manager.opponentplay.OpponentPlaysManager;
+import ge.ai.domino.manager.replaygame.ReplayGameManager;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -23,6 +25,10 @@ public class ReplayGameOperation implements GameDebuggerOperation {
 	private static final Logger logger = Logger.getLogger(ReplayGameOperation.class);
 
 	private static final FunctionManager functionManager = new FunctionManager();
+
+	private static final ReplayGameManager replayGameManager = new ReplayGameManager();
+
+	private static final OpponentPlaysManager opponentPlaysManager = new OpponentPlaysManager();
 
 	@Override
 	public void process(Scanner scanner) throws DAIException {
@@ -38,10 +44,10 @@ public class ReplayGameOperation implements GameDebuggerOperation {
 
 			int gameId = 0;
 			try {
-				ReplayMoveInfo replayMoveInfo = GameDebuggerHelper.replayGameManager.startReplayGame(id);
+				ReplayMoveInfo replayMoveInfo = replayGameManager.startReplayGame(id);
 				gameId = replayMoveInfo.getGameId();
 				while (replayMoveInfo.getNextMove() != null) {
-					replayMoveInfo = GameDebuggerHelper.replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
+					replayMoveInfo = replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
 					if (replayMoveInfo.getNextMove() != null) {
 						Move nextMove = new Move(replayMoveInfo.getNextMove().getLeft(), replayMoveInfo.getNextMove().getRight(), replayMoveInfo.getNextMove().getDirection());
 						if (replayMoveInfo.getBestAiPrediction() != null && !replayMoveInfo.getBestAiPrediction().equals(nextMove)) {
@@ -54,7 +60,7 @@ public class ReplayGameOperation implements GameDebuggerOperation {
 				}
 
 				List<OpponentPlay> opponentPlays = GameDebuggerHelper.removeExtraPlays(CachedGames.getOpponentPlays(replayMoveInfo.getGameId()));
-				List<GroupedOpponentPlay> groupedOpponentPlays = GameDebuggerHelper.opponentPlaysManager.getGroupedOpponentPlays(opponentPlays, true, false, false);
+				List<GroupedOpponentPlay> groupedOpponentPlays = opponentPlaysManager.getGroupedOpponentPlays(opponentPlays, true, false, false);
 				groupOpponentPlaysMap.put(id, groupedOpponentPlays);
 
 				fullOpponentPlays.addAll(opponentPlays);
@@ -80,7 +86,7 @@ public class ReplayGameOperation implements GameDebuggerOperation {
 				logger.info(groupedOpponentPlay.getAverageGuess());
 			}
 		}
-		GroupedOpponentPlay groupedOpponentPlay = GameDebuggerHelper.opponentPlaysManager.getGroupedOpponentPlays(fullOpponentPlays, false, false, true).get(0);
+		GroupedOpponentPlay groupedOpponentPlay = opponentPlaysManager.getGroupedOpponentPlays(fullOpponentPlays, false, false, true).get(0);
 		logger.info("Opponent plays grouped in one result");
 		logger.info(groupedOpponentPlay.getAverageGuess());
 	}

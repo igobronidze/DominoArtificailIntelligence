@@ -9,7 +9,6 @@ import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -27,9 +26,9 @@ public abstract class RoundHeuristic {
 
     private static final SysParam rateForFinishedGameHeuristic = new SysParam("rateForFinishedGameHeuristic", "1.6");
 
-    private static double heuristicValueForStartNextRoundValue = systemParameterManager.getDoubleParameterValue(heuristicValueForStartNextRound);
+    private double heuristicValueForStartNextRoundValue = systemParameterManager.getDoubleParameterValue(heuristicValueForStartNextRound);
 
-    private static double rateForFinishedGameHeuristicValue = systemParameterManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
+    private double rateForFinishedGameHeuristicValue = systemParameterManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
 
     abstract double getNotFinishedRoundHeuristic(Round round);
 

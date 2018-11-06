@@ -72,6 +72,13 @@ public class ClientManager {
                         CachedSystemParameter.setCachedParameters(sysParams);
                         logger.info("Load sys params: " + sysParams);
                         break;
+                    case UPDATE_SYS_PARAMS_IN_CACH:
+                        Map<String, String> params = (Map<String, String>) ois.readObject();
+                        for (Map.Entry<String, String> entry : params.entrySet()) {
+                            sysParamManager.changeParameterOnlyInCache(entry.getKey(), entry.getValue());
+                        }
+                        logger.info("Updated sys params: " + params);
+                        break;
                     case LOAD_FUNCTION_ARG_AND_VALUES:
                         Map<String, FunctionArgsAndValues> functionArgsAndValues = (Map<String, FunctionArgsAndValues>) ois.readObject();
                         functionManager.setFunctions(functionArgsAndValues, true);

@@ -15,6 +15,7 @@ import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.domain.played.SkipRoundInfo;
 import ge.ai.domino.manager.game.GameManager;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
+import ge.ai.domino.manager.heuristic.HeuristicManager;
 import ge.ai.domino.manager.played.PlayedGameManager;
 
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class ReplayGameManager {
 	private final PlayedGameManager playedGameManager = new PlayedGameManager();
 
 	private final GameManager gameManager = new GameManager();
+
+	private final HeuristicManager heuristicManager = new HeuristicManager();
 
 	public ReplayMoveInfo startReplayGame(int gameId) throws DAIException {
 		GameHistory gameHistory = playedGameManager.getGameHistory(gameId);
@@ -96,6 +99,7 @@ public class ReplayGameManager {
 			if (replayedRound.getAiPredictions() != null) {
 				replayMoveInfo.setBestAiPrediction(getAiPrediction(replayedRound.getAiPredictions()));
 				replayMoveInfo.setAiPredictions(replayedRound.getAiPredictions().getAiPredictions());
+				replayMoveInfo.setHeuristicValue(heuristicManager.getHeuristic(replayedRound));
 			}
 		}
 

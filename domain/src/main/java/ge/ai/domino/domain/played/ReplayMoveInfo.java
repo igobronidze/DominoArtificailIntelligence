@@ -1,5 +1,6 @@
 package ge.ai.domino.domain.played;
 
+import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.move.Move;
 
@@ -18,6 +19,10 @@ public class ReplayMoveInfo {
 	private Move bestAiPrediction;
 
 	private List<AiPrediction> aiPredictions;
+
+	private Round round;
+
+	private double heuristicValue;
 
 	public int getGameId() {
 		return gameId;
@@ -65,5 +70,21 @@ public class ReplayMoveInfo {
 
 	public void setAiPredictions(List<AiPrediction> aiPredictions) {
 		this.aiPredictions = aiPredictions;
+	}
+
+	public Round getRound() {
+		return round;
+	}
+
+	public void setRound(Round round) {
+		this.round = round;
+	}
+
+	public double getHeuristicValue() {
+		return heuristicValue;
+	}
+
+	public void setHeuristicValue(double heuristicValue) {
+		this.heuristicValue = heuristicValue;
 	}
 }

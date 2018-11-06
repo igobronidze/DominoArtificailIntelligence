@@ -13,13 +13,15 @@ public class ParseRoundOperation implements GameDebuggerOperation {
 
 	private static final Logger logger = Logger.getLogger(ParseRoundOperation.class);
 
+	private static final RoundParserManager roundParserManager = new RoundParserManager();
+
 	public void process(Scanner scanner) throws DAIException {
 		String s;
 		StringBuilder log = new StringBuilder();
 		while (!(s = scanner.nextLine()).equals(GameDebuggerHelper.LOG_END)) {
 			log.append(s).append(RoundLogger.END_LINE);
 		}
-		GameDebuggerHelper.round = GameDebuggerHelper.roundParserManager.parseRound(log.toString());
+		GameDebuggerHelper.round = roundParserManager.parseRound(log.toString());
 		GameDebuggerHelper.round.getGameInfo().setGameId(GameDebuggerHelper.GAME_ID);
 		logger.info("Round parsed successfully");
 	}

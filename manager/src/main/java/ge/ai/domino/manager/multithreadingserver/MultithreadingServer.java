@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MultithreadingServer {
 
@@ -75,6 +76,16 @@ public class MultithreadingServer {
 
     public List<ClientSocket> getClients() {
         return clients;
+    }
+
+    public void updateSysParams(Map<String, String> params) {
+        try {
+            for (ClientSocket clientSocket : clients) {
+                clientSocket.updateSysParams(params);
+            }
+        } catch (IOException ex) {
+            logger.error("Error occurred while update sys params", ex);
+        }
     }
 
     public void stopService() {

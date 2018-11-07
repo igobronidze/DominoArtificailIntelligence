@@ -97,7 +97,7 @@ public class ReplayGameManager {
 			Round replayedRound = replayMove(gameId, playedMove);
 			replayMoveInfo.setMoveIndex(moveIndex + 1);
 			if (replayedRound.getAiPredictions() != null) {
-				replayMoveInfo.setBestAiPrediction(getAiPrediction(replayedRound.getAiPredictions()));
+				replayMoveInfo.setBestAiPrediction(getBestPrediction(replayedRound.getAiPredictions()));
 				replayMoveInfo.setAiPredictions(replayedRound.getAiPredictions().getAiPredictions());
 				replayMoveInfo.setHeuristicValue(heuristicManager.getHeuristic(replayedRound));
 			}
@@ -159,9 +159,9 @@ public class ReplayGameManager {
 		}
 	}
 
-	private Move getAiPrediction(AiPredictionsWrapper aiPredictionsWrapper) {
+	private Move getBestPrediction(AiPredictionsWrapper aiPredictionsWrapper) {
 		for (AiPrediction aiPrediction : aiPredictionsWrapper.getAiPredictions()) {
-			if (aiPrediction.isBestMove()) {
+			if (aiPrediction.getMoveProbability() == 1.0) {
 				return aiPrediction.getMove();
 			}
 		}

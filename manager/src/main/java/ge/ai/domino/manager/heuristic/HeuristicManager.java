@@ -58,7 +58,7 @@ public class HeuristicManager {
 		minMax.setRoundHeuristicParams(params);
 		AiPredictionsWrapper aiPredictionsWrapper = minMax.solve(round);
 		for (AiPrediction aiPrediction : aiPredictionsWrapper.getAiPredictions()) {
-			if (aiPrediction.isBestMove()) {
+			if (aiPrediction.getMoveProbability() == 1.0) {
 				heuristic.setAiValue(aiPrediction.getHeuristicValue());
 				break;
 			}

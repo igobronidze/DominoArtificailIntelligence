@@ -10,8 +10,6 @@ public class AiPrediction implements Serializable {
 
     private double heuristicValue;
 
-    private boolean bestMove;
-
     private double realHeuristic;
 
     private double moveProbability;
@@ -30,14 +28,6 @@ public class AiPrediction implements Serializable {
 
     public void setHeuristicValue(double heuristicValue) {
         this.heuristicValue = heuristicValue;
-    }
-
-    public boolean isBestMove() {
-        return bestMove;
-    }
-
-    public void setBestMove(boolean bestMove) {
-        this.bestMove = bestMove;
     }
 
     public double getRealHeuristic() {
@@ -63,7 +53,6 @@ public class AiPrediction implements Serializable {
                 ", heuristicValue=" + heuristicValue +
                 ", realHeuristic=" + realHeuristic +
                 ", moveProbability=" + moveProbability +
-                ", bestMove=" + bestMove +
                 '}';
     }
 }

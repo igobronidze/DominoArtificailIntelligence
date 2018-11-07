@@ -74,7 +74,6 @@ public class MinMaxDFS extends MinMax {
 			AiPredictionsWrapper aiPredictionsWrapper = new AiPredictionsWrapper();
 			AiPrediction aiPrediction = new AiPrediction();
 			aiPrediction.setMove(moves.get(0));
-			aiPrediction.setBestMove(true);
 			aiPrediction.setHeuristicValue(Integer.MIN_VALUE);
 			aiPrediction.setRealHeuristic(Integer.MIN_VALUE);
 			aiPredictionsWrapper.getAiPredictions().add(aiPrediction);
@@ -141,10 +140,10 @@ public class MinMaxDFS extends MinMax {
 			}
 			if (better) {
 				if (bestAiPrediction != null) {
-					bestAiPrediction.setBestMove(false);
+//					bestAiPrediction.setBestMove(false);
 				}
 				bestAiPrediction = aiPrediction;
-				bestAiPrediction.setBestMove(true);
+//				bestAiPrediction.setBestMove(true);
 				if (bestNodeRound != null) {
 					bestNodeRound.setLastPlayedProbability(0.0);
 				}

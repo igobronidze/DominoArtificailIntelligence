@@ -81,6 +81,27 @@ public class SystemParameterDAOImpl implements SystemParameterDAO {
     }
 
     @Override
+    public void editSystemParameter(String key, String value) throws DAIException {
+        try {
+            logger.info("Start editSystemParameter method");
+            String sql = String.format("UPDATE %s SET %s = ? WHERE %s = ?", SYSTEM_PARAMETER_TABLE_NAME, VALUE_COLUMN_NAME, KEY_COLUMN_NAME);
+            pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
+            pstmt.setString(1, value);
+            pstmt.setString(2, key);
+            int count = pstmt.executeUpdate();
+            if (count < 1) {
+                logger.warn("System parameter with key [" + key + "] don't exists");
+                throw new DAIException("keyNotExist");
+            }
+            logger.info("Edited system parameter with key [" + key + "]");
+        } catch (SQLException ex) {
+            logger.error("Error occurred while edit system parameter with key [" + key + "]", ex);
+        } finally {
+            ConnectionUtil.closeConnection();
+        }
+    }
+
+    @Override
     public void deleteSystemParameter(String key) throws DAIException {
         try {
             logger.info("Started deleteSystemParameter with key [" + key + "]");

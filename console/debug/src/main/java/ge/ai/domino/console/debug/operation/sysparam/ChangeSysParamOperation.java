@@ -1,4 +1,4 @@
-package ge.ai.domino.console.debug.operation.game;
+package ge.ai.domino.console.debug.operation.sysparam;
 
 import ge.ai.domino.console.debug.operation.GameDebuggerOperation;
 import ge.ai.domino.domain.exception.DAIException;

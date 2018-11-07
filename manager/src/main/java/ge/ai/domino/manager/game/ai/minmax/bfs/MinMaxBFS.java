@@ -124,6 +124,8 @@ public class MinMaxBFS extends MinMax {
     @Override
     public AiPredictionsWrapper minMaxForNodeRound(NodeRound nodeRound) throws DAIException {
         logger.info("Executing MinMaxBFS minMaxForNodeRound method gameId[" +  nodeRound.getRound().getGameInfo().getGameId() + "]");
+        nodeRound.setTreeHeight(1);
+        addInQueue(nodeRound);
 
         if (nodeRound.getRound().getGameInfo().isFinished() || isNewRound(nodeRound.getRound())) {
             logger.info("Round is finished");
@@ -132,11 +134,6 @@ public class MinMaxBFS extends MinMax {
 
         long ms = System.currentTimeMillis();
         long inlineMs = System.currentTimeMillis();
-        if (nodeRound.getRound().getTableInfo().isMyMove()) {
-            addMyPlaysForNodeRound(nodeRound, true);
-        } else {
-            addOpponentPlaysForNodeRound(nodeRound);
-        }
 
         while (!nodeRoundsQueue.isEmpty()) {
             NodeRound nr = nodeRoundsQueue.remove();
@@ -152,54 +149,27 @@ public class MinMaxBFS extends MinMax {
         double tookMs = System.currentTimeMillis() - ms;
         logger.info("MinMaxBFS took " + tookMs + " ms, iteration " + iteration + ", average " + (tookMs / iteration));
 
-        return getAiPredictionsWrapper(nodeRound);
+        return getAiPredictionsWrapper();
     }
 
-    @SuppressWarnings("Duplicates")
-    protected AiPredictionsWrapper getAiPredictionsWrapper(NodeRound nodeRound) {
-        AiPrediction bestAiPrediction = null;
-        NodeRound bestNodeRound = null;
+    AiPredictionsWrapper getAiPredictionsWrapper() {
         List<AiPrediction> aiPredictions = new ArrayList<>();
 
-        for (NodeRound nr : nodeRoundsByHeight.get(1)) {
+        for (NodeRound nr : nodeRoundsByHeight.get(2)) {
             Move move = TileAndMoveHelper.getMove(nr.getLastPlayedMove());
             AiPrediction aiPrediction = new AiPrediction();
             aiPrediction.setMove(move);
             aiPrediction.setHeuristicValue(nr.getHeuristic());
             aiPrediction.setRealHeuristic(roundHeuristic.getHeuristic(nr.getRound(), false));
+            aiPrediction.setMoveProbability(nr.getLastPlayedProbability());
             aiPredictions.add(aiPrediction);
-
-            boolean better = false;
-            if (nodeRound.getRound().getTableInfo().isMyMove()) {
-                if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() < aiPrediction.getHeuristicValue()) {
-                    better = true;
-                }
-            } else {
-                if (bestAiPrediction == null || bestAiPrediction.getHeuristicValue() > aiPrediction.getHeuristicValue()) {
-                    better = true;
-                }
-            }
-            if (better) {
-                if (bestAiPrediction != null) {
-                    bestAiPrediction.setBestMove(false);
-                }
-                bestAiPrediction = aiPrediction;
-                bestAiPrediction.setBestMove(true);
-                if (bestNodeRound != null) {
-                    bestNodeRound.setLastPlayedProbability(0.0);
-                }
-                bestNodeRound = nr;
-                bestNodeRound.setLastPlayedProbability(1.0);
-            }
-            logger.info("PlayedMove: " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + nr.getHeuristic());
         }
 
-        nodeRound.setHeuristic(bestAiPrediction.getHeuristicValue());
-        if (bestAiPrediction.getMove().getDirection() != null) {
-            logger.info("AIPrediction is [" + bestAiPrediction.getMove().getLeft() + "-" + bestAiPrediction.getMove().getRight() + " " +
-                    bestAiPrediction.getMove().getDirection().name() + "], " + "heuristic: " + bestAiPrediction.getHeuristicValue());
-        } else {
-            logger.info("AIPrediction is add tile, heuristic: " + bestAiPrediction.getHeuristicValue());
+        Collections.sort(aiPredictions, (o1, o2) -> Double.compare(o2.getHeuristicValue(), o1.getHeuristicValue()));
+        logger.info("AIPredictions: ");
+        for (AiPrediction aiPrediction : aiPredictions) {
+            Move move = aiPrediction.getMove();
+            logger.info("PlayedMove: " + move.getLeft() + ":" + move.getRight() + " " + move.getDirection() + ", heuristic: " + aiPrediction.getHeuristicValue());
         }
 
         AiPredictionsWrapper aiPredictionsWrapper = new AiPredictionsWrapper();
@@ -223,7 +193,7 @@ public class MinMaxBFS extends MinMax {
         }
     }
 
-    protected void addOpponentPlaysForNodeRound(NodeRound nodeRound) throws DAIException {
+    void addOpponentPlaysForNodeRound(NodeRound nodeRound) throws DAIException {
         Round round = nodeRound.getRound();
         if (round.getGameInfo().isFinished() || isNewRound(round)) {
             return;
@@ -259,7 +229,7 @@ public class MinMaxBFS extends MinMax {
         }
     }
 
-    protected void addMyPlaysForNodeRound(NodeRound nodeRound, boolean addBazaarPlay) throws DAIException {
+    void addMyPlaysForNodeRound(NodeRound nodeRound, boolean addBazaarPlay) throws DAIException {
         Round round = nodeRound.getRound();
         if (round.getGameInfo().isFinished() || isNewRound(round)) {
             return;
@@ -301,7 +271,7 @@ public class MinMaxBFS extends MinMax {
         }
     }
 
-    protected void applyBottomUpMinMax() {
+    void applyBottomUpMinMax() {
         for (Map.Entry<Integer, List<NodeRound>> entry : nodeRoundsByHeight.entrySet()) {
             long ms = System.currentTimeMillis();
             List<NodeRound> nodeRounds = entry.getValue();
@@ -329,7 +299,6 @@ public class MinMaxBFS extends MinMax {
                                 }
                                 nodeRound.setHeuristic(bestNodeRound.getHeuristic());
                             }
-
                         } else {
                             Collections.sort(nodeRound.getChildren(), (NodeRound n1, NodeRound n2) -> (n1.getHeuristic().compareTo(n2.getHeuristic())));
                             double heuristic = 0.0;

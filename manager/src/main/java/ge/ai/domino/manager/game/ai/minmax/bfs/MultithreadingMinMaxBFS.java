@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,13 +44,13 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 
 		NodeRound nodeRound = new NodeRound();
 		nodeRound.setRound(round);
-		createNodeRoundWithHeightTwo(nodeRound);
+		createNodeRoundWithHeightThree(nodeRound);
 
 		invokeRemoteMinMaxes();
 		applyBottomUpMinMax();
 
 		logger.info("MinMaxBFS took " + (System.currentTimeMillis() - ms) + " ms");
-		AiPredictionsWrapper aiPredictionsWrapper = getAiPredictionsWrapper(nodeRound);
+		AiPredictionsWrapper aiPredictionsWrapper = getAiPredictionsWrapper();
 		if (new MinMaxPredictor().usePredictor()) {
 			CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
 		}
@@ -61,23 +62,24 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 		super.minMaxForCachedNodeRound(round);
 	}
 
-	private NodeRound createNodeRoundWithHeightTwo(NodeRound nodeRound) throws DAIException {
+	private NodeRound createNodeRoundWithHeightThree(NodeRound nodeRound) throws DAIException {
 		addMyPlaysForNodeRound(nodeRound, false);
 
-		nodeRoundsByHeight.put(1, new ArrayList<>());
+		nodeRoundsByHeight.put(1, Collections.singletonList(nodeRound));
+		nodeRoundsByHeight.put(2, new ArrayList<>());
 
 		for (NodeRound child : nodeRound.getChildren()) {
-			nodeRoundsByHeight.get(1).add(child);
+			nodeRoundsByHeight.get(2).add(child);
 
 			addOpponentPlaysForNodeRound(child);
 			for (NodeRound grandchild : child.getChildren()) {
-				nodeRoundsByHeight.putIfAbsent(2, new ArrayList<>());
-				nodeRoundsByHeight.get(2).add(grandchild);
+				nodeRoundsByHeight.putIfAbsent(3, new ArrayList<>());
+				nodeRoundsByHeight.get(3).add(grandchild);
 				roundsForProcess.put(grandchild.getId(), grandchild);
 			}
 			for (NodeRound grandchild : child.getBazaarNodeRounds()) {
-				nodeRoundsByHeight.putIfAbsent(2, new ArrayList<>());
-				nodeRoundsByHeight.get(2).add(grandchild);
+				nodeRoundsByHeight.putIfAbsent(3, new ArrayList<>());
+				nodeRoundsByHeight.get(3).add(grandchild);
 				roundsForProcess.put(grandchild.getId(), grandchild);
 			}
 		}
@@ -139,13 +141,11 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 	}
 
 	private double getHeuristicFromPrediction(AiPredictionsWrapper aiPredictionsWrapper) {
-		double best = Integer.MIN_VALUE;
+		double heuristic = 0.0;
 		for (AiPrediction aiPrediction : aiPredictionsWrapper.getAiPredictions()) {
-			if (aiPrediction.getHeuristicValue() > best) {
-				best = aiPrediction.getHeuristicValue();
-			}
+			heuristic += aiPrediction.getHeuristicValue() * aiPrediction.getMoveProbability();
 		}
-		return best;
+		return heuristic;
 	}
 
 	private class ClientInfo {

@@ -14,6 +14,8 @@ public class AiPrediction implements Serializable {
 
     private double realHeuristic;
 
+    private double moveProbability;
+
     public Move getMove() {
         return move;
     }
@@ -46,12 +48,21 @@ public class AiPrediction implements Serializable {
         this.realHeuristic = realHeuristic;
     }
 
+    public double getMoveProbability() {
+        return moveProbability;
+    }
+
+    public void setMoveProbability(double moveProbability) {
+        this.moveProbability = moveProbability;
+    }
+
     @Override
     public String toString() {
         return "AiPrediction{" +
                 "move=" + move +
                 ", heuristicValue=" + heuristicValue +
                 ", realHeuristic=" + realHeuristic +
+                ", moveProbability=" + moveProbability +
                 ", bestMove=" + bestMove +
                 '}';
     }

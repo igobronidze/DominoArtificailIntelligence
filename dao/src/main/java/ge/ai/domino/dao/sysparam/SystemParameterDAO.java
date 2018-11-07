@@ -12,6 +12,8 @@ public interface SystemParameterDAO {
 
     void editSystemParameter(SystemParameter systemParameter) throws DAIException;
 
+    void editSystemParameter(String key, String value) throws DAIException;
+
     void deleteSystemParameter(String key) throws DAIException;
 
     List<SystemParameter> getSystemParameters(String key, SystemParameterType type);

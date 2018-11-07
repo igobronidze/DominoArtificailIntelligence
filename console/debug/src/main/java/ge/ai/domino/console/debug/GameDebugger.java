@@ -1,7 +1,7 @@
 package ge.ai.domino.console.debug;
 
 import ge.ai.domino.console.debug.operation.game.CachGameOperation;
-import ge.ai.domino.console.debug.operation.game.ChangeSysParamOperation;
+import ge.ai.domino.console.debug.operation.sysparam.ChangeSysParamOperation;
 import ge.ai.domino.console.debug.operation.game.ParseRoundOperation;
 import ge.ai.domino.console.debug.operation.game.ReplayGameOperation;
 import ge.ai.domino.console.debug.operation.game.ReplayGameWithDifferenceModeOperation;
@@ -15,6 +15,7 @@ import ge.ai.domino.console.debug.operation.move.AddTileForMeOperation;
 import ge.ai.domino.console.debug.operation.move.AddTileForOpponentOperation;
 import ge.ai.domino.console.debug.operation.move.PlayForMeOperation;
 import ge.ai.domino.console.debug.operation.move.PlayForOpponentOperation;
+import ge.ai.domino.console.debug.operation.sysparam.SysParamsUpdateOperation;
 import ge.ai.domino.domain.exception.DAIException;
 import org.apache.log4j.Logger;
 
@@ -44,6 +45,7 @@ public class GameDebugger {
             logger.info("13. Send game to multithreading client");
             logger.info("14. Heuristic Optimization");
             logger.info("15. Replay games with difference modes");
+            logger.info("16. Update sys params from properties file");
             String line = scanner.nextLine();
 
             try {
@@ -108,6 +110,10 @@ public class GameDebugger {
                     }
                     case "15": {
                         new ReplayGameWithDifferenceModeOperation().process(scanner);
+                        break;
+                    }
+                    case "16": {
+                        new SysParamsUpdateOperation().process(scanner);
                         break;
                     }
                 }

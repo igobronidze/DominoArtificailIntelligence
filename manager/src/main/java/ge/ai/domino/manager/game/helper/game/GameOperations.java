@@ -8,9 +8,11 @@ import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.played.PlayedTile;
+import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.helper.filter.OpponentTilesFilter;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
+import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
@@ -34,6 +36,14 @@ public class GameOperations {
 	private static final String FIRST_NOT_TWIN_TILE_DIRECTION_KEY = "firstNotTwinTileDirection";
 
 	private static final String FIRST_NOT_TWIN_TILE_DIRECTION_DEFAULT_VALUE = "left";
+
+	private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
+
+	private static final SysParam analyzeFirstTwinTileRate = new SysParam("analyzeFirstTwinTileRate", "0.1");
+
+	private static final SysParam analyzeFirstNotTwinTileRate = new SysParam("analyzeFirstNotTwinTileRate", "0.1");
+
+	private static final SysParam analyzeFirstNotTwinTileTwinsSubtractionRate = new SysParam("analyzeFirstNotTwinTileTwinsSubtractionRate", "0.05");
 
 	public static int countLeftTiles(Round round, boolean countMine, boolean virtual) {
 		int gameId = round.getGameInfo().getGameId();
@@ -177,6 +187,48 @@ public class GameOperations {
 				entry.setValue(0.0);
 			}
 		}
+		return sum;
+	}
+
+	public static double analyzeFirstOpponentTileAndReturnProbabilitiesSum(Map<Tile, Double> opponentTiles, Tile playedTile) {
+		double sum = 0.0;
+		Set<Integer> usedNumbers = new HashSet<>();
+
+		if (playedTile.getLeft() == playedTile.getRight()) {
+			usedNumbers.add(playedTile.getLeft());
+			OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter()
+					.mustUsedNumbers(usedNumbers);
+			for (Map.Entry<Tile, Double> entry : opponentTiles.entrySet()) {
+				if (opponentTilesFilter.filter(entry)) {
+					double addition = entry.getValue() * (1.0 + systemParameterManager.getDoubleParameterValue(analyzeFirstTwinTileRate));
+					entry.setValue(entry.getValue() + addition);
+					sum -= addition;
+				}
+			}
+		} else {
+			usedNumbers.add(playedTile.getLeft());
+			usedNumbers.add(playedTile.getRight());
+			OpponentTilesFilter opponentTilesFilter = new OpponentTilesFilter()
+					.mustUsedNumbers(usedNumbers);
+			for (Map.Entry<Tile, Double> entry : opponentTiles.entrySet()) {
+				if (opponentTilesFilter.filter(entry)) {
+					double addition = entry.getValue() * (1.0 + systemParameterManager.getDoubleParameterValue(analyzeFirstNotTwinTileRate));
+					entry.setValue(entry.getValue() + addition);
+					sum -= addition;
+				}
+			}
+
+			opponentTilesFilter = new OpponentTilesFilter()
+					.twin(true);
+			for (Map.Entry<Tile, Double> entry : opponentTiles.entrySet()) {
+				if (opponentTilesFilter.filter(entry)) {
+					double subtraction = entry.getValue() * (1.0 + systemParameterManager.getDoubleParameterValue(analyzeFirstNotTwinTileTwinsSubtractionRate));
+					entry.setValue(entry.getValue() - subtraction);
+					sum += subtraction;
+				}
+			}
+		}
+
 		return sum;
 	}
 

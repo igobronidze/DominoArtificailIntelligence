@@ -26,7 +26,6 @@ public class PlayForMeProcessor extends MoveProcessor {
 		logger.info("Start playForMe method for tile [" + move.getLeft() + "-" + move.getRight() + "] direction ["
 				+ move.getDirection().name() + "], gameId[" + gameId + "]");
 
-		// Not played twins case
 		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {
 			double sum = GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (move.getLeft() == move.getRight() ? move.getLeft() : -1));
 			ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);

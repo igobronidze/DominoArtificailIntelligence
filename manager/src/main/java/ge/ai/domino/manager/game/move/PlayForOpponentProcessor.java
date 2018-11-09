@@ -27,14 +27,19 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		logger.info("Start playForOpponent method for tile [" + move.getLeft() + "-" + move.getRight() + "] direction ["
 				+ move.getDirection().name() + "], gameId[" + round.getGameInfo().getGameId() + "]");
 
-		// Not played twins case
 		Map<Tile, Double> opponentTiles = round.getOpponentTiles();
-		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {
-			double sum = GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (move.getLeft() == move.getRight() ? move.getLeft() : -1));
+		Tile tile = new Tile(move.getLeft(), move.getRight());
+
+		if (round.getTableInfo().getLeft() == null) {
+			double sum;
+			if (round.getTableInfo().isFirstRound()) {
+				sum = GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (move.getLeft() == move.getRight() ? move.getLeft() : -1));
+			} else {
+				sum = GameOperations.analyzeFirstOpponentTileAndReturnProbabilitiesSum(round.getOpponentTiles(), tile);
+			}
 			ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
 		}
 
-		Tile tile = new Tile(move.getLeft(), move.getRight());
 		double prob = opponentTiles.get(tile);
 		opponentTiles.remove(tile);
 

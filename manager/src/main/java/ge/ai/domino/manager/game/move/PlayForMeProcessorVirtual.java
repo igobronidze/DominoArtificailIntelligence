@@ -16,12 +16,6 @@ public class PlayForMeProcessorVirtual extends MoveProcessor {
 			round.getTableInfo().getRoundBlockingInfo().setLastNotTwinPlayedTileMy(true);
 		}
 
-		// Not played twins case
-		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {
-			double sum = GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (move.getLeft() == move.getRight() ? move.getLeft() : -1));
-			ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
-		}
-
 		// Play tile
 		Tile tmpTile = new Tile(move.getLeft(), move.getRight());
 		round.getMyTiles().remove(tmpTile);

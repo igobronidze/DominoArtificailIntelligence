@@ -61,6 +61,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
     private static final String STOPPED = "stopped";
 
+    private static final String LEVEL_COLUMN_NAME = "level";
+
     private final ChannelDAO channelDAO = new ChannelDAOImpl();
 
     private PreparedStatement pstmt;
@@ -69,14 +71,15 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     public int addPlayedGame(PlayedGame game) {
         try {
             logger.info("Start addGame method");
-            String sql = String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?,?,?,?,?);",
-                    PLAYED_GAME_TABLE_NAME, VERSION_COLUMN_NAME, POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, RESULT_COLUMN_NAME);
+            String sql = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?);",
+                    PLAYED_GAME_TABLE_NAME, VERSION_COLUMN_NAME, POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, RESULT_COLUMN_NAME, LEVEL_COLUMN_NAME);
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, game.getVersion());
             pstmt.setInt(2, game.getPointForWin());
             pstmt.setString(3, game.getOpponentName());
             pstmt.setInt(4, game.getChannel().getId());
             pstmt.setString(5, game.getResult().name());
+            pstmt.setInt(6, game.getLevel());
             pstmt.executeUpdate();
 
             String maxId = "max_id";
@@ -120,15 +123,15 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     }
 
     @Override
-    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId) {
+    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId, String level) {
         List<Channel> channels = channelDAO.getChannels();
         Map<Integer, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getId, channel -> channel));
 
         List<PlayedGame> games = new ArrayList<>();
         try {
-            StringBuilder sql = new StringBuilder(String.format("SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s, %s FROM %s WHERE 1 = 1 ",
+            StringBuilder sql = new StringBuilder(String.format("SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s FROM %s WHERE 1 = 1 ",
                     ID_COLUMN_NAME, VERSION_COLUMN_NAME, RESULT_COLUMN_NAME, DATE_COLUMN_NAME, TIME_COLUMN_NAME, MY_POINT_COLUMN_NAME, OPPONENT_POINT_COLUMN_NAME,
-                    POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
+                    POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, LEVEL_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
             if (!StringUtil.isEmpty(version)) {
                 QueryUtil.addFilter(sql, VERSION_COLUMN_NAME, version, FilterCondition.EQUAL, true);
             }
@@ -140,6 +143,14 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             }
             if (channelId != null) {
                 QueryUtil.addFilter(sql, CHANNEL_ID_COLUMN_NAME, String.valueOf(channelId), FilterCondition.EQUAL, false);
+            }
+            if (level != null) {
+                try {
+                    int levelIntValue = Integer.parseInt(level);
+                    QueryUtil.addFilter(sql, LEVEL_COLUMN_NAME, String.valueOf(levelIntValue), FilterCondition.EQUAL, false);
+                } catch (NumberFormatException ex) {
+                    logger.warn("Can't parse level[" + level + "]");
+                }
             }
             sql.append(" ORDER BY " + ID_COLUMN_NAME + " DESC");
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql.toString());
@@ -160,6 +171,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 game.setPointForWin(rs.getInt(POINT_FOR_WIN_COLUMN_NAME));
                 game.setOpponentName(rs.getString(OPPONENT_NAME_COLUMN_NAME));
                 game.setChannel(channelsMap.get(rs.getInt(CHANNEL_ID_COLUMN_NAME)));
+                game.setLevel(rs.getInt(LEVEL_COLUMN_NAME));
                 games.add(game);
             }
         } catch (SQLException ex) {
@@ -209,7 +221,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin) {
+    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
         List<Channel> channels = channelDAO.getChannels();
         Map<Integer, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getId, channel -> channel));
 
@@ -231,6 +243,10 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             }
             if (groupedByPointForWin) {
                 QueryUtil.addParameter(sb, POINT_FOR_WIN_COLUMN_NAME, !first);
+                first = false;
+            }
+            if (groupByLevel) {
+                QueryUtil.addParameter(sb, LEVEL_COLUMN_NAME, !first);
                 first = false;
             }
             if (!first) {
@@ -267,6 +283,13 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                     sb.append("GROUP BY ").append(POINT_FOR_WIN_COLUMN_NAME);
                 }
             }
+            if (groupByLevel) {
+                if (!first) {
+                    sb.append(", ").append(LEVEL_COLUMN_NAME);
+                } else {
+                    sb.append("GROUP BY ").append(LEVEL_COLUMN_NAME);
+                }
+            }
             if (groupByVersion) {
                 sb.append(" ORDER BY " + VERSION_COLUMN_NAME);
             } else if (groupedByPointForWin) {
@@ -291,6 +314,9 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 }
                 if (groupedByPointForWin) {
                     game.setPointForWin(rs.getInt(POINT_FOR_WIN_COLUMN_NAME));
+                }
+                if (groupByLevel) {
+                    game.setLevel(rs.getInt(LEVEL_COLUMN_NAME));
                 }
                 game.setWin(rs.getInt(WIN_ME));
                 game.setLose(rs.getInt(WIN_OPPONENT));

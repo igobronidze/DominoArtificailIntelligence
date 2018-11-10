@@ -24,6 +24,8 @@ import java.util.List;
 
 public class GroupedPlayedGamePane extends BorderPane {
 
+    private static final int COUMN_COUNT = 9;
+
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
     private TableView<GroupedPlayedGameProperty> tableView;
@@ -37,6 +39,8 @@ public class GroupedPlayedGamePane extends BorderPane {
     private TCHCheckBox groupByChannelCheckBox;
 
     private TCHCheckBox groupByPointForWinCheckBox;
+
+    private TCHCheckBox groupByLevelCheckBox;
 
     public GroupedPlayedGamePane(DoubleBinding doubleBinding) {
         this.doubleBinding = doubleBinding;
@@ -55,6 +59,7 @@ public class GroupedPlayedGamePane extends BorderPane {
         groupByOpponentNameCheckBox = new TCHCheckBox(Messages.get("groupByOpponentName"));
         groupByChannelCheckBox = new TCHCheckBox(Messages.get("groupByChannel"));
         groupByPointForWinCheckBox = new TCHCheckBox(Messages.get("groupByPointForWin"));
+        groupByLevelCheckBox = new TCHCheckBox(Messages.get("groupByLevel"));
         TCHButton searchButton = new TCHButton();
         searchButton.setGraphic(new ImageView(ImageFactory.getImage("search.png")));
         searchButton.setOnAction(e -> loadPlayedGames());
@@ -62,7 +67,7 @@ public class GroupedPlayedGamePane extends BorderPane {
         flowPane.setVgap(10);
         flowPane.setHgap(10);
         flowPane.setPadding(new Insets(15));
-        flowPane.getChildren().addAll(groupByVersionCheckBox, groupByOpponentNameCheckBox, groupByChannelCheckBox, groupByPointForWinCheckBox, searchButton);
+        flowPane.getChildren().addAll(groupByVersionCheckBox, groupByOpponentNameCheckBox, groupByChannelCheckBox, groupByPointForWinCheckBox, groupByLevelCheckBox, searchButton);
         this.setTop(flowPane);
     }
 
@@ -72,35 +77,38 @@ public class GroupedPlayedGamePane extends BorderPane {
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
         TableColumn<GroupedPlayedGameProperty, Boolean> versionColumn = new TableColumn<>(Messages.get("version"));
         versionColumn.setCellValueFactory(new PropertyValueFactory<>("version"));
-        versionColumn.prefWidthProperty().bind(doubleBinding.divide(8));
+        versionColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> pointForWinColumn = new TableColumn<>(Messages.get("pointForWin"));
         pointForWinColumn.setCellValueFactory(new PropertyValueFactory<>("pointForWin"));
-        pointForWinColumn.prefWidthProperty().bind(doubleBinding.divide(8));
+        pointForWinColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> opponentNameColumn = new TableColumn<>(Messages.get("opponentName"));
         opponentNameColumn.setCellValueFactory(new PropertyValueFactory<>("opponentName"));
-        opponentNameColumn.prefWidthProperty().bind(doubleBinding.divide(8));
+        opponentNameColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> channelColumn = new TableColumn<>(Messages.get("channel"));
         channelColumn.setCellValueFactory(new PropertyValueFactory<>("channel"));
-        channelColumn.prefWidthProperty().bind(doubleBinding.divide(8));
+        channelColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
+        TableColumn<GroupedPlayedGameProperty, Boolean> levelColumn = new TableColumn<>(Messages.get("level"));
+        levelColumn.setCellValueFactory(new PropertyValueFactory<>("level"));
+        levelColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentColumn = new TableColumn<>(Messages.get("winPercent"));
         winPercentColumn.setCellValueFactory(new PropertyValueFactory<>("winPercent"));
-        winPercentColumn.prefWidthProperty().bind(doubleBinding.divide(8));
+        winPercentColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> losePercentColumn = new TableColumn<>(Messages.get("losePercent"));
         losePercentColumn.setCellValueFactory(new PropertyValueFactory<>("losePercent"));
-        losePercentColumn.prefWidthProperty().bind(doubleBinding.divide(8));
+        losePercentColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> stoppedColumn = new TableColumn<>(Messages.get("stoppedPercent"));
         stoppedColumn.setCellValueFactory(new PropertyValueFactory<>("stoppedPercent"));
-        stoppedColumn.prefWidthProperty().bind(doubleBinding.divide(8));
+        stoppedColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentForFinishedColumn = new TableColumn<>(Messages.get("winPercentForFinished"));
         winPercentForFinishedColumn.setCellValueFactory(new PropertyValueFactory<>("winPercentForFinished"));
         winPercentForFinishedColumn.prefWidthProperty().bind(doubleBinding.divide(8));
-        tableView.getColumns().addAll(versionColumn, pointForWinColumn, opponentNameColumn, channelColumn, winPercentColumn, losePercentColumn, stoppedColumn, winPercentForFinishedColumn);
+        tableView.getColumns().addAll(versionColumn, pointForWinColumn, opponentNameColumn, channelColumn, levelColumn, winPercentColumn, losePercentColumn, stoppedColumn, winPercentForFinishedColumn);
         this.setCenter(tableView);
     }
 
     private void loadPlayedGames() {
         List<GroupedPlayedGame> games = playedGameService.getGroupedPlayedGames(groupByVersionCheckBox.isSelected(), groupByOpponentNameCheckBox.isSelected(),
-                groupByChannelCheckBox.isSelected(), groupByPointForWinCheckBox.isSelected());
+                groupByChannelCheckBox.isSelected(), groupByPointForWinCheckBox.isSelected(), groupByLevelCheckBox.isSelected());
         List<GroupedPlayedGameProperty> groupedPlayedGameProperties = new ArrayList<>();
         for (GroupedPlayedGame game : games) {
             groupedPlayedGameProperties.add(new GroupedPlayedGameProperty(game));

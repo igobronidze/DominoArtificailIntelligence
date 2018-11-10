@@ -26,6 +26,8 @@ public class PlayedGame {
 
     private GameHistory gameHistory;
 
+    private int level;
+
     public int getId() {
         return id;
     }
@@ -104,5 +106,13 @@ public class PlayedGame {
 
     public void setGameHistory(GameHistory gameHistory) {
         this.gameHistory = gameHistory;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

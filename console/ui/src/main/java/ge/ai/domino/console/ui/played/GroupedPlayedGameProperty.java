@@ -26,6 +26,8 @@ public class GroupedPlayedGameProperty {
 
     private SimpleStringProperty winPercentForFinished;
 
+    private SimpleStringProperty level;
+
     GroupedPlayedGameProperty(GroupedPlayedGame game) {
         version = new SimpleStringProperty(game.getVersion());
         pointForWin = new SimpleStringProperty(game.getPointForWin() == null ? "" : "" + game.getPointForWin());
@@ -36,6 +38,7 @@ public class GroupedPlayedGameProperty {
         losePercent = new SimpleStringProperty("" + game.getLose() + " (" + formatter.format((double)game.getLose() / sum * 100) + "%)");
         stoppedPercent = new SimpleStringProperty("" + game.getStopped() + " (" + formatter.format((double)game.getStopped() / sum * 100) + "%)");
         winPercentForFinished = new SimpleStringProperty("" + formatter.format((double)game.getWin() / (game.getWin() + game.getLose()) * 100) + "%");
+        level = new SimpleStringProperty(game.getLevel() == null ? "" : "" + game.getLevel());
     }
 
     public String getVersion() {
@@ -100,5 +103,13 @@ public class GroupedPlayedGameProperty {
 
     public void setWinPercentForFinished(String winPercentForFinished) {
         this.winPercentForFinished.set(winPercentForFinished);
+    }
+
+    public String getLevel() {
+        return level.get();
+    }
+
+    public void setLevel(String level) {
+        this.winPercentForFinished.set(level);
     }
 }

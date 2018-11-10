@@ -1,5 +1,10 @@
 package ge.ai.domino.manager.played;
 
+import ge.ai.domino.caching.game.CachedGames;
+import ge.ai.domino.dao.opponentplay.OpponentPlayDAO;
+import ge.ai.domino.dao.opponentplay.OpponentPlayDAOImpl;
+import ge.ai.domino.dao.played.PlayedGameDAO;
+import ge.ai.domino.dao.played.PlayedGameDAOImpl;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
@@ -10,11 +15,6 @@ import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.GroupedPlayedGame;
 import ge.ai.domino.domain.played.PlayedGame;
-import ge.ai.domino.caching.game.CachedGames;
-import ge.ai.domino.dao.opponentplay.OpponentPlayDAO;
-import ge.ai.domino.dao.opponentplay.OpponentPlayDAOImpl;
-import ge.ai.domino.dao.played.PlayedGameDAO;
-import ge.ai.domino.dao.played.PlayedGameDAOImpl;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
 
@@ -33,13 +33,14 @@ public class PlayedGameManager {
         playedGame.setOpponentName(gameProperties.getOpponentName());
         playedGame.setPointForWin(gameProperties.getPointsForWin());
         playedGame.setChannel(gameProperties.getChannel());
+        playedGame.setLevel(gameProperties.getLevel());
         playedGame.setVersion(ProjectVersionUtil.getVersion());
         playedGame.setResult(GameResult.RUNS);
         return playedGameDAO.addPlayedGame(playedGame);
     }
 
-    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId) {
-        return playedGameDAO.getPlayedGames(version, result, opponentName, channelId);
+    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId, String level) {
+        return playedGameDAO.getPlayedGames(version, result, opponentName, channelId, level);
     }
 
     public GameHistory getGameHistory(int gameId) throws DAIException {
@@ -50,8 +51,8 @@ public class PlayedGameManager {
         return playedGameDAO.getGameProperties(gameId);
     }
 
-    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin) {
-        return playedGameDAO.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByChannel, groupedByPointForWin);
+    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
+        return playedGameDAO.getGroupedPlayedGames(groupByVersion, groupByOpponentName, groupByChannel, groupedByPointForWin, groupByLevel);
     }
 
     public void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays, boolean specifyWinner) {

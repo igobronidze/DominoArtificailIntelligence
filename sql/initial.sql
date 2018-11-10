@@ -22,6 +22,7 @@ CREATE TABLE played_game (
 );
 ALTER TABLE played_game ADD COLUMN channel_id INT NOT NULL DEFAULT 0;
 ALTER TABLE played_game DROP COLUMN website;
+ALTER TABLE played_game ADD COLUMN level INT NOT NULL DEFAULT 0;
 
 -- Opponent Plays
 CREATE TABLE opponent_play (

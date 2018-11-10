@@ -7,6 +7,7 @@ import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
 import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
 import ge.ai.domino.console.ui.tchcomponents.TCHFieldLabel;
+import ge.ai.domino.console.ui.tchcomponents.TCHNumberTextField;
 import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
@@ -25,8 +26,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ public class GamePropertiesPane extends VBox {
     private static final ChannelService channelService = new ChannelServiceImpl();
 
     private static final SysParam possiblePoints = new SysParam("possiblePoints", "75,155,175,255,355");
+
+    private static final SysParam levelDefaultValue = new SysParam("levelDefaultValue", "5");
 
     private final ControlPanel controlPanel;
 
@@ -70,6 +73,9 @@ public class GamePropertiesPane extends VBox {
         TCHComboBox pointComboBox = new TCHComboBox(objPoints);
         TCHFieldLabel pointFieldLabel = new TCHFieldLabel(Messages.get("point"), pointComboBox);
         TCHButton startButton = new TCHButton(Messages.get("start"));
+        TCHNumberTextField levelField = new TCHNumberTextField(TCHComponentSize.MEDIUM);
+        levelField.setNumber(new BigDecimal(systemParameterService.getIntegerParameterValue(levelDefaultValue)));
+        TCHFieldLabel levelFieldLabel = new TCHFieldLabel(Messages.get("level"), levelField);
         startButton.setOnAction(e -> {
             if (StringUtil.isEmpty((String) channelsCombo.getValue()) || StringUtil.isEmpty(nameField.getText())) {
                 WarnDialog.showWarnDialog(Messages.get("pleaseFillAllField"));
@@ -78,6 +84,7 @@ public class GamePropertiesPane extends VBox {
                 gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
                 gameProperties.setChannel(channelsMap.get(channelsCombo.getValue()));
                 gameProperties.setOpponentName(nameField.getText());
+                gameProperties.setLevel(levelField.getNumber().intValue());
                 ServiceExecutor.execute(() -> {
                     AppController.round =  GAME_SERVICE.startGame(gameProperties);
                     gamePane = new GamePane(controlPanel, gameProperties) {
@@ -90,6 +97,6 @@ public class GamePropertiesPane extends VBox {
                 });
             }
         });
-        this.getChildren().addAll(nameFieldLabel, channelFieldLabel, pointFieldLabel, startButton);
+        this.getChildren().addAll(nameFieldLabel, channelFieldLabel, pointFieldLabel, levelFieldLabel, startButton);
     }
 }

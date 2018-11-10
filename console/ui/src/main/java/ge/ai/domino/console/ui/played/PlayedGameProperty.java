@@ -29,6 +29,8 @@ public class PlayedGameProperty {
 
     private SimpleStringProperty channel;
 
+    private SimpleIntegerProperty level;
+
     public PlayedGameProperty(PlayedGame game) {
         id = new SimpleIntegerProperty(game.getId());
         version = new SimpleStringProperty(game.getVersion());
@@ -43,6 +45,7 @@ public class PlayedGameProperty {
         pointForWin = new SimpleIntegerProperty(game.getPointForWin());
         opponentName = new SimpleStringProperty(game.getOpponentName());
         channel = new SimpleStringProperty(game.getChannel().getName());
+        level = new SimpleIntegerProperty(game.getLevel());
     }
 
     public int getId() {
@@ -115,5 +118,13 @@ public class PlayedGameProperty {
 
     public void setChannel(String channel) {
         this.channel.set(channel);
+    }
+
+    public int getLevel() {
+        return level.get();
+    }
+
+    public void setLevel(int level) {
+        this.level.set(level);
     }
 }

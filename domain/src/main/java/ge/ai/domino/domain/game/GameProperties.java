@@ -12,6 +12,8 @@ public class GameProperties implements Serializable {
 
     private int pointsForWin;
 
+    private int level;
+
     public String getOpponentName() {
         return opponentName;
     }
@@ -34,5 +36,13 @@ public class GameProperties implements Serializable {
 
     public void setPointsForWin(int pointsForWin) {
         this.pointsForWin = pointsForWin;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

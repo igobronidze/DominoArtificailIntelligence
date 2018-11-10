@@ -12,6 +12,8 @@ public class GroupedPlayedGame {
 
     private Integer pointForWin;
 
+    private Integer level;
+
     private int win;
 
     private int lose;
@@ -48,6 +50,14 @@ public class GroupedPlayedGame {
 
     public void setPointForWin(Integer pointForWin) {
         this.pointForWin = pointForWin;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     public int getWin() {

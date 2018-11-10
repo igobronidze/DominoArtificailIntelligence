@@ -82,6 +82,7 @@ public class MinMaxBFS extends MinMax {
             aiPrediction.setMove(moves.get(0));
             aiPrediction.setHeuristicValue(Integer.MIN_VALUE);
             aiPrediction.setRealHeuristic(Integer.MIN_VALUE);
+            aiPrediction.setMoveProbability(1.0);
             aiPredictionsWrapper.getAiPredictions().add(aiPrediction);
             return aiPredictionsWrapper;
         } else {

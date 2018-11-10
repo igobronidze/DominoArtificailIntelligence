@@ -492,7 +492,7 @@ public abstract class GamePane extends BorderPane {
                 for (AiPrediction aiPrediction : tilePredictions) {
                     String heuristic = aiPrediction.getHeuristicValue() == Integer.MIN_VALUE ? "NAN" : formatter.format(aiPrediction.getHeuristicValue());
                     Label label = new Label(aiPrediction.getMove().getDirection().name() + "(" + heuristic + ")");
-                    if (aiPrediction.isBestMove()) {
+                    if (aiPrediction.getMoveProbability() == 1.0) {
                         bestAiPrediction = aiPrediction;
                         label.setStyle("-fx-font-size: 14px; -fx-text-fill: green; -fx-font-weight: bold");
                     }

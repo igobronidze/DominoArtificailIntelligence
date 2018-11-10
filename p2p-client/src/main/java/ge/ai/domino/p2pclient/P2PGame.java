@@ -155,7 +155,7 @@ public class P2PGame {
     private void playBestMove() throws DAIException, IOException {
         Move bestMove = null;
         for (AiPrediction aiPrediction : round.getAiPredictions().getAiPredictions()) {
-            if (aiPrediction.isBestMove()) {
+            if (aiPrediction.getMoveProbability() == 1.0) {
                 bestMove = aiPrediction.getMove();
             }
         }

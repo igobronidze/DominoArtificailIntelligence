@@ -4,6 +4,9 @@ DELETE FROM system_parameter;
 INSERT INTO system_parameter (key, value, type) VALUES('checkOpponentProbabilities', 'true', 'GAME_MANAGER');
 INSERT INTO system_parameter (key, value, type) VALUES('epsilonForProbabilities', '0.0001', 'GAME_MANAGER');
 INSERT INTO system_parameter (key, value, type) VALUES('distributedProbabilityMaxRate', '0.75', 'GAME_MANAGER');
+INSERT INTO system_parameter (key, value, type) VALUES('analyzeFirstTwinTileRate', '0.10', 'GAME_MANAGER');
+INSERT INTO system_parameter (key, value, type) VALUES('analyzeFirstNotTwinTileRate', '0.10', 'GAME_MANAGER');
+INSERT INTO system_parameter (key, value, type) VALUES('analyzeFirstNotTwinTileTwinsSubtractionRate', '0.07', 'GAME_MANAGER');
 
 -------- CONTROL_PANEL
 INSERT INTO system_parameter (key, value, type) VALUES('bestMoveAutoPlay', 'true', 'CONTROL_PANEL');

@@ -39,11 +39,11 @@ public class GameOperations {
 
 	private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
-	private static final SysParam analyzeFirstTwinTileRate = new SysParam("analyzeFirstTwinTileRate", "0.1");
+	private static final SysParam analyzeFirstTwinTileRate = new SysParam("analyzeFirstTwinTileRate", "0.10");
 
-	private static final SysParam analyzeFirstNotTwinTileRate = new SysParam("analyzeFirstNotTwinTileRate", "0.1");
+	private static final SysParam analyzeFirstNotTwinTileRate = new SysParam("analyzeFirstNotTwinTileRate", "0.10");
 
-	private static final SysParam analyzeFirstNotTwinTileTwinsSubtractionRate = new SysParam("analyzeFirstNotTwinTileTwinsSubtractionRate", "0.05");
+	private static final SysParam analyzeFirstNotTwinTileTwinsSubtractionRate = new SysParam("analyzeFirstNotTwinTileTwinsSubtractionRate", "0.07");
 
 	public static int countLeftTiles(Round round, boolean countMine, boolean virtual) {
 		int gameId = round.getGameInfo().getGameId();
@@ -200,7 +200,7 @@ public class GameOperations {
 					.mustUsedNumbers(usedNumbers);
 			for (Map.Entry<Tile, Double> entry : opponentTiles.entrySet()) {
 				if (opponentTilesFilter.filter(entry)) {
-					double addition = entry.getValue() * (1.0 + systemParameterManager.getDoubleParameterValue(analyzeFirstTwinTileRate));
+					double addition = entry.getValue() * systemParameterManager.getDoubleParameterValue(analyzeFirstTwinTileRate);
 					entry.setValue(entry.getValue() + addition);
 					sum -= addition;
 				}
@@ -212,7 +212,7 @@ public class GameOperations {
 					.mustUsedNumbers(usedNumbers);
 			for (Map.Entry<Tile, Double> entry : opponentTiles.entrySet()) {
 				if (opponentTilesFilter.filter(entry)) {
-					double addition = entry.getValue() * (1.0 + systemParameterManager.getDoubleParameterValue(analyzeFirstNotTwinTileRate));
+					double addition = entry.getValue() * systemParameterManager.getDoubleParameterValue(analyzeFirstNotTwinTileRate);
 					entry.setValue(entry.getValue() + addition);
 					sum -= addition;
 				}
@@ -222,7 +222,7 @@ public class GameOperations {
 					.twin(true);
 			for (Map.Entry<Tile, Double> entry : opponentTiles.entrySet()) {
 				if (opponentTilesFilter.filter(entry)) {
-					double subtraction = entry.getValue() * (1.0 + systemParameterManager.getDoubleParameterValue(analyzeFirstNotTwinTileTwinsSubtractionRate));
+					double subtraction = entry.getValue() * systemParameterManager.getDoubleParameterValue(analyzeFirstNotTwinTileTwinsSubtractionRate);
 					entry.setValue(entry.getValue() - subtraction);
 					sum += subtraction;
 				}

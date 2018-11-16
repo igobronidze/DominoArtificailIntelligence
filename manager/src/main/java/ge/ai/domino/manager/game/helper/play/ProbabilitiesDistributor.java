@@ -1,4 +1,4 @@
-package ge.ai.domino.manager.game.helper.game;
+package ge.ai.domino.manager.game.helper.play;
 
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;

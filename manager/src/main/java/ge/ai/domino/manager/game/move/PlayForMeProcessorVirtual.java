@@ -4,8 +4,7 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
-import ge.ai.domino.manager.game.helper.game.GameOperations;
-import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
+import ge.ai.domino.manager.game.helper.play.GameOperations;
 
 public class PlayForMeProcessorVirtual extends MoveProcessor {
 

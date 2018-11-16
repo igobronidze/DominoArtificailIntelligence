@@ -7,8 +7,8 @@ import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictor;
-import ge.ai.domino.manager.game.helper.game.GameOperations;
-import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
+import ge.ai.domino.manager.game.helper.play.GameOperations;
+import ge.ai.domino.manager.game.helper.play.ProbabilitiesDistributor;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 
 import java.util.Map;

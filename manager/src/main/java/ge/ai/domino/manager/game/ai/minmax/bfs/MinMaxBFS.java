@@ -15,9 +15,10 @@ import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.manager.game.helper.filter.OpponentTilesFilter;
-import ge.ai.domino.manager.game.helper.game.GameOperations;
-import ge.ai.domino.manager.game.helper.game.MoveHelper;
-import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
+import ge.ai.domino.manager.game.helper.play.GameOperations;
+import ge.ai.domino.manager.game.helper.play.MoveHelper;
+import ge.ai.domino.manager.game.helper.play.PossibleMovesManager;
+import ge.ai.domino.manager.game.helper.play.ProbabilitiesDistributor;
 import ge.ai.domino.serverutil.CloneUtil;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
@@ -49,7 +50,7 @@ public class MinMaxBFS extends MinMax {
         NodeRound nodeRound = new NodeRound();
         nodeRound.setRound(round);
 
-        List<Move> moves = GameOperations.getPossibleMoves(nodeRound.getRound(), false);
+        List<Move> moves = PossibleMovesManager.getPossibleMoves(nodeRound.getRound(), false);
         if (moves.isEmpty()) {
             logger.info("There are no AIPrediction");
             return null;
@@ -199,7 +200,7 @@ public class MinMaxBFS extends MinMax {
             return;
         }
 
-        List<Move> moves = GameOperations.getPossibleMoves(round, false);
+        List<Move> moves = PossibleMovesManager.getPossibleMoves(round, false);
 
         nodeRound.setOpponentTilesClone(CloneUtil.getClone(round.getOpponentTiles()));
         for (Move move : moves) {
@@ -235,7 +236,7 @@ public class MinMaxBFS extends MinMax {
             return;
         }
 
-        List<Move> moves = GameOperations.getPossibleMoves(round, false);
+        List<Move> moves = PossibleMovesManager.getPossibleMoves(round, false);
         if (!moves.isEmpty()) {
             for (Move move : moves) {
                 Round nextRound = playForMeProcessorVirtual.move(CloneUtil.getClone(round), move);

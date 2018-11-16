@@ -9,7 +9,7 @@ import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
-import ge.ai.domino.manager.game.helper.game.GameOperations;
+import ge.ai.domino.manager.game.helper.play.PossibleMovesManager;
 import ge.ai.domino.manager.multithreadingserver.ClientSocket;
 import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
 import org.apache.log4j.Logger;
@@ -35,7 +35,7 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 	@Override
 	public AiPredictionsWrapper solve(Round round) throws DAIException {
 		long ms = System.currentTimeMillis();
-		List<Move> moves = GameOperations.getPossibleMoves(round, false);
+		List<Move> moves = PossibleMovesManager.getPossibleMoves(round, false);
 		logger.info("Start MultithreadedMinMaxBFS solve method, movesCount[" + moves.size() + "]");
 		if (moves.size() <= 1) {
 			super.setThreadCount(systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate)); // For minmax performance time);

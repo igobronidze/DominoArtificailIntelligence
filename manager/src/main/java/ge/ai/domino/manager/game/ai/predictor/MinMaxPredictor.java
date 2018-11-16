@@ -8,7 +8,7 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
-import ge.ai.domino.manager.game.helper.game.ProbabilitiesDistributor;
+import ge.ai.domino.manager.game.helper.play.ProbabilitiesDistributor;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.serverutil.CloneUtil;

@@ -1,7 +1,7 @@
 package ge.ai.domino.manager.game.ai.minmax;
 
 import ge.ai.domino.domain.move.Move;
-import ge.ai.domino.manager.game.helper.game.MoveHelper;
+import ge.ai.domino.manager.game.helper.play.MoveHelper;
 
 import java.util.HashMap;
 import java.util.Map;

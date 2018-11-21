@@ -51,7 +51,7 @@ public class ReplayGameOperation implements GameDebuggerOperation {
 					if (replayMoveInfo.getNextMove() != null) {
 						Move nextMove = new Move(replayMoveInfo.getNextMove().getLeft(), replayMoveInfo.getNextMove().getRight(), replayMoveInfo.getNextMove().getDirection());
 						if (replayMoveInfo.getBestAiPrediction() != null && !replayMoveInfo.getBestAiPrediction().equals(nextMove)) {
-							logger.info("Next move and best prediction is not same");
+							logger.warn("Next move and best prediction is not same");
 							logger.info("Next move: " + nextMove);
 							logger.info("Best prediction: " + replayMoveInfo.getBestAiPrediction());
 							replayMoveInfo.getAiPredictions().forEach(logger::info);

@@ -79,7 +79,7 @@ public class MixedRoundHeuristic extends RoundHeuristic {
 //		logger.info("pointDiff: " + pointDiff);
 
 		// Tiles Diff
-		double tilesDiff = mixedRoundHeuristicTilesDiffRateValue * (proportionalPointsDiffCoefficient * myTilesCount - inverseProportionalPointsDiffCoefficient * opponentTilesCount);
+		double tilesDiff = mixedRoundHeuristicTilesDiffRateValue * (inverseProportionalPointsDiffCoefficient * opponentTilesCount - proportionalPointsDiffCoefficient * myTilesCount);
 //		logger.info("tilesDiff: " + tilesDiff);
 
 		// Moves Diff

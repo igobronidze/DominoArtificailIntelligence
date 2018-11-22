@@ -7,6 +7,7 @@ import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
+import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
@@ -285,6 +286,7 @@ public class MinMaxBFS extends MinMax {
                                 double heuristic = 0;
                                 for (NodeRound bazaarNodeRound : nodeRound.getBazaarNodeRounds()) {
                                     heuristic += bazaarNodeRound.getHeuristic() * bazaarNodeRound.getLastPlayedProbability();
+                                    nodeRound.addDescendant(bazaarNodeRound.getDescendant());
                                 }
                                 nodeRound.setHeuristic(heuristic);
                             } else {
@@ -297,35 +299,51 @@ public class MinMaxBFS extends MinMax {
                                         bestNodeRound = child;
                                         bestNodeRound.setLastPlayedProbability(1.0);
                                     }
+                                    nodeRound.addDescendant(child.getDescendant());
                                 }
                                 nodeRound.setHeuristic(bestNodeRound.getHeuristic());
                             }
                         } else {
-                            Collections.sort(nodeRound.getChildren(), (NodeRound n1, NodeRound n2) -> (n1.getHeuristic().compareTo(n2.getHeuristic())));
                             double heuristic = 0.0;
                             double remainingProbability = 1.0;
-                            for (NodeRound child : nodeRound.getChildren()) {
-                                if (ComparisonHelper.equal(remainingProbability, 0.0)) {
-                                    break;
+
+                            if (nodeRound.getLastPlayedMove() != null && nodeRound.getLastPlayedMove().getType() == MoveType.ADD_FOR_OPPONENT) {
+                                for (NodeRound child : nodeRound.getChildren()) {
+                                    double prob = nodeRound.getOpponentTilesClone().get(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()));
+                                    heuristic += child.getHeuristic() * prob;
+                                    child.setLastPlayedProbability(prob);
+                                    remainingProbability -= prob;
+                                    nodeRound.addDescendant(child.getDescendant());
                                 }
-                                Map<Tile, Double> opponentTilesClone = nodeRound.getOpponentTilesClone();
-                                double prob = opponentTilesClone.get(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()));
-                                heuristic += child.getHeuristic() * prob * remainingProbability;
-                                child.setLastPlayedProbability(prob * remainingProbability);
-                                opponentTilesClone.put(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()), 0.0);
-                                ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTilesClone, prob);
-                                remainingProbability -= prob * remainingProbability;
+                            } else {
+                                Collections.sort(nodeRound.getChildren(), (NodeRound n1, NodeRound n2) -> (n1.getHeuristic().compareTo(n2.getHeuristic())));
+                                for (NodeRound child : nodeRound.getChildren()) {
+                                    if (!ComparisonHelper.equal(remainingProbability, 0.0)) {
+                                        Map<Tile, Double> opponentTilesClone = nodeRound.getOpponentTilesClone();
+                                        double prob = opponentTilesClone.get(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()));
+                                        heuristic += child.getHeuristic() * prob * remainingProbability;
+                                        child.setLastPlayedProbability(prob * remainingProbability);
+                                        opponentTilesClone.put(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()), 0.0);
+                                        ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(opponentTilesClone, prob);
+                                        remainingProbability -= prob * remainingProbability;
+                                    }
+                                    nodeRound.addDescendant(child.getDescendant());
+                                }
                             }
-                            if (!nodeRound.getBazaarNodeRounds().isEmpty() && !ComparisonHelper.equal(remainingProbability, 0.0)) {
+                            if (!nodeRound.getBazaarNodeRounds().isEmpty()) {
                                 NodeRound bazaarNodeRound = nodeRound.getBazaarNodeRounds().get(0);
-                                bazaarNodeRound.setLastPlayedProbability(remainingProbability);
-                                heuristic += bazaarNodeRound.getHeuristic() * remainingProbability;
+                                nodeRound.addDescendant(bazaarNodeRound.getDescendant());
+                                if (!ComparisonHelper.equal(remainingProbability, 0.0)) {
+                                    bazaarNodeRound.setLastPlayedProbability(remainingProbability);
+                                    heuristic += bazaarNodeRound.getHeuristic() * remainingProbability;
+                                }
                             }
                             nodeRound.setHeuristic(heuristic);
                         }
                     } else {
                         nodeRound.setHeuristic(roundHeuristic.getHeuristic(nodeRound.getRound(), false));
                     }
+                    nodeRound.addDescendant(1);
                 }
             }
             logger.info("Button up MinMax for height " + entry.getKey() + " took " + (System.currentTimeMillis() - ms) + " ms");

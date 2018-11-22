@@ -30,6 +30,8 @@ public class NodeRound {
 
 	private Map<Tile, Double> opponentTilesClone;
 
+	private int descendant;
+
 	public int getId() {
 		return id;
 	}
@@ -100,5 +102,13 @@ public class NodeRound {
 
 	public void setOpponentTilesClone(Map<Tile, Double> opponentTilesClone) {
 		this.opponentTilesClone = opponentTilesClone;
+	}
+
+	public int getDescendant() {
+		return descendant;
+	}
+
+	public void addDescendant(int descendant) {
+		this.descendant += descendant;
 	}
 }

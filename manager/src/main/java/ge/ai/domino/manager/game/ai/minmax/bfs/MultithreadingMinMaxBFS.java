@@ -90,6 +90,9 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 	private void invokeRemoteMinMaxes() throws DAIException {
 		MultithreadingServer server = MultithreadingServer.getInstance();
 		List<ClientSocket> clients = server.getClients();
+		if (clients.isEmpty()) {
+			throw new DAIException("clientsIsEmpty");
+		}
 
 		List<ClientInfo> clientInfos = new ArrayList<>();
 		for (ClientSocket clientSocket : clients) {

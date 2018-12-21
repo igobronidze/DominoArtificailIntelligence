@@ -1,7 +1,7 @@
 -- SysParam Name -> opponentPlayHeuristicsDiffsFunctionName
 -- 1-123/6,30,32,61,118
 
-DELETE FROM arg_and_value;
+DELETE FROM arg_and_value WHERE 1 = 1;
 
 INSERT INTO arg_and_value (function_name, arg, value)
 VALUES ('opponentPlayHeuristicsDiffsFunction_XXL', 500, 0.9999),

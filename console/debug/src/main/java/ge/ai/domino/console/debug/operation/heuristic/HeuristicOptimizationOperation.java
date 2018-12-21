@@ -169,7 +169,7 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 			sum += Math.abs(heuristic.getValue() - heuristic.getAiValue());
 		}
 		double average = sum / heuristics.size();
-		System.out.println("Average heuristic diff: " + average);
+		logger.info("Average heuristic diff: " + average);
 		return average;
 	}
 

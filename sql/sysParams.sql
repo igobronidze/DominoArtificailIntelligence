@@ -1,4 +1,4 @@
-DELETE FROM system_parameter;
+DELETE FROM system_parameter WHERE 1 = 1;
 
 -------- GAME_MANAGER
 INSERT INTO system_parameter (key, value, type) VALUES('checkOpponentProbabilities', 'true', 'GAME_MANAGER');

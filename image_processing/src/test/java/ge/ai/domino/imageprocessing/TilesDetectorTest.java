@@ -20,7 +20,7 @@ public class TilesDetectorTest {
 
 	private static final int betliveImageCount = 7;
 
-	private static final int liderbetImageCount = 4;
+	private static final int liderbetImageCount = 5;
 
 	private static final Map<Integer, String> betliveImagePathMap = new HashMap<>();
 
@@ -78,7 +78,7 @@ public class TilesDetectorTest {
 	private TilesDetectorParams getTilesDetectorParamsForLiderbet() {
 		return new TilesDetectorParams()
 				.contourMinArea(200)
-				.heightPercentage(13)
+				.heightPercentage(12)
 				.marginBottomPercentage(5)
 				.marginLeftPercentage(15)
 				.widthPercentage(75)
@@ -98,16 +98,17 @@ public class TilesDetectorTest {
 	}
 
 	private static void initBetliveExpectedTiles() {
-		initBetliveExpectedTiles1();
-		initBetliveExpectedTiles2();
-		initBetliveExpectedTiles3();
-		initBetliveExpectedTiles4();
-		initBetliveExpectedTiles5();
-		initBetliveExpectedTiles6();
-		initBetliveExpectedTiles7();
+		int index = 1;
+		initBetliveExpectedTiles1(index++);
+		initBetliveExpectedTiles2(index++);
+		initBetliveExpectedTiles3(index++);
+		initBetliveExpectedTiles4(index++);
+		initBetliveExpectedTiles5(index++);
+		initBetliveExpectedTiles6(index++);
+		initBetliveExpectedTiles7(index++);
 	}
 
-	private static void initBetliveExpectedTiles1() {
+	private static void initBetliveExpectedTiles1(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(5, 5));
 		expectedTiles.add(new Tile(5, 1));
@@ -116,10 +117,10 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(4, 2));
 		expectedTiles.add(new Tile(3, 3));
 		expectedTiles.add(new Tile(0, 0));
-		betliveExpectedTilesMap.put(1, expectedTiles);
+		betliveExpectedTilesMap.put(index, expectedTiles);
 	}
 
-	private static void initBetliveExpectedTiles2() {
+	private static void initBetliveExpectedTiles2(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(6, 3));
 		expectedTiles.add(new Tile(5, 4));
@@ -128,10 +129,10 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(2, 2));
 		expectedTiles.add(new Tile(2, 1));
 		expectedTiles.add(new Tile(1, 0));
-		betliveExpectedTilesMap.put(2, expectedTiles);
+		betliveExpectedTilesMap.put(index, expectedTiles);
 	}
 
-	private static void initBetliveExpectedTiles3() {
+	private static void initBetliveExpectedTiles3(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(5, 3));
 		expectedTiles.add(new Tile(3, 2));
@@ -140,10 +141,10 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(6, 4));
 		expectedTiles.add(new Tile(4, 2));
 		expectedTiles.add(new Tile(4, 0));
-		betliveExpectedTilesMap.put(3, expectedTiles);
+		betliveExpectedTilesMap.put(index, expectedTiles);
 	}
 
-	private static void initBetliveExpectedTiles4() {
+	private static void initBetliveExpectedTiles4(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(5, 1));
 		expectedTiles.add(new Tile(6, 6));
@@ -153,43 +154,45 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(4, 3));
 		expectedTiles.add(new Tile(3, 3));
 		expectedTiles.add(new Tile(3, 2));
-		betliveExpectedTilesMap.put(4, expectedTiles);
+		betliveExpectedTilesMap.put(index, expectedTiles);
 	}
 
-	private static void initBetliveExpectedTiles5() {
+	private static void initBetliveExpectedTiles5(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(4, 2));
 		expectedTiles.add(new Tile(6, 6));
 		expectedTiles.add(new Tile(6, 5));
-		betliveExpectedTilesMap.put(5, expectedTiles);
+		betliveExpectedTilesMap.put(index, expectedTiles);
 	}
 
-	private static void initBetliveExpectedTiles6() {
+	private static void initBetliveExpectedTiles6(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(5, 5));
 		expectedTiles.add(new Tile(6, 1));
 		expectedTiles.add(new Tile(4, 2));
 		expectedTiles.add(new Tile(3, 3));
-		betliveExpectedTilesMap.put(6, expectedTiles);
+		betliveExpectedTilesMap.put(index, expectedTiles);
 	}
 
-	private static void initBetliveExpectedTiles7() {
+	private static void initBetliveExpectedTiles7(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(5, 5));
 		expectedTiles.add(new Tile(6, 2));
 		expectedTiles.add(new Tile(4, 4));
 		expectedTiles.add(new Tile(3, 0));
-		betliveExpectedTilesMap.put(7, expectedTiles);
+		betliveExpectedTilesMap.put(index, expectedTiles);
 	}
 
 	private static void initLiderbetExpectedTiles() {
-		initLiderbetExpectedTiles1();
-		initLiderbetExpectedTiles2();
-		initLiderbetExpectedTiles3();
-		initLiderbetExpectedTiles4();
+		int index = 1;
+		initLiderbetExpectedTiles1(index++);
+		initLiderbetExpectedTiles2(index++);
+		initLiderbetExpectedTiles3(index++);
+		initLiderbetExpectedTiles4(index++);
+		initLiderbetExpectedTiles5(index++);
 	}
 
-	private static void initLiderbetExpectedTiles1() {
+	private static void initLiderbetExpectedTiles1(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(4, 6));
 		expectedTiles.add(new Tile(0, 6));
@@ -198,20 +201,20 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(2, 5));
 		expectedTiles.add(new Tile(3, 3));
 		expectedTiles.add(new Tile(1, 1));
-		liderbetExpectedTilesMap.put(1, expectedTiles);
+		liderbetExpectedTilesMap.put(index, expectedTiles);
 	}
 
-	private static void initLiderbetExpectedTiles2() {
+	private static void initLiderbetExpectedTiles2(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(0, 0));
 		expectedTiles.add(new Tile(3, 3));
 		expectedTiles.add(new Tile(4, 4));
 		expectedTiles.add(new Tile(3, 4));
 		expectedTiles.add(new Tile(1, 3));
-		liderbetExpectedTilesMap.put(2, expectedTiles);
+		liderbetExpectedTilesMap.put(index, expectedTiles);
 	}
 
-	private static void initLiderbetExpectedTiles3() {
+	private static void initLiderbetExpectedTiles3(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(0, 1));
 		expectedTiles.add(new Tile(1, 6));
@@ -220,10 +223,10 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(4, 4));
 		expectedTiles.add(new Tile(0, 4));
 		expectedTiles.add(new Tile(1, 3));
-		liderbetExpectedTilesMap.put(3, expectedTiles);
+		liderbetExpectedTilesMap.put(index, expectedTiles);
 	}
 
-	private static void initLiderbetExpectedTiles4() {
+	private static void initLiderbetExpectedTiles4(int index) {
 		List<Tile> expectedTiles = new ArrayList<>();
 		expectedTiles.add(new Tile(0, 3));
 		expectedTiles.add(new Tile(2, 6));
@@ -232,6 +235,18 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(5, 5));
 		expectedTiles.add(new Tile(3, 4));
 		expectedTiles.add(new Tile(2, 2));
-		liderbetExpectedTilesMap.put(4, expectedTiles);
+		liderbetExpectedTilesMap.put(index, expectedTiles);
+	}
+
+	private static void initLiderbetExpectedTiles5(int index) {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(3, 6));
+		expectedTiles.add(new Tile(4, 6));
+		expectedTiles.add(new Tile(0, 4));
+		expectedTiles.add(new Tile(1, 5));
+		expectedTiles.add(new Tile(3, 4));
+		expectedTiles.add(new Tile(3, 5));
+		expectedTiles.add(new Tile(1, 1));
+		liderbetExpectedTilesMap.put(index, expectedTiles);
 	}
 }

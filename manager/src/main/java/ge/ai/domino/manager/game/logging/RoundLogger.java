@@ -31,11 +31,11 @@ public class RoundLogger {
 
     public static final String NOT = "N";
 
-    public static final String NOT_WITH_SPACES = "N                 ";
+    private static final String NOT_WITH_SPACES = "N                 ";
 
     public static final String NO_TILES = "No tiles";
 
-    public static final NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
+    private static final NumberFormat formatter = new DecimalFormat("#0.0000000000000000");
 
     private static final Logger logger = Logger.getLogger(RoundLogger.class);
 
@@ -95,9 +95,10 @@ public class RoundLogger {
         result += INNER_DELIMITER + playedTile.isTwin();
         result += INNER_DELIMITER + playedTile.isConsiderInSum();
         result += INNER_DELIMITER + playedTile.isCenter();
-        return String.valueOf(result);
+        return result;
     }
 
+    @SuppressWarnings("Duplicates")
     private static StringBuilder myTileToString(List<Tile> tiles) {
         StringBuilder info = new StringBuilder();
         info.append("__________My Tiles__________").append(END_LINE);

@@ -62,7 +62,7 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 		super.minMaxForCachedNodeRound(round);
 	}
 
-	private NodeRound createNodeRoundWithHeightThree(NodeRound nodeRound) throws DAIException {
+	private void createNodeRoundWithHeightThree(NodeRound nodeRound) throws DAIException {
 		addMyPlaysForNodeRound(nodeRound, false);
 
 		nodeRoundsByHeight.put(1, Collections.singletonList(nodeRound));
@@ -83,8 +83,6 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 				roundsForProcess.put(grandchild.getId(), grandchild);
 			}
 		}
-
-		return nodeRound;
 	}
 
 	private void invokeRemoteMinMaxes() throws DAIException {
@@ -109,7 +107,11 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 					best = clientInfo;
 				}
 			}
-			best.nodeRounds.add(nodeRound);
+			if (best != null) {
+				best.nodeRounds.add(nodeRound);
+			} else {
+				throw new DAIException("cantFindBestRound");
+			}
 		}
 
 		List<Callable<Map.Entry<List<Integer>, List<AiPredictionsWrapper>>>> callableList = new ArrayList<>();

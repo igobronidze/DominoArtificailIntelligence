@@ -54,53 +54,31 @@ public class MixedRoundHeuristic extends RoundHeuristic {
 		roundStatisticProcessor.replaceRound(round);
 
 		double pointForWin = CachedGames.getGameProperties(round.getGameInfo().getGameId()).getPointsForWin();
-//		logger.info("pointForWin: " + pointForWin);
 		double myPoint = roundStatisticProcessor.getStatistic(RoundStatisticType.MY_POINT);
-//		logger.info("myPoint: " + myPoint);
 		double opponentPoint = roundStatisticProcessor.getStatistic(RoundStatisticType.OPPONENT_POINT);
-//		logger.info("opponentPoint: " + opponentPoint);
 		double myTilesCount = roundStatisticProcessor.getStatistic(RoundStatisticType.MY_TILES_COUNT);
-//		logger.info("myTilesCount: " + myTilesCount);
 		double opponentTilesCount = roundStatisticProcessor.getStatistic(RoundStatisticType.OPPONENT_TILES_COUNT);
-//		logger.info("opponentTilesCount: " + opponentTilesCount);
 		double proportionalPointsDiffCoefficient = getPointsDiffCoefficient(myPoint, opponentPoint, pointForWin, true);
-//		logger.info("proportionalPointsDiffCoefficient: " + proportionalPointsDiffCoefficient);
 		double inverseProportionalPointsDiffCoefficient = getPointsDiffCoefficient(myPoint, opponentPoint, pointForWin, false);
-//		logger.info("inverseProportionalPointsDiffCoefficient: " + inverseProportionalPointsDiffCoefficient);
 
-		// Point Diff
-		double balancedMyPoint = myPoint * (myPoint >= pointForWin ? (1.0 + mixedRoundHeuristicPointsBalancingRateValue) :
-				(1.0 + mixedRoundHeuristicPointsBalancingRateValue * (myPoint / pointForWin)));
-//		logger.info("balancedMyPoint: " + balancedMyPoint);
-		double balancedOpponentPoint = opponentPoint * (opponentPoint >= pointForWin ? (1.0 + mixedRoundHeuristicPointsBalancingRateValue) :
-				(1.0 + mixedRoundHeuristicPointsBalancingRateValue * (opponentPoint / pointForWin)));
-//		logger.info("balancedOpponentPoint: " + balancedOpponentPoint);
-		double pointDiff = proportionalPointsDiffCoefficient * (balancedMyPoint - balancedOpponentPoint);
-//		logger.info("pointDiff: " + pointDiff);
+
+		double pointDiff = getBalancedPointDiff(myPoint, opponentPoint, pointForWin);
 
 		// Tiles Diff
 		double tilesDiff = mixedRoundHeuristicTilesDiffRateValue * (inverseProportionalPointsDiffCoefficient * opponentTilesCount - proportionalPointsDiffCoefficient * myTilesCount);
-//		logger.info("tilesDiff: " + tilesDiff);
 
 		// Moves Diff
 		double myMovesCount = roundStatisticProcessor.getStatistic(RoundStatisticType.MY_PLAY_OPTIONS_COUNT) / myTilesCount;
-//		logger.info("myMovesCount: " + myMovesCount);
 		double opponentMovesCount = roundStatisticProcessor.getStatistic(RoundStatisticType.OPPONENT_PLAY_OPTIONS_COUNT) / opponentTilesCount;
-//		logger.info("opponentMovesCount: " + opponentMovesCount);
 		double movesDiff = mixedRoundHeuristicMovesDiffRateValue * (proportionalPointsDiffCoefficient * myMovesCount - inverseProportionalPointsDiffCoefficient * opponentMovesCount);
-//		logger.info("movesDiff: " + movesDiff);
 
 		// Open tiles sum
 		double openTilesSum = roundStatisticProcessor.getStatistic(RoundStatisticType.OPEN_TILES_SUM);
-//		logger.info("openTilesSum: " + openTilesSum);
 		double balancedOpenTilesSum = openTilesSum * mixedRoundHeuristicOpenTilesSumBalancingRateValue * inverseProportionalPointsDiffCoefficient;
-//		logger.info("balancedOpenTilesSum: " + balancedOpenTilesSum);
 
 		// Play turn
 		double playTurn = roundStatisticProcessor.getStatistic(RoundStatisticType.PLAY_TURN);
-//		logger.info("playTurn: " + playTurn);
 		double balancedPlayTurn = mixedRoundHeuristicPLayTurnRateValue * playTurn;
-//		logger.info("balancedPlayTurn: " + balancedPlayTurn);
 
 
 		return pointDiff + tilesDiff + movesDiff + balancedOpenTilesSum + balancedPlayTurn;
@@ -112,5 +90,13 @@ public class MixedRoundHeuristic extends RoundHeuristic {
 			diff *= -1;
 		}
 		return 1.0 + diff;
+	}
+
+	public double getBalancedPointDiff(double myPoint, double opponentPoint, double pointForWin) {
+		double balancedMyPoint = myPoint * (myPoint >= pointForWin ? (1.0 + mixedRoundHeuristicPointsBalancingRateValue) :
+				(1.0 + mixedRoundHeuristicPointsBalancingRateValue * (myPoint / pointForWin)));
+		double balancedOpponentPoint = opponentPoint * (opponentPoint >= pointForWin ? (1.0 + mixedRoundHeuristicPointsBalancingRateValue) :
+				(1.0 + mixedRoundHeuristicPointsBalancingRateValue * (opponentPoint / pointForWin)));
+		return getPointsDiffCoefficient(myPoint, opponentPoint, pointForWin, true) * (balancedMyPoint - balancedOpponentPoint);
 	}
 }

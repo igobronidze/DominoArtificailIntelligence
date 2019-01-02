@@ -43,7 +43,7 @@ public abstract class RoundHeuristic {
             return getFinishedGameHeuristic(round.getGameInfo(), CachedGames.getGameProperties(round.getGameInfo().getGameId()).getPointsForWin());
         }
         if (isNewRound(round)) {
-            return getFinishedRoundHeuristic(round.getGameInfo(), round.getTableInfo().isMyMove());
+            return getFinishedRoundHeuristic(round.getGameInfo(), round.getTableInfo().isMyMove(), CachedGames.getGameProperties(round.getGameInfo().getGameId()).getPointsForWin());
         }
 
         Random random = new Random();
@@ -64,6 +64,10 @@ public abstract class RoundHeuristic {
         return heuristic;
     }
 
+    public double getBalancedPointDiff(double myPoint, double opponentPoint, double pointForWin) {
+        return myPoint - opponentPoint;
+    }
+
     private double getFinishedGameHeuristic(GameInfo gameInfo, int pointForWin) {
         if (gameInfo.getMyPoint() > gameInfo.getOpponentPoint()) {
             return pointForWin * rateForFinishedGameHeuristicValue;
@@ -72,8 +76,9 @@ public abstract class RoundHeuristic {
         }
     }
 
-    private double getFinishedRoundHeuristic(GameInfo gameInfo, boolean startMe) {
-        return gameInfo.getMyPoint() - gameInfo.getOpponentPoint() + (startMe ? heuristicValueForStartNextRoundValue : -1 * heuristicValueForStartNextRoundValue);
+    private double getFinishedRoundHeuristic(GameInfo gameInfo, boolean startMe, double pointForWin) {
+        return getBalancedPointDiff(gameInfo.getMyPoint(), gameInfo.getOpponentPoint(), pointForWin)
+                + (startMe ? heuristicValueForStartNextRoundValue : -1 * heuristicValueForStartNextRoundValue);
     }
 
     private boolean isNewRound(Round round) {

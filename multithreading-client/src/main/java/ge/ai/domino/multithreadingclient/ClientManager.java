@@ -11,6 +11,7 @@ import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
+import ge.ai.domino.domain.played.PlayedMove;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.GameManager;
@@ -19,6 +20,7 @@ import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
+import ge.ai.domino.manager.multithreadingserver.MultithreadingRound;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
@@ -100,18 +102,22 @@ public class ClientManager {
                         CachedGames.addGame(game);
                         break;
                     case EXECUTE_MIN_MAX:
-                        List<Round> rounds = (List<Round>) ois.readObject();
-                        logger.info("Starting minmax for rounds, count[" + rounds.size() + "]");
+                        List<MultithreadingRound> multithreadingRounds = (List<MultithreadingRound>) ois.readObject();
+                        logger.info("Starting minmax for rounds, count[" + multithreadingRounds.size() + "]");
 
                         long ms = System.currentTimeMillis();
                         List<AiPredictionsWrapper> aiPredictionsWrappers = new ArrayList<>();
-                        for (Round round : rounds) {
+                        for (MultithreadingRound multithreadingRound : multithreadingRounds) {
+                            Round round = multithreadingRound.getRound();
                             round.getGameInfo().setGameId(round.getGameInfo().getGameId() + GAME_ID_ADDITION);
                             MinMax minMax = MinMaxFactory.getMinMax(false);
-                            minMax.setThreadCount(rounds.size());
+                            minMax.setThreadCount(multithreadingRounds.size());
 
                             NodeRound nodeRound = new NodeRound();
+                            nodeRound.setId(multithreadingRound.getId());
                             nodeRound.setRound(round);
+                            nodeRound.setLastPlayedMove(new PlayedMove());
+                            nodeRound.getLastPlayedMove().setType(multithreadingRound.getLastPlayedMoveType());
                             aiPredictionsWrappers.add(minMax.minMaxForNodeRound(nodeRound));
                         }
                         logger.info("MinMax for all round took " + (System.currentTimeMillis() - ms) + "ms");

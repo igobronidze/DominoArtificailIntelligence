@@ -7,7 +7,6 @@ public enum MultithreadingCommand {
     LOAD_SYS_PARAMS,
     UPDATE_SYS_PARAMS_IN_CACH,
     LOAD_FUNCTION_ARG_AND_VALUES,
-    EXECUTE_EXTRA_MIN_MAX,
     RANK_TEST,
     EXECUTE_MIN_MAX,
     FINISH

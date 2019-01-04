@@ -5,6 +5,7 @@ import ge.ai.domino.console.debug.GameDebuggerHelper;
 import ge.ai.domino.console.debug.operation.GameDebuggerOperation;
 import ge.ai.domino.dao.script.ScriptExecutorImpl;
 import ge.ai.domino.domain.exception.DAIException;
+import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.domain.sysparam.SysParam;
@@ -20,7 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +96,7 @@ public class ReplayGameWithDifferenceModeOperation implements GameDebuggerOperat
 						first = false;
 					}
 					logger.info("Mode: " + mode);
-					Collections.sort(replayMoveInfo.getAiPredictions(), (o1, o2) -> Double.compare(o1.getHeuristicValue(), o2.getHeuristicValue()));
+					replayMoveInfo.getAiPredictions().sort(Comparator.comparingDouble(AiPrediction::getHeuristicValue));
 					replayMoveInfo.getAiPredictions().forEach(logger::info);
 					logger.info("Best prediction: " + replayMoveInfo.getBestAiPrediction());
 					logger.info("Round heuristic: " + replayMoveInfo.getHeuristicValue());

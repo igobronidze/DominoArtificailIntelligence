@@ -31,4 +31,6 @@ public interface PlayedGameDAO {
     void updateGameInfo(GameInfo gameInfo);
 
     GameProperties getGameProperties(int gameId) throws DAIException;
+
+    List<Integer> getAllPlayedGame();
 }

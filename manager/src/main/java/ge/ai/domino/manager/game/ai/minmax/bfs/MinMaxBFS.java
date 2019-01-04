@@ -25,7 +25,7 @@ import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -167,7 +167,7 @@ public class MinMaxBFS extends MinMax {
             aiPredictions.add(aiPrediction);
         }
 
-        Collections.sort(aiPredictions, (o1, o2) -> Double.compare(o2.getHeuristicValue(), o1.getHeuristicValue()));
+        aiPredictions.sort((o1, o2) -> Double.compare(o2.getHeuristicValue(), o1.getHeuristicValue()));
         logger.info("AIPredictions: ");
         for (AiPrediction aiPrediction : aiPredictions) {
             Move move = aiPrediction.getMove();
@@ -307,16 +307,18 @@ public class MinMaxBFS extends MinMax {
                             double heuristic = 0.0;
                             double remainingProbability = 1.0;
 
+                            nodeRound.getChildren().sort(Comparator.comparing(NodeRound::getHeuristic));
                             if (nodeRound.getLastPlayedMove() != null && nodeRound.getLastPlayedMove().getType() == MoveType.ADD_FOR_OPPONENT) {
                                 for (NodeRound child : nodeRound.getChildren()) {
-                                    double prob = nodeRound.getOpponentTilesClone().get(new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight()));
+                                    Tile childTile = new Tile(child.getLastPlayedMove().getLeft(), child.getLastPlayedMove().getRight());
+                                    double prob = nodeRound.getOpponentTilesClone().get(childTile);
+                                    nodeRound.getOpponentTilesClone().put(childTile, 0.0);
                                     heuristic += child.getHeuristic() * prob;
                                     child.setLastPlayedProbability(prob);
                                     remainingProbability -= prob;
                                     nodeRound.addDescendant(child.getDescendant());
                                 }
                             } else {
-                                Collections.sort(nodeRound.getChildren(), (NodeRound n1, NodeRound n2) -> (n1.getHeuristic().compareTo(n2.getHeuristic())));
                                 for (NodeRound child : nodeRound.getChildren()) {
                                     if (!ComparisonHelper.equal(remainingProbability, 0.0)) {
                                         Map<Tile, Double> opponentTilesClone = nodeRound.getOpponentTilesClone();

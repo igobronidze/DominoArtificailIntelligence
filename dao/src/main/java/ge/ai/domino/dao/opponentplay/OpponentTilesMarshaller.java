@@ -9,7 +9,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -21,32 +20,21 @@ public class OpponentTilesMarshaller {
 
     public static String getMarshalledTiles(OpponentTilesWrapper opponentTiles) {
         StringWriter stringWriter = new StringWriter();
-        BufferedWriter bufferedWriter = new BufferedWriter(stringWriter);
-        try {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(stringWriter)) {
             getMarshaller().marshal(opponentTiles, bufferedWriter);
         } catch (Exception ex) {
             logger.error("Unable to marshall opponent tiles", ex);
-        } finally {
-            try {
-                bufferedWriter.close();
-            } catch (IOException ignore) {
-            }
         }
         return stringWriter.toString();
     }
 
     public static OpponentTilesWrapper unmarshallOpponentTiles(String object) {
         StringReader stringReader = new StringReader(object);
-        BufferedReader bufferedReader = new BufferedReader(stringReader);
 
-        try {
+        try (BufferedReader bufferedReader = new BufferedReader(stringReader)) {
             return (OpponentTilesWrapper) createUnmarshaller().unmarshal(bufferedReader);
         } catch (Exception ex) {
             logger.error("Unable to unmarshall opponent tiles", ex);
-        } finally {
-            try {
-                bufferedReader.close();
-            } catch (IOException ignore) { }
         }
         return null;
     }

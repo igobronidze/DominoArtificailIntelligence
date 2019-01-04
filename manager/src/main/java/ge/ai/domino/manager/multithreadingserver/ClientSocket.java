@@ -5,7 +5,6 @@ import ge.ai.domino.dao.function.FunctionDAO;
 import ge.ai.domino.dao.function.FunctionDAOImpl;
 import ge.ai.domino.domain.command.MultithreadingCommand;
 import ge.ai.domino.domain.game.GameInitialData;
-import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
@@ -86,12 +85,12 @@ public class ClientSocket {
         logger.info("Average for " + result.size() + " try is " + (average / result.size()));
     }
 
-    public List<AiPredictionsWrapper> executeMinMax(List<Round> rounds) throws Exception {
-        logger.info("Starting minmax execution, roundsCount[" + rounds.size() + "], clientName[" + name + "]");
+    public List<AiPredictionsWrapper> executeMinMax(List<MultithreadingRound> multithreadingRounds) throws Exception {
+        logger.info("Starting minmax execution, roundsCount[" + multithreadingRounds.size() + "], clientName[" + name + "]");
         long ms = System.currentTimeMillis();
 
         oos.writeObject(MultithreadingCommand.EXECUTE_MIN_MAX);
-        oos.writeObject(rounds);
+        oos.writeObject(multithreadingRounds);
         List<AiPredictionsWrapper> aiPredictionsWrappers =  (List<AiPredictionsWrapper>) ois.readObject();
         logger.info("MinMax for clientName[" + name + "] took " + (System.currentTimeMillis() - ms) + "ms");
 

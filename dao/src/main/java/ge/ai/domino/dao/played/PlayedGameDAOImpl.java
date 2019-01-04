@@ -418,4 +418,21 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
         }
         return null;
     }
+
+    @Override
+    public List<Integer> getAllPlayedGame() {
+        List<Integer> result = new ArrayList<>();
+        try {
+            pstmt = ConnectionUtil.getConnection().prepareStatement(String.format("SELECT %s FROM %s WHERE 1 = 1 ", ID_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                result.add(rs.getInt(ID_COLUMN_NAME));
+            }
+        } catch (SQLException ex) {
+            logger.error("Error occurred while getting all played game", ex);
+        } finally {
+            ConnectionUtil.closeConnection();
+        }
+        return result;
+    }
 }

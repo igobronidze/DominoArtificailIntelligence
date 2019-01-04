@@ -39,7 +39,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -200,7 +199,7 @@ public class GameManager {
                 addTileForMe(gameId, tile.getLeft(), tile.getRight());
             }
         } catch (Exception ex) {
-            logImage(gameId, tilesDetectorManager.getTmpImagePath());
+            logImage(tilesDetectorManager.getTmpImagePath());
             throw ex;
         }
         logger.info("Added tiles for me, gameId[" + gameId + "]");
@@ -221,7 +220,7 @@ public class GameManager {
             Tile tile = tiles.get(tiles.size() - 1);
             addTileForMe(gameId, tile.getLeft(), tile.getRight());
         } catch (Exception ex) {
-            logImage(gameId,tilesDetectorManager.getTmpImagePath());
+            logImage(tilesDetectorManager.getTmpImagePath());
             throw ex;
         }
         logger.info("Added tiles for me, gameId[" + gameId + "]");
@@ -249,22 +248,18 @@ public class GameManager {
         }
     }
 
-    private void logImage(int gameId, String imagePath) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss");
+    private void logImage(String imagePath) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss");
 
-            File folder = new File(LOG_IMAGES_DIRECTORY_PATH);
-            folder.mkdirs();
-            String destPath = folder.getPath() + "/" + sdf.format(new Date()) + TilesDetectorManager.TMP_IMAGE_EXTENSION;
-            copyFiles(new File(imagePath), new File(destPath));
-            new File(imagePath).delete();
-            logger.info("Save log image");
-        } catch (IOException ex) {
-            logger.error("Can't save log image, gameId[" + gameId + "]");
-        }
+        File folder = new File(LOG_IMAGES_DIRECTORY_PATH);
+        folder.mkdirs();
+        String destPath = folder.getPath() + "/" + sdf.format(new Date()) + TilesDetectorManager.TMP_IMAGE_EXTENSION;
+        copyFiles(new File(imagePath), new File(destPath));
+        new File(imagePath).delete();
+        logger.info("Save log image");
     }
 
-    private void copyFiles(File source, File dest) throws IOException {
+    private void copyFiles(File source, File dest) {
         try (InputStream is = new FileInputStream(source); OutputStream os = new FileOutputStream(dest);){
             byte[] buffer = new byte[1024];
             int length;

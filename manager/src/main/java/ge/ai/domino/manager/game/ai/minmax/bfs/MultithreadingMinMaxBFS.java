@@ -11,6 +11,7 @@ import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.helper.play.PossibleMovesManager;
 import ge.ai.domino.manager.multithreadingserver.ClientSocket;
+import ge.ai.domino.manager.multithreadingserver.MultithreadingRound;
 import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
 import org.apache.log4j.Logger;
 
@@ -116,7 +117,7 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 
 		List<Callable<Map.Entry<List<Integer>, List<AiPredictionsWrapper>>>> callableList = new ArrayList<>();
 		for (ClientInfo clientInfo : clientInfos) {
-			callableList.add(() -> new AbstractMap.SimpleEntry<>(clientInfo.getIds(), clientInfo.clientSocket.executeMinMax(clientInfo.getRounds())));
+			callableList.add(() -> new AbstractMap.SimpleEntry<>(clientInfo.getIds(), clientInfo.clientSocket.executeMinMax(clientInfo.getMultithreadingRounds())));
 		}
 
 		ExecutorService executorService = Executors.newFixedThreadPool(100);
@@ -163,8 +164,16 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 			return nodeRounds.stream().map(NodeRound::getId).collect(Collectors.toList());
 		}
 
-		private List<Round> getRounds() {
-			return nodeRounds.stream().map(NodeRound::getRound).collect(Collectors.toList());
+		private List<MultithreadingRound> getMultithreadingRounds() {
+			List<MultithreadingRound> multithreadingRounds = new ArrayList<>();
+			for (NodeRound nodeRound : nodeRounds) {
+				MultithreadingRound multithreadingRound = new MultithreadingRound();
+				multithreadingRound.setId(nodeRound.getId());
+				multithreadingRound.setRound(nodeRound.getRound());
+				multithreadingRound.setLastPlayedMoveType(nodeRound.getLastPlayedMove().getType());
+				multithreadingRounds.add(multithreadingRound);
+			}
+			return multithreadingRounds;
 		}
 	}
 }

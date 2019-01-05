@@ -1,6 +1,7 @@
 package ge.ai.domino.manager;
 
 import ge.ai.domino.caching.game.CachedGames;
+import ge.ai.domino.dao.connection.ConnectionUtil;
 import ge.ai.domino.dao.played.PlayedGameDAO;
 import ge.ai.domino.dao.played.PlayedGameDAOImpl;
 import ge.ai.domino.domain.move.Move;
@@ -9,15 +10,22 @@ import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.replaygame.ReplayGameManager;
+import ge.ai.domino.manager.script.ScriptManager;
 import ge.ai.domino.util.properties.DAIPropertiesUtil;
 import org.apache.log4j.Logger;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +38,8 @@ public class GamesTest {
 
     private static final String TEST_DAI_PROPERTIES_FILE_PATH = "../../dai/properties/dai_test.properties";
 
+    private static final String scriptFilePath = "/gamesTest.sql";
+
     private static final Logger logger = Logger.getLogger(GamesTest.class);
 
     private static final FunctionManager functionManager = new FunctionManager();
@@ -38,10 +48,34 @@ public class GamesTest {
 
     private static final ReplayGameManager replayGameManager = new ReplayGameManager();
 
-    @Test
-    public void testGames() {
+    private static final ScriptManager scriptManager = new ScriptManager();
+
+    @BeforeClass
+    public static void startUp() {
         DAIPropertiesUtil.daiPropertiesFile = new File(TEST_DAI_PROPERTIES_FILE_PATH);
 
+        try (BufferedReader br = new BufferedReader(new FileReader(GamesTest.class.getResource(scriptFilePath).getFile()))) {
+            String line;
+            StringBuilder script = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                script.append(line);
+            }
+
+            scriptManager.executeUpdateScript(script.toString());
+        } catch (IOException e) {
+            logger.error("Can't read script file, path[" + scriptFilePath + "]");
+        }
+    }
+
+    @AfterClass
+    public static void cleanUp() throws Exception {
+        String sql = "DELETE FROM system_parameter; DELETE FROM arg_and_value; DELETE FROM channel; DELETE FROM played_game;";
+        PreparedStatement pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
+        pstmt.executeUpdate();
+    }
+
+    @Test
+    public void testGames() {
         functionManager.initFunctions();
 
         List<Integer> idsForReplay = CREATE_MODE ? idsForCreateMode : playedGameDAO.getAllPlayedGame();

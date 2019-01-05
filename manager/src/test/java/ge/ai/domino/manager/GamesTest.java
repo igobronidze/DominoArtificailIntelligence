@@ -69,7 +69,7 @@ public class GamesTest {
 
     @AfterClass
     public static void cleanUp() throws Exception {
-        String sql = "DELETE FROM system_parameter; DELETE FROM arg_and_value; DELETE FROM channel; DELETE FROM played_game;";
+        String sql = "DELETE FROM system_parameter; DELETE FROM arg_and_value; DELETE FROM channel;";
         PreparedStatement pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
         pstmt.executeUpdate();
     }

@@ -124,6 +124,9 @@ public abstract class GamePane extends BorderPane {
                     AppController.round = gameService.detectAndAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), true, withSecondParams);
                     controlPanel.getStage().setIconified(false);
                     controlPanel.getStage().requestFocus();
+
+                    Tile highestTile = getHighestTile();
+                    AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(highestTile.getLeft(), highestTile.getRight(), MoveDirection.LEFT));
                     reload(false, false);
                 });
             }
@@ -144,6 +147,24 @@ public abstract class GamePane extends BorderPane {
                 reload(false, false);
             }
         }.showWindow(firstRound);
+    }
+
+    private Tile getHighestTile() {
+        for (int i = 6; i >= 0; i--) {
+            Tile tile = new Tile(i, i);
+            if (AppController.round.getMyTiles().contains(tile)) {
+                return tile;
+            }
+        }
+        for (int i = 6; i >= 0; i--) {
+            for (int j = i -1; j >= 0; j--) {
+                Tile tile = new Tile(i, j);
+                if (AppController.round.getMyTiles().contains(tile)) {
+                    return tile;
+                }
+            }
+        }
+        return new Tile(0, 0);
     }
 
     private void showAddedTilesDetectWindow() {

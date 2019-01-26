@@ -14,6 +14,7 @@ INSERT INTO system_parameter (key, value, type) VALUES('detectAddedTiles', 'true
 INSERT INTO system_parameter (key, value, type) VALUES('possiblePoints', '75,155,175,255,355', 'CONTROL_PANEL');
 INSERT INTO system_parameter (key, value, type) VALUES('systemLanguageCode', 'ka', 'CONTROL_PANEL');
 INSERT INTO system_parameter (key, value, type) VALUES('p2pServerPort', '8080', 'CONTROL_PANEL');
+INSERT INTO system_parameter (key, value, type) VALUES('levelDefaultValue', '5', 'CONTROL_PANEL');
 
 -------- LOGGING
 INSERT INTO system_parameter (key, value, type) VALUES('logTilesAfterMethod', 'true', 'LOGGING');

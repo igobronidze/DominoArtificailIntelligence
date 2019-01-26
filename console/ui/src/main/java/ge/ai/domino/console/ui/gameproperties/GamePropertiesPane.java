@@ -44,6 +44,10 @@ public class GamePropertiesPane extends VBox {
 
     private static final SysParam levelDefaultValue = new SysParam("levelDefaultValue", "5");
 
+    private static final SysParam defaultWinPoint = new SysParam("defaultWinPoint", "255");
+
+    private static final SysParam defaultChannelName = new SysParam("defaultChannelName", "Real");
+
     private final ControlPanel controlPanel;
 
     private GamePane gamePane;
@@ -64,14 +68,18 @@ public class GamePropertiesPane extends VBox {
         List<Channel> channels = channelService.getChannels();
         Map<String, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getName, channel -> channel));
         TCHComboBox channelsCombo = new TCHComboBox(new ArrayList<>(channelsMap.keySet()));
-
+        channelsCombo.setValue(systemParameterService.getStringParameterValue(defaultChannelName));
         TCHFieldLabel channelFieldLabel = new TCHFieldLabel(Messages.get("channel"), channelsCombo);
+
         TCHTextField nameField = new TCHTextField("tmp", TCHComponentSize.MEDIUM);
         TCHFieldLabel nameFieldLabel = new TCHFieldLabel(Messages.get("name"), nameField);
+
         List<Integer> points = systemParameterService.getIntegerListParameterValue(possiblePoints);
         List<Object> objPoints = new ArrayList<>(points);
         TCHComboBox pointComboBox = new TCHComboBox(objPoints);
+        pointComboBox.setValue(systemParameterService.getIntegerParameterValue(defaultWinPoint));
         TCHFieldLabel pointFieldLabel = new TCHFieldLabel(Messages.get("point"), pointComboBox);
+
         TCHButton startButton = new TCHButton(Messages.get("start"));
         TCHNumberTextField levelField = new TCHNumberTextField(TCHComponentSize.MEDIUM);
         levelField.setNumber(new BigDecimal(systemParameterService.getIntegerParameterValue(levelDefaultValue)));

@@ -411,7 +411,7 @@ public abstract class GamePane extends BorderPane {
                         AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
                     } else if (direction == null) {
                         AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), playedTile.getLeft(), playedTile.getRight());
-                    } else {
+                    } else if (playedTile != null) {
                         AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(playedTile.getLeft(), playedTile.getRight(), direction));
                     }
                 });

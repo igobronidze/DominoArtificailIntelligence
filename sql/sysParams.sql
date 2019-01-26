@@ -15,6 +15,8 @@ INSERT INTO system_parameter (key, value, type) VALUES('possiblePoints', '75,155
 INSERT INTO system_parameter (key, value, type) VALUES('systemLanguageCode', 'ka', 'CONTROL_PANEL');
 INSERT INTO system_parameter (key, value, type) VALUES('p2pServerPort', '8080', 'CONTROL_PANEL');
 INSERT INTO system_parameter (key, value, type) VALUES('levelDefaultValue', '5', 'CONTROL_PANEL');
+INSERT INTO system_parameter (key, value, type) VALUES('defaultWinPoint', '255', 'CONTROL_PANEL');
+INSERT INTO system_parameter (key, value, type) VALUES('defaultChannelName', 'Real', 'CONTROL_PANEL');
 
 -------- LOGGING
 INSERT INTO system_parameter (key, value, type) VALUES('logTilesAfterMethod', 'true', 'LOGGING');

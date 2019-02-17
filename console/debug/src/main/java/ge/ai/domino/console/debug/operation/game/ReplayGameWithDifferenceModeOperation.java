@@ -6,6 +6,8 @@ import ge.ai.domino.console.debug.operation.GameDebuggerOperation;
 import ge.ai.domino.dao.script.ScriptExecutorImpl;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.ai.AiPrediction;
+import ge.ai.domino.domain.game.opponentplay.GroupedOpponentPlay;
+import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.domain.sysparam.SysParam;
@@ -13,6 +15,7 @@ import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
+import ge.ai.domino.manager.opponentplay.OpponentPlaysManager;
 import ge.ai.domino.manager.replaygame.ReplayGameManager;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
@@ -40,15 +43,23 @@ public class ReplayGameWithDifferenceModeOperation implements GameDebuggerOperat
 
 	private static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
 
-	private static final List<String> MODE_FILE_NAMES = Arrays.asList("/mode/mode_1.properties", "/mode/mode_2.properties", "/mode/mode_3.properties");
+	private static final List<String> MODE_FILE_NAMES = Arrays.asList("/mode/general_strategy_predictor_mode.properties",
+			"/mode/min_max_predictor_mode.properties",
+			"/mode/one_move_heuristic_predictor_mode.properties");
 
 	private final SysParam useMultithreadingMinMax = new SysParam("useMultithreadingMinMax", "true");
+
+	private static final OpponentPlaysManager opponentPlaysManager = new OpponentPlaysManager();
 
 	@Override
 	public void process(Scanner scanner) throws DAIException {
 		List<Integer> idsForProcess = GameDebuggerHelper.getIdsForProcess(scanner);
 		functionManager.initFunctions();
 
+		Map<String, List<OpponentPlay>> fullOpponentPlaysMap = new HashMap<>();
+		for (String modeFile : MODE_FILE_NAMES) {
+			fullOpponentPlaysMap.put(modeFile, new ArrayList<>());
+		}
 		for (int id : idsForProcess) {
 			int count = 0;
 			Map<String, List<ReplayMoveInfo>> replayMoveInfoMap = new HashMap<>();
@@ -72,6 +83,10 @@ public class ReplayGameWithDifferenceModeOperation implements GameDebuggerOperat
 							count++;
 						}
 					}
+
+					List<OpponentPlay> opponentPlays = GameDebuggerHelper.removeExtraPlays(CachedGames.getOpponentPlays(replayMoveInfo.getGameId()));
+
+					fullOpponentPlaysMap.get(modeFile).addAll(opponentPlays);
 				} catch (Exception ex) {
 					logger.error("Error occurred while replay game id[" + id + "], mode[" + modeFile + "]", ex);
 				} finally {
@@ -109,6 +124,12 @@ public class ReplayGameWithDifferenceModeOperation implements GameDebuggerOperat
 				if (!samePrediction) {
 					logger.info("All best prediction is not same");
 				}
+			}
+
+			for (String moveFile : MODE_FILE_NAMES) {
+				GroupedOpponentPlay groupedOpponentPlay = opponentPlaysManager.getGroupedOpponentPlays(fullOpponentPlaysMap.get(moveFile), false, false, true).get(0);
+				logger.info("Opponent plays grouped in one result, Mode: " + moveFile);
+				logger.info(groupedOpponentPlay.getAverageGuess());
 			}
 		}
 	}

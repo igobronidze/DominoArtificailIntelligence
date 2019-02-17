@@ -6,7 +6,5 @@ import ge.ai.domino.domain.move.Move;
 
 public interface OpponentTilesPredictor {
 
-	void predict(Round round, Move move) throws DAIException;
-
-	boolean usePredictor();
+	void predict(Round round, Round roundBeforePlay, Move move) throws DAIException;
 }

@@ -50,8 +50,6 @@ public abstract class MinMax implements AiSolver {
 
 	protected final SysParam minMaxForCachedNodeRoundIterationRate = new SysParam("minMaxForCachedNodeRoundIterationRate", "4");
 
-	protected final SysParam useMinMaxPredictor = new SysParam("useMinMaxPredictor", "false");
-
 	protected final RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
 
 	protected int threadCount = 1;

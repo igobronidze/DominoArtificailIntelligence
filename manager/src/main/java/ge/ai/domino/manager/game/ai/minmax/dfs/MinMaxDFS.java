@@ -12,7 +12,7 @@ import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
-import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
+import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictorFactory;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.manager.game.helper.play.GameOperations;
 import ge.ai.domino.manager.game.helper.play.MoveHelper;
@@ -57,13 +57,14 @@ public class MinMaxDFS extends MinMax {
 			logger.info("No AIPrediction");
 			return null;
 		}
+
 		if (moves.size() == 1 && systemParameterManager.getBooleanParameterValue(bestMoveAutoPlay)) {
-			if (systemParameterManager.getBooleanParameterValue(useMinMaxPredictor)) {
+			if (OpponentTilesPredictorFactory.useMinMaxPredictor()) {
 				new Thread(() -> {
 					try {
 						CachedMinMax.changeMinMaxInProgress(gameId, true);
 						minMaxForMoves(moves, nodeRound, ms);
-						if (new MinMaxPredictor().usePredictor()) {
+						if (OpponentTilesPredictorFactory.useMinMaxPredictor()) {
 							CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
 						}
 						CachedMinMax.changeMinMaxInProgress(gameId, false);
@@ -81,7 +82,7 @@ public class MinMaxDFS extends MinMax {
 			return aiPredictionsWrapper;
 		} else {
 			AiPredictionsWrapper aiPredictionsWrapper = minMaxForMoves(moves, nodeRound, ms);
-			if (new MinMaxPredictor().usePredictor()) {
+			if (OpponentTilesPredictorFactory.useMinMaxPredictor()) {
 				CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
 			}
 			return aiPredictionsWrapper;

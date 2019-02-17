@@ -17,10 +17,10 @@ import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
-import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
+import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictorFactory;
+import ge.ai.domino.manager.game.helper.initial.InitialUtil;
 import ge.ai.domino.manager.game.helper.play.GameOperations;
 import ge.ai.domino.manager.game.helper.play.MoveHelper;
-import ge.ai.domino.manager.game.helper.initial.InitialUtil;
 import ge.ai.domino.manager.game.logging.GameLogger;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.AddForMeProcessor;
@@ -119,7 +119,7 @@ public class GameManager {
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForMeMove(move));
 
-        if (new MinMaxPredictor().usePredictor()) {
+        if (OpponentTilesPredictorFactory.useMinMaxPredictor()) {
             changeCachedNodeRound(gameId, move, round);
         }
 

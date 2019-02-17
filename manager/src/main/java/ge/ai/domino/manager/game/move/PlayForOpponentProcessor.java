@@ -5,11 +5,12 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
-import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
 import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictor;
+import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictorFactory;
 import ge.ai.domino.manager.game.helper.play.GameOperations;
 import ge.ai.domino.manager.game.helper.play.ProbabilitiesDistributor;
 import ge.ai.domino.manager.game.logging.RoundLogger;
+import ge.ai.domino.serverutil.CloneUtil;
 
 import java.util.Map;
 
@@ -17,6 +18,8 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 
 	@Override
 	public Round move(Round round, Move move) throws DAIException {
+		Round cloneRound = CloneUtil.getClone(round);
+
 		boolean firstMove = round.getTableInfo().getLeft() == null;
 		boolean playedFromBazaar = false;
 
@@ -61,9 +64,9 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 		if (round.getTableInfo().getOpponentTilesCount() == 0) {
 			round = GameOperations.finishedLastAndGetNewRound(round, false, GameOperations.countLeftTiles(round, true, false), false);
 		} else {
-            OpponentTilesPredictor minMaxPredictor = new MinMaxPredictor();
-            if (!playedFromBazaar && minMaxPredictor.usePredictor() && !firstMove) {
-				minMaxPredictor.predict(round, move);
+            OpponentTilesPredictor minMaxPredictor = OpponentTilesPredictorFactory.getOpponentTilesPredictor(false);
+            if (!playedFromBazaar && OpponentTilesPredictorFactory.useOpponentTilesPredictor() && !firstMove) {
+				minMaxPredictor.predict(round, cloneRound, move);
             }
             round.setAiPredictions(MinMaxFactory.getMinMax(true).solve(round));
 		}

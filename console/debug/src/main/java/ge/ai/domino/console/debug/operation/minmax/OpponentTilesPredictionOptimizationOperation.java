@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class MinMaxPredictionOptimizationOperation implements GameDebuggerOperation {
+public class OpponentTilesPredictionOptimizationOperation implements GameDebuggerOperation {
 
-	private static final Logger logger = Logger.getLogger(MinMaxPredictionOptimizationOperation.class);
+	private static final Logger logger = Logger.getLogger(OpponentTilesPredictionOptimizationOperation.class);
 
 	private static final ReplayGameManager replayGameManager = new ReplayGameManager();
 
@@ -55,7 +55,7 @@ public class MinMaxPredictionOptimizationOperation implements GameDebuggerOperat
 		logger.info("Games amount:");
 		Integer gamesAmount = Integer.parseInt(scanner.nextLine());
 		logger.info("Optimization iteration:");
-		Integer optimizationIteration = Integer.parseInt(scanner.nextLine());
+		int optimizationIteration = Integer.parseInt(scanner.nextLine());
 		logger.info("Optimization inner iteration:");
 		Integer optimizationInnerIteration = Integer.parseInt(scanner.nextLine());
 
@@ -72,14 +72,14 @@ public class MinMaxPredictionOptimizationOperation implements GameDebuggerOperat
 				};
 
 		for (int i = 1; i <= optimizationIteration; i++) {
-			logger.info("Starting MinMaxPredictor optimization iteration[" + i + "]");
+			logger.info("Starting MinMaxOpponentTilesPredictor optimization iteration[" + i + "]");
 
 			Collections.shuffle(idsForProcess);
 
 			List<Double> newValues = unimodalOptimizationWithMultipleParams.getExtremaVector(functionArgsAndValues.getValues(),
 					getParamIntervals(functionArgsAndValues.getValues()), optimizationInnerIteration);
 			functionArgsAndValues.setValues(newValues);
-			logger.info("Finished MinMaxPredictor optimization iteration[" + i + "]");
+			logger.info("Finished MinMaxOpponentTilesPredictor optimization iteration[" + i + "]");
 			logger.info("New values: " + newValues);
 			try {
 				Thread.sleep(5 * 60 * 1000);

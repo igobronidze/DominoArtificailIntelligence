@@ -10,6 +10,7 @@ import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ public class PossibleMovesManager {
 	private static final String MOVE_PRIORITY_DELIMITER = ",";
 
 	private static final String MOVE_PRIORITY_DEFAULT_VALUE = "LEFT,RIGHT,TOP,BOTTOM";
+
+	private static final Map<Integer, List<MoveDirection>> cachedMoveDirections = new HashMap<>();
 
 	public static List<Move> getPossibleMoves(Round round, boolean allMove) {
 		List<Move> moves = new ArrayList<>();
@@ -69,14 +72,17 @@ public class PossibleMovesManager {
 	}
 
 	private static List<MoveDirection> getMovePriority(int gameId) {
-		Map<String, String> params = CachedGames.getGameProperties(gameId).getChannel().getParams();
-		String movePriority = params.getOrDefault(MOVE_PRIORITY_KEY, MOVE_PRIORITY_DEFAULT_VALUE);
+		if (!cachedMoveDirections.containsKey(gameId)) {
+			Map<String, String> params = CachedGames.getGameProperties(gameId).getChannel().getParams();
+			String movePriority = params.getOrDefault(MOVE_PRIORITY_KEY, MOVE_PRIORITY_DEFAULT_VALUE);
 
-		List<MoveDirection> moveDirections = new ArrayList<>();
-		for (String direction : movePriority.split(MOVE_PRIORITY_DELIMITER)) {
-			moveDirections.add(MoveDirection.valueOf(direction));
+			List<MoveDirection> moveDirections = new ArrayList<>();
+			for (String direction : movePriority.split(MOVE_PRIORITY_DELIMITER)) {
+				moveDirections.add(MoveDirection.valueOf(direction));
+			}
+			cachedMoveDirections.put(gameId, moveDirections);
 		}
-		return moveDirections;
+		return cachedMoveDirections.get(gameId);
 	}
 
 	private static void addLeftPossibleMove(Tile tile, PlayedTile left, List<Move> moves, Set<Integer> played, boolean allMove) {

@@ -28,7 +28,7 @@ INSERT INTO system_parameter (key, value, type) VALUES('logAboutRoundHeuristic',
 INSERT INTO system_parameter (key, value, type) VALUES('minMaxOnFirstTile', 'true', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('minMaxTreeHeight', '7', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('minMaxType', 'BFS', 'MIN_MAX');
-INSERT INTO system_parameter (key, value, type) VALUES('useMinMaxPredictor', 'true', 'MIN_MAX');
+INSERT INTO system_parameter (key, value, type) VALUES('opponentTilesPredictor', 'MIN_MAX', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('opponentPlayHeuristicsDiffsFunctionName', 'opponentPlayHeuristicsDiffsFunction_initialForOptimization', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('minMaxIteration', '150000', 'MIN_MAX');
 -- Multithreading

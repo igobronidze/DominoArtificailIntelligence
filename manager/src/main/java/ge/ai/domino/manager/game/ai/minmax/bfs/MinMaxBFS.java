@@ -13,7 +13,7 @@ import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
-import ge.ai.domino.manager.game.ai.predictor.MinMaxPredictor;
+import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictorFactory;
 import ge.ai.domino.manager.game.helper.ComparisonHelper;
 import ge.ai.domino.manager.game.helper.filter.OpponentTilesFilter;
 import ge.ai.domino.manager.game.helper.play.GameOperations;
@@ -58,13 +58,13 @@ public class MinMaxBFS extends MinMax {
         }
 
         if (moves.size() == 1 && systemParameterManager.getBooleanParameterValue(bestMoveAutoPlay)) {
-            if (systemParameterManager.getBooleanParameterValue(useMinMaxPredictor)) {
+            if (OpponentTilesPredictorFactory.useMinMaxPredictor()) {
                 new Thread(() -> {
                     try {
                         CachedMinMax.changeMinMaxInProgress(round.getGameInfo().getGameId(), true);
                         threadCount = systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate); // For minmax performance time
                         minMaxForNodeRound(nodeRound);
-                        if (new MinMaxPredictor().usePredictor()) {
+                        if (OpponentTilesPredictorFactory.useMinMaxPredictor()) {
                             int gameId = nodeRound.getRound().getGameInfo().getGameId();
                             if (CachedMinMax.isUseFirstChild(gameId)) {
                                 CachedMinMax.changeUseFirstChild(gameId, false);
@@ -89,7 +89,7 @@ public class MinMaxBFS extends MinMax {
             return aiPredictionsWrapper;
         } else {
             AiPredictionsWrapper aiPredictionsWrapper = minMaxForNodeRound(nodeRound);
-            if (new MinMaxPredictor().usePredictor()) {
+            if (OpponentTilesPredictorFactory.useMinMaxPredictor()) {
                 CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
             }
             return aiPredictionsWrapper;

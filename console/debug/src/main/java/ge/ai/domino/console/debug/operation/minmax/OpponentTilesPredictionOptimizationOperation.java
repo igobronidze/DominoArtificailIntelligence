@@ -42,7 +42,8 @@ public class OpponentTilesPredictionOptimizationOperation implements GameDebugge
 	public void process(Scanner scanner) throws DAIException {
 		List<Integer> idsForProcess = GameDebuggerHelper.getIdsForProcess(scanner);
 
-		String functionName = "opponentPlayHeuristicsDiffsFunction_initialForOptimization";
+		logger.info("Function name(opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor, opponentPlayHeuristicsDiffsFunction_initialForOptimization):");
+		String functionName = scanner.nextLine();
 		sysParamManager.changeParameterOnlyInCache("opponentPlayHeuristicsDiffsFunctionName", functionName);
 
 		FunctionDAO functionDAO = new FunctionDAOImpl();
@@ -82,7 +83,7 @@ public class OpponentTilesPredictionOptimizationOperation implements GameDebugge
 			logger.info("Finished MinMaxOpponentTilesPredictor optimization iteration[" + i + "]");
 			logger.info("New values: " + newValues);
 			try {
-				Thread.sleep(5 * 60 * 1000);
+				Thread.sleep(10 * 1000);
 			} catch (InterruptedException ex) {
 				logger.error(ex);
 			}

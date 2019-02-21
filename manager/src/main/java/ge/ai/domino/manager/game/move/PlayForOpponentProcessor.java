@@ -65,7 +65,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 			round = GameOperations.finishedLastAndGetNewRound(round, false, GameOperations.countLeftTiles(round, true, false), false);
 		} else {
             OpponentTilesPredictor minMaxPredictor = OpponentTilesPredictorFactory.getOpponentTilesPredictor(false);
-            if (!playedFromBazaar && OpponentTilesPredictorFactory.useOpponentTilesPredictor() && !firstMove) {
+            if (!playedFromBazaar && !firstMove) {
 				minMaxPredictor.predict(round, cloneRound, move);
             }
             round.setAiPredictions(MinMaxFactory.getMinMax(true).solve(round));

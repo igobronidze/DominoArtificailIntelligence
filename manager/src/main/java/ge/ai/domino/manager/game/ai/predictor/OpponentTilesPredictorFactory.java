@@ -11,12 +11,6 @@ public class OpponentTilesPredictorFactory {
 
     private static OpponentTilesPredictor opponentTilesPredictor;
 
-    public static boolean useOpponentTilesPredictor() {
-        getOpponentTilesPredictor(false);
-
-        return opponentTilesPredictor != null;
-    }
-
     public static boolean useMinMaxPredictor() {
         getOpponentTilesPredictor(false);
 
@@ -27,9 +21,6 @@ public class OpponentTilesPredictorFactory {
         if (opponentTilesPredictor == null || reInitialize) {
             OpponentTilesPredictorType opponentTilesPredictorType = OpponentTilesPredictorType.valueOf(systemParameterManager.getStringParameterValue(opponentTilesPredictorSysParam));
             switch (opponentTilesPredictorType) {
-                case GENERAL_STRATEGY:
-                    opponentTilesPredictor = new GeneralStrategyOpponentTilesPredictor();
-                    break;
                 case ONE_MOVE_HEURISTIC:
                     opponentTilesPredictor = new OneMoveHeuristicOpponentTilesPredictor();
                     break;
@@ -38,7 +29,7 @@ public class OpponentTilesPredictorFactory {
                     break;
                 case NONE:
                     default:
-                        opponentTilesPredictor = null;
+                        opponentTilesPredictor = new WithoutOpponentTilesPredictor();
                         break;
             }
         }

@@ -139,19 +139,36 @@ VALUES ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 800, 0.992
   ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -25, 0.001030432924875),
   ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', -800, 1.754861565E-4);
 
+
+
+
+-- INSERT INTO arg_and_value (function_name, arg, value)
+-- VALUES ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 800, 0.691301227),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 60, 0.68200314),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 35, 0.542545617),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 23, 0.348344326),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 15, 0.2939955),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 10, 0.291261196),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 6, 0.250260651),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 3, 0.0765818581),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 1, 0.07581051204375),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0.5, 0.0642543212),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0, 0.0168418735),
+--   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', -800, 0.00105255458);
+
+
+
 INSERT INTO arg_and_value (function_name, arg, value)
-VALUES ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 800, 0.6913012199999999),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 60, 0.38260144),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 30, 0.341968536),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 26, 0.306545764),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 22, 0.30380094665234375),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 15, 0.2626426864375),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 10, 0.2295806518634766),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 6, 0.13039654814140625),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 3, 0.04070606900883789),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 1, 0.0347257704),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0.5, 0.032846094508125),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0, 0.005422449559882813),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', -5, 0.00359327323),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', -25, 3.899728509375E-4),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', -800,1.75486159E-4);
+VALUES ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 800, 0.9959),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 60, 0.9919),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 35, 0.9659),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 23, 0.5765),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 15, 0.3946),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 10, 0.3397),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 7, 0.2805),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 4, 0.1558),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 2, 0.0589),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 1, 0.0340),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0.5, 0.0319),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0, 0.0011),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', -800, 0.0001);

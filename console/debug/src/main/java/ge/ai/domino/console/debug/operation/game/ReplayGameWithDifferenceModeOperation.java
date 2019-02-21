@@ -43,7 +43,7 @@ public class ReplayGameWithDifferenceModeOperation implements GameDebuggerOperat
 
 	private static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
 
-	private static final List<String> MODE_FILE_NAMES = Arrays.asList("/mode/general_strategy_predictor_mode.properties",
+	private static final List<String> MODE_FILE_NAMES = Arrays.asList("/mode/without_predictor_mode.properties",
 			"/mode/min_max_predictor_mode.properties",
 			"/mode/one_move_heuristic_predictor_mode.properties",
 			"/mode/one_move_heuristic_predictor_mode_2.properties");

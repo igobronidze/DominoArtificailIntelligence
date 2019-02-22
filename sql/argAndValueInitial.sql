@@ -159,16 +159,15 @@ VALUES ('opponentPlayHeuristicsDiffsFunction_initialForOptimization', 800, 0.992
 
 
 INSERT INTO arg_and_value (function_name, arg, value)
-VALUES ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 800, 0.9959),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 60, 0.9919),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 35, 0.9659),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 23, 0.5765),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 15, 0.3946),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 10, 0.3397),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 7, 0.2805),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 4, 0.1558),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 2, 0.0589),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 1, 0.0340),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0.5, 0.0319),
-  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0, 0.0011),
+VALUES ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 800, 0.9900),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 35, 0.9600),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 23, 0.7950),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 15, 0.7000),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 10, 0.4115),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 7, 0.2502),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 4, 0.8888),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 2, 0.0626),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 1, 0.0373),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0.5, 0.0120),
+  ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', 0, 0.0021),
   ('opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor', -800, 0.0001);

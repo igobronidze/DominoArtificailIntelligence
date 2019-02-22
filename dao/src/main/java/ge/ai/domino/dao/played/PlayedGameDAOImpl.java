@@ -193,6 +193,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 String history = rs.getString(GAME_HISTORY_COLUMN_NAME);
                 return GameHistoryMarshaller.unmarshallGameHistory(history);
             } else {
+                logger.error(String.format("There is no played game gameId[%s]", gameId));
                 throw new DAIException("noPlayedGame");
             }
         } catch (SQLException ex) {
@@ -409,6 +410,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
                 return gameProperties;
             } else {
+                logger.error(String.format("There is no played game gameId[%s]", gameId));
                 throw new DAIException("noPlayedGame");
             }
         } catch (SQLException ex) {

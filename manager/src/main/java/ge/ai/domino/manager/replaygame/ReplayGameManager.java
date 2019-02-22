@@ -37,21 +37,30 @@ public class ReplayGameManager {
 	private final HeuristicManager heuristicManager = new HeuristicManager();
 
 	public ReplayMoveInfo startReplayGame(int gameId) throws DAIException {
-		OpponentTilesPredictorFactory.getOpponentTilesPredictor(true);
-
 		GameHistory gameHistory = playedGameManager.getGameHistory(gameId);
 		GameProperties gameProperties = playedGameManager.getGameProperties(gameId);
 
-		Game game = InitialUtil.getInitialGame(gameProperties, false);
-		CachedGames.addGame(game);
-		CachedGames.addCreatedGameHistory(game.getId(), gameHistory);
+		Game initialGame = new Game();
+		initialGame.setId(gameId);
+		initialGame.setGameHistory(gameHistory);
+		initialGame.setProperties(gameProperties);
 
-		gameManager.ifNeedSendInitialData(game, gameProperties);
+		return startReplayGame(initialGame);
+	}
+
+	public ReplayMoveInfo startReplayGame(Game initialGame) {
+		OpponentTilesPredictorFactory.getOpponentTilesPredictor(true);
+
+		Game game = InitialUtil.getInitialGame(initialGame.getProperties(), false);
+		CachedGames.addGame(game);
+		CachedGames.addCreatedGameHistory(game.getId(), initialGame.getGameHistory());
+
+		gameManager.ifNeedSendInitialData(game, initialGame.getProperties());
 
 		ReplayMoveInfo replayMoveInfo = new ReplayMoveInfo();
 		replayMoveInfo.setGameId(game.getId());
 		replayMoveInfo.setMoveIndex(1);
-		List<PlayedMove> playedMoves = new ArrayList<>(gameHistory.getPlayedMoves());
+		List<PlayedMove> playedMoves = new ArrayList<>(initialGame.getGameHistory().getPlayedMoves());
 		replayMoveInfo.setPreviousMove(playedMoves.get(0));
 		replayMoveInfo.setNextMove(playedMoves.get(1));
 

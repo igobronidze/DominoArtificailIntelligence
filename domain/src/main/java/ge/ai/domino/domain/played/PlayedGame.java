@@ -26,6 +26,8 @@ public class PlayedGame {
 
     private GameHistory gameHistory;
 
+    private String marshaledGameHistory;
+
     private int level;
 
     public int getId() {
@@ -106,6 +108,14 @@ public class PlayedGame {
 
     public void setGameHistory(GameHistory gameHistory) {
         this.gameHistory = gameHistory;
+    }
+
+    public String getMarshaledGameHistory() {
+        return marshaledGameHistory;
+    }
+
+    public void setMarshaledGameHistory(String marshaledGameHistory) {
+        this.marshaledGameHistory = marshaledGameHistory;
     }
 
     public int getLevel() {

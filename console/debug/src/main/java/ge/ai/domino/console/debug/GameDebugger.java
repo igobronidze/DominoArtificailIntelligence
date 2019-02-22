@@ -1,5 +1,6 @@
 package ge.ai.domino.console.debug;
 
+import ge.ai.domino.console.debug.operation.db.PlayedGameInsertOperation;
 import ge.ai.domino.console.debug.operation.game.CachGameOperation;
 import ge.ai.domino.console.debug.operation.game.ParseRoundOperation;
 import ge.ai.domino.console.debug.operation.game.ReplayGameOperation;
@@ -46,6 +47,7 @@ public class GameDebugger {
             logger.info("14. Heuristic Optimization");
             logger.info("15. Replay games with difference modes");
             logger.info("16. Update sys params from properties file");
+            logger.info("17. Insert played games");
             String line = scanner.nextLine();
 
             try {
@@ -116,9 +118,13 @@ public class GameDebugger {
                         new SysParamsUpdateOperation().process(scanner);
                         break;
                     }
+                    case "17": {
+                        new PlayedGameInsertOperation().process(scanner);
+                        break;
+                    }
                 }
             } catch (DAIException ex) {
-                logger.error("Error occurred while execute game debugger", ex.getExc());
+                logger.error(String.format("Error occurred while execute game debugger, %s ", ex.getMessageKey()), ex.getExc());
             } catch (Exception ex) {
                 logger.error("Error occurred while execute game debugger", ex);
             }

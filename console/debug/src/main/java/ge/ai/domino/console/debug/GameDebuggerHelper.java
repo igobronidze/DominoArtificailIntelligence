@@ -22,11 +22,11 @@ public class GameDebuggerHelper {
 	public static Round round;
 
 	public static List<Integer> getIdsForProcess(Scanner scanner) {
-		logger.info("Game ids( Format example - 1-20/3,15 ):");
+		logger.info("Game ids( Format example - 1_20/3,15 ):");
 		String inputIds = scanner.nextLine();
 
-		int idFrom = Integer.parseInt(inputIds.split("/")[0].split("-")[0]);
-		int idTo = Integer.parseInt(inputIds.split("/")[0].split("-")[1]);
+		int idFrom = Integer.parseInt(inputIds.split("/")[0].split("_")[0]);
+		int idTo = Integer.parseInt(inputIds.split("/")[0].split("_")[1]);
 
 		String[] notUsedIdsString = inputIds.split("/")[1].split(",");
 		List<Integer> notUsedIds = new ArrayList<>();

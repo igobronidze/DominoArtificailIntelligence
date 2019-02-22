@@ -7,13 +7,17 @@ import ge.ai.domino.dao.function.FunctionDAO;
 import ge.ai.domino.dao.function.FunctionDAOImpl;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.function.FunctionArgsAndValues;
+import ge.ai.domino.domain.game.Game;
+import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.opponentplay.GroupedOpponentPlay;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
+import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.opponentplay.OpponentPlaysManager;
 import ge.ai.domino.manager.opponentplay.guess.NegativeBalancedGuessRateCounter;
+import ge.ai.domino.manager.played.PlayedGameManager;
 import ge.ai.domino.manager.replaygame.ReplayGameManager;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.math.optimization.OptimizationDirection;
@@ -38,6 +42,8 @@ public class OpponentTilesPredictionOptimizationOperation implements GameDebugge
 
 	private static final SystemParameterManager sysParamManager = new SystemParameterManager();
 
+	private final PlayedGameManager playedGameManager = new PlayedGameManager();
+
 	@Override
 	public void process(Scanner scanner) throws DAIException {
 		List<Integer> idsForProcess = GameDebuggerHelper.getIdsForProcess(scanner);
@@ -60,6 +66,19 @@ public class OpponentTilesPredictionOptimizationOperation implements GameDebugge
 		logger.info("Optimization inner iteration:");
 		Integer optimizationInnerIteration = Integer.parseInt(scanner.nextLine());
 
+		List<Game> games = new ArrayList<>();
+		for (Integer gameId : idsForProcess) {
+			GameHistory gameHistory = playedGameManager.getGameHistory(gameId);
+			GameProperties gameProperties = playedGameManager.getGameProperties(gameId);
+
+			Game game = new Game();
+			game.setId(gameId);
+			game.setGameHistory(gameHistory);
+			game.setProperties(gameProperties);
+
+			games.add(game);
+		}
+
 		UnimodalOptimizationWithMultipleParams unimodalOptimizationWithMultipleParams =
 				new UnimodalOptimizationWithMultipleParams(UnimodalOptimizationType.INTERVAL_DIVISION, OptimizationDirection.MAX) {
 					@Override
@@ -68,14 +87,14 @@ public class OpponentTilesPredictionOptimizationOperation implements GameDebugge
 						functionArgsAndValuesMap.put(functionName, functionArgsAndValues);
 						functionManager.setFunctions(functionArgsAndValuesMap, false);
 
-						return getAverageGuess(idsForProcess.subList(0, gamesAmount), NegativeBalancedGuessRateCounter.class.getSimpleName(), params);
+						return getAverageGuess(games.subList(0, gamesAmount), NegativeBalancedGuessRateCounter.class.getSimpleName(), params);
 					}
 				};
 
 		for (int i = 1; i <= optimizationIteration; i++) {
 			logger.info("Starting MinMaxOpponentTilesPredictor optimization iteration[" + i + "]");
 
-			Collections.shuffle(idsForProcess);
+			Collections.shuffle(games);
 
 			List<Double> newValues = unimodalOptimizationWithMultipleParams.getExtremaVector(functionArgsAndValues.getValues(),
 					getParamIntervals(functionArgsAndValues.getValues()), optimizationInnerIteration);
@@ -90,14 +109,14 @@ public class OpponentTilesPredictionOptimizationOperation implements GameDebugge
 		}
 	}
 
-	private static double getAverageGuess(List<Integer> idsForProcess, String guessRateCounterClassName, List<Double> params) {
+	private static double getAverageGuess(List<Game> games, String guessRateCounterClassName, List<Double> params) {
 		List<OpponentPlay> fullOpponentPlays = new ArrayList<>();
-		for (int id : idsForProcess) {
-			logger.info("Starting game for replay id[" + id + "]");
+		for (Game game : games) {
+			logger.info("Starting game for replay id[" + game.getId() + "]");
 
 			int gameId = 0;
 			try {
-				ReplayMoveInfo replayMoveInfo = replayGameManager.startReplayGame(id);
+				ReplayMoveInfo replayMoveInfo = replayGameManager.startReplayGame(game);
 				gameId = replayMoveInfo.getGameId();
 
 				while (replayMoveInfo.getNextMove() != null) {
@@ -106,14 +125,14 @@ public class OpponentTilesPredictionOptimizationOperation implements GameDebugge
 
 				fullOpponentPlays.addAll(GameDebuggerHelper.removeExtraPlays(CachedGames.getOpponentPlays(replayMoveInfo.getGameId())));
 			} catch (Exception ex) {
-				logger.error("Error occurred while replay game id[" + id + "]", ex);
+				logger.error("Error occurred while replay game id[" + game.getId() + "]", ex);
 			} finally {
 				CachedGames.removeGame(gameId);
 				CachedGames.removeCreatedGameHistory(gameId);
 				CachedMinMax.cleanUp(gameId);
 			}
 
-			logger.info("Finished game for replay id[" + id + "]");
+			logger.info("Finished game for replay id[" + game.getId() + "]");
 		}
 
 		GroupedOpponentPlay groupedOpponentPlay = opponentPlaysManager.getGroupedOpponentPlays(fullOpponentPlays, false, false, true).get(0);

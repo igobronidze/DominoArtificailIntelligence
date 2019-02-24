@@ -20,11 +20,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GroupedPlayedGamePane extends BorderPane {
 
-    private static final int COUMN_COUNT = 9;
+    private static final int COLUMN_COUNT = 9;
 
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
@@ -71,38 +72,38 @@ public class GroupedPlayedGamePane extends BorderPane {
         this.setTop(flowPane);
     }
 
-    @SuppressWarnings("unchecked")
     private void initTable() {
         tableView = new TableView<>();
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
         TableColumn<GroupedPlayedGameProperty, Boolean> versionColumn = new TableColumn<>(Messages.get("version"));
         versionColumn.setCellValueFactory(new PropertyValueFactory<>("version"));
-        versionColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
+        versionColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> pointForWinColumn = new TableColumn<>(Messages.get("pointForWin"));
         pointForWinColumn.setCellValueFactory(new PropertyValueFactory<>("pointForWin"));
-        pointForWinColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
+        pointForWinColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> opponentNameColumn = new TableColumn<>(Messages.get("opponentName"));
         opponentNameColumn.setCellValueFactory(new PropertyValueFactory<>("opponentName"));
-        opponentNameColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
+        opponentNameColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> channelColumn = new TableColumn<>(Messages.get("channel"));
         channelColumn.setCellValueFactory(new PropertyValueFactory<>("channel"));
-        channelColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
+        channelColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> levelColumn = new TableColumn<>(Messages.get("level"));
         levelColumn.setCellValueFactory(new PropertyValueFactory<>("level"));
-        levelColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
+        levelColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentColumn = new TableColumn<>(Messages.get("winPercent"));
         winPercentColumn.setCellValueFactory(new PropertyValueFactory<>("winPercent"));
-        winPercentColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
+        winPercentColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> losePercentColumn = new TableColumn<>(Messages.get("losePercent"));
         losePercentColumn.setCellValueFactory(new PropertyValueFactory<>("losePercent"));
-        losePercentColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
+        losePercentColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> stoppedColumn = new TableColumn<>(Messages.get("stoppedPercent"));
         stoppedColumn.setCellValueFactory(new PropertyValueFactory<>("stoppedPercent"));
-        stoppedColumn.prefWidthProperty().bind(doubleBinding.divide(COUMN_COUNT));
+        stoppedColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentForFinishedColumn = new TableColumn<>(Messages.get("winPercentForFinished"));
         winPercentForFinishedColumn.setCellValueFactory(new PropertyValueFactory<>("winPercentForFinished"));
         winPercentForFinishedColumn.prefWidthProperty().bind(doubleBinding.divide(8));
-        tableView.getColumns().addAll(versionColumn, pointForWinColumn, opponentNameColumn, channelColumn, levelColumn, winPercentColumn, losePercentColumn, stoppedColumn, winPercentForFinishedColumn);
+        tableView.getColumns().addAll(Arrays.asList(versionColumn, pointForWinColumn, opponentNameColumn,
+                channelColumn, levelColumn, winPercentColumn, losePercentColumn, stoppedColumn, winPercentForFinishedColumn));
         this.setCenter(tableView);
     }
 

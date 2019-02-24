@@ -67,7 +67,7 @@ public class GamePropertiesPane extends VBox {
     private void initComponents() {
         List<Channel> channels = channelService.getChannels();
         Map<String, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getName, channel -> channel));
-        TCHComboBox channelsCombo = new TCHComboBox(new ArrayList<>(channelsMap.keySet()));
+        TCHComboBox<String> channelsCombo = new TCHComboBox<>(new ArrayList<>(channelsMap.keySet()));
         channelsCombo.setValue(systemParameterService.getStringParameterValue(defaultChannelName));
         TCHFieldLabel channelFieldLabel = new TCHFieldLabel(Messages.get("channel"), channelsCombo);
 
@@ -75,8 +75,7 @@ public class GamePropertiesPane extends VBox {
         TCHFieldLabel nameFieldLabel = new TCHFieldLabel(Messages.get("name"), nameField);
 
         List<Integer> points = systemParameterService.getIntegerListParameterValue(possiblePoints);
-        List<Object> objPoints = new ArrayList<>(points);
-        TCHComboBox pointComboBox = new TCHComboBox(objPoints);
+        TCHComboBox<Integer> pointComboBox = new TCHComboBox<>(points);
         pointComboBox.setValue(systemParameterService.getIntegerParameterValue(defaultWinPoint));
         TCHFieldLabel pointFieldLabel = new TCHFieldLabel(Messages.get("point"), pointComboBox);
 
@@ -85,7 +84,7 @@ public class GamePropertiesPane extends VBox {
         levelField.setNumber(new BigDecimal(systemParameterService.getIntegerParameterValue(levelDefaultValue)));
         TCHFieldLabel levelFieldLabel = new TCHFieldLabel(Messages.get("level"), levelField);
         startButton.setOnAction(e -> {
-            if (StringUtil.isEmpty((String) channelsCombo.getValue()) || StringUtil.isEmpty(nameField.getText())) {
+            if (StringUtil.isEmpty(channelsCombo.getValue()) || StringUtil.isEmpty(nameField.getText())) {
                 WarnDialog.showWarnDialog(Messages.get("pleaseFillAllField"));
             } else {
                 GameProperties gameProperties = new GameProperties();

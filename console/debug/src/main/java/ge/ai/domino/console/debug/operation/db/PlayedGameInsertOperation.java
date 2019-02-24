@@ -3,7 +3,6 @@ package ge.ai.domino.console.debug.operation.db;
 import ge.ai.domino.console.debug.operation.GameDebuggerOperation;
 import ge.ai.domino.dao.connection.ConnectionUtil;
 import ge.ai.domino.domain.channel.Channel;
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.PlayedGame;
 import org.apache.log4j.Logger;
@@ -25,7 +24,7 @@ public class PlayedGameInsertOperation implements GameDebuggerOperation {
     private static PreparedStatement pstmt;
 
     @Override
-    public void process(Scanner scanner) throws DAIException {
+    public void process(Scanner scanner) {
         List<PlayedGame> playedGames = getPlayedGames();
         insetGames(playedGames);
     }

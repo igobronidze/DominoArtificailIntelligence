@@ -3,7 +3,6 @@ package ge.ai.domino.console.debug.operation.game;
 import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.console.debug.GameDebuggerHelper;
 import ge.ai.domino.console.debug.operation.GameDebuggerOperation;
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.opponentplay.GroupedOpponentPlay;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.move.Move;
@@ -31,7 +30,7 @@ public class ReplayGameOperation implements GameDebuggerOperation {
 	private static final OpponentPlaysManager opponentPlaysManager = new OpponentPlaysManager();
 
 	@Override
-	public void process(Scanner scanner) throws DAIException {
+	public void process(Scanner scanner) {
 		List<Integer> idsForProcess = GameDebuggerHelper.getIdsForProcess(scanner);
 
 		functionManager.initFunctions();

@@ -30,7 +30,7 @@ public class GroupedOpponentPlaysPane extends BorderPane {
 
     private final GroupedOpponentPlaysService groupedOpponentPlaysService = new GroupedOpponentPlaysServiceImpl();
 
-    private TableView tableView;
+    private TableView<Map<String, String>> tableView;
 
     private DoubleBinding doubleBinding;
 

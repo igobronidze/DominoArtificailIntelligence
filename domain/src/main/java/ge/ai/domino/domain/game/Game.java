@@ -24,6 +24,14 @@ public class Game {
 
     private int opponentLeftTilesCount;
 
+    public Game() {}
+
+    public Game(int id, GameProperties properties, GameHistory gameHistory) {
+        this.id = id;
+        this.properties = properties;
+        this.gameHistory = gameHistory;
+    }
+
     public int getId() {
         return id;
     }

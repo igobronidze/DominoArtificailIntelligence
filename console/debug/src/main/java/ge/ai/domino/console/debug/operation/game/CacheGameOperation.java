@@ -9,9 +9,9 @@ import org.apache.log4j.Logger;
 
 import java.util.Scanner;
 
-public class CachGameOperation implements GameDebuggerOperation {
+public class CacheGameOperation implements GameDebuggerOperation {
 
-	private static final Logger logger = Logger.getLogger(CachGameOperation.class);
+	private static final Logger logger = Logger.getLogger(CacheGameOperation.class);
 
 	public void process(Scanner scanner) {
 		GameProperties gameProperties = new GameProperties();

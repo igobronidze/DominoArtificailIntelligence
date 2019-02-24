@@ -12,7 +12,6 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.heuristic.Heuristic;
 import ge.ai.domino.domain.heuristic.RoundHeuristicType;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.manager.game.helper.play.GameOperations;
 import ge.ai.domino.manager.game.helper.play.PossibleMovesManager;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.heuristic.HeuristicManager;

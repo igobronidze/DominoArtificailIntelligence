@@ -40,12 +40,7 @@ public class ReplayGameManager {
 		GameHistory gameHistory = playedGameManager.getGameHistory(gameId);
 		GameProperties gameProperties = playedGameManager.getGameProperties(gameId);
 
-		Game initialGame = new Game();
-		initialGame.setId(gameId);
-		initialGame.setGameHistory(gameHistory);
-		initialGame.setProperties(gameProperties);
-
-		return startReplayGame(initialGame);
+		return startReplayGame(new Game(gameId, gameProperties, gameHistory));
 	}
 
 	public ReplayMoveInfo startReplayGame(Game initialGame) {

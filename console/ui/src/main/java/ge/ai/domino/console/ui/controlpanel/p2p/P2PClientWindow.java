@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class P2PClientWindow {

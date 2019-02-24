@@ -33,7 +33,7 @@ public class ChannelPane extends BorderPane {
 
     private final ChannelService channelService = new ChannelServiceImpl();
 
-    private TCHComboBox channelsCombo;
+    private TCHComboBox<String> channelsCombo;
 
     private Map<String, Channel> channels;
 
@@ -110,7 +110,7 @@ public class ChannelPane extends BorderPane {
     }
 
     private void initTopPane() {
-        channelsCombo = new TCHComboBox(new ArrayList<>(channels.keySet()));
+        channelsCombo = new TCHComboBox<>(new ArrayList<>(channels.keySet()));
         channelsCombo.setOnAction(e -> initChannelPane());
 
         TCHTextField channelNameField = new TCHTextField(TCHComponentSize.SMALL);

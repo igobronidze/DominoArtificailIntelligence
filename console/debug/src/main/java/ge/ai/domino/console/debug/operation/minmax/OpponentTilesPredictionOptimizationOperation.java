@@ -71,12 +71,7 @@ public class OpponentTilesPredictionOptimizationOperation implements GameDebugge
 			GameHistory gameHistory = playedGameManager.getGameHistory(gameId);
 			GameProperties gameProperties = playedGameManager.getGameProperties(gameId);
 
-			Game game = new Game();
-			game.setId(gameId);
-			game.setGameHistory(gameHistory);
-			game.setProperties(gameProperties);
-
-			games.add(game);
+			games.add(new Game(gameId, gameProperties, gameHistory));
 		}
 
 		UnimodalOptimizationWithMultipleParams unimodalOptimizationWithMultipleParams =

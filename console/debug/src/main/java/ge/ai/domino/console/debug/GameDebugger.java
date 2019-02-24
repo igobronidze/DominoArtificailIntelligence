@@ -1,7 +1,7 @@
 package ge.ai.domino.console.debug;
 
 import ge.ai.domino.console.debug.operation.db.PlayedGameInsertOperation;
-import ge.ai.domino.console.debug.operation.game.CachGameOperation;
+import ge.ai.domino.console.debug.operation.game.CacheGameOperation;
 import ge.ai.domino.console.debug.operation.game.ParseRoundOperation;
 import ge.ai.domino.console.debug.operation.game.ReplayGameOperation;
 import ge.ai.domino.console.debug.operation.game.ReplayGameWithDifferenceModeOperation;
@@ -55,7 +55,7 @@ public class GameDebugger {
                     case "0":
                         return;
                     case "1": {
-                        new CachGameOperation().process(scanner);
+                        new CacheGameOperation().process(scanner);
                         break;
                     }
                     case "2": {

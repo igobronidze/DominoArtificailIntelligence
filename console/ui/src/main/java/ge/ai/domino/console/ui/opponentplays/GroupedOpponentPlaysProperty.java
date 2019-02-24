@@ -10,11 +10,11 @@ import java.util.Map;
 
 public class GroupedOpponentPlaysProperty {
 
-	public static final String GAME_ID_KEY = "gameId";
+	static final String GAME_ID_KEY = "gameId";
 
-	public static final String VERSION_KEY = "version";
+	static final String VERSION_KEY = "version";
 
-	public static ObservableList<Map<String, String>> generateDataInMap(List<GroupedOpponentPlay> groupedOpponentPlays) {
+	static ObservableList<Map<String, String>> generateDataInMap(List<GroupedOpponentPlay> groupedOpponentPlays) {
 		ObservableList<Map<String, String>> allData = FXCollections.observableArrayList();
 		for (GroupedOpponentPlay groupedOpponentPlay : groupedOpponentPlays) {
 			Map<String, String> dataRow = new HashMap<>();

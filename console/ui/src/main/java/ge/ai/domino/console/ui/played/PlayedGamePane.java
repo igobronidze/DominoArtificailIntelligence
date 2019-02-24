@@ -29,6 +29,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.util.StringConverter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class PlayedGamePane extends BorderPane {
 
     private TCHTextField opponentNameField;
 
-    private TCHComboBox channelCombo;
+    private TCHComboBox<String> channelCombo;
 
     private TCHTextField levelField;
 
@@ -99,7 +100,7 @@ public class PlayedGamePane extends BorderPane {
         resultComboBox.setStyle("-fx-font-family: sylfaen; -fx-font-size: 14px;");
         opponentNameField = new TCHTextField(TCHComponentSize.SMALL);
         opponentNameField.setPromptText(Messages.get("opponentName"));
-        channelCombo = new TCHComboBox(new ArrayList<>(channelsMap.keySet()));
+        channelCombo = new TCHComboBox<>(new ArrayList<>(channelsMap.keySet()));
         levelField = new TCHTextField(TCHComponentSize.SMALL);
         levelField.setPromptText(Messages.get("level"));
         TCHButton searchButton = new TCHButton();
@@ -113,7 +114,6 @@ public class PlayedGamePane extends BorderPane {
         this.setTop(flowPane);
     }
 
-    @SuppressWarnings("unchecked")
     private void initTable() {
         tableView = new TableView<>();
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
@@ -147,8 +147,8 @@ public class PlayedGamePane extends BorderPane {
         TableColumn<PlayedGameProperty, Boolean> levelColumn = new TableColumn<>(Messages.get("level"));
         levelColumn.setCellValueFactory(new PropertyValueFactory<>("level"));
         levelColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        tableView.getColumns().addAll(idColumn, versionColumn, resultColumn, dateColumn, myPointColumn, opponentPointColumn,
-                pointForWinColumn, opponentNameColumn, channelColumn, levelColumn);
+        tableView.getColumns().addAll(Arrays.asList(idColumn, versionColumn, resultColumn, dateColumn, myPointColumn, opponentPointColumn,
+                pointForWinColumn, opponentNameColumn, channelColumn, levelColumn));
         this.setCenter(tableView);
     }
 

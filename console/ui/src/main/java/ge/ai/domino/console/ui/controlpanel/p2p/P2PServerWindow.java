@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class P2PServerWindow {
@@ -33,8 +32,7 @@ public abstract class P2PServerWindow {
 
         TCHLabel label = new TCHLabel(Messages.get("selectPointOfWin"));
         List<Integer> points = systemParameterService.getIntegerListParameterValue(possiblePoints);
-        List<Object> objPoints = new ArrayList<>(points);
-        TCHComboBox pointComboBox = new TCHComboBox(objPoints);
+        TCHComboBox<Integer> pointComboBox = new TCHComboBox<>(points);
 
         TCHButton startButton = new TCHButton(Messages.get("start"));
         TCHButton stopButton = new TCHButton(Messages.get("stop"));

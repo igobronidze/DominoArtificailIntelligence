@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ShortcutPane extends HBox {
@@ -30,7 +31,6 @@ public class ShortcutPane extends HBox {
         initTable();
     }
 
-    @SuppressWarnings("unchecked")
     private void initTable() {
         doubleBinding = doubleBinding.subtract(20);
         tableView = new TableView<>();
@@ -41,7 +41,7 @@ public class ShortcutPane extends HBox {
         TableColumn<ShortcutProperty, Boolean> valueColumn = new TableColumn<>(Messages.get("value"));
         valueColumn.prefWidthProperty().bind(doubleBinding.divide(5).multiply(4));
         valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
-        tableView.getColumns().addAll(keyColumn, valueColumn);
+        tableView.getColumns().addAll(Arrays.asList(keyColumn, valueColumn));
         loadShortcuts();
         this.getChildren().add(tableView);
     }

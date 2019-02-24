@@ -14,7 +14,6 @@ import ge.ai.domino.service.sysparam.SystemParameterService;
 import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -31,7 +30,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,13 +45,13 @@ public class SystemParametersPane extends HBox {
 
     private TCHTextField valueField;
 
-    private TCHComboBox typeComboBox;
+    private TCHComboBox<SystemParameterType> typeComboBox;
 
     private DoubleBinding doubleBinding;
 
     private TCHTextField keyFilterField;
 
-    private TCHComboBox typeFilterComboBox;
+    private TCHComboBox<SystemParameterType> typeFilterComboBox;
 
     public SystemParametersPane(DoubleBinding doubleBinding) {
         this.doubleBinding = doubleBinding;
@@ -67,11 +65,10 @@ public class SystemParametersPane extends HBox {
         initParams();
     }
 
-    @SuppressWarnings("unchecked")
     private void initTable() {
         keyFilterField = new TCHTextField(TCHComponentSize.MEDIUM);
         keyFilterField.setPromptText(Messages.get("key"));
-        typeFilterComboBox = new TCHComboBox(Arrays.asList(SystemParameterType.values()));
+        typeFilterComboBox = new TCHComboBox<>(Arrays.asList(SystemParameterType.values()));
 
         TCHButton searchButton = new TCHButton();
         searchButton.setGraphic(new ImageView(ImageFactory.getImage("search.png")));
@@ -97,11 +94,11 @@ public class SystemParametersPane extends HBox {
         TableColumn<SystemParameterProperty, Boolean> typeColumn = new TableColumn<>(Messages.get("type"));
         typeColumn.prefWidthProperty().bind(doubleBinding.divide(8).multiply(2));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        TableColumn deleteColumn = new TableColumn<>("");
-        deleteColumn.setCellValueFactory((Callback<TableColumn.CellDataFeatures<SystemParameterProperty, Boolean>, ObservableValue<Boolean>>) p -> new SimpleBooleanProperty(p.getValue() != null));
+        TableColumn<SystemParameterProperty, Boolean> deleteColumn = new TableColumn<>("");
+        deleteColumn.setCellValueFactory(p -> new SimpleBooleanProperty(p.getValue() != null));
         deleteColumn.setCellFactory(p -> new DeleteButtonCell());
         deleteColumn.setPrefWidth(70);
-        tableView.getColumns().addAll(idColumn, keyColumn, valueColumn, typeColumn, deleteColumn);
+        tableView.getColumns().addAll(Arrays.asList(idColumn, keyColumn, valueColumn, typeColumn, deleteColumn));
         loadSystemParameters(true);
         tableView.setRowFactory( tv -> {
             TableRow<SystemParameterProperty> row = new TableRow<>();
@@ -110,7 +107,7 @@ public class SystemParametersPane extends HBox {
                     SystemParameterProperty systemParameterProperty = row.getItem();
                     keyField.setText(systemParameterProperty.getKey());
                     valueField.setText(systemParameterProperty.getValue());
-                    typeComboBox.setValue(systemParameterProperty.getType());
+                    typeComboBox.setValue(SystemParameterType.valueOf(systemParameterProperty.getType()));
                     keyField.setDisable(true);
                 }
             });
@@ -132,7 +129,7 @@ public class SystemParametersPane extends HBox {
         vBox.setStyle("-fx-border-color: green; -fx-border-radius: 25px; -fx-border-size: 1px;");
         keyField = new TCHTextField(TCHComponentSize.SMALL);
         valueField = new TCHTextField(TCHComponentSize.SMALL);
-        typeComboBox = new TCHComboBox(Arrays.asList(SystemParameterType.values()));
+        typeComboBox = new TCHComboBox<>(Arrays.asList(SystemParameterType.values()));
         TCHFieldLabel keyFieldLabel = new TCHFieldLabel(Messages.get("key"), keyField);
         TCHFieldLabel valueFieldLabel = new TCHFieldLabel(Messages.get("value"), valueField);
         TCHFieldLabel typeFieldLabel = new TCHFieldLabel(Messages.get("type"), typeComboBox);
@@ -143,8 +140,8 @@ public class SystemParametersPane extends HBox {
         saveButton.setOnAction(event -> {
             String key = keyField.getText();
             String value = valueField.getText();
-            String type = typeComboBox.getValue().toString();
-            SystemParameter systemParameter = new SystemParameter(0, key, value, SystemParameterType.valueOf(type));
+            SystemParameterType type = typeComboBox.getValue();
+            SystemParameter systemParameter = new SystemParameter(0, key, value, type);
             if (!key.isEmpty() && !value.isEmpty()) {
                 ServiceExecutor.execute(() -> {
                     if (keyField.isDisabled()) {
@@ -163,7 +160,6 @@ public class SystemParametersPane extends HBox {
         this.getChildren().add(vBox);
     }
 
-    @SuppressWarnings("unchecked")
     private void clearFields() {
         keyField.setText("");
         valueField.setText("");
@@ -199,7 +195,7 @@ public class SystemParametersPane extends HBox {
     }
 
     private void loadSystemParameters(boolean initialCall) {
-        List<SystemParameter> systemParameters = systemParameterService.getSystemParameters(initialCall ? null : keyFilterField.getText(), initialCall ? null : SystemParameterType.valueOf(typeFilterComboBox.getValue().toString()));
+        List<SystemParameter> systemParameters = systemParameterService.getSystemParameters(initialCall ? null : keyFilterField.getText(), initialCall ? null : typeFilterComboBox.getValue());
         List<SystemParameterProperty> systemParameterProperties = systemParameters.stream().map(SystemParameterProperty::new).collect(Collectors.toList());
         ObservableList<SystemParameterProperty> data = FXCollections.observableArrayList(systemParameterProperties);
         tableView.setItems(data);

@@ -1,7 +1,6 @@
 package ge.ai.domino.console.debug.operation.sysparam;
 
 import ge.ai.domino.console.debug.operation.GameDebuggerOperation;
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
@@ -14,7 +13,7 @@ public class ChangeSysParamOperation implements GameDebuggerOperation {
 	private static final SystemParameterManager sysParamManager = new SystemParameterManager();
 
 	@Override
-	public void process(Scanner scanner) throws DAIException {
+	public void process(Scanner scanner) {
 		logger.info("key:");
 		String key = scanner.nextLine();
 		logger.info("value:");

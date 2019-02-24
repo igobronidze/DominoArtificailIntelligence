@@ -17,6 +17,7 @@ import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.console.ui.util.service.ServiceExecutor;
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInfo;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.TableInfo;
@@ -114,6 +115,8 @@ public abstract class GamePane extends BorderPane {
         initFocusLoseListener();
     }
 
+    public abstract void onNewGame();
+
     private void showDetectTilesWindow(boolean firstRound) {
         controlPanel.getStage().setIconified(true);
 
@@ -207,8 +210,6 @@ public abstract class GamePane extends BorderPane {
         }
     }
 
-    public abstract void onNewGame();
-
     private void initTopPane() {
         TableInfo tableInfo = AppController.round.getTableInfo();
         GameInfo gameInfo = AppController.round.getGameInfo();
@@ -250,12 +251,7 @@ public abstract class GamePane extends BorderPane {
                         if (AppController.round.getMyTiles().size() == 1) {
                             showAddLeftTilesCount(new Tile(move.getLeft(), move.getRight()), move.getDirection(), MoveType.PLAY_FOR_ME);
                         } else {
-                            if (gameService.roundWillBeBlocked(AppController.round.getGameInfo().getGameId(), move)) {
-                                showAddLeftTilesCount(new Tile(move.getLeft(), move.getRight()), move.getDirection(), MoveType.PLAY_FOR_ME);
-                            } else {
-                                AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), move);
-                                reload(true, false);
-                            }
+                            tryToPlayForMe(move);
                         }
                     });
                 } else if (AppController.round != null && !hasPrediction && AppController.round.getTableInfo().isMyMove() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
@@ -625,14 +621,18 @@ public abstract class GamePane extends BorderPane {
                 showAddLeftTilesCount(tile, direction, MoveType.PLAY_FOR_ME);
             } else {
                 Move move = TileAndMoveHelper.getMove(tile, direction);
-                if (gameService.roundWillBeBlocked(AppController.round.getGameInfo().getGameId(), move)) {
-                    showAddLeftTilesCount(new Tile(move.getLeft(), move.getRight()), move.getDirection(), MoveType.PLAY_FOR_ME);
-                } else {
-                    AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), move);
-                    reload(true, false);
-                }
+                tryToPlayForMe(move);
             }
         });
+    }
+
+    private void tryToPlayForMe(Move move) throws DAIException {
+        if (gameService.roundWillBeBlocked(AppController.round.getGameInfo().getGameId(), move)) {
+            showAddLeftTilesCount(new Tile(move.getLeft(), move.getRight()), move.getDirection(), MoveType.PLAY_FOR_ME);
+        } else {
+            AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), move);
+            reload(true, false);
+        }
     }
 
     private void onOpponentTileEntered(Tile tile, MoveDirection direction) {

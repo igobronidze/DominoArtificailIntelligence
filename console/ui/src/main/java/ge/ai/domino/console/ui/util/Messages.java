@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -29,7 +30,7 @@ public class Messages {
                 properties = new Properties();
                 try {
                     InputStream is = Messages.class.getResourceAsStream("/messages_" + langCode + ".properties");
-                    Reader bufferedReader = new InputStreamReader(is, "UTF-8");
+                    Reader bufferedReader = new InputStreamReader(is, StandardCharsets.UTF_8);
                     properties.load(bufferedReader);
                     messages.put(langCode, properties);
                 } catch (IOException ignore) {}

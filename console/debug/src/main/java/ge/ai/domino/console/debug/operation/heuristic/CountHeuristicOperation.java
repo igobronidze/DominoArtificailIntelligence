@@ -2,7 +2,6 @@ package ge.ai.domino.console.debug.operation.heuristic;
 
 import ge.ai.domino.console.debug.GameDebuggerHelper;
 import ge.ai.domino.console.debug.operation.GameDebuggerOperation;
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.manager.heuristic.HeuristicManager;
 import org.apache.log4j.Logger;
 
@@ -16,7 +15,7 @@ public class CountHeuristicOperation implements GameDebuggerOperation {
 	private static final HeuristicManager heuristicManager = new HeuristicManager();
 
 	@Override
-	public void process(Scanner scanner) throws DAIException {
+	public void process(Scanner scanner) {
 		Map<String, Double> result = heuristicManager.getHeuristics(GameDebuggerHelper.round);
 		for (Map.Entry<String, Double> entry : result.entrySet()) {
 			logger.info(entry.getKey() + ": " + entry.getValue());

@@ -1,7 +1,6 @@
 package ge.ai.domino.console.debug.operation.minmax;
 
 import ge.ai.domino.console.debug.operation.GameDebuggerOperation;
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
 import org.apache.log4j.Logger;
@@ -15,7 +14,7 @@ public class SendGameToMultithreadingClientOperation implements GameDebuggerOper
 	private static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
 
 	@Override
-	public void process(Scanner scanner) throws DAIException {
+	public void process(Scanner scanner) {
 		logger.info("Game ID:");
 		int gameId = Integer.parseInt(scanner.nextLine());
 		logger.info("Point for win:");

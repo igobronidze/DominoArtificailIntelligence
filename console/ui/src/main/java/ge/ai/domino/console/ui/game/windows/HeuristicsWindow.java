@@ -1,4 +1,4 @@
-package ge.ai.domino.console.ui.game;
+package ge.ai.domino.console.ui.game.windows;
 
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHLabel;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 public abstract class HeuristicsWindow {
 
-	void showWindow(Map<String, Double> heuristics) {
+	public void showWindow(Map<String, Double> heuristics) {
 		Stage stage = new Stage();
 		stage.setResizable(false);
 		stage.setTitle(Messages.get("heuristic"));

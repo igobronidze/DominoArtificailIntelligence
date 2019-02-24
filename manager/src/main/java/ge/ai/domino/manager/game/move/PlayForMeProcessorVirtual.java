@@ -16,15 +16,16 @@ public class PlayForMeProcessorVirtual extends MoveProcessor {
 		}
 
 		// Play tile
-		Tile tmpTile = new Tile(move.getLeft(), move.getRight());
-		round.getMyTiles().remove(tmpTile);
-		GameOperations.playTile(round, move);
+		GameOperations.playTile(round, move, true);
 
 		round.getGameInfo().setMyPoint(round.getGameInfo().getMyPoint() + GameOperations.countScore(round));
 		round.getTableInfo().setMyMove(false);
 
 		if (round.getMyTiles().size() == 0) {
 			round = GameOperations.finishedLastAndGetNewRound(round, true, GameOperations.countLeftTiles(round, false, true), true);
+		} else if (GameOperations.isRoundBlocked(round)) {
+			logger.info("Round is blocked");
+			round = GameOperations.blockRound(round, GameOperations.countLeftTiles(round, false, true), true);
 		}
 
 		return round;

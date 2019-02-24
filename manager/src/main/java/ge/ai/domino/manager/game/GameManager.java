@@ -248,6 +248,18 @@ public class GameManager {
         }
     }
 
+    public boolean roundWillBeBlocked(int gameId, Move move) {
+        Round round = CachedGames.getCurrentRound(gameId, true);
+        try {
+            MoveValidator.validateMove(round, move);
+        } catch (DAIException ex) {
+            return false;
+        }
+
+        GameOperations.playTile(round, move, true);
+        return GameOperations.isRoundBlocked(round);
+    }
+
     private void logImage(String imagePath) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss");
 

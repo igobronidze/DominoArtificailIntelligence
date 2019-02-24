@@ -74,4 +74,9 @@ public class GameServiceImpl implements GameService {
     public String getCurrentRoundInfoInString(int gameId) {
         return gameManager.getCurrentRoundInfoInString(gameId);
     }
+
+    @Override
+    public boolean roundWillBeBlocked(int gameId, Move move) {
+        return gameManager.roundWillBeBlocked(gameId, move);
+    }
 }

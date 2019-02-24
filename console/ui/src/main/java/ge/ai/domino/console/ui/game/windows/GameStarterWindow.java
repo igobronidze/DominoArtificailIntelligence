@@ -1,4 +1,4 @@
-package ge.ai.domino.console.ui.game;
+package ge.ai.domino.console.ui.game.windows;
 
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHLabel;
@@ -10,9 +10,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-abstract class GameStarterWindow {
+public abstract class GameStarterWindow {
 
-	void showWindow() {
+	public void showWindow() {
 		Stage stage = new Stage();
 		stage.setResizable(false);
 		stage.setTitle(Messages.get("gameStarter"));

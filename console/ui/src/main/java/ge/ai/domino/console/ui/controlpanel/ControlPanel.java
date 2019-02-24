@@ -1,6 +1,6 @@
 package ge.ai.domino.console.ui.controlpanel;
 
-import ge.ai.domino.console.ui.game.SaveGameWindow;
+import ge.ai.domino.console.ui.game.windows.SaveGameWindow;
 import ge.ai.domino.console.ui.gameproperties.GamePropertiesPane;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.service.ServiceExecutor;

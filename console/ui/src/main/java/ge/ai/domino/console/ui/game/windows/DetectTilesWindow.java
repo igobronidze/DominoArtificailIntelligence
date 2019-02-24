@@ -1,4 +1,4 @@
-package ge.ai.domino.console.ui.game;
+package ge.ai.domino.console.ui.game.windows;
 
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHCheckBox;
@@ -11,9 +11,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-abstract class DetectTilesWindow {
+public abstract class DetectTilesWindow {
 
-	void showWindow(boolean firstRound) {
+	public void showWindow(boolean firstRound) {
 		Stage stage = new Stage();
 		stage.setResizable(false);
 		stage.setTitle(Messages.get("detectTiles"));

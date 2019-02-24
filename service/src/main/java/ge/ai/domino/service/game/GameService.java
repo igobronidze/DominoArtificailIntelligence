@@ -32,4 +32,6 @@ public interface GameService {
     void editOpponentNameInCache(int gameId, String opponentName);
 
     String getCurrentRoundInfoInString(int gameId);
+
+    boolean roundWillBeBlocked(int gameId, Move move);
 }

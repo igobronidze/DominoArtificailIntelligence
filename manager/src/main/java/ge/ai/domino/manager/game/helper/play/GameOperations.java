@@ -223,7 +223,16 @@ public class GameOperations {
 		return sum;
 	}
 
-	public static void playTile(Round round, Move move) {
+	public static void playTile(Round round, Move move, boolean removeTile) {
+		if (removeTile) {
+			Tile tmpTile = new Tile(move.getLeft(), move.getRight());
+			if (round.getTableInfo().isMyMove()) {
+				round.getMyTiles().remove(tmpTile);
+			} else {
+				round.getOpponentTiles().remove(tmpTile);
+			}
+		}
+
 		TableInfo tableInfo = round.getTableInfo();
 		int left = move.getLeft();
 		int right = move.getRight();
@@ -336,6 +345,21 @@ public class GameOperations {
 			}
 		}
 		return cachedPrediction;
+	}
+
+	public static boolean isRoundBlocked(Round round) {
+		Set<Integer> possiblePlayNumbers = getPossiblePlayNumbers(round.getTableInfo());
+		for (Tile tile : round.getMyTiles()) {
+			if (possiblePlayNumbers.contains(tile.getLeft()) || possiblePlayNumbers.contains(tile.getRight())) {
+				return false;
+			}
+		}
+		for (Tile tile : round.getOpponentTiles().keySet()) {
+			if (possiblePlayNumbers.contains(tile.getLeft()) || possiblePlayNumbers.contains(tile.getRight())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static int normalizeLeftTilesCount(double count) {

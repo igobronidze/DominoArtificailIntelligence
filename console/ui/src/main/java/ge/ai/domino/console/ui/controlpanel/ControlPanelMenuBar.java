@@ -3,7 +3,7 @@ package ge.ai.domino.console.ui.controlpanel;
 import ge.ai.domino.console.ui.channel.ChannelPane;
 import ge.ai.domino.console.ui.controlpanel.p2p.P2PClientWindow;
 import ge.ai.domino.console.ui.controlpanel.p2p.P2PServerWindow;
-import ge.ai.domino.console.ui.game.SaveGameWindow;
+import ge.ai.domino.console.ui.game.windows.SaveGameWindow;
 import ge.ai.domino.console.ui.opponentplays.GroupedOpponentPlaysPane;
 import ge.ai.domino.console.ui.played.GroupedPlayedGamePane;
 import ge.ai.domino.console.ui.played.PlayedGamePane;

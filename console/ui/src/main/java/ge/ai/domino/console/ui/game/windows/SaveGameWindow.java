@@ -1,4 +1,4 @@
-package ge.ai.domino.console.ui.game;
+package ge.ai.domino.console.ui.game.windows;
 
 import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;

@@ -40,32 +40,32 @@ public class PossibleMovesManager {
 		} else {
 			if (round.getTableInfo().isMyMove()) {
 				for (Tile tile : round.getMyTiles()) {
-					addPossibleMovesForTile(round.getGameInfo().getGameId(), tile, left, right, top, bottom, moves, allMove);
+					addPossibleMovesForTile(round, tile, left, right, top, bottom, moves, allMove);
 				}
 			} else {
 				round.getOpponentTiles().entrySet().stream().filter(entry -> entry.getValue() > 0.0).forEach(
-						entry -> addPossibleMovesForTile(round.getGameInfo().getGameId(), entry.getKey(), left, right, top, bottom, moves, allMove));
+						entry -> addPossibleMovesForTile(round, entry.getKey(), left, right, top, bottom, moves, allMove));
 			}
 		}
 		return moves;
 	}
 
-	private static void addPossibleMovesForTile(int gameId, Tile tile, PlayedTile left, PlayedTile right, PlayedTile top, PlayedTile bottom, List<Move> moves, boolean allMove) {
+	private static void addPossibleMovesForTile(Round round, Tile tile, PlayedTile left, PlayedTile right, PlayedTile top, PlayedTile bottom, List<Move> moves, boolean allMove) {
 		Set<Integer> played = new HashSet<>();
 
-		for (MoveDirection moveDirection : getMovePriority(gameId)) {
+		for (MoveDirection moveDirection : getMovePriority(round.getGameInfo().getGameId())) {
 			switch (moveDirection) {
 				case LEFT:
-					addLeftPossibleMove(tile, left, moves, played, allMove);
+					addLeftPossibleMove(tile, left, moves, played, allMove, round.getTableInfo().isWithCenter());
 					break;
 				case RIGHT:
-					addRightPossibleMove(tile, right, moves, played, allMove);
+					addRightPossibleMove(tile, right, moves, played, allMove, round.getTableInfo().isWithCenter());
 					break;
 				case TOP:
-					addTopPossibleMove(tile, top, left, right, moves, played, allMove);
+					addTopPossibleMove(tile, top, left, right, moves, played, allMove, round.getTableInfo().isWithCenter());
 					break;
 				case BOTTOM:
-					addBottomPossibleMove(tile, bottom, left, right, moves,played, allMove);
+					addBottomPossibleMove(tile, bottom, left, right, moves,played, allMove, round.getTableInfo().isWithCenter());
 					break;
 			}
 		}
@@ -85,45 +85,45 @@ public class PossibleMovesManager {
 		return cachedMoveDirections.get(gameId);
 	}
 
-	private static void addLeftPossibleMove(Tile tile, PlayedTile left, List<Move> moves, Set<Integer> played, boolean allMove) {
-		if (!played.contains(TileAndMoveHelper.hashForPlayedTile(left))) {
+	private static void addLeftPossibleMove(Tile tile, PlayedTile left, List<Move> moves, Set<Integer> played, boolean allMove, boolean withCenter) {
+		if (!played.contains(TileAndMoveHelper.hashForPlayedTile(left, withCenter))) {
 			if (left.getOpenSide() == tile.getLeft() || left.getOpenSide() == tile.getRight()) {
 				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.LEFT));
 				if (!allMove) {
-					played.add(TileAndMoveHelper.hashForPlayedTile(left));
+					played.add(TileAndMoveHelper.hashForPlayedTile(left, withCenter));
 				}
 			}
 		}
 	}
 
-	private static void addRightPossibleMove(Tile tile, PlayedTile right, List<Move> moves, Set<Integer> played, boolean allMove) {
-		if (!played.contains(TileAndMoveHelper.hashForPlayedTile(right))) {
+	private static void addRightPossibleMove(Tile tile, PlayedTile right, List<Move> moves, Set<Integer> played, boolean allMove, boolean withCenter) {
+		if (!played.contains(TileAndMoveHelper.hashForPlayedTile(right, withCenter))) {
 			if (right.getOpenSide() == tile.getLeft() || right.getOpenSide() == tile.getRight()) {
 				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.RIGHT));
 				if (!allMove) {
-					played.add(TileAndMoveHelper.hashForPlayedTile(right));
+					played.add(TileAndMoveHelper.hashForPlayedTile(right, withCenter));
 				}
 			}
 		}
 	}
 
-	private static void addTopPossibleMove(Tile tile, PlayedTile top, PlayedTile left, PlayedTile right, List<Move> moves, Set<Integer> played, boolean allMove) {
-		if (top != null && !played.contains(TileAndMoveHelper.hashForPlayedTile(top))) {
+	private static void addTopPossibleMove(Tile tile, PlayedTile top, PlayedTile left, PlayedTile right, List<Move> moves, Set<Integer> played, boolean allMove, boolean withCenter) {
+		if (top != null && !played.contains(TileAndMoveHelper.hashForPlayedTile(top, withCenter))) {
 			if ((top.getOpenSide() == tile.getLeft() || top.getOpenSide() == tile.getRight()) && !left.isCenter() && !right.isCenter()) {
 				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.TOP));
 				if (!allMove) {
-					played.add(TileAndMoveHelper.hashForPlayedTile(top));
+					played.add(TileAndMoveHelper.hashForPlayedTile(top, withCenter));
 				}
 			}
 		}
 	}
 
-	private static void addBottomPossibleMove(Tile tile, PlayedTile bottom, PlayedTile left, PlayedTile right, List<Move> moves, Set<Integer> played, boolean allMove) {
-		if (bottom != null && !played.contains(TileAndMoveHelper.hashForPlayedTile(bottom))) {
+	private static void addBottomPossibleMove(Tile tile, PlayedTile bottom, PlayedTile left, PlayedTile right, List<Move> moves, Set<Integer> played, boolean allMove, boolean withCenter) {
+		if (bottom != null && !played.contains(TileAndMoveHelper.hashForPlayedTile(bottom, withCenter))) {
 			if ((bottom.getOpenSide() == tile.getLeft() || bottom.getOpenSide() == tile.getRight()) && !left.isCenter() && !right.isCenter()) {
 				moves.add(TileAndMoveHelper.getMove(tile, MoveDirection.BOTTOM));
 				if (!allMove) {
-					played.add(TileAndMoveHelper.hashForPlayedTile(bottom));
+					played.add(TileAndMoveHelper.hashForPlayedTile(bottom, withCenter));
 				}
 			}
 		}

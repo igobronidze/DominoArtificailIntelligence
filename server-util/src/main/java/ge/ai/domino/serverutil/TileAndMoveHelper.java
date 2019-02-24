@@ -17,9 +17,13 @@ public class TileAndMoveHelper {
 		return new Move(playedMove.getLeft(), playedMove.getRight(), playedMove.getDirection());
 	}
 
-	public static int hashForPlayedTile(PlayedTile playedTile) {
+	public static int hashForPlayedTile(PlayedTile playedTile, boolean zeroTwinEqualNotTwin) {
 		int p = 10;
-		return (playedTile.getOpenSide() + 1) * (playedTile.isTwin() ? p : 1);
+		if (zeroTwinEqualNotTwin) {
+			return playedTile.getOpenSide() * (playedTile.isTwin() ? p : 1);
+		} else {
+			return (playedTile.getOpenSide() + 1) * (playedTile.isTwin() ? p : 1);
+		}
 	}
 
 	public static boolean equalWithHash(Move move1, Move move2, TableInfo tableInfo) {
@@ -31,7 +35,7 @@ public class TileAndMoveHelper {
 		}
 		PlayedTile playedTile = getPlayedTile(tableInfo, move2.getDirection());
 		PlayedTile mayBePlayedTile = getPlayedTile(tableInfo, move1.getDirection());
-		return playedTile != null && mayBePlayedTile != null && hashForPlayedTile(playedTile) == hashForPlayedTile(mayBePlayedTile);
+		return playedTile != null && mayBePlayedTile != null && hashForPlayedTile(playedTile, false) == hashForPlayedTile(mayBePlayedTile, false);
 	}
 
 	private static PlayedTile getPlayedTile(TableInfo tableInfo, MoveDirection moveDirection) {

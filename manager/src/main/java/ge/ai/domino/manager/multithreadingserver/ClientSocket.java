@@ -86,12 +86,14 @@ public class ClientSocket {
     }
 
     public List<AiPredictionsWrapper> executeMinMax(List<MultithreadingRound> multithreadingRounds) throws Exception {
-        logger.info("Starting minmax execution, roundsCount[" + multithreadingRounds.size() + "], clientName[" + name + "]");
+        Long taskId = System.currentTimeMillis();
+        logger.info("Starting minmax execution, roundsCount[" + multithreadingRounds.size() + "], clientName[" + name + "], taskId[" + taskId + "]");
         long ms = System.currentTimeMillis();
 
         oos.writeObject(MultithreadingCommand.EXECUTE_MIN_MAX);
+        oos.writeObject(taskId);
         oos.writeObject(multithreadingRounds);
-        List<AiPredictionsWrapper> aiPredictionsWrappers =  (List<AiPredictionsWrapper>) ois.readObject();
+        List<AiPredictionsWrapper> aiPredictionsWrappers = (List<AiPredictionsWrapper>) ois.readObject();
         logger.info("MinMax for clientName[" + name + "] took " + (System.currentTimeMillis() - ms) + "ms");
 
         return aiPredictionsWrappers;

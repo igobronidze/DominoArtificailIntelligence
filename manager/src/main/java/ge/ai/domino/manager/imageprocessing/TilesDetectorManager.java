@@ -65,7 +65,7 @@ public class TilesDetectorManager {
             logger.info("Screenshot took " + (System.currentTimeMillis() - ms) + "ms");
 
             ms = System.currentTimeMillis();
-            File tempFile = File.createTempFile(TMP_IMAGE_PREFIX + String.valueOf(gameId), TMP_IMAGE_EXTENSION);
+            File tempFile = File.createTempFile(TMP_IMAGE_PREFIX + gameId, TMP_IMAGE_EXTENSION);
             tmpImagePath = tempFile.getAbsolutePath();
             ImageIO.write(Image, "png", new File(tempFile.getAbsolutePath()));
             logger.info("Save of image took " + (System.currentTimeMillis() - ms) + "ms");

@@ -1,7 +1,6 @@
 package ge.ai.domino.manager.game.move;
 
 import ge.ai.domino.caching.game.CachedGames;
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.move.Move;
@@ -11,7 +10,7 @@ import ge.ai.domino.manager.game.helper.play.ProbabilitiesDistributor;
 public class AddForOpponentProcessorVirtual extends MoveProcessor {
 
 	@Override
-	public Round move(Round round, Move move) throws DAIException {
+	public Round move(Round round, Move move) {
 		int gameId = round.getGameInfo().getGameId();
 		TableInfo tableInfo = round.getTableInfo();
 

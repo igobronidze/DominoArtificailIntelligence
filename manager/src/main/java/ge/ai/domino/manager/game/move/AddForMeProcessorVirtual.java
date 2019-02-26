@@ -1,6 +1,5 @@
 package ge.ai.domino.manager.game.move;
 
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.TableInfo;
 import ge.ai.domino.domain.game.Tile;
@@ -13,7 +12,7 @@ import java.util.Map;
 public class AddForMeProcessorVirtual extends MoveProcessor {
 
 	@Override
-	public Round move(Round round, Move move) throws DAIException {
+	public Round move(Round round, Move move) {
 		TableInfo tableInfo = round.getTableInfo();
 
 		// If omit -> a) If opponent also has omitted finish b) Make opponent try

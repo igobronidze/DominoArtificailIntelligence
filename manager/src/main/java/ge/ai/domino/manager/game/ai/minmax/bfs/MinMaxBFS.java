@@ -42,9 +42,9 @@ public class MinMaxBFS extends MinMax {
 
     private int iteration;
 
-    protected Map<Integer, List<NodeRound>> nodeRoundsByHeight = new TreeMap<>((o1, o2) -> Integer.compare(o2, o1));
-
     private Queue<NodeRound> nodeRoundsQueue = new LinkedList<>();
+
+    Map<Integer, List<NodeRound>> nodeRoundsByHeight = new TreeMap<>((o1, o2) -> Integer.compare(o2, o1));
 
     @Override
     public AiPredictionsWrapper solve(Round round) throws DAIException {
@@ -109,7 +109,7 @@ public class MinMaxBFS extends MinMax {
 
         while (!nodeRoundsQueue.isEmpty()) {
             NodeRound nr = nodeRoundsQueue.remove();
-            processRoundNode(nr);
+            processNodeRound(nr);
         }
         nodeRoundsQueue = null;
 
@@ -139,7 +139,7 @@ public class MinMaxBFS extends MinMax {
 
         while (!nodeRoundsQueue.isEmpty()) {
             NodeRound nr = nodeRoundsQueue.remove();
-            processRoundNode(nr);
+            processNodeRound(nr);
         }
         nodeRoundsQueue = null;
         logger.info("Processing node round took " + (System.currentTimeMillis() - inlineMs) + " ms");
@@ -180,7 +180,7 @@ public class MinMaxBFS extends MinMax {
         return aiPredictionsWrapper;
     }
 
-    private void processRoundNode(NodeRound nodeRound) throws DAIException {
+    private void processNodeRound(NodeRound nodeRound) throws DAIException {
         nodeRoundsByHeight.computeIfAbsent(nodeRound.getTreeHeight(), k -> new ArrayList<>());
         nodeRoundsByHeight.get(nodeRound.getTreeHeight()).add(nodeRound);
 

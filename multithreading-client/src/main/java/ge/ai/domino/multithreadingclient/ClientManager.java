@@ -102,8 +102,9 @@ public class ClientManager {
                         CachedGames.addGame(game);
                         break;
                     case EXECUTE_MIN_MAX:
+                        Long taskId = (Long)ois.readObject();
                         List<MultithreadingRound> multithreadingRounds = (List<MultithreadingRound>) ois.readObject();
-                        logger.info("Starting minmax for rounds, count[" + multithreadingRounds.size() + "]");
+                        logger.info(String.format("Starting minmax taskId[%s], count[%s]", taskId, multithreadingRounds.size()));
 
                         long ms = System.currentTimeMillis();
                         List<AiPredictionsWrapper> aiPredictionsWrappers = new ArrayList<>();

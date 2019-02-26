@@ -47,6 +47,7 @@ public class OpponentTilesPredictionOptimizationOperation implements GameDebugge
 	@Override
 	public void process(Scanner scanner) throws DAIException {
 		List<Integer> idsForProcess = GameDebuggerHelper.getIdsForProcess(scanner);
+		// 9_90/14,18,21,27,34,35,40,48,54,64,68
 
 		logger.info("Function name(opponentPlayHeuristicsDiffsFunction_oneMoveHeuristicPredictor, opponentPlayHeuristicsDiffsFunction_initialForOptimization):");
 		String functionName = scanner.nextLine();

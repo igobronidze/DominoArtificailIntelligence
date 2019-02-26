@@ -263,9 +263,7 @@ public class GameOperations {
 					if (!tableInfo.isWithCenter()) {   // Check if become center
 						PlayedTile rightTile = tableInfo.getRight();
 						if (rightTile.isTwin()) {
-							tableInfo.setTop(new PlayedTile(rightTile.getOpenSide(), true, false, true));
-							tableInfo.setBottom(new PlayedTile(rightTile.getOpenSide(), true, false, true));
-							tableInfo.setWithCenter(true);
+							makeCenter(rightTile, tableInfo);
 						}
 					}
 					tableInfo.setRight(new PlayedTile(tableInfo.getRight().getOpenSide() == left ? right : left, left == right, true, false));
@@ -277,15 +275,19 @@ public class GameOperations {
 					if (!tableInfo.isWithCenter()) {   // Check if become center
 						PlayedTile leftTile = tableInfo.getLeft();
 						if (leftTile.isTwin()) {
-							tableInfo.setTop(new PlayedTile(leftTile.getOpenSide(), true, false, true));
-							tableInfo.setBottom(new PlayedTile(leftTile.getOpenSide(), true, false, true));
-							tableInfo.setWithCenter(true);
+							makeCenter(leftTile, tableInfo);
 						}
 					}
 					tableInfo.setLeft(new PlayedTile(tableInfo.getLeft().getOpenSide() == left ? right : left, left == right, true, false));
 					break;
 			}
 		}
+	}
+
+	private static void makeCenter(PlayedTile playedTile, TableInfo tableInfo) {
+		tableInfo.setTop(new PlayedTile(playedTile.getOpenSide(), true, false, true));
+		tableInfo.setBottom(new PlayedTile(playedTile.getOpenSide(), true, false, true));
+		tableInfo.setWithCenter(true);
 	}
 
 	public static int countScore(Round round) {

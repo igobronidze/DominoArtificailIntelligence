@@ -1,6 +1,5 @@
 package ge.ai.domino.manager.game.move;
 
-import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
@@ -12,7 +11,7 @@ import java.util.Map;
 public class PlayForOpponentProcessorVirtual extends MoveProcessor {
 
 	@Override
-	public Round move(Round round, Move move) throws DAIException {
+	public Round move(Round round, Move move) {
 		round.getTableInfo().getRoundBlockingInfo().setOmitOpponent(false);
 		if (move.getRight() != move.getLeft()) {
 			round.getTableInfo().getRoundBlockingInfo().setLastNotTwinPlayedTileMy(false);

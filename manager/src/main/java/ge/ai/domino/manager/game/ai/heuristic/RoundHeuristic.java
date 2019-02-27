@@ -16,7 +16,8 @@ public abstract class RoundHeuristic {
 
     private final Logger logger = Logger.getLogger(RoundHeuristic.class);
 
-    protected static final RoundStatisticProcessor roundStatisticProcessor = new RoundStatisticProcessor();
+    // TODO[IG] removed static for multithreading
+    protected final RoundStatisticProcessor roundStatisticProcessor = new RoundStatisticProcessor();
 
     private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
 

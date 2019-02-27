@@ -62,7 +62,7 @@ public class MinMaxBFS extends MinMax {
                 new Thread(() -> {
                     try {
                         CachedMinMax.changeMinMaxInProgress(round.getGameInfo().getGameId(), true);
-                        threadCount = systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate); // For minmax performance time
+                        processCount = systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate); // For minmax performance time
                         minMaxForNodeRound(nodeRound);
                         if (OpponentTilesPredictorFactory.useMinMaxPredictor()) {
                             int gameId = nodeRound.getRound().getGameInfo().getGameId();
@@ -100,7 +100,7 @@ public class MinMaxBFS extends MinMax {
     public void minMaxForCachedNodeRound(Round round) throws DAIException {
         logger.info("Executing MinMaxBFSForCachedNodeRound gameId[" + round.getGameInfo().getGameId() + "]");
 
-        threadCount = systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate);  // For minmax performance time
+        processCount = systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate);  // For minmax performance time
 
         NodeRound nodeRound = new NodeRound();
         nodeRound.setRound(round);
@@ -184,7 +184,7 @@ public class MinMaxBFS extends MinMax {
         nodeRoundsByHeight.computeIfAbsent(nodeRound.getTreeHeight(), k -> new ArrayList<>());
         nodeRoundsByHeight.get(nodeRound.getTreeHeight()).add(nodeRound);
 
-        if (iteration > systemParameterManager.getIntegerParameterValue(minMaxIteration) / threadCount) {
+        if (iteration > systemParameterManager.getIntegerParameterValue(minMaxIteration) / processCount) {
             return;
         }
 

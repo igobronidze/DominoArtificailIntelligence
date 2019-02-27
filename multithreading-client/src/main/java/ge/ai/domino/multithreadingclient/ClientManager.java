@@ -28,8 +28,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class ClientManager {
 
@@ -42,6 +48,8 @@ public class ClientManager {
     private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
     private final SysParam rankTestCount = new SysParam("rankTestCount", "5");
+
+    private final int threadsCount = 3;
 
     private ObjectInputStream ois;
 
@@ -107,20 +115,27 @@ public class ClientManager {
                         logger.info(String.format("Starting minmax taskId[%s], count[%s]", taskId, multithreadingRounds.size()));
 
                         long ms = System.currentTimeMillis();
-                        List<AiPredictionsWrapper> aiPredictionsWrappers = new ArrayList<>();
-                        for (MultithreadingRound multithreadingRound : multithreadingRounds) {
-                            Round round = multithreadingRound.getRound();
-                            round.getGameInfo().setGameId(round.getGameInfo().getGameId() + GAME_ID_ADDITION);
-                            MinMax minMax = MinMaxFactory.getMinMax(false);
-                            minMax.setThreadCount(multithreadingRounds.size());
+                        List<AiPredictionsWrapper> aiPredictionsWrappers;
 
-                            NodeRound nodeRound = new NodeRound();
-                            nodeRound.setId(multithreadingRound.getId());
-                            nodeRound.setRound(round);
-                            nodeRound.setLastPlayedMove(new PlayedMove());
-                            nodeRound.getLastPlayedMove().setType(multithreadingRound.getLastPlayedMoveType());
-                            aiPredictionsWrappers.add(minMax.minMaxForNodeRound(nodeRound));
+                        aiPredictionsWrappers = Arrays.asList(new AiPredictionsWrapper[multithreadingRounds.size()]);
+                        ExecutorService executorService = Executors.newFixedThreadPool(threadsCount);
+                        List<Callable<Object>> calls = new ArrayList<>();
+                        for (int i = 0; i < multithreadingRounds.size(); i++) {
+                            MultithreadingRound multithreadingRound = multithreadingRounds.get(i);
+                            final int index = i;
+                            calls.add(() -> {
+                                aiPredictionsWrappers.set(index, executeMinMax(multithreadingRound, multithreadingRounds.size()));
+                                return null;
+                            });
                         }
+
+                        try {
+                            logExecutionExceptions(executorService.invokeAll(calls));
+                        } catch (InterruptedException ex) {
+                            logger.error("Error occurred while invoke minMax thead", ex);
+                            throw new DAIException(ex.getMessage());
+                        }
+
                         logger.info("MinMax for all round took " + (System.currentTimeMillis() - ms) + "ms");
 
                         oos.writeObject(aiPredictionsWrappers);
@@ -135,6 +150,32 @@ public class ClientManager {
                 throw new DAIException("unexpectedError");
             }
         }
+    }
+
+    private void logExecutionExceptions(List<Future<Object>> futures) {
+        for (Future<Object> f : futures) {
+            try {
+                f.get();
+            } catch (ExecutionException ex) {
+                logger.error("Future threw ExecutionException", ex);
+            } catch (InterruptedException ex) {
+                logger.error("InterruptedException while calling Future.get() method", ex);
+            }
+        }
+    }
+
+    private AiPredictionsWrapper executeMinMax(MultithreadingRound multithreadingRound, int processCount) throws DAIException {
+        Round round = multithreadingRound.getRound();
+        round.getGameInfo().setGameId(round.getGameInfo().getGameId() + GAME_ID_ADDITION);
+        MinMax minMax = MinMaxFactory.getMinMax(false);
+        minMax.setProcessCount(processCount);
+
+        NodeRound nodeRound = new NodeRound();
+        nodeRound.setId(multithreadingRound.getId());
+        nodeRound.setRound(round);
+        nodeRound.setLastPlayedMove(new PlayedMove());
+        nodeRound.getLastPlayedMove().setType(multithreadingRound.getLastPlayedMoveType());
+        return minMax.minMaxForNodeRound(nodeRound);
     }
 
     private void executeRankTest() throws IOException {

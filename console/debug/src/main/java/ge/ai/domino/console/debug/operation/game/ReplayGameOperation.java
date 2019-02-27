@@ -45,6 +45,8 @@ public class ReplayGameOperation implements GameDebuggerOperation {
 			try {
 				ReplayMoveInfo replayMoveInfo = replayGameManager.startReplayGame(id);
 				gameId = replayMoveInfo.getGameId();
+
+				long ms = System.currentTimeMillis();
 				while (replayMoveInfo.getNextMove() != null) {
 					replayMoveInfo = replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
 					if (replayMoveInfo.getNextMove() != null) {
@@ -57,6 +59,7 @@ public class ReplayGameOperation implements GameDebuggerOperation {
 						}
 					}
 				}
+				logger.info(String.format("Replaying moves took %s ms", (System.currentTimeMillis() - ms)));
 
 				List<OpponentPlay> opponentPlays = GameDebuggerHelper.removeExtraPlays(CachedGames.getOpponentPlays(replayMoveInfo.getGameId()));
 				List<GroupedOpponentPlay> groupedOpponentPlays = opponentPlaysManager.getGroupedOpponentPlays(opponentPlays, true, false, false);

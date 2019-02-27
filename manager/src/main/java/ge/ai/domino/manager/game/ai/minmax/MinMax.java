@@ -52,10 +52,10 @@ public abstract class MinMax implements AiSolver {
 
 	protected final RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
 
-	protected int threadCount = 1;
+	protected int processCount = 1;
 
-	public void setThreadCount(int threadCount) {
-		this.threadCount = threadCount;
+	public void setProcessCount(int processCount) {
+		this.processCount = processCount;
 	}
 
 	public abstract void minMaxForCachedNodeRound(Round round) throws DAIException;

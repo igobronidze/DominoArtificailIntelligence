@@ -7,8 +7,8 @@ import ge.ai.domino.imageprocessing.contour.ContoursDetector;
 import ge.ai.domino.imageprocessing.crop.CropImageParams;
 import ge.ai.domino.imageprocessing.crop.CropImageParamsCreator;
 import ge.ai.domino.imageprocessing.crop.ImageCropper;
+import ge.ai.domino.imageprocessing.util.OpenCVUtil;
 import org.bytedeco.javacpp.opencv_core;
-import org.bytedeco.javacpp.opencv_imgcodecs;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 
 public class TilesDetector {
 
-	public List<Tile> getTiles(String imagePath, TilesDetectorParams tilesDetectorParams) {
-		opencv_core.Mat srcMat = opencv_imgcodecs.imread(imagePath);
+	public List<Tile> getTiles(BufferedImage initialImage, TilesDetectorParams tilesDetectorParams) {
+		opencv_core.Mat srcMat = OpenCVUtil.bufferedImageToMat(initialImage);
 
 		CropImageParams cropImageParams = CropImageParamsCreator.createCropImageParams(srcMat.cols(), srcMat.rows(), tilesDetectorParams.getHeightPercentage(),
 				tilesDetectorParams.getMarginBottomPercentage(), tilesDetectorParams.getWidthPercentage(), tilesDetectorParams.getMarginLeftPercentage());

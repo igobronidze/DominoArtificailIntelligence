@@ -20,4 +20,15 @@ public class OpenCVUtil {
         OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
         return  iplImageToBufferedImage(converter.convertToIplImage(converter.convert(mat)));
     }
+
+    public static opencv_core.Mat bufferedImageToMat(BufferedImage bufImage) {
+        OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
+        return converter.convertToMat(converter.convert(bufferedImageToIplImage(bufImage)));
+    }
+
+    private static opencv_core.IplImage bufferedImageToIplImage(BufferedImage bufImage) {
+        OpenCVFrameConverter.ToIplImage iplConverter = new OpenCVFrameConverter.ToIplImage();
+        Java2DFrameConverter java2dConverter = new Java2DFrameConverter();
+        return iplConverter.convert(java2dConverter.convert(bufImage));
+    }
 }

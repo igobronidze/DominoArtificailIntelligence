@@ -9,10 +9,8 @@ import ge.ai.domino.imageprocessing.TilesDetectorParams;
 import ge.ai.domino.manager.game.GameManager;
 import org.apache.log4j.Logger;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +41,6 @@ public class TilesDetectorManager {
 
     private static final int BLUR_COEFFICIENT = 3;
 
-    private static final String TMP_IMAGE_PREFIX = "game_";
-
     public static final String TMP_IMAGE_EXTENSION = ".png";
 
     private static final String SECOND_PARAM_SUFFIX = "_2";
@@ -53,7 +49,7 @@ public class TilesDetectorManager {
 
     private final TilesDetector tilesDetector = new TilesDetector();
 
-    private String tmpImagePath;
+    private BufferedImage lastImage;
 
     public List<Tile> detectTiles(int gameId, boolean withSecondParams) throws DAIException {
         try {
@@ -61,17 +57,11 @@ public class TilesDetectorManager {
             long ms = System.currentTimeMillis();
             Robot robot = new Robot();
             Rectangle capture = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-            BufferedImage Image = robot.createScreenCapture(capture);
+            lastImage = robot.createScreenCapture(capture);
             logger.info("Screenshot took " + (System.currentTimeMillis() - ms) + "ms");
 
             ms = System.currentTimeMillis();
-            File tempFile = File.createTempFile(TMP_IMAGE_PREFIX + gameId, TMP_IMAGE_EXTENSION);
-            tmpImagePath = tempFile.getAbsolutePath();
-            ImageIO.write(Image, "png", new File(tempFile.getAbsolutePath()));
-            logger.info("Save of image took " + (System.currentTimeMillis() - ms) + "ms");
-
-            ms = System.currentTimeMillis();
-            List<Tile> tiles = balanceTiles(tilesDetector.getTiles(tempFile.getAbsolutePath(), getTilesDetectorParams(gameId, withSecondParams)));
+            List<Tile> tiles = balanceTiles(tilesDetector.getTiles(lastImage, getTilesDetectorParams(gameId, withSecondParams)));
             logger.info("Detection took " + (System.currentTimeMillis() - ms) + "ms");
             logger.info("Detected tiles: " + tiles);
             return tiles;
@@ -119,7 +109,7 @@ public class TilesDetectorManager {
         return result;
     }
 
-    public String getTmpImagePath() {
-        return tmpImagePath;
+    public BufferedImage getLastImage() {
+        return lastImage;
     }
 }

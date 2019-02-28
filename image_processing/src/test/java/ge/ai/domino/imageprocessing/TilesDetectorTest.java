@@ -5,6 +5,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +26,9 @@ public class TilesDetectorTest {
 
 	private static final int liderbetImageCount = 5;
 
-	private static final Map<Integer, String> betliveImagePathMap = new HashMap<>();
+	private static final Map<Integer, BufferedImage> betliveBufferedImageMap = new HashMap<>();
 
-	private static final Map<Integer, String> liderbetImagePathMap = new HashMap<>();
+	private static final Map<Integer, BufferedImage> liderbetBufferedImageMap = new HashMap<>();
 
 	private static final Map<Integer, List<Tile>> betliveExpectedTilesMap = new HashMap<>();
 
@@ -33,9 +37,9 @@ public class TilesDetectorTest {
 	private static final TilesDetector tilesDetector = new TilesDetector();
 
 	@BeforeClass
-	public static void init() {
-		initBetlivePathMap();
-		initLiderbetPathMap();
+	public static void init() throws IOException {
+		initBetliveImagesMap();
+		initLiderbetImagesMap();
 
 		initBetliveExpectedTiles();
 		initLiderbetExpectedTiles();
@@ -43,7 +47,7 @@ public class TilesDetectorTest {
 
 	@Test
 	public void testGetTilesForBetlive() {
-		for (Map.Entry<Integer, String> entry : betliveImagePathMap.entrySet()) {
+		for (Map.Entry<Integer, BufferedImage> entry : betliveBufferedImageMap.entrySet()) {
 			List<Tile> resultTiles = tilesDetector.getTiles(entry.getValue(), getTilesDetectorParamsForBetlive());
 			List<Tile> expectedTiles = betliveExpectedTilesMap.get(entry.getKey());
 			Assert.assertEquals(expectedTiles.size(), resultTiles.size());
@@ -55,7 +59,7 @@ public class TilesDetectorTest {
 
 	@Test
 	public void testGetTilesForLiderbet() {
-		for (Map.Entry<Integer, String> entry : liderbetImagePathMap.entrySet()) {
+		for (Map.Entry<Integer, BufferedImage> entry : liderbetBufferedImageMap.entrySet()) {
 			List<Tile> resultTiles = tilesDetector.getTiles(entry.getValue(), getTilesDetectorParamsForLiderbet());
 			List<Tile> expectedTiles = liderbetExpectedTilesMap.get(entry.getKey());
 			Assert.assertEquals(expectedTiles.size(), resultTiles.size());
@@ -85,15 +89,17 @@ public class TilesDetectorTest {
 				.blurCoefficient(1);
 	}
 
-	private static void initBetlivePathMap() {
+	private static void initBetliveImagesMap() throws IOException {
 		for (int i = 1; i <= betliveImageCount; i++) {
-			betliveImagePathMap.put(i, BETLIVE_IMAGE_PATH_SUFFIX + i + IMAGE_EXTENSION);
+			BufferedImage img = ImageIO.read(new File(BETLIVE_IMAGE_PATH_SUFFIX + i + IMAGE_EXTENSION));
+			betliveBufferedImageMap.put(i, img);
 		}
 	}
 
-	private static void initLiderbetPathMap() {
+	private static void initLiderbetImagesMap() throws IOException {
 		for (int i = 1; i <= liderbetImageCount; i++) {
-			liderbetImagePathMap.put(i, LIDERBET_IMAGE_PATH_SUFFIX + i + IMAGE_EXTENSION);
+			BufferedImage img = ImageIO.read(new File(LIDERBET_IMAGE_PATH_SUFFIX + i + IMAGE_EXTENSION));
+			liderbetBufferedImageMap.put(i, img);
 		}
 	}
 

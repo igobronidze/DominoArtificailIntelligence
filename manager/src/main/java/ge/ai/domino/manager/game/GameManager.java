@@ -36,9 +36,12 @@ import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
 import org.apache.log4j.Logger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -199,7 +202,11 @@ public class GameManager {
                 addTileForMe(gameId, tile.getLeft(), tile.getRight());
             }
         } catch (Exception ex) {
-            logImage(tilesDetectorManager.getTmpImagePath());
+            try {
+                logImage(tilesDetectorManager.getLastImage());
+            } catch (IOException ioEx) {
+                logger.warn("Can't save log image", ioEx);
+            }
             throw ex;
         }
         logger.info("Added tiles for me, gameId[" + gameId + "]");
@@ -220,7 +227,11 @@ public class GameManager {
             Tile tile = tiles.get(tiles.size() - 1);
             addTileForMe(gameId, tile.getLeft(), tile.getRight());
         } catch (Exception ex) {
-            logImage(tilesDetectorManager.getTmpImagePath());
+            try {
+                logImage(tilesDetectorManager.getLastImage());
+            } catch (IOException ioEx) {
+                logger.warn("Can't save log image", ioEx);
+            }
             throw ex;
         }
         logger.info("Added tiles for me, gameId[" + gameId + "]");
@@ -260,15 +271,16 @@ public class GameManager {
         return GameOperations.isRoundBlocked(round);
     }
 
-    private void logImage(String imagePath) {
+    private void logImage(BufferedImage image) throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss");
 
         File folder = new File(LOG_IMAGES_DIRECTORY_PATH);
         folder.mkdirs();
+
         String destPath = folder.getPath() + "/" + sdf.format(new Date()) + TilesDetectorManager.TMP_IMAGE_EXTENSION;
-        copyFiles(new File(imagePath), new File(destPath));
-        new File(imagePath).delete();
-        logger.info("Save log image");
+
+        File outputfile = new File(destPath);
+        ImageIO.write(image, "jpg", outputfile);
     }
 
     private void copyFiles(File source, File dest) {

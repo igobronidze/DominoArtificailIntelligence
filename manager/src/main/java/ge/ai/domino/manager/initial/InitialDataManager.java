@@ -16,7 +16,10 @@ import ge.ai.domino.manager.game.helper.initial.InitialUtil;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
 import org.apache.log4j.Logger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 public class InitialDataManager {
 
@@ -36,12 +39,13 @@ public class InitialDataManager {
     }
 
     public void playInitialExtraMoves() {
-        detectTiles();
-
-        logger.info("Start extra moves");
-        int gameId = initGame();
-
+        int gameId = 0;
         try {
+            detectTiles();
+
+            logger.info("Start extra moves");
+            gameId = initGame();
+
             gameManager.addTileForMe(gameId, 5, 4);
             gameManager.addTileForMe(gameId, 6, 3);
             gameManager.addTileForMe(gameId, 6, 4);
@@ -59,20 +63,20 @@ public class InitialDataManager {
             gameManager.playForOpponent(gameId, new Move(5, 1, MoveDirection.LEFT));
             gameManager.playForMe(gameId, new Move(5, 3, MoveDirection.LEFT));
             gameManager.playForOpponent(gameId, new Move(3, 0, MoveDirection.LEFT));
-        } catch (DAIException ex) {
+        } catch (DAIException | IOException ex) {
             logger.error("Error occurred while play initial extra moves");
+        } finally {
+            CachedGames.removeGame(gameId);
+            CachedMinMax.cleanUp(gameId);
+
+            logger.info("Finished extra moves");
         }
-
-        CachedGames.removeGame(gameId);
-        CachedMinMax.cleanUp(gameId);
-
-        logger.info("Finished extra moves");
     }
 
-    private void detectTiles() {
+    private void detectTiles() throws IOException {
         logger.info("Start extra tiles detect method");
-        File file = new File(INITIAL_EXTA_TILES_IMAGE_PATH);
-        tilesDetector.getTiles(file.getAbsolutePath(), getTestTilesDetectorParams());
+        BufferedImage img = ImageIO.read(new File(INITIAL_EXTA_TILES_IMAGE_PATH));
+        tilesDetector.getTiles(img, getTestTilesDetectorParams());
         logger.info("Finished extra tiles detect method");
     }
 

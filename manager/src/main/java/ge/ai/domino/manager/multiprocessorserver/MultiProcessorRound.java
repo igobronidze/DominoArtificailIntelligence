@@ -1,11 +1,11 @@
-package ge.ai.domino.manager.multithreadingserver;
+package ge.ai.domino.manager.multiprocessorserver;
 
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.move.MoveType;
 
 import java.io.Serializable;
 
-public class MultithreadingRound implements Serializable {
+public class MultiProcessorRound implements Serializable {
 
     private int id;
 

@@ -13,7 +13,7 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.function.FunctionManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.logging.RoundLogger;
-import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
+import ge.ai.domino.manager.multiprocessorserver.MultiProcessorServer;
 import ge.ai.domino.manager.opponentplay.OpponentPlaysManager;
 import ge.ai.domino.manager.replaygame.ReplayGameManager;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
@@ -40,14 +40,14 @@ public class ReplayGameWithDifferenceModeOperation implements GameDebuggerOperat
 
 	private static final ReplayGameManager replayGameManager = new ReplayGameManager();
 
-	private static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
+	private static final MultiProcessorServer multiProcessorServer = MultiProcessorServer.getInstance();
 
 	private static final List<String> MODE_FILE_NAMES = Arrays.asList("/mode/without_predictor_mode.properties",
 			"/mode/min_max_predictor_mode.properties",
 			"/mode/one_move_heuristic_predictor_mode.properties",
 			"/mode/one_move_heuristic_predictor_mode_2.properties");
 
-	private final SysParam useMultithreadingMinMax = new SysParam("useMultithreadingMinMax", "true");
+	private final SysParam useMultiProcessorMinMax = new SysParam("useMultiProcessorMinMax", "true");
 
 	private static final OpponentPlaysManager opponentPlaysManager = new OpponentPlaysManager();
 
@@ -145,8 +145,8 @@ public class ReplayGameWithDifferenceModeOperation implements GameDebuggerOperat
 				params.put((String) entry.getKey(), (String) entry.getValue());
 			}
 
-			if (sysParamManager.getBooleanParameterValue(useMultithreadingMinMax)) {
-				multithreadingServer.updateSysParams(params);
+			if (sysParamManager.getBooleanParameterValue(useMultiProcessorMinMax)) {
+				multiProcessorServer.updateSysParams(params);
 			}
 		} catch (IOException ex) {
 			logger.error("Error occurred while read property file[" + filePath + "]");

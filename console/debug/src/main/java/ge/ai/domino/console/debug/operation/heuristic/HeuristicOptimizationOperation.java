@@ -15,7 +15,7 @@ import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.helper.play.PossibleMovesManager;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.heuristic.HeuristicManager;
-import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
+import ge.ai.domino.manager.multiprocessorserver.MultiProcessorServer;
 import ge.ai.domino.manager.parser.GameParserManager;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.math.optimization.OptimizationDirection;
@@ -37,7 +37,7 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 
 	private static final HeuristicManager heuristicManager = new HeuristicManager();
 
-	private static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
+	private static final MultiProcessorServer multiProcessorServer = MultiProcessorServer.getInstance();
 
 	private static final SystemParameterManager sysParamManager = new SystemParameterManager();
 
@@ -45,7 +45,7 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 
 	private static final GameParserManager gameParserManager = new GameParserManager();
 
-	private final SysParam useMultithreadingMinMax = new SysParam("useMultithreadingMinMax", "true");
+	private final SysParam useMultiProcessorMinMax = new SysParam("useMultiProcessorMinMax", "true");
 
 	@Override
 	public void process(Scanner scanner) throws DAIException {
@@ -77,11 +77,11 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 			game.setProperties(gameProperties);
 			CachedGames.addGame(game);
 
-			if (sysParamManager.getBooleanParameterValue(useMultithreadingMinMax)) {
+			if (sysParamManager.getBooleanParameterValue(useMultiProcessorMinMax)) {
 				GameInitialData gameInitialData = new GameInitialData();
 				gameInitialData.setGameId(gameFromLog.getGameId());
 				gameInitialData.setPointsForWin(gameFromLog.getPointForWin());
-				multithreadingServer.initGame(gameInitialData);
+				multiProcessorServer.initGame(gameInitialData);
 			}
 
 			for (Round round : gameFromLog.getRounds()) {

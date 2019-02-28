@@ -10,9 +10,9 @@ import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictorFactory;
 import ge.ai.domino.manager.game.helper.play.PossibleMovesManager;
-import ge.ai.domino.manager.multithreadingserver.ClientSocket;
-import ge.ai.domino.manager.multithreadingserver.MultithreadingRound;
-import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
+import ge.ai.domino.manager.multiprocessorserver.ClientSocket;
+import ge.ai.domino.manager.multiprocessorserver.MultiProcessorRound;
+import ge.ai.domino.manager.multiprocessorserver.MultiProcessorServer;
 import org.apache.log4j.Logger;
 
 import java.util.AbstractMap;
@@ -27,9 +27,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class MultithreadingMinMaxBFS extends MinMaxBFS {
+public class MultiProcessorMinMaxBFS extends MinMaxBFS {
 
-	private final Logger logger = Logger.getLogger(MultithreadingMinMaxBFS.class);
+	private final Logger logger = Logger.getLogger(MultiProcessorMinMaxBFS.class);
 
 	private Map<Integer, NodeRound> roundsForProcess = new HashMap<>();
 
@@ -37,7 +37,7 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 	public AiPredictionsWrapper solve(Round round) throws DAIException {
 		long ms = System.currentTimeMillis();
 		List<Move> moves = PossibleMovesManager.getPossibleMoves(round, false);
-		logger.info("Start MultithreadedMinMaxBFS solve method, movesCount[" + moves.size() + "]");
+		logger.info("Start MultiProcessorMinMaxBFS solve method, movesCount[" + moves.size() + "]");
 		if (moves.size() <= 1) {
 			super.setProcessCount(systemParameterManager.getIntegerParameterValue(minMaxForCachedNodeRoundIterationRate)); // For minmax performance time);
 			return super.solve(round);
@@ -87,8 +87,8 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 	}
 
 	private void invokeRemoteMinMaxes() throws DAIException {
-		MultithreadingServer server = MultithreadingServer.getInstance();
-		List<ClientSocket> clients = server.getClients();
+		MultiProcessorServer multiProcessorServer = MultiProcessorServer.getInstance();
+		List<ClientSocket> clients = multiProcessorServer.getClients();
 		if (clients.isEmpty()) {
 			throw new DAIException("clientsIsEmpty");
 		}
@@ -117,7 +117,7 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 
 		List<Callable<Map.Entry<List<Integer>, List<AiPredictionsWrapper>>>> callableList = new ArrayList<>();
 		for (ClientInfo clientInfo : clientInfos) {
-			callableList.add(() -> new AbstractMap.SimpleEntry<>(clientInfo.getIds(), clientInfo.clientSocket.executeMinMax(clientInfo.getMultithreadingRounds())));
+			callableList.add(() -> new AbstractMap.SimpleEntry<>(clientInfo.getIds(), clientInfo.clientSocket.executeMinMax(clientInfo.getMultiProcessorRounds())));
 		}
 
 		ExecutorService executorService = Executors.newFixedThreadPool(100);
@@ -139,7 +139,7 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 			}
 
 		} catch (Exception ex) {
-			logger.error("Error occurred while execute multithreaded minmax", ex);
+			logger.error("Error occurred while execute multiProcessor minmax", ex);
 			throw new DAIException("unexpectedError");
 		} finally {
 			executorService.shutdown();
@@ -164,16 +164,16 @@ public class MultithreadingMinMaxBFS extends MinMaxBFS {
 			return nodeRounds.stream().map(NodeRound::getId).collect(Collectors.toList());
 		}
 
-		private List<MultithreadingRound> getMultithreadingRounds() {
-			List<MultithreadingRound> multithreadingRounds = new ArrayList<>();
+		private List<MultiProcessorRound> getMultiProcessorRounds() {
+			List<MultiProcessorRound> multiProcessorRounds = new ArrayList<>();
 			for (NodeRound nodeRound : nodeRounds) {
-				MultithreadingRound multithreadingRound = new MultithreadingRound();
-				multithreadingRound.setId(nodeRound.getId());
-				multithreadingRound.setRound(nodeRound.getRound());
-				multithreadingRound.setLastPlayedMoveType(nodeRound.getLastPlayedMove().getType());
-				multithreadingRounds.add(multithreadingRound);
+				MultiProcessorRound multiProcessorRound = new MultiProcessorRound();
+				multiProcessorRound.setId(nodeRound.getId());
+				multiProcessorRound.setRound(nodeRound.getRound());
+				multiProcessorRound.setLastPlayedMoveType(nodeRound.getLastPlayedMove().getType());
+				multiProcessorRounds.add(multiProcessorRound);
 			}
-			return multithreadingRounds;
+			return multiProcessorRounds;
 		}
 	}
 }

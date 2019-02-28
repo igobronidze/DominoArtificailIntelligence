@@ -1,9 +1,9 @@
-package ge.ai.domino.multithreadingclient;
+package ge.ai.domino.multiprocessorclient;
 
 import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.caching.sysparam.CachedSystemParameter;
 import ge.ai.domino.domain.channel.Channel;
-import ge.ai.domino.domain.command.MultithreadingCommand;
+import ge.ai.domino.domain.command.MultiProcessorCommand;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.function.FunctionArgsAndValues;
 import ge.ai.domino.domain.game.Game;
@@ -20,7 +20,7 @@ import ge.ai.domino.manager.game.ai.minmax.MinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMaxFactory;
 import ge.ai.domino.manager.game.ai.minmax.NodeRound;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
-import ge.ai.domino.manager.multithreadingserver.MultithreadingRound;
+import ge.ai.domino.manager.multiprocessorserver.MultiProcessorRound;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import org.apache.log4j.Logger;
 
@@ -37,9 +37,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class ClientManager {
+public class MultiProcessorClientManager {
 
-    private static final Logger logger = Logger.getLogger(ClientManager.class);
+    private static final Logger logger = Logger.getLogger(MultiProcessorClientManager.class);
 
     private static final int GAME_ID_ADDITION = 1000;
 
@@ -49,7 +49,7 @@ public class ClientManager {
 
     private final SysParam rankTestCount = new SysParam("rankTestCount", "5");
 
-    private final int threadsCount = 3;
+    private final SysParam multiProcessorMinMaxThreadsCount = new SysParam("multiProcessorMinMaxThreadsCount", "3");
 
     private ObjectInputStream ois;
 
@@ -57,7 +57,7 @@ public class ClientManager {
 
     private String name;
 
-    public ClientManager(ObjectInputStream ois, ObjectOutputStream oos, String name) {
+    public MultiProcessorClientManager(ObjectInputStream ois, ObjectOutputStream oos, String name) {
         this.ois = ois;
         this.oos = oos;
         this.name = name;
@@ -66,7 +66,7 @@ public class ClientManager {
     public void startListen() throws DAIException {
         while (true) {
             try {
-                MultithreadingCommand command = (MultithreadingCommand) ois.readObject();
+                MultiProcessorCommand command = (MultiProcessorCommand) ois.readObject();
                 logger.info("Get command[" + command + "]");
 
                 boolean finish = false;
@@ -111,20 +111,20 @@ public class ClientManager {
                         break;
                     case EXECUTE_MIN_MAX:
                         Long taskId = (Long)ois.readObject();
-                        List<MultithreadingRound> multithreadingRounds = (List<MultithreadingRound>) ois.readObject();
-                        logger.info(String.format("Starting minmax taskId[%s], count[%s]", taskId, multithreadingRounds.size()));
+                        List<MultiProcessorRound> multiProcessorRounds = (List<MultiProcessorRound>) ois.readObject();
+                        logger.info(String.format("Starting minmax taskId[%s], count[%s]", taskId, multiProcessorRounds.size()));
 
                         long ms = System.currentTimeMillis();
                         List<AiPredictionsWrapper> aiPredictionsWrappers;
 
-                        aiPredictionsWrappers = Arrays.asList(new AiPredictionsWrapper[multithreadingRounds.size()]);
-                        ExecutorService executorService = Executors.newFixedThreadPool(threadsCount);
+                        aiPredictionsWrappers = Arrays.asList(new AiPredictionsWrapper[multiProcessorRounds.size()]);
+                        ExecutorService executorService = Executors.newFixedThreadPool(sysParamManager.getIntegerParameterValue(multiProcessorMinMaxThreadsCount));
                         List<Callable<Object>> calls = new ArrayList<>();
-                        for (int i = 0; i < multithreadingRounds.size(); i++) {
-                            MultithreadingRound multithreadingRound = multithreadingRounds.get(i);
+                        for (int i = 0; i < multiProcessorRounds.size(); i++) {
+                            MultiProcessorRound multiProcessorRound = multiProcessorRounds.get(i);
                             final int index = i;
                             calls.add(() -> {
-                                aiPredictionsWrappers.set(index, executeMinMax(multithreadingRound, multithreadingRounds.size()));
+                                aiPredictionsWrappers.set(index, executeMinMax(multiProcessorRound, multiProcessorRounds.size()));
                                 return null;
                             });
                         }
@@ -146,7 +146,7 @@ public class ClientManager {
                     break;
                 }
             } catch (ClassNotFoundException | IOException ex) {
-                logger.error("Error occurred while play minmax for multithreading", ex);
+                logger.error("Error occurred while play minmax for multiProcessor", ex);
                 throw new DAIException("unexpectedError");
             }
         }
@@ -164,17 +164,17 @@ public class ClientManager {
         }
     }
 
-    private AiPredictionsWrapper executeMinMax(MultithreadingRound multithreadingRound, int processCount) throws DAIException {
-        Round round = multithreadingRound.getRound();
+    private AiPredictionsWrapper executeMinMax(MultiProcessorRound multiProcessorRound, int processCount) throws DAIException {
+        Round round = multiProcessorRound.getRound();
         round.getGameInfo().setGameId(round.getGameInfo().getGameId() + GAME_ID_ADDITION);
         MinMax minMax = MinMaxFactory.getMinMax(false);
         minMax.setProcessCount(processCount);
 
         NodeRound nodeRound = new NodeRound();
-        nodeRound.setId(multithreadingRound.getId());
+        nodeRound.setId(multiProcessorRound.getId());
         nodeRound.setRound(round);
         nodeRound.setLastPlayedMove(new PlayedMove());
-        nodeRound.getLastPlayedMove().setType(multithreadingRound.getLastPlayedMoveType());
+        nodeRound.getLastPlayedMove().setType(multiProcessorRound.getLastPlayedMoveType());
         return minMax.minMaxForNodeRound(nodeRound);
     }
 

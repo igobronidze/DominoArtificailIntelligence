@@ -2,16 +2,16 @@ package ge.ai.domino.console.debug.operation.minmax;
 
 import ge.ai.domino.console.debug.operation.GameDebuggerOperation;
 import ge.ai.domino.domain.game.GameInitialData;
-import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
+import ge.ai.domino.manager.multiprocessorserver.MultiProcessorServer;
 import org.apache.log4j.Logger;
 
 import java.util.Scanner;
 
-public class SendGameToMultithreadingClientOperation implements GameDebuggerOperation {
+public class SendGameToMultiProcessorClientOperation implements GameDebuggerOperation {
 
-	private static final Logger logger = Logger.getLogger(SendGameToMultithreadingClientOperation.class);
+	private static final Logger logger = Logger.getLogger(SendGameToMultiProcessorClientOperation.class);
 
-	private static final MultithreadingServer multithreadingServer = MultithreadingServer.getInstance();
+	private static final MultiProcessorServer multiProcessorServer = MultiProcessorServer.getInstance();
 
 	@Override
 	public void process(Scanner scanner) {
@@ -22,6 +22,6 @@ public class SendGameToMultithreadingClientOperation implements GameDebuggerOper
 		GameInitialData gameInitialData = new GameInitialData();
 		gameInitialData.setGameId(gameId);
 		gameInitialData.setPointsForWin(pointForWin);
-		multithreadingServer.initGame(gameInitialData);
+		multiProcessorServer.initGame(gameInitialData);
 	}
 }

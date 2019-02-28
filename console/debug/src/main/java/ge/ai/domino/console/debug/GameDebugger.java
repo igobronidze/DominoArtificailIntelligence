@@ -9,8 +9,8 @@ import ge.ai.domino.console.debug.operation.heuristic.CountHeuristicOperation;
 import ge.ai.domino.console.debug.operation.heuristic.HeuristicOptimizationOperation;
 import ge.ai.domino.console.debug.operation.minmax.MinMaxSolveOperation;
 import ge.ai.domino.console.debug.operation.minmax.OpponentTilesPredictionOptimizationOperation;
-import ge.ai.domino.console.debug.operation.minmax.SendGameToMultithreadingClientOperation;
-import ge.ai.domino.console.debug.operation.minmax.StartMultithreadingServerOperation;
+import ge.ai.domino.console.debug.operation.minmax.SendGameToMultiProcessorClientOperation;
+import ge.ai.domino.console.debug.operation.minmax.StartMultiProcessorServerOperation;
 import ge.ai.domino.console.debug.operation.move.AddTileForMeOperation;
 import ge.ai.domino.console.debug.operation.move.AddTileForOpponentOperation;
 import ge.ai.domino.console.debug.operation.move.PlayForMeOperation;
@@ -41,9 +41,9 @@ public class GameDebugger {
             logger.info("8. Get heuristics");
             logger.info("9. Replay games");
             logger.info("10. OpponentTilesPredictor Optimization");
-            logger.info("11. Start MinMax Multithreading server");
+            logger.info("11. Start MinMax MultiProcessor server");
             logger.info("12. Execute MinMax solve");
-            logger.info("13. Send game to multithreading client");
+            logger.info("13. Send game to multiProcessor client");
             logger.info("14. Heuristic Optimization");
             logger.info("15. Replay games with difference modes");
             logger.info("16. Update sys params from properties file");
@@ -95,7 +95,7 @@ public class GameDebugger {
                         break;
                     }
                     case "11": {
-                        new StartMultithreadingServerOperation().process(scanner);
+                        new StartMultiProcessorServerOperation().process(scanner);
                         break;
                     }
                     case "12": {
@@ -103,7 +103,7 @@ public class GameDebugger {
                         break;
                     }
                     case "13": {
-                        new SendGameToMultithreadingClientOperation().process(scanner);
+                        new SendGameToMultiProcessorClientOperation().process(scanner);
                         break;
                     }
                     case "14": {

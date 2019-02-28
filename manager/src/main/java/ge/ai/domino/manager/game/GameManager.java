@@ -31,7 +31,7 @@ import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
 import ge.ai.domino.manager.game.validator.MoveValidator;
 import ge.ai.domino.manager.game.validator.OpponentTilesValidator;
 import ge.ai.domino.manager.imageprocessing.TilesDetectorManager;
-import ge.ai.domino.manager.multithreadingserver.MultithreadingServer;
+import ge.ai.domino.manager.multiprocessorserver.MultiProcessorServer;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
 import org.apache.log4j.Logger;
@@ -65,7 +65,7 @@ public class GameManager {
 
     private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
-    private final SysParam useMultithreadingMinMax = new SysParam("useMultithreadingMinMax", "true");
+    private final SysParam useMultiProcessorMinMax = new SysParam("useMultiProcessorMinMax", "true");
 
     private static final String LOG_IMAGES_DIRECTORY_PATH = "log/images";
 
@@ -238,13 +238,13 @@ public class GameManager {
     }
 
     public void ifNeedSendInitialData(Game game, GameProperties gameProperties) {
-        if (systemParameterManager.getBooleanParameterValue(useMultithreadingMinMax)) {
-            MultithreadingServer server = MultithreadingServer.getInstance();
+        if (systemParameterManager.getBooleanParameterValue(useMultiProcessorMinMax)) {
+            MultiProcessorServer multiProcessorServer = MultiProcessorServer.getInstance();
 
             GameInitialData gameInitialData = new GameInitialData();
             gameInitialData.setGameId(game.getId());
             gameInitialData.setPointsForWin(gameProperties.getPointsForWin());
-            server.initGame(gameInitialData);
+            multiProcessorServer.initGame(gameInitialData);
         }
     }
 

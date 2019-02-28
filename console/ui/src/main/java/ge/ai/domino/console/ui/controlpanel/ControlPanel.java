@@ -9,8 +9,8 @@ import ge.ai.domino.service.function.FunctionService;
 import ge.ai.domino.service.function.FunctionServiceImpl;
 import ge.ai.domino.service.initial.InitialDataService;
 import ge.ai.domino.service.initial.InitialDataServiceImpl;
-import ge.ai.domino.service.multithreading.MultithreadingServerService;
-import ge.ai.domino.service.multithreading.MultithreadingServerServiceImpl;
+import ge.ai.domino.service.multiprocessor.MultiProcessorServerService;
+import ge.ai.domino.service.multiprocessor.MultiProcessorServerServiceImpl;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -22,7 +22,7 @@ public class ControlPanel extends Application {
 
     private InitialDataService initialDataService = new InitialDataServiceImpl();
 
-    private MultithreadingServerService multithreadingServerService = new MultithreadingServerServiceImpl();
+    private MultiProcessorServerService multiProcessorServerService = new MultiProcessorServerServiceImpl();
 
     private Stage stage;
 
@@ -53,7 +53,7 @@ public class ControlPanel extends Application {
                     @Override
                     public void onSave() {
                         AppController.round = null;
-                        multithreadingServerService.stopServer();
+                        multiProcessorServerService.stopServer();
                     }
 
                     @Override
@@ -62,7 +62,7 @@ public class ControlPanel extends Application {
                     }
                 }.showWindow(false);
             } else {
-                multithreadingServerService.stopServer();
+                multiProcessorServerService.stopServer();
             }
         });
     }

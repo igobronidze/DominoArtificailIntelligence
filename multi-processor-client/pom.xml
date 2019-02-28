@@ -7,8 +7,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>multithreading-client</artifactId>
-    <name>Multithreading Client</name>
+    <artifactId>multi-processor-client</artifactId>
+    <name>Multi Processor Client</name>
 
     <build>
         <plugins>
@@ -21,7 +21,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ge.ai.domino.multithreadingclient.ClientRunner</mainClass>
+                            <mainClass>ge.ai.domino.multiprocessorclient.MultiProcessorClientRunner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

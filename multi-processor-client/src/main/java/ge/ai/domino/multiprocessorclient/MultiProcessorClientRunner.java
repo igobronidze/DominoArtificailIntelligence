@@ -1,14 +1,14 @@
-package ge.ai.domino.multithreadingclient;
+package ge.ai.domino.multiprocessorclient;
 
 import org.apache.log4j.Logger;
 
-public class ClientRunner {
+public class MultiProcessorClientRunner {
 
-    private static final Logger logger = Logger.getLogger(ClientManager.class);
+    private static final Logger logger = Logger.getLogger(MultiProcessorClientManager.class);
 
     // java -jar domino.jar localhost 8080 name
     public static void main(String[] args) throws Exception {
-        Client client = new Client();
+        MultiProcessorClient client = new MultiProcessorClient();
 
         try {
             String host = args[0];
@@ -16,7 +16,7 @@ public class ClientRunner {
             String name = args[2];
             client.startClient(host, port, name);
         } catch (Exception ex) {
-            logger.error("Error occurred while run multithreading client app", ex);
+            logger.error("Error occurred while run Multi Processor Client app", ex);
             client.startClient();
         }
     }

@@ -19,10 +19,10 @@ INSERT INTO system_parameter (id, key, value, type) VALUES(17, 'minMaxType', 'BF
 INSERT INTO system_parameter (id, key, value, type) VALUES(18, 'opponentTilesPredictor', 'MIN_MAX', 'MIN_MAX');
 INSERT INTO system_parameter (id, key, value, type) VALUES(19, 'opponentPlayHeuristicsDiffsFunctionName', 'opponentPlayHeuristicsDiffsFunction_initialForOptimization', 'MIN_MAX');
 INSERT INTO system_parameter (id, key, value, type) VALUES(20, 'minMaxIteration', '600000', 'MIN_MAX');
-INSERT INTO system_parameter (id, key, value, type) VALUES(21, 'useMultithreadingMinMax', 'false', 'MIN_MAX');
-INSERT INTO system_parameter (id, key, value, type) VALUES(22, 'multithreadingClientRankSysParam', 'minMaxIteration', 'MIN_MAX');
-INSERT INTO system_parameter (id, key, value, type) VALUES(23, 'multithreadingServerPort', '8080', 'MIN_MAX');
-INSERT INTO system_parameter (id, key, value, type) VALUES(24, 'executeRankTestForMultithreadingClient', 'true', 'MIN_MAX');
+INSERT INTO system_parameter (id, key, value, type) VALUES(21, 'useMultiProcessorMinMax', 'false', 'MIN_MAX');
+INSERT INTO system_parameter (id, key, value, type) VALUES(22, 'multiProcessorClientRankSysParam', 'minMaxIteration', 'MIN_MAX');
+INSERT INTO system_parameter (id, key, value, type) VALUES(23, 'multiProcessorServerPort', '8080', 'MIN_MAX');
+INSERT INTO system_parameter (id, key, value, type) VALUES(24, 'executeRankTestForMultiProcessorClient', 'true', 'MIN_MAX');
 INSERT INTO system_parameter (id, key, value, type) VALUES(25, 'rankTestCount', '2', 'MIN_MAX');
 INSERT INTO system_parameter (id, key, value, type) VALUES(26, 'minMaxForCachedNodeRoundIterationRate', '5', 'MIN_MAX');
 INSERT INTO system_parameter (id, key, value, type) VALUES(27, 'coefficientForComplexHeuristic', '12', 'HEURISTIC');
@@ -38,6 +38,7 @@ INSERT INTO system_parameter (id, key, value, type) VALUES(36, 'mixedRoundHeuris
 INSERT INTO system_parameter (id, key, value, type) VALUES(37, 'roundStatisticProcessorParam1', '0.4', 'HEURISTIC');
 INSERT INTO system_parameter (id, key, value, type) VALUES(38, 'roundStatisticProcessorParam2', '0.2', 'HEURISTIC');
 INSERT INTO system_parameter (id, key, value, type) VALUES(39, 'roundStatisticProcessorParam3', '0.1', 'HEURISTIC');
+INSERT INTO system_parameter (id, key, value, type) VALUES(40, 'multiProcessorMinMaxThreadsCount', '3', 'MIN_MAX');
 
 DELETE FROM arg_and_value;
 INSERT INTO arg_and_value (id, function_name, arg, value)

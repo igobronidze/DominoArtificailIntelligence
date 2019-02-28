@@ -1,4 +1,4 @@
-package ge.ai.domino.manager.multithreadingserver;
+package ge.ai.domino.manager.multiprocessorserver;
 
 import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.domain.sysparam.SysParam;
@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MultithreadingServer {
+public class MultiProcessorServer {
 
-    private static final Logger logger = Logger.getLogger(MultithreadingServer.class);
+    private static final Logger logger = Logger.getLogger(MultiProcessorServer.class);
 
     private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-    private final SysParam multithreadingServerPort = new SysParam("multithreadingServerPort", "8080");
+    private final SysParam multiProcessorServerPort = new SysParam("multiProcessorServerPort", "8080");
 
-    private final SysParam executeRankTestForMultithreadingClient = new SysParam("executeRankTestForMultithreadingClient", "true");
+    private final SysParam executeRankTestForMultiProcessorClient = new SysParam("executeRankTestForMultiProcessorClient", "true");
 
     private ServerSocket server = null;
 
@@ -28,23 +28,23 @@ public class MultithreadingServer {
 
     private boolean open;
 
-    private static MultithreadingServer instance;
+    private static MultiProcessorServer instance;
 
-    private MultithreadingServer() {}
+    private MultiProcessorServer() {}
 
-    public static MultithreadingServer getInstance() {
+    public static MultiProcessorServer getInstance() {
         if (instance == null) {
-            instance = new MultithreadingServer();
+            instance = new MultiProcessorServer();
         }
         return instance;
     }
 
     public void startServer() {
-        int port = sysParamManager.getIntegerParameterValue(multithreadingServerPort);
+        int port = sysParamManager.getIntegerParameterValue(multiProcessorServerPort);
         try {
             server = new ServerSocket(port);
             open = true;
-            logger.info("Started multithreading server, port[" + port + "]");
+            logger.info("Started multiProcessor server, port[" + port + "]");
             while (open) {
                 Socket socket = server.accept();
                 ClientSocket clientSocket = new ClientSocket(socket);
@@ -52,14 +52,14 @@ public class MultithreadingServer {
 
                 clientSocket.sendSysParams();
                 clientSocket.sendFunctionArgsAndValues();
-                if (sysParamManager.getBooleanParameterValue(executeRankTestForMultithreadingClient)) {
+                if (sysParamManager.getBooleanParameterValue(executeRankTestForMultiProcessorClient)) {
                     clientSocket.executeRankTest();
                 }
                 clients.add(clientSocket);
                 logger.info("Accepted new client, name[" + clientSocket.getName() + "]");
             }
         } catch (IOException | ClassNotFoundException ex) {
-            logger.error("Can't start multithreading server, port[" + port + "]", ex);
+            logger.error("Can't start multiProcessor server, port[" + port + "]", ex);
             stopService();
         }
     }
@@ -96,7 +96,7 @@ public class MultithreadingServer {
                 server.close();
             }
         } catch (IOException ex) {
-            logger.error("Can't stop multithreading server, port[" + sysParamManager.getIntegerParameterValue(multithreadingServerPort) + "]", ex);
+            logger.error("Can't stop multiProcessor server, port[" + sysParamManager.getIntegerParameterValue(multiProcessorServerPort) + "]", ex);
         }
     }
 }

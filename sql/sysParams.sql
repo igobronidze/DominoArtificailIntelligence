@@ -31,13 +31,14 @@ INSERT INTO system_parameter (key, value, type) VALUES('minMaxType', 'BFS', 'MIN
 INSERT INTO system_parameter (key, value, type) VALUES('opponentTilesPredictor', 'MIN_MAX', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('opponentPlayHeuristicsDiffsFunctionName', 'opponentPlayHeuristicsDiffsFunction_initialForOptimization', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('minMaxIteration', '150000', 'MIN_MAX');
--- Multithreading
-INSERT INTO system_parameter (key, value, type) VALUES('useMultithreadingMinMax', 'true', 'MIN_MAX');
-INSERT INTO system_parameter (key, value, type) VALUES('multithreadingClientRankSysParam', 'minMaxIteration', 'MIN_MAX');
-INSERT INTO system_parameter (key, value, type) VALUES('multithreadingServerPort', '8080', 'MIN_MAX');
-INSERT INTO system_parameter (key, value, type) VALUES('executeRankTestForMultithreadingClient', 'true', 'MIN_MAX');
+-- MultiProcessor
+INSERT INTO system_parameter (key, value, type) VALUES('useMultiProcessorMinMax', 'true', 'MIN_MAX');
+INSERT INTO system_parameter (key, value, type) VALUES('multiProcessorClientRankSysParam', 'minMaxIteration', 'MIN_MAX');
+INSERT INTO system_parameter (key, value, type) VALUES('multiProcessorServerPort', '8080', 'MIN_MAX');
+INSERT INTO system_parameter (key, value, type) VALUES('executeRankTestForMultiProcessorClient', 'true', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('rankTestCount', '2', 'MIN_MAX');
 INSERT INTO system_parameter (key, value, type) VALUES('minMaxForCachedNodeRoundIterationRate', '5', 'MIN_MAX');
+INSERT INTO system_parameter (key, value, type) VALUES('multiProcessorMinMaxThreadsCount', '3', 'MIN_MAX');
 
 -------- HEURISTIC
 -- Global

@@ -1,9 +1,9 @@
-package ge.ai.domino.manager.multithreadingserver;
+package ge.ai.domino.manager.multiprocessorserver;
 
 import ge.ai.domino.caching.sysparam.CachedSystemParameter;
 import ge.ai.domino.dao.function.FunctionDAO;
 import ge.ai.domino.dao.function.FunctionDAOImpl;
-import ge.ai.domino.domain.command.MultithreadingCommand;
+import ge.ai.domino.domain.command.MultiProcessorCommand;
 import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.sysparam.SysParam;
@@ -25,7 +25,7 @@ public class ClientSocket {
 
     private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-    private final SysParam multithreadingClientRankSysParam = new SysParam("multithreadingClientRankSysParam", "minMaxIteration");
+    private final SysParam multiProcessorClientRankSysParam = new SysParam("multiProcessorClientRankSysParam", "minMaxIteration");
 
     private String name;
 
@@ -44,35 +44,35 @@ public class ClientSocket {
     }
 
     public void specifyClientName() throws IOException, ClassNotFoundException {
-        oos.writeObject(MultithreadingCommand.GET_NAME);
+        oos.writeObject(MultiProcessorCommand.GET_NAME);
         name = (String) ois.readObject();
     }
 
     public void sendSysParams() throws IOException {
         Map<String, String> sysParams = CachedSystemParameter.getCachedParameters();
-        oos.writeObject(MultithreadingCommand.LOAD_SYS_PARAMS);
+        oos.writeObject(MultiProcessorCommand.LOAD_SYS_PARAMS);
         oos.writeObject(sysParams);
 
-        rank = Integer.valueOf(sysParams.get(sysParamManager.getStringParameterValue(multithreadingClientRankSysParam)));
+        rank = Integer.valueOf(sysParams.get(sysParamManager.getStringParameterValue(multiProcessorClientRankSysParam)));
     }
 
     public void updateSysParams(Map<String, String> params) throws IOException {
-        oos.writeObject(MultithreadingCommand.UPDATE_SYS_PARAMS_IN_CACH);
+        oos.writeObject(MultiProcessorCommand.UPDATE_SYS_PARAMS_IN_CACH);
         oos.writeObject(params);
     }
 
     public void sendFunctionArgsAndValues() throws IOException {
-        oos.writeObject(MultithreadingCommand.LOAD_FUNCTION_ARG_AND_VALUES);
+        oos.writeObject(MultiProcessorCommand.LOAD_FUNCTION_ARG_AND_VALUES);
         oos.writeObject(functionDAO.getFunctionArgsAndValues(""));
     }
 
     public void initGame(GameInitialData gameInitialData) throws IOException {
-        oos.writeObject(MultithreadingCommand.INIT_GAME);
+        oos.writeObject(MultiProcessorCommand.INIT_GAME);
         oos.writeObject(gameInitialData);
     }
 
     public void executeRankTest() throws IOException, ClassNotFoundException {
-        oos.writeObject(MultithreadingCommand.RANK_TEST);
+        oos.writeObject(MultiProcessorCommand.RANK_TEST);
         List<Long> result = (List<Long>) ois.readObject();
 
         logger.info("Rank test for client[" + name + "], rank[" + rank + "]");
@@ -85,14 +85,14 @@ public class ClientSocket {
         logger.info("Average for " + result.size() + " try is " + (average / result.size()));
     }
 
-    public List<AiPredictionsWrapper> executeMinMax(List<MultithreadingRound> multithreadingRounds) throws Exception {
+    public List<AiPredictionsWrapper> executeMinMax(List<MultiProcessorRound> multiProcessorRounds) throws Exception {
         Long taskId = System.currentTimeMillis();
-        logger.info("Starting minmax execution, roundsCount[" + multithreadingRounds.size() + "], clientName[" + name + "], taskId[" + taskId + "]");
+        logger.info("Starting minmax execution, roundsCount[" + multiProcessorRounds.size() + "], clientName[" + name + "], taskId[" + taskId + "]");
         long ms = System.currentTimeMillis();
 
-        oos.writeObject(MultithreadingCommand.EXECUTE_MIN_MAX);
+        oos.writeObject(MultiProcessorCommand.EXECUTE_MIN_MAX);
         oos.writeObject(taskId);
-        oos.writeObject(multithreadingRounds);
+        oos.writeObject(multiProcessorRounds);
         List<AiPredictionsWrapper> aiPredictionsWrappers = (List<AiPredictionsWrapper>) ois.readObject();
         logger.info("MinMax for clientName[" + name + "] took " + (System.currentTimeMillis() - ms) + "ms");
 
@@ -109,7 +109,7 @@ public class ClientSocket {
 
     public void close() {
         try {
-            oos.writeObject(MultithreadingCommand.FINISH);
+            oos.writeObject(MultiProcessorCommand.FINISH);
             ois.close();
             oos.close();
             socket.close();

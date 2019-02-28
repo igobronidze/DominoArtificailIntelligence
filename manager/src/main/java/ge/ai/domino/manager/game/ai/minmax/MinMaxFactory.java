@@ -2,7 +2,7 @@ package ge.ai.domino.manager.game.ai.minmax;
 
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.minmax.bfs.MinMaxBFS;
-import ge.ai.domino.manager.game.ai.minmax.bfs.MultithreadingMinMaxBFS;
+import ge.ai.domino.manager.game.ai.minmax.bfs.MultiProcessorMinMaxBFS;
 import ge.ai.domino.manager.game.ai.minmax.dfs.MinMaxDFS;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 
@@ -12,22 +12,22 @@ public class MinMaxFactory {
 
 	private static final SysParam minMaxType = new SysParam("minMaxType", "DFS");
 
-	private static final SysParam useMultithreadingMinMax = new SysParam("useMultithreadingMinMax", "true");
+	private static final SysParam useMultiProcessorMinMax = new SysParam("useMultiProcessorMinMax", "true");
 
-	public static MinMax getMinMax(boolean useMultithreading) {
+	public static MinMax getMinMax(boolean useMultiProcessor) {
 		String type = systemParameterManager.getStringParameterValue(minMaxType);
 
 		MinMax minMaxDFS = new MinMaxDFS();
 		MinMax minMaxBFS = new MinMaxBFS();
-		MultithreadingMinMaxBFS multithreadingMinMaxBFS = new MultithreadingMinMaxBFS();
+		MultiProcessorMinMaxBFS multiProcessorMinMaxBFS = new MultiProcessorMinMaxBFS();
 
 		MinMax result = minMaxBFS;
 
 		if (type.equals(minMaxDFS.getType())) {
 			result = minMaxDFS;
 		} else if (type.equals(minMaxBFS.getType())) {
-			if (useMultithreading && systemParameterManager.getBooleanParameterValue(useMultithreadingMinMax)) {
-				return multithreadingMinMaxBFS;
+			if (useMultiProcessor && systemParameterManager.getBooleanParameterValue(useMultiProcessorMinMax)) {
+				return multiProcessorMinMaxBFS;
 			} else {
 				result = minMaxBFS;
 			}

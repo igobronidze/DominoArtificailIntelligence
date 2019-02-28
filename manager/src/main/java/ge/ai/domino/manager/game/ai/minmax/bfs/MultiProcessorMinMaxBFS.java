@@ -131,7 +131,7 @@ public class MultiProcessorMinMaxBFS extends MinMaxBFS {
 					NodeRound nodeRound = roundsForProcess.get(aiPredictionsWrapperEntry.getKey().get(i));
 					AiPredictionsWrapper aiPredictionsWrapper = aiPredictionsWrapperEntry.getValue().get(i);
 					if (aiPredictionsWrapper.getAiPredictions().isEmpty()) {
-						nodeRound.setHeuristic(roundHeuristic.getHeuristic(nodeRound.getRound(), false));
+						nodeRound.setHeuristic(roundHeuristic.getHeuristic(nodeRound.getRound()));
 					} else {
 						nodeRound.setHeuristic(getHeuristicFromPrediction(aiPredictionsWrapper));
 					}

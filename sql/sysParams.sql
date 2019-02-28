@@ -21,7 +21,6 @@ INSERT INTO system_parameter (key, value, type) VALUES('defaultChannelName', 'Re
 -------- LOGGING
 INSERT INTO system_parameter (key, value, type) VALUES('logTilesAfterMethod', 'true', 'LOGGING');
 INSERT INTO system_parameter (key, value, type) VALUES('logOnVirtualMode', 'false', 'LOGGING');
-INSERT INTO system_parameter (key, value, type) VALUES('logAboutRoundHeuristic', 'false', 'LOGGING');
 
 -------- MIN_MAX
 -- Global

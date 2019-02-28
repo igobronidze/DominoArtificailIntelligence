@@ -128,7 +128,7 @@ public class MinMaxDFS extends MinMax {
 			AiPrediction aiPrediction = new AiPrediction();
 			aiPrediction.setMove(move);
 			aiPrediction.setHeuristicValue(heuristic);
-			aiPrediction.setRealHeuristic(roundHeuristic.getHeuristic(nextRound, false));
+			aiPrediction.setRealHeuristic(roundHeuristic.getHeuristic(nextRound));
 			aiPredictions.add(aiPrediction);
 			boolean better = false;
 			if (nodeRound.getRound().getTableInfo().isMyMove()) {
@@ -177,7 +177,7 @@ public class MinMaxDFS extends MinMax {
 		Round round = nodeRound.getRound();
 
 		if (round.getGameInfo().isFinished() || isNewRound(round) || height == treeHeight) {
-			nodeRound.setHeuristic(roundHeuristic.getHeuristic(round, false));
+			nodeRound.setHeuristic(roundHeuristic.getHeuristic(round));
 			return nodeRound.getHeuristic();
 		}
 

@@ -12,7 +12,7 @@ INSERT INTO system_parameter (id, key, value, type) VALUES(10, 'systemLanguageCo
 INSERT INTO system_parameter (id, key, value, type) VALUES(11, 'p2pServerPort', '8080', 'CONTROL_PANEL');
 INSERT INTO system_parameter (id, key, value, type) VALUES(12, 'logTilesAfterMethod', 'true', 'LOGGING');
 INSERT INTO system_parameter (id, key, value, type) VALUES(13, 'logOnVirtualMode', 'false', 'LOGGING');
-INSERT INTO system_parameter (id, key, value, type) VALUES(14, 'logAboutRoundHeuristic', 'false', 'LOGGING');
+INSERT INTO system_parameter (id, key, value, type) VALUES(14, 'multiProcessorMinMaxThreadsCount', '3', 'MIN_MAX');
 INSERT INTO system_parameter (id, key, value, type) VALUES(15, 'minMaxOnFirstTile', 'true', 'MIN_MAX');
 INSERT INTO system_parameter (id, key, value, type) VALUES(16, 'minMaxTreeHeight', '7', 'MIN_MAX');
 INSERT INTO system_parameter (id, key, value, type) VALUES(17, 'minMaxType', 'BFS', 'MIN_MAX');
@@ -38,7 +38,6 @@ INSERT INTO system_parameter (id, key, value, type) VALUES(36, 'mixedRoundHeuris
 INSERT INTO system_parameter (id, key, value, type) VALUES(37, 'roundStatisticProcessorParam1', '0.4', 'HEURISTIC');
 INSERT INTO system_parameter (id, key, value, type) VALUES(38, 'roundStatisticProcessorParam2', '0.2', 'HEURISTIC');
 INSERT INTO system_parameter (id, key, value, type) VALUES(39, 'roundStatisticProcessorParam3', '0.1', 'HEURISTIC');
-INSERT INTO system_parameter (id, key, value, type) VALUES(40, 'multiProcessorMinMaxThreadsCount', '3', 'MIN_MAX');
 
 DELETE FROM arg_and_value;
 INSERT INTO arg_and_value (id, function_name, arg, value)

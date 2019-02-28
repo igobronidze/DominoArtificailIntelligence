@@ -292,19 +292,25 @@ public class GameOperations {
 
 	public static int countScore(Round round) {
 		int count = 0;
+
 		TableInfo tableInfo = round.getTableInfo();
-		if (tableInfo.getLeft().getOpenSide() == tableInfo.getRight().getOpenSide() && tableInfo.getLeft().isTwin() && tableInfo.getRight().isTwin()) {
-			count = tableInfo.getLeft().getOpenSide() * 2;  // First move, 5X5 case
+		PlayedTile left = tableInfo.getLeft();
+		PlayedTile right = tableInfo.getRight();
+		PlayedTile top = tableInfo.getTop();
+		PlayedTile bottom = tableInfo.getBottom();
+
+		if (left.getOpenSide() == right.getOpenSide() && left.isTwin() && right.isTwin()) {
+			count = left.getOpenSide() * 2;  // First move, 5X5 case
 		} else if (round.getMyTiles().size() + tableInfo.getOpponentTilesCount() == 13 && tableInfo.getBazaarTilesCount() == 14) {
 			return 0;   // First move, not 5X5
 		} else {
-			count += tableInfo.getLeft().isTwin() ? (tableInfo.getLeft().getOpenSide() * 2) : tableInfo.getLeft().getOpenSide();
-			count += tableInfo.getRight().isTwin() ? (tableInfo.getRight().getOpenSide() * 2) : tableInfo.getRight().getOpenSide();
-			if (tableInfo.getTop() != null && tableInfo.getTop().isConsiderInSum()) {
-				count += tableInfo.getTop().isTwin() ? (tableInfo.getTop().getOpenSide() * 2) : tableInfo.getTop().getOpenSide();
+			count += left.isTwin() ? (left.getOpenSide() * 2) : left.getOpenSide();
+			count += right.isTwin() ? (right.getOpenSide() * 2) : right.getOpenSide();
+			if (top != null && top.isConsiderInSum()) {
+				count += top.isTwin() ? (top.getOpenSide() * 2) : top.getOpenSide();
 			}
-			if (tableInfo.getBottom() != null && tableInfo.getBottom().isConsiderInSum()) {
-				count += tableInfo.getBottom().isTwin() ? (tableInfo.getBottom().getOpenSide() * 2) : tableInfo.getBottom().getOpenSide();
+			if (bottom != null && bottom.isConsiderInSum()) {
+				count += bottom.isTwin() ? (bottom.getOpenSide() * 2) : bottom.getOpenSide();
 			}
 		}
 		if (count > 0 && count % 5 == 0) {

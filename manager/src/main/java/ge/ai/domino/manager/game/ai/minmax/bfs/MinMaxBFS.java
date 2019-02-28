@@ -162,7 +162,7 @@ public class MinMaxBFS extends MinMax {
             AiPrediction aiPrediction = new AiPrediction();
             aiPrediction.setMove(move);
             aiPrediction.setHeuristicValue(nr.getHeuristic());
-            aiPrediction.setRealHeuristic(roundHeuristic.getHeuristic(nr.getRound(), false));
+            aiPrediction.setRealHeuristic(roundHeuristic.getHeuristic(nr.getRound()));
             aiPrediction.setMoveProbability(nr.getLastPlayedProbability());
             aiPredictions.add(aiPrediction);
         }
@@ -343,7 +343,7 @@ public class MinMaxBFS extends MinMax {
                             nodeRound.setHeuristic(heuristic);
                         }
                     } else {
-                        nodeRound.setHeuristic(roundHeuristic.getHeuristic(nodeRound.getRound(), false));
+                        nodeRound.setHeuristic(roundHeuristic.getHeuristic(nodeRound.getRound()));
                     }
                     nodeRound.addDescendant(1);
                 }

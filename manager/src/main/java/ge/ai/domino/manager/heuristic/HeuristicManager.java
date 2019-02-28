@@ -29,7 +29,7 @@ public class HeuristicManager {
 
 	public Double getHeuristic(Round round) {
 		RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(systemParameterManager.getStringParameterValue(roundHeuristicType));
-		return roundHeuristic.getHeuristic(round, false);
+		return roundHeuristic.getHeuristic(round);
 	}
 
 	public Map<String, Double> getHeuristics(Round round) {
@@ -39,7 +39,7 @@ public class HeuristicManager {
 		Map<String, Double> result = new HashMap<>();
 		for (RoundHeuristicType type : RoundHeuristicType.values()) {
 			RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(type.name());
-			result.put(type.name(), roundHeuristic.getHeuristic(round, true));
+			result.put(type.name(), roundHeuristic.getHeuristic(round));
 		}
 
 		logger.info("Finished getHeuristics method");
@@ -52,7 +52,7 @@ public class HeuristicManager {
 		heuristic.setRound(round);
 
 		RoundHeuristic roundHeuristic = RoundHeuristicFactory.getRoundHeuristic(roundHeuristicType.name());
-		heuristic.setValue(roundHeuristic.getHeuristic(round, false));
+		heuristic.setValue(roundHeuristic.getHeuristic(round));
 
 		MinMax minMax = MinMaxFactory.getMinMax(true);
 		minMax.setRoundHeuristicParams(params);

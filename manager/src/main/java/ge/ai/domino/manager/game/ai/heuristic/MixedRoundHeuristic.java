@@ -5,13 +5,10 @@ import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.heuristic.statistic.RoundStatisticType;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
-import org.apache.log4j.Logger;
 
 import java.util.List;
 
 public class MixedRoundHeuristic extends RoundHeuristic {
-
-	private final Logger logger = Logger.getLogger(RoundHeuristic.class);
 
 	private final SystemParameterManager sysParamManager = new SystemParameterManager();
 

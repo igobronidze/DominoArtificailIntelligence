@@ -75,7 +75,7 @@ public class GamesTest {
     }
 
     @Test
-    public void testGames() {
+    public void testGames() throws Exception {
         functionManager.initFunctions();
 
         List<Integer> idsForReplay = CREATE_MODE ? idsForCreateMode : playedGameDAO.getAllPlayedGame();
@@ -85,48 +85,40 @@ public class GamesTest {
         for (int id : idsForReplay) {
             logger.info("Starting test for game id[" + id + "]");
 
-            int gameId = 0;
             List<PossibleMoves> possibleMovesList = new ArrayList<>();
-            try {
-                PossibleMovesWrapper possibleMovesWrapper = null;
-                int index = 0;
-                if (!CREATE_MODE) {
-                    possibleMovesWrapper = PossibleMovesWrapperMarshaller.unmarshall(new File(getClass().getResource("/" + id + ".xml").getFile()));
-                }
+            PossibleMovesWrapper possibleMovesWrapper = null;
+            int index = 0;
 
-                ReplayMoveInfo replayMoveInfo = replayGameManager.startReplayGame(id);
-                gameId = replayMoveInfo.getGameId();
-                while (replayMoveInfo.getNextMove() != null) {
-                    replayMoveInfo = replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
-                    replayMoveInfo.setRound(CachedGames.getCurrentRound(gameId, true));
-                    if (replayMoveInfo.getNextMove() != null) {
-                        Move nextMove = new Move(replayMoveInfo.getNextMove().getLeft(), replayMoveInfo.getNextMove().getRight(), replayMoveInfo.getNextMove().getDirection());
-                        if (replayMoveInfo.getBestAiPrediction() != null) {
-                            if (CREATE_MODE) {
-                                PossibleMoves possibleMoves = new PossibleMoves();
-                                possibleMoves.setIndex(index + 1);
-                                possibleMoves.getMoves().add(getMove(nextMove));
-                                possibleMovesList.add(possibleMoves);
-                            } else {
-                                PossibleMoves possibleMoves = possibleMovesWrapper.getPossibleMoves().get(index);
-                                if (!contains(replayMoveInfo.getBestAiPrediction(), possibleMoves)) {
-                                    GamesTestFailure gamesTestFailure = new GamesTestFailure();
-                                    gamesTestFailure.setReplayMoveInfo(replayMoveInfo);
-                                    gamesTestFailure.setPossibleMoves(possibleMoves);
-                                    gamesTestFailures.add(gamesTestFailure);
-                                    gamesTestFailure.setIndex(index + 1);
-                                }
+            if (!CREATE_MODE) {
+                possibleMovesWrapper = PossibleMovesWrapperMarshaller.unmarshall(new File(getClass().getResource("/" + id + ".xml").getFile()));
+            }
+
+            ReplayMoveInfo replayMoveInfo = replayGameManager.startReplayGame(id);
+            int gameId = replayMoveInfo.getGameId();
+            while (replayMoveInfo.getNextMove() != null) {
+                replayMoveInfo = replayGameManager.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
+                replayMoveInfo.setRound(CachedGames.getCurrentRound(gameId, true));
+                if (replayMoveInfo.getNextMove() != null) {
+                    Move nextMove = new Move(replayMoveInfo.getNextMove().getLeft(), replayMoveInfo.getNextMove().getRight(), replayMoveInfo.getNextMove().getDirection());
+                    if (replayMoveInfo.getBestAiPrediction() != null) {
+                        if (CREATE_MODE) {
+                            PossibleMoves possibleMoves = new PossibleMoves();
+                            possibleMoves.setIndex(index + 1);
+                            possibleMoves.getMoves().add(getMove(nextMove));
+                            possibleMovesList.add(possibleMoves);
+                        } else {
+                            PossibleMoves possibleMoves = possibleMovesWrapper.getPossibleMoves().get(index);
+                            if (!contains(replayMoveInfo.getBestAiPrediction(), possibleMoves)) {
+                                GamesTestFailure gamesTestFailure = new GamesTestFailure();
+                                gamesTestFailure.setReplayMoveInfo(replayMoveInfo);
+                                gamesTestFailure.setPossibleMoves(possibleMoves);
+                                gamesTestFailure.setIndex(index + 1);
+                                gamesTestFailures.add(gamesTestFailure);
                             }
-                            index++;
                         }
+                        index++;
                     }
                 }
-            } catch (Exception ex) {
-                logger.error("Error occurred while test game id[" + id + "]", ex);
-            } finally {
-                CachedGames.removeGame(gameId);
-                CachedGames.removeCreatedGameHistory(gameId);
-                CachedMinMax.cleanUp(gameId);
             }
 
             logger.info("Finished game for replay id[" + id + "]");

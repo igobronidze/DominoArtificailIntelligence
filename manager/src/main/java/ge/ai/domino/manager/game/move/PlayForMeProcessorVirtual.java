@@ -22,7 +22,6 @@ public class PlayForMeProcessorVirtual extends MoveProcessor {
 		if (round.getMyTiles().size() == 0) {
 			round = GameOperations.finishedLastAndGetNewRound(round, true, GameOperations.countLeftTiles(round, false, true), true);
 		} else if (GameOperations.isRoundBlocked(round)) {
-			logger.info("Round is blocked");
 			round = GameOperations.blockRound(round, GameOperations.countLeftTiles(round, false, true), true);
 		}
 

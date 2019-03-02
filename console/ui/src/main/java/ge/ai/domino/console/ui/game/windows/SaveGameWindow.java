@@ -4,6 +4,7 @@ import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHCheckBox;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.service.played.PlayedGameService;
 import ge.ai.domino.service.played.PlayedGameServiceImpl;
 import javafx.geometry.Insets;
@@ -29,7 +30,8 @@ public abstract class SaveGameWindow extends Stage {
             optionsVBox.getChildren().addAll(saveGameCheckBox, saveOpponentPlaysCheckBox);
             TCHButton saveButton = new TCHButton(Messages.get("save"));
             saveButton.setOnAction(event -> {
-                playedGameService.finishGame(AppController.round.getGameInfo().getGameId(), saveGameCheckBox.isSelected(), saveOpponentPlaysCheckBox.isSelected(), specifyWinner);
+                new ServiceExecutor() {}.execute(() ->
+                        playedGameService.finishGame(AppController.round.getGameInfo().getGameId(), saveGameCheckBox.isSelected(), saveOpponentPlaysCheckBox.isSelected(), specifyWinner));
                 onSave();
                 this.close();
             });

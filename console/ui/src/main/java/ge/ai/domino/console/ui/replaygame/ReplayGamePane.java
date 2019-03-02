@@ -49,10 +49,10 @@ public class ReplayGamePane extends BorderPane {
         gameIdField.setNumber(new BigDecimal(0));
 
         TCHButton startGameButton = new TCHButton(Messages.get("start"));
-        startGameButton.setOnAction(e -> ServiceExecutor.execute(() -> {
-            replayMoveInfo = replayGameService.startReplayGame(gameIdField.getNumber().intValue());
-            initMainPane();
-        }));
+        startGameButton.setOnAction(e ->
+            new ServiceExecutor() {}.execute(() -> replayMoveInfo = replayGameService.startReplayGame(gameIdField.getNumber().intValue()))
+        );
+        initMainPane();
 
         FlowPane flowPane = new FlowPane(Orientation.HORIZONTAL);
         flowPane.setVgap(10);
@@ -72,16 +72,20 @@ public class ReplayGamePane extends BorderPane {
 
         ImageView replayImage = new ImageView(ImageFactory.getImage("skip.png"));
         replayImage.setCursor(Cursor.HAND);
-        replayImage.setOnMouseClicked(event -> ServiceExecutor.execute(() -> {
-            replayMoveInfo = replayGameService.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
-            initMainPane();
-        }));
+        replayImage.setOnMouseClicked(event -> {
+                new ServiceExecutor() {}.execute(() -> replayMoveInfo = replayGameService.replayMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex()));
+                initMainPane();
+            }
+        );
+
+
         ImageView undoImage = new ImageView(ImageFactory.getImage("undo.png"));
         undoImage.setCursor(Cursor.HAND);
-        undoImage.setOnMouseClicked(event -> ServiceExecutor.execute(() -> {
-            replayMoveInfo = replayGameService.undoReplayedMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex());
-            initMainPane();
-        }));
+        undoImage.setOnMouseClicked(event -> {
+                new ServiceExecutor() {}.execute(() -> replayMoveInfo = replayGameService.undoReplayedMove(replayMoveInfo.getGameId(), replayMoveInfo.getMoveIndex()));
+                initMainPane();
+            }
+        );
 
         HBox hBox = new HBox(20);
         if (replayMoveInfo != null && replayMoveInfo.getNextMove() != null) {
@@ -93,7 +97,11 @@ public class ReplayGamePane extends BorderPane {
         mainVBox.getChildren().add(hBox);
 
         ScrollPane scrollPane = new ScrollPane();
-        TCHLabel gameInfoLabel = new TCHLabel(replayMoveInfo == null ? "" : gameService.getCurrentRoundInfoInString(replayMoveInfo.getGameId()));
+        TCHLabel gameInfoLabel = new TCHLabel("");
+        if (replayMoveInfo != null) {
+            new ServiceExecutor() {}.execute(() -> gameInfoLabel.setText(gameService.getCurrentRoundInfoInString(replayMoveInfo.getGameId())));
+        }
+
         scrollPane.setContent(gameInfoLabel);
         scrollPane.setPrefHeight(495);
         scrollPane.setMaxHeight(495);

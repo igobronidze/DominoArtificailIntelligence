@@ -4,6 +4,7 @@ import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHCheckBox;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.domain.played.GroupedPlayedGame;
 import ge.ai.domino.service.played.PlayedGameService;
 import ge.ai.domino.service.played.PlayedGameServiceImpl;
@@ -108,8 +109,10 @@ public class GroupedPlayedGamePane extends BorderPane {
     }
 
     private void loadPlayedGames() {
-        List<GroupedPlayedGame> games = playedGameService.getGroupedPlayedGames(groupByVersionCheckBox.isSelected(), groupByOpponentNameCheckBox.isSelected(),
-                groupByChannelCheckBox.isSelected(), groupByPointForWinCheckBox.isSelected(), groupByLevelCheckBox.isSelected());
+        List<GroupedPlayedGame> games = new ArrayList<>();
+        new ServiceExecutor() {}.execute(() -> games.addAll(playedGameService.getGroupedPlayedGames(groupByVersionCheckBox.isSelected(), groupByOpponentNameCheckBox.isSelected(),
+                groupByChannelCheckBox.isSelected(), groupByPointForWinCheckBox.isSelected(), groupByLevelCheckBox.isSelected())));
+
         List<GroupedPlayedGameProperty> groupedPlayedGameProperties = new ArrayList<>();
         for (GroupedPlayedGame game : games) {
             groupedPlayedGameProperties.add(new GroupedPlayedGameProperty(game));

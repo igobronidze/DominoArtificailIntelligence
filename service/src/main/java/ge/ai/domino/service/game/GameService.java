@@ -19,19 +19,19 @@ public interface GameService {
 
     Round getLastPlayedRound(int gameId) throws DAIException;
 
-    void specifyRoundBeginner(int gameId, boolean startMe);
+    void specifyRoundBeginner(int gameId, boolean startMe) throws DAIException;
 
-    void specifyOpponentLeftTiles(int gameId, int leftTilesCount);
+    void specifyOpponentLeftTiles(int gameId, int leftTilesCount) throws DAIException;
 
-    Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe, boolean finishGame);
+    Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe, boolean finishGame) throws DAIException;
 
     Round detectAndAddNewTilesForMe(int gameId, boolean withSecondParams) throws DAIException;
 
     Round detectAndAddInitialTilesForMe(int gameId, Boolean startMe, boolean withSecondParams) throws DAIException;
 
-    void editOpponentNameInCache(int gameId, String opponentName);
+    void editOpponentNameInCache(int gameId, String opponentName) throws DAIException;
 
-    String getCurrentRoundInfoInString(int gameId);
+    String getCurrentRoundInfoInString(int gameId) throws DAIException;
 
-    boolean roundWillBeBlocked(int gameId, Move move);
+    boolean roundWillBeBlocked(int gameId, Move move) throws DAIException;
 }

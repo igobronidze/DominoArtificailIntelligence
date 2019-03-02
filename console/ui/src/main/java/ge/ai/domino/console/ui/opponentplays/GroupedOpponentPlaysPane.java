@@ -7,6 +7,7 @@ import ge.ai.domino.console.ui.tchcomponents.TCHFieldLabel;
 import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.domain.game.opponentplay.GroupedOpponentPlay;
 import ge.ai.domino.service.opponentplays.GroupedOpponentPlaysService;
 import ge.ai.domino.service.opponentplays.GroupedOpponentPlaysServiceImpl;
@@ -113,8 +114,10 @@ public class GroupedOpponentPlaysPane extends BorderPane {
     }
 
     private void loadPlayedGames() {
-        List<GroupedOpponentPlay> opponentPlays = groupedOpponentPlaysService.getGroupedOpponentPlays(getGameIdFieldValue(), versionField.getText(),
-                groupByOpponentGameIdCheckBox.isSelected(), groupByVersionCheckBox.isSelected(), groupInOneResultCheckBox.isSelected());
+        List<GroupedOpponentPlay> opponentPlays = new ArrayList<>();
+        new ServiceExecutor() {}.execute(() -> opponentPlays.addAll(groupedOpponentPlaysService.getGroupedOpponentPlays(getGameIdFieldValue(), versionField.getText(),
+                groupByOpponentGameIdCheckBox.isSelected(), groupByVersionCheckBox.isSelected(), groupInOneResultCheckBox.isSelected())));
+
         data = GroupedOpponentPlaysProperty.generateDataInMap(opponentPlays);
     }
 

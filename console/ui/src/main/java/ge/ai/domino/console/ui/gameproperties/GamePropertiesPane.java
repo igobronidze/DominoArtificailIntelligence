@@ -3,6 +3,7 @@ package ge.ai.domino.console.ui.gameproperties;
 import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.controlpanel.ControlPanel;
 import ge.ai.domino.console.ui.game.GamePane;
+import ge.ai.domino.console.ui.game.GamePaneInitialData;
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
 import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
@@ -36,7 +37,7 @@ public class GamePropertiesPane extends VBox {
 
     private static final SystemParameterService systemParameterService = new SystemParameterServiceImpl();
 
-    private static final GameService GAME_SERVICE = new GameServiceImpl();
+    private static final GameService gameService = new GameServiceImpl();
 
     private static final ChannelService channelService = new ChannelServiceImpl();
 
@@ -47,6 +48,10 @@ public class GamePropertiesPane extends VBox {
     private static final SysParam defaultWinPoint = new SysParam("defaultWinPoint", "255");
 
     private static final SysParam defaultChannelName = new SysParam("defaultChannelName", "Real");
+
+    private static final SysParam bestMoveAutoPlay = new SysParam("bestMoveAutoPlay", "true");
+
+    private static final SysParam detectAddedTiles = new SysParam("detectAddedTiles", "true");
 
     private final ControlPanel controlPanel;
 
@@ -65,23 +70,33 @@ public class GamePropertiesPane extends VBox {
     }
 
     private void initComponents() {
-        List<Channel> channels = channelService.getChannels();
+        List<Channel> channels = new ArrayList<>();
+
+        new ServiceExecutor() {}.execute(() -> channels.addAll(channelService.getChannels()));
+
         Map<String, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getName, channel -> channel));
         TCHComboBox<String> channelsCombo = new TCHComboBox<>(new ArrayList<>(channelsMap.keySet()));
-        channelsCombo.setValue(systemParameterService.getStringParameterValue(defaultChannelName));
+
+        new ServiceExecutor() {}.execute(() -> channelsCombo.setValue(systemParameterService.getStringParameterValue(defaultChannelName)));
+
         TCHFieldLabel channelFieldLabel = new TCHFieldLabel(Messages.get("channel"), channelsCombo);
 
         TCHTextField nameField = new TCHTextField("tmp", TCHComponentSize.MEDIUM);
         TCHFieldLabel nameFieldLabel = new TCHFieldLabel(Messages.get("name"), nameField);
 
-        List<Integer> points = systemParameterService.getIntegerListParameterValue(possiblePoints);
+        List<Integer> points = new ArrayList<>();
+        new ServiceExecutor() {}.execute(() -> points.addAll(systemParameterService.getIntegerListParameterValue(possiblePoints)));
         TCHComboBox<Integer> pointComboBox = new TCHComboBox<>(points);
-        pointComboBox.setValue(systemParameterService.getIntegerParameterValue(defaultWinPoint));
+
+        new ServiceExecutor() {}.execute(() -> pointComboBox.setValue(systemParameterService.getIntegerParameterValue(defaultWinPoint)));
+
         TCHFieldLabel pointFieldLabel = new TCHFieldLabel(Messages.get("point"), pointComboBox);
 
         TCHButton startButton = new TCHButton(Messages.get("start"));
         TCHNumberTextField levelField = new TCHNumberTextField(TCHComponentSize.MEDIUM);
-        levelField.setNumber(new BigDecimal(systemParameterService.getIntegerParameterValue(levelDefaultValue)));
+
+        new ServiceExecutor() {}.execute(() -> levelField.setNumber(new BigDecimal(systemParameterService.getIntegerParameterValue(levelDefaultValue))));
+
         TCHFieldLabel levelFieldLabel = new TCHFieldLabel(Messages.get("level"), levelField);
         startButton.setOnAction(e -> {
             if (StringUtil.isEmpty(channelsCombo.getValue()) || StringUtil.isEmpty(nameField.getText())) {
@@ -92,16 +107,19 @@ public class GamePropertiesPane extends VBox {
                 gameProperties.setChannel(channelsMap.get(channelsCombo.getValue()));
                 gameProperties.setOpponentName(nameField.getText());
                 gameProperties.setLevel(levelField.getNumber().intValue());
-                ServiceExecutor.execute(() -> {
-                    AppController.round =  GAME_SERVICE.startGame(gameProperties);
-                    gamePane = new GamePane(controlPanel, gameProperties) {
-                        @Override
-                        public void onNewGame() {
-                            gamePane = null;
-                        }
-                    };
-                    controlPanel.getRoot().setCenter(gamePane);
-                });
+
+                new ServiceExecutor() {}.execute(() -> AppController.round =  gameService.startGame(gameProperties));
+
+                GamePaneInitialData gamePaneInitialData = new GamePaneInitialData();
+                new ServiceExecutor() {}.execute(() -> gamePaneInitialData.setBestMoveAutoPlay(systemParameterService.getBooleanParameterValue(bestMoveAutoPlay)));
+                new ServiceExecutor() {}.execute(() -> gamePaneInitialData.setDetectAddedTiles(systemParameterService.getBooleanParameterValue(detectAddedTiles)));
+                gamePane = new GamePane(controlPanel, gameProperties, gamePaneInitialData) {
+                    @Override
+                    public void onNewGame() {
+                        gamePane = null;
+                    }
+                };
+                controlPanel.getRoot().setCenter(gamePane);
             }
         });
         this.getChildren().addAll(nameFieldLabel, channelFieldLabel, pointFieldLabel, levelFieldLabel, startButton);

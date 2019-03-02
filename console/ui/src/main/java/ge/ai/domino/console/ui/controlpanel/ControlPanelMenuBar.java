@@ -33,6 +33,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
@@ -174,9 +175,7 @@ public class ControlPanelMenuBar extends MenuBar {
         Menu actionMenu = new Menu(Messages.get("action"));
 
         MenuItem initialExtraMovesMenuItem = new MenuItem(Messages.get("executeInitialExtraMoves"));
-        initialExtraMovesMenuItem.setOnAction(e -> {
-            initialDataService.playInitialExtraMoves();
-        });
+        initialExtraMovesMenuItem.setOnAction(e -> new ServiceExecutor() {}.execute(() -> initialDataService.playInitialExtraMoves()));
 
         MenuItem replayGameMenuItem = new MenuItem(Messages.get("replayGame"));
         replayGameMenuItem.setOnAction(e -> {
@@ -189,10 +188,15 @@ public class ControlPanelMenuBar extends MenuBar {
         });
 
         MenuItem startServerMenuItem = new MenuItem(Messages.get("startMultiProcessorServer"));
-        startServerMenuItem.setOnAction(e -> new Thread(() -> ServiceExecutor.execute(multiProcessorServerService::startServer)).start());
+        startServerMenuItem.setOnAction(e -> new ServiceExecutor() {
+            @Override
+            public boolean isAsync() {
+                return true;
+            }
+        }.execute(multiProcessorServerService::startServer));
 
         MenuItem stopServerMenuItem = new MenuItem(Messages.get("stopMultiProcessorServer"));
-        stopServerMenuItem.setOnAction(e -> new Thread(() -> ServiceExecutor.execute(multiProcessorServerService::stopServer)).start());
+        stopServerMenuItem.setOnAction(e -> new ServiceExecutor() {}.execute(multiProcessorServerService::stopServer));
 
         actionMenu.getItems().addAll(replayGameMenuItem, initialExtraMovesMenuItem, startServerMenuItem, stopServerMenuItem);
         return actionMenu;
@@ -212,12 +216,18 @@ public class ControlPanelMenuBar extends MenuBar {
                 channel.setName(P2P_GAME_CHANNEL_NAME);
                 gameProperties.setChannel(channel);
                 gameProperties.setPointsForWin(pointOfWin);
-                new Thread(() -> ServiceExecutor.execute(() -> p2PServerService.startServer(gameProperties))).start();
+
+                new ServiceExecutor() {
+                    @Override
+                    public boolean isAsync() {
+                        return true;
+                    }
+                }.execute(() -> p2PServerService.startServer(gameProperties));
             }
 
             @Override
             public void onStop() {
-                ServiceExecutor.execute(p2PServerService::stopServer);
+                new ServiceExecutor() {}.execute(p2PServerService::stopServer);
             }
         }.showWindow(controlPanel.getStage()));
 
@@ -228,7 +238,9 @@ public class ControlPanelMenuBar extends MenuBar {
             TimerTask task = new TimerTask() {
 
                 public void run() {
-                    List<GameInfo> gameInfos = playedGameService.getGameInfosBeforeId(lastPlayedGameId);
+                    List<GameInfo> gameInfos = new ArrayList<>();
+                    new ServiceExecutor() {}.execute(() -> gameInfos.addAll(playedGameService.getGameInfosBeforeId(lastPlayedGameId)));
+
                     gameInfos.sort(Comparator.comparingInt(GameInfo::getGameId));
                     p2PClientWindow.setGameInfos(gameInfos);
                 }
@@ -237,11 +249,12 @@ public class ControlPanelMenuBar extends MenuBar {
 
                 @Override
                 public void onStart(int count) {
+                    new ServiceExecutor() {}.execute(() -> lastPlayedGameId = playedGameService.getLastPlayedGameId());
+
                     new Thread(() -> {
-                        lastPlayedGameId = playedGameService.getLastPlayedGameId();
                         try {
                             for (int i = 0; i < count; i++) {
-                                p2PClientService.startClient();
+                                new ServiceExecutor() {}.execute(p2PClientService::startClient);
                                 Thread.sleep(SLEEP_BETWEEN_P2P_GAME);
                             }
                         } catch (Exception ignore) {} finally {

@@ -15,17 +15,17 @@ public interface SystemParameterService {
 
     void deleteSystemParameter(String key) throws DAIException;
 
-    List<SystemParameter> getSystemParameters(String key, SystemParameterType type);
+    List<SystemParameter> getSystemParameters(String key, SystemParameterType type) throws DAIException;
 
-    String getStringParameterValue(SysParam parameter);
+    String getStringParameterValue(SysParam parameter) throws DAIException;
 
-    Integer getIntegerParameterValue(SysParam parameter);
+    Integer getIntegerParameterValue(SysParam parameter) throws DAIException;
 
-    Double getDoubleParameterValue(SysParam parameter);
+    Double getDoubleParameterValue(SysParam parameter) throws DAIException;
 
-    Long getLongParameterValue(SysParam parameter);
+    Long getLongParameterValue(SysParam parameter) throws DAIException;
 
-    List<Integer> getIntegerListParameterValue(SysParam parameter);
+    List<Integer> getIntegerListParameterValue(SysParam parameter) throws DAIException;
 
-    boolean getBooleanParameterValue(SysParam parameter);
+    boolean getBooleanParameterValue(SysParam parameter) throws DAIException;
 }

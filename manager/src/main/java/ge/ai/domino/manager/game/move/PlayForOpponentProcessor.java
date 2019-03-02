@@ -28,7 +28,7 @@ public class PlayForOpponentProcessor extends MoveProcessor {
 			round.getTableInfo().getRoundBlockingInfo().setLastNotTwinPlayedTileMy(false);
 		}
 		logger.info("Start playForOpponent method for tile [" + move.getLeft() + "-" + move.getRight() + "] direction ["
-				+ move.getDirection().name() + "], gameId[" + round.getGameInfo().getGameId() + "]");
+				+ (move.getDirection() == null ? "N" : move.getDirection().name()) + "], gameId[" + round.getGameInfo().getGameId() + "]");
 
 		Map<Tile, Double> opponentTiles = round.getOpponentTiles();
 		Tile tile = new Tile(move.getLeft(), move.getRight());

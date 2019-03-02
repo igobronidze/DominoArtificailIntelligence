@@ -48,14 +48,14 @@ public class ShortcutPane extends HBox {
 
     private void loadShortcuts() {
         List<ShortcutProperty> shortcuts = new ArrayList<>();
-        shortcuts.add(new ShortcutProperty("ctrl_x_y", Messages.get("ctrl_x_y")));
-        shortcuts.add(new ShortcutProperty("ctrl_backspace", Messages.get("ctrl_backspace")));
-        shortcuts.add(new ShortcutProperty("ctrl_arrow", Messages.get("ctrl_arrow")));
-        shortcuts.add(new ShortcutProperty("ctrl_+", Messages.get("ctrl_+")));
-        shortcuts.add(new ShortcutProperty("ctrl_Z", Messages.get("ctrl_Z")));
-        shortcuts.add(new ShortcutProperty("ctrl_B", Messages.get("ctrl_B")));
-        shortcuts.add(new ShortcutProperty("ctrl_N", Messages.get("ctrl_N")));
-        shortcuts.add(new ShortcutProperty("ctrl_H", Messages.get("ctrl_H")));
+        shortcuts.add(new ShortcutProperty("x_y", Messages.get("shortcut_x_y")));
+        shortcuts.add(new ShortcutProperty("backspace", Messages.get("shortcut_backspace")));
+        shortcuts.add(new ShortcutProperty("arrow", Messages.get("shortcut_arrow")));
+        shortcuts.add(new ShortcutProperty("+", Messages.get("shortcut_+")));
+        shortcuts.add(new ShortcutProperty("Z", Messages.get("shortcut_Z")));
+        shortcuts.add(new ShortcutProperty("B", Messages.get("shortcut_B")));
+        shortcuts.add(new ShortcutProperty("N", Messages.get("shortcut_N")));
+        shortcuts.add(new ShortcutProperty("H", Messages.get("shortcut_H")));
         ObservableList<ShortcutProperty> data = FXCollections.observableArrayList(shortcuts);
         tableView.setItems(data);
     }

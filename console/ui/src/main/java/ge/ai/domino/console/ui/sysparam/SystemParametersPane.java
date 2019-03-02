@@ -31,6 +31,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,15 +144,13 @@ public class SystemParametersPane extends HBox {
             SystemParameterType type = typeComboBox.getValue();
             SystemParameter systemParameter = new SystemParameter(0, key, value, type);
             if (!key.isEmpty() && !value.isEmpty()) {
-                ServiceExecutor.execute(() -> {
-                    if (keyField.isDisabled()) {
-                        systemParameterService.editSystemParameter(systemParameter);
-                    } else {
-                        systemParameterService.addSystemParameter(systemParameter);
-                    }
-                    clearFields();
-                    loadSystemParameters(true);
-                });
+                if (keyField.isDisabled()) {
+                    new ServiceExecutor() {}.execute(() -> systemParameterService.editSystemParameter(systemParameter));
+                } else {
+                    new ServiceExecutor() {}.execute(() -> systemParameterService.addSystemParameter(systemParameter));
+                }
+                clearFields();
+                loadSystemParameters(true);
             }
         });
         hBox.getChildren().addAll(saveButton, cleanButton);
@@ -179,10 +178,8 @@ public class SystemParametersPane extends HBox {
             cellButton.setPrefWidth(25);
             cellButton.setOnAction(t -> {
                 SystemParameterProperty systemParameterProperty = DeleteButtonCell.this.getTableView().getItems().get(DeleteButtonCell.this.getIndex());
-                ServiceExecutor.execute(() -> {
-                    systemParameterService.deleteSystemParameter(systemParameterProperty.getKey());
-                    loadSystemParameters(true);
-                });
+                new ServiceExecutor() {}.execute(() -> systemParameterService.deleteSystemParameter(systemParameterProperty.getKey()));
+                loadSystemParameters(true);
             });
         }
         @Override
@@ -195,7 +192,9 @@ public class SystemParametersPane extends HBox {
     }
 
     private void loadSystemParameters(boolean initialCall) {
-        List<SystemParameter> systemParameters = systemParameterService.getSystemParameters(initialCall ? null : keyFilterField.getText(), initialCall ? null : typeFilterComboBox.getValue());
+        List<SystemParameter> systemParameters = new ArrayList<>();
+        new ServiceExecutor() {}.execute(() -> systemParameters.addAll(systemParameterService.getSystemParameters(initialCall ? null : keyFilterField.getText(), initialCall ? null : typeFilterComboBox.getValue())));
+
         List<SystemParameterProperty> systemParameterProperties = systemParameters.stream().map(SystemParameterProperty::new).collect(Collectors.toList());
         ObservableList<SystemParameterProperty> data = FXCollections.observableArrayList(systemParameterProperties);
         tableView.setItems(data);

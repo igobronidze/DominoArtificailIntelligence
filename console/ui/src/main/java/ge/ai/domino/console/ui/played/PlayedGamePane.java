@@ -6,6 +6,7 @@ import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
 import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.PlayedGame;
@@ -71,7 +72,13 @@ public class PlayedGamePane extends BorderPane {
     }
 
     private void initChannels() {
-        List<Channel> channels = channelService.getChannels();
+        List<Channel> channels = new ArrayList<>();
+
+        new ServiceExecutor() {}.execute(() -> {
+            channels.addAll(channelService.getChannels());
+        });
+
+
         channelsMap = channels.stream().collect(Collectors.toMap(Channel::getName, Channel::getId));
     }
 
@@ -153,8 +160,10 @@ public class PlayedGamePane extends BorderPane {
     }
 
     private void loadPlayedGames() {
-        List<PlayedGame> playedGames = playedGameService.getPlayedGames(versionField.getText(), resultComboBox.getValue(),
-                opponentNameField.getText(), channelsMap.get(channelCombo.getValue()), levelField.getText());
+        List<PlayedGame> playedGames = new ArrayList<>();
+        new ServiceExecutor() {}.execute(() -> playedGames.addAll(playedGameService.getPlayedGames(versionField.getText(), resultComboBox.getValue(),
+                opponentNameField.getText(), channelsMap.get(channelCombo.getValue()), levelField.getText())));
+
         List<PlayedGameProperty> playedGameProperties = new ArrayList<>();
         for (PlayedGame playedGame : playedGames) {
             playedGameProperties.add(new PlayedGameProperty(playedGame));

@@ -2,7 +2,6 @@ package ge.ai.domino.manager.game.move;
 
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.MinMax;
@@ -24,7 +23,7 @@ public class PlayForMeProcessor extends MoveProcessor {
 		}
 		int gameId = round.getGameInfo().getGameId();
 		logger.info("Start playForMe method for tile [" + move.getLeft() + "-" + move.getRight() + "] direction ["
-				+ move.getDirection().name() + "], gameId[" + gameId + "]");
+				+ (move.getDirection() == null ? "N" : move.getDirection().name()) + "], gameId[" + gameId + "]");
 
 		if (round.getTableInfo().isFirstRound() && round.getTableInfo().getLeft() == null) {
 			double sum = GameOperations.makeTwinTilesAsBazaarAndReturnProbabilitiesSum(round.getOpponentTiles(), (move.getLeft() == move.getRight() ? move.getLeft() : -1));

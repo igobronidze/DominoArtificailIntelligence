@@ -34,10 +34,9 @@ public class ControlPanel extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        ServiceExecutor.execute(() -> {
-            functionService.initFunctions();
-            this.initialData = initialDataService.getInitialData();
-		});
+        new ServiceExecutor() {}.execute(() -> functionService.initFunctions());
+
+        new ServiceExecutor() {}.execute(() -> initialData = initialDataService.getInitialData());
 
         stage = primaryStage;
         primaryStage.setTitle(Messages.get("Domino") + " " + initialData.getVersion());
@@ -53,7 +52,7 @@ public class ControlPanel extends Application {
                     @Override
                     public void onSave() {
                         AppController.round = null;
-                        multiProcessorServerService.stopServer();
+                        new ServiceExecutor() {}.execute(() -> multiProcessorServerService.stopServer());
                     }
 
                     @Override
@@ -62,7 +61,7 @@ public class ControlPanel extends Application {
                     }
                 }.showWindow(false);
             } else {
-                multiProcessorServerService.stopServer();
+                new ServiceExecutor() {}.execute(() -> multiProcessorServerService.stopServer());
             }
         });
     }

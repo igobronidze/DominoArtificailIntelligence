@@ -8,6 +8,7 @@ import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.service.channel.ChannelService;
 import ge.ai.domino.service.channel.ChannelServiceImpl;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,7 +37,7 @@ public class ChannelPane extends BorderPane {
 
     private TCHComboBox<String> channelsCombo;
 
-    private Map<String, Channel> channels;
+    private Map<String, Channel> channelsMap;
 
     private Channel selectedChannel;
 
@@ -49,9 +51,14 @@ public class ChannelPane extends BorderPane {
     }
 
     private void initChannels() {
-        channels = new HashMap<>();
-        for (Channel channel : channelService.getChannels()) {
-            channels.put(channel.getName(), channel);
+        channelsMap = new HashMap<>();
+
+        List<Channel> channels = new ArrayList<>();
+
+        new ServiceExecutor() {}.execute(() -> channels.addAll(channelService.getChannels()));
+
+        for (Channel channel : channels) {
+            channelsMap.put(channel.getName(), channel);
         }
     }
 
@@ -97,7 +104,8 @@ public class ChannelPane extends BorderPane {
             }
             if (valid) {
                 selectedChannel.setParams(params);
-                channelService.editChannel(selectedChannel);
+
+                new ServiceExecutor() {}.execute(() -> channelService.editChannel(selectedChannel));
                 initChannelPane();
             }
         });
@@ -110,7 +118,7 @@ public class ChannelPane extends BorderPane {
     }
 
     private void initTopPane() {
-        channelsCombo = new TCHComboBox<>(new ArrayList<>(channels.keySet()));
+        channelsCombo = new TCHComboBox<>(new ArrayList<>(channelsMap.keySet()));
         channelsCombo.setOnAction(e -> initChannelPane());
 
         TCHTextField channelNameField = new TCHTextField(TCHComponentSize.SMALL);
@@ -121,8 +129,8 @@ public class ChannelPane extends BorderPane {
             if (!StringUtil.isEmpty(channelNameField.getText())) {
                 Channel channel = new Channel();
                 channel.setName(channelNameField.getText());
-                channelService.addChannel(channel);
 
+                new ServiceExecutor() {}.execute(() -> channelService.addChannel(channel));
                 channelNameField.setText("");
                 initChannels();
                 initUI();
@@ -147,7 +155,7 @@ public class ChannelPane extends BorderPane {
         paramsBox.setPadding(new Insets(15));
 
         if (channelsCombo.getValue() != null) {
-            selectedChannel = channels.get(channelsCombo.getValue());
+            selectedChannel = channelsMap.get(channelsCombo.getValue());
             if (selectedChannel != null ) {
                 existedFields = new LinkedHashMap<>();
                 newFields = new LinkedHashMap<>();

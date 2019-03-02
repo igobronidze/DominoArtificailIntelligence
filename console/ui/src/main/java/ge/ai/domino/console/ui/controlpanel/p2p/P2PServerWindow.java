@@ -4,6 +4,7 @@ import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
 import ge.ai.domino.console.ui.tchcomponents.TCHLabel;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.service.sysparam.SystemParameterService;
 import ge.ai.domino.service.sysparam.SystemParameterServiceImpl;
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class P2PServerWindow {
@@ -31,7 +33,8 @@ public abstract class P2PServerWindow {
         stage.setTitle(Messages.get("p2pServer"));
 
         TCHLabel label = new TCHLabel(Messages.get("selectPointOfWin"));
-        List<Integer> points = systemParameterService.getIntegerListParameterValue(possiblePoints);
+        List<Integer> points = new ArrayList<>();
+        new ServiceExecutor() {}.execute(() -> points.addAll(systemParameterService.getIntegerListParameterValue(possiblePoints)));
         TCHComboBox<Integer> pointComboBox = new TCHComboBox<>(points);
 
         TCHButton startButton = new TCHButton(Messages.get("start"));

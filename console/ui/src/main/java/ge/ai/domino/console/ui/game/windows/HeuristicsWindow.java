@@ -1,8 +1,12 @@
 package ge.ai.domino.console.ui.game.windows;
 
+import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHLabel;
 import ge.ai.domino.console.ui.util.Messages;
+import ge.ai.domino.console.ui.util.service.ServiceExecutor;
+import ge.ai.domino.service.heuristic.HeuristicService;
+import ge.ai.domino.service.heuristic.HeuristicServiceImpl;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,11 +17,17 @@ import javafx.stage.Stage;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class HeuristicsWindow {
 
-	public void showWindow(Map<String, Double> heuristics) {
+	private final HeuristicService heuristicService = new HeuristicServiceImpl();
+
+	public void showWindow() {
+		Map<String, Double> heuristics = new HashMap<>();
+		new ServiceExecutor() {}.execute(() -> heuristics.putAll(heuristicService.getHeuristics(AppController.round.getGameInfo().getGameId())));
+
 		Stage stage = new Stage();
 		stage.setResizable(false);
 		stage.setTitle(Messages.get("heuristic"));

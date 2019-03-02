@@ -1,8 +1,10 @@
 package ge.ai.domino.service.multiprocessor;
 
+import ge.ai.domino.domain.exception.DAIException;
+
 public interface MultiProcessorServerService {
 
-    void startServer();
+    void startServer() throws DAIException;
 
-    void stopServer();
+    void stopServer() throws DAIException;
 }

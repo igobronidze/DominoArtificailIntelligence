@@ -309,7 +309,7 @@ public abstract class GamePane extends BorderPane {
                     }
                     break;
                 case ADD:
-                    mainInfoLabel.setText("ADD");
+                    mainInfoLabel.setText("ADD(" + (int)AppController.round.getTableInfo().getOpponentTilesCount() + ")");
                     ontAddTileEntered();
                     break;
                 case Z:

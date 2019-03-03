@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>ge.ai.domino</groupId>
-            <artifactId>multithreading-client</artifactId>
+            <artifactId>multi-processor-client</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

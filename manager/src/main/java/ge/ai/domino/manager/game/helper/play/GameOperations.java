@@ -356,6 +356,10 @@ public class GameOperations {
 	}
 
 	public static boolean isRoundBlocked(Round round) {
+		if (round.getTableInfo().getOpponentTilesCount() == 0 || round.getMyTiles().isEmpty()) {
+			return false;
+		}
+
 		Set<Integer> possiblePlayNumbers = getPossiblePlayNumbers(round.getTableInfo());
 		for (Tile tile : round.getMyTiles()) {
 			if (possiblePlayNumbers.contains(tile.getLeft()) || possiblePlayNumbers.contains(tile.getRight())) {

@@ -39,6 +39,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.apache.log4j.Logger;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -48,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class GamePane extends BorderPane {
+
+    private static final Logger logger = Logger.getLogger(GamePane.class);
 
     private static final int TILE_IMAGE_WIDTH = 65;
 
@@ -309,7 +312,6 @@ public abstract class GamePane extends BorderPane {
                     }
                     break;
                 case ADD:
-                    mainInfoLabel.setText("ADD(" + (int)AppController.round.getTableInfo().getOpponentTilesCount() + ")");
                     ontAddTileEntered();
                     break;
                 case Z:
@@ -407,6 +409,7 @@ public abstract class GamePane extends BorderPane {
                     gameService.specifyOpponentLeftTiles(AppController.round.getGameInfo().getGameId(), count);
                     switch (moveType) {
                         case ADD_FOR_ME:
+                            logger.info("Add tile for me from UI - 1");
                             AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), playedTile.getLeft(), playedTile.getRight());
                             break;
                         case ADD_FOR_OPPONENT:
@@ -432,6 +435,7 @@ public abstract class GamePane extends BorderPane {
             public void onMe() {
                 new ServiceExecutor() {}.execute(() -> {
                     gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
+                    logger.info("Add tile for me from UI - 2");
                     AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                 });
                 reload(true, false);
@@ -441,6 +445,7 @@ public abstract class GamePane extends BorderPane {
             public void onHe() {
                 new ServiceExecutor() {}.execute(() -> {
                     gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
+                    logger.info("Add tile for me from UI - 3");
                     AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                 });
                 reload(true, false);
@@ -667,6 +672,7 @@ public abstract class GamePane extends BorderPane {
                 showGameStarterWindow(tile);
             } else {
                 mainInfoSecondaryLabel.setText(Messages.get("working"));
+                logger.info("Add tile for me from UI - 4");
                 new ServiceExecutor() {
                     @Override
                     public boolean isAsync() {
@@ -743,6 +749,7 @@ public abstract class GamePane extends BorderPane {
             reload(true, false);
         } else {
             new ServiceExecutor() {}.execute(() -> AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId()));
+            mainInfoLabel.setText("ADD(" + (int)AppController.round.getTableInfo().getOpponentTilesCount() + ")");
             reload(true, false);
         }
     }

@@ -13,8 +13,8 @@ public class MultiProcessorClientRunner {
         try {
             String host = args[0];
             int port = Integer.parseInt(args[1]);
-            String name = args[2];
-            client.startClient(host, port, name);
+            Integer clientId = Integer.parseInt(args[2]);
+            client.startClient(host, port, clientId);
         } catch (Exception ex) {
             logger.error("Error occurred while run Multi Processor Client app", ex);
             client.startClient();

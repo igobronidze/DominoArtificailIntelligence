@@ -1,7 +1,7 @@
 package ge.ai.domino.domain.command;
 
 public enum MultiProcessorCommand {
-    GET_NAME,
+    GET_CLIEND_ID,
     INIT_GAME,
     LOAD_SYS_PARAMS,
     UPDATE_SYS_PARAMS_IN_CACH,

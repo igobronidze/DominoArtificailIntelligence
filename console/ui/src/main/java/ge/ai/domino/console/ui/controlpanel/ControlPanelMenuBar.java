@@ -1,6 +1,7 @@
 package ge.ai.domino.console.ui.controlpanel;
 
 import ge.ai.domino.console.ui.channel.ChannelPane;
+import ge.ai.domino.console.ui.client.ClientPane;
 import ge.ai.domino.console.ui.controlpanel.p2p.P2PClientWindow;
 import ge.ai.domino.console.ui.controlpanel.p2p.P2PServerWindow;
 import ge.ai.domino.console.ui.game.windows.SaveGameWindow;
@@ -167,7 +168,16 @@ public class ControlPanelMenuBar extends MenuBar {
             stage.setTitle(Messages.get("channels"));
             stage.show();
         });
-        controlPanelMenu.getItems().addAll(sysParamsItem, channelsItem, playedGameItem, groupedPlayedGameItem, groupedOpponentPlaysItem);
+        MenuItem clientsItem = new MenuItem(Messages.get("clients"));
+        clientsItem.setOnAction(e -> {
+            Stage stage = new Stage();
+            stage.setHeight(680);
+            stage.setWidth(700);
+            stage.setScene(new Scene(new ClientPane()));
+            stage.setTitle(Messages.get("clients"));
+            stage.show();
+        });
+        controlPanelMenu.getItems().addAll(sysParamsItem, channelsItem, clientsItem, playedGameItem, groupedPlayedGameItem, groupedOpponentPlaysItem);
         return controlPanelMenu;
     }
 

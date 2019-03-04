@@ -49,3 +49,10 @@ CREATE TABLE channel (
   name VARCHAR(100) NOT NULL,
   params TEXT
 );
+
+-- Client
+CREATE TABLE client (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  params TEXT
+);

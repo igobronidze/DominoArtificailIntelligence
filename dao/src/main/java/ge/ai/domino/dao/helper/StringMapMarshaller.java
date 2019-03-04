@@ -1,17 +1,17 @@
-package ge.ai.domino.dao.channel;
+package ge.ai.domino.dao.helper;
 
 import ge.ai.domino.util.string.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChannelParamsMarshaller {
+public class StringMapMarshaller {
 
 	private static final String DELIMITER = "##";
 
 	private static final String EQUAL = "=";
 
-	static String marshallChannelParams(Map<String, String> params) {
+	public static String marshallMap(Map<String, String> params) {
 		if (params.isEmpty()) {
 			return "";
 		}
@@ -25,7 +25,7 @@ public class ChannelParamsMarshaller {
 		return result.substring(0, result.length() - 2);
 	}
 
-	static Map<String, String> unmarshallChannelParams(String content) {
+	public static Map<String, String> unmarshallMap(String content) {
 		Map<String, String> params = new HashMap<>();
 
 		if (!StringUtil.isEmpty(content)) {

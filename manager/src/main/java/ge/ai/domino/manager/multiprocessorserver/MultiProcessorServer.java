@@ -1,5 +1,6 @@
 package ge.ai.domino.manager.multiprocessorserver;
 
+import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameInitialData;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
@@ -46,17 +47,21 @@ public class MultiProcessorServer {
             open = true;
             logger.info("Started multiProcessor server, port[" + port + "]");
             while (open) {
-                Socket socket = server.accept();
-                ClientSocket clientSocket = new ClientSocket(socket);
-                clientSocket.specifyClientName();
+                try {
+                    Socket socket = server.accept();
+                    ClientSocket clientSocket = new ClientSocket(socket);
+                    clientSocket.specifyClient();
 
-                clientSocket.sendSysParams();
-                clientSocket.sendFunctionArgsAndValues();
-                if (sysParamManager.getBooleanParameterValue(executeRankTestForMultiProcessorClient)) {
-                    clientSocket.executeRankTest();
+                    clientSocket.sendSysParams();
+                    clientSocket.sendFunctionArgsAndValues();
+                    if (sysParamManager.getBooleanParameterValue(executeRankTestForMultiProcessorClient)) {
+                        clientSocket.executeRankTest();
+                    }
+                    clients.add(clientSocket);
+                    logger.info("Accepted new client, name[" + clientSocket.getName() + "]");
+                } catch (DAIException ex) {
+                    logger.error("Error occurred while connect client", ex);
                 }
-                clients.add(clientSocket);
-                logger.info("Accepted new client, name[" + clientSocket.getName() + "]");
             }
         } catch (IOException | ClassNotFoundException ex) {
             logger.error("Can't start multiProcessor server, port[" + port + "]", ex);

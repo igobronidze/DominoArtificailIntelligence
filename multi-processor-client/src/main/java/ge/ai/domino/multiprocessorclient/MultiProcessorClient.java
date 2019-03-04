@@ -17,7 +17,7 @@ public class MultiProcessorClient {
 
     private static final String DEFAULT_HOST = "localhost";
 
-    private static final String DEFAULT_NAME = "Unknown";
+    private static final int DEFAULT_CLIENT_ID = 1;
 
     private static final int TIMEOUT = 3_000;
 
@@ -27,10 +27,10 @@ public class MultiProcessorClient {
 
     public void startClient() throws DAIException {
         int port = sysParamManager.getIntegerParameterValue(multiProcessorServerPort);
-        startClient(DEFAULT_HOST, port, DEFAULT_NAME);
+        startClient(DEFAULT_HOST, port, DEFAULT_CLIENT_ID);
     }
 
-    public void startClient(String host, int port, String name) throws DAIException {
+    public void startClient(String host, int port, Integer clientId) throws DAIException {
         try {
             Socket socket = new Socket();
             socket.connect(new InetSocketAddress(host, port), TIMEOUT);
@@ -39,7 +39,11 @@ public class MultiProcessorClient {
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
-            new MultiProcessorClientManager(ois, oos, name == null ? DEFAULT_NAME : name).startListen();
+            if (clientId == null) {
+                clientId = DEFAULT_CLIENT_ID;
+            }
+
+            new MultiProcessorClientManager(ois, oos, clientId).startListen();
             ois.close();
             oos.close();
             socket.close();

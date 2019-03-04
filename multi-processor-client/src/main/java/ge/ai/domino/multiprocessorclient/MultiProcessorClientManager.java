@@ -55,12 +55,12 @@ public class MultiProcessorClientManager {
 
     private ObjectOutputStream oos;
 
-    private String name;
+    private int clientId;
 
-    public MultiProcessorClientManager(ObjectInputStream ois, ObjectOutputStream oos, String name) {
+    public MultiProcessorClientManager(ObjectInputStream ois, ObjectOutputStream oos, int clientId) {
         this.ois = ois;
         this.oos = oos;
-        this.name = name;
+        this.clientId = clientId;
     }
 
     public void startListen() throws DAIException {
@@ -74,8 +74,8 @@ public class MultiProcessorClientManager {
                     case FINISH:
                         finish = true;
                         break;
-                    case GET_NAME:
-                        oos.writeObject(name);
+                    case GET_CLIEND_ID:
+                        oos.writeObject(clientId);
                         break;
                     case LOAD_SYS_PARAMS:
                         Map<String, String> sysParams = (Map<String, String>) ois.readObject();

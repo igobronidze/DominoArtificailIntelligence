@@ -1,6 +1,7 @@
 package ge.ai.domino.dao.channel;
 
 import ge.ai.domino.dao.connection.ConnectionUtil;
+import ge.ai.domino.dao.helper.StringMapMarshaller;
 import ge.ai.domino.domain.channel.Channel;
 import org.apache.log4j.Logger;
 
@@ -32,7 +33,7 @@ public class ChannelDAOImpl implements ChannelDAO {
 					CHANNEL_TABLE_NAME, NAME_COLUMN_NAME, PARAMS_COLUMN_NAME);
 			pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
 			pstmt.setString(1, channel.getName());
-			pstmt.setString(2, ChannelParamsMarshaller.marshallChannelParams(channel.getParams()));
+			pstmt.setString(2, StringMapMarshaller.marshallMap(channel.getParams()));
 			pstmt.executeUpdate();
 
 			logger.info("Added channel name [" + channel.getName() + "]");
@@ -51,7 +52,7 @@ public class ChannelDAOImpl implements ChannelDAO {
 					CHANNEL_TABLE_NAME, NAME_COLUMN_NAME, PARAMS_COLUMN_NAME, ID_COLUMN_NAME);
 			pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
 			pstmt.setString(1, channel.getName());
-			pstmt.setString(2, ChannelParamsMarshaller.marshallChannelParams(channel.getParams()));
+			pstmt.setString(2, StringMapMarshaller.marshallMap(channel.getParams()));
 			pstmt.setInt(3, channel.getId());
 			pstmt.executeUpdate();
 			logger.info("Updated channel id[" + channel.getId() + "]");
@@ -74,11 +75,11 @@ public class ChannelDAOImpl implements ChannelDAO {
 				Channel channel = new Channel();
 				channel.setId(rs.getInt(ID_COLUMN_NAME));
 				channel.setName(rs.getString(NAME_COLUMN_NAME));
-				channel.setParams(ChannelParamsMarshaller.unmarshallChannelParams(rs.getString(PARAMS_COLUMN_NAME)));
+				channel.setParams(StringMapMarshaller.unmarshallMap(rs.getString(PARAMS_COLUMN_NAME)));
 				channels.add(channel);
 			}
 		} catch (SQLException ex) {
-			logger.error("Error occurred while getting game games", ex);
+			logger.error("Error occurred while getting channels", ex);
 		} finally {
 			ConnectionUtil.closeConnection();
 		}

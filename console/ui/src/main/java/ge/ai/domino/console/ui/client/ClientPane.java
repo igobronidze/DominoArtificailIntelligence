@@ -58,7 +58,7 @@ public class ClientPane extends BorderPane {
         new ServiceExecutor() {}.execute(() -> clients.addAll(clientService.getClients()));
 
         for (Client client : clients) {
-            clientsMap.put(client.getName(), client);
+            clientsMap.put(client.getName() + "_" + client.getId(), client);
         }
     }
 

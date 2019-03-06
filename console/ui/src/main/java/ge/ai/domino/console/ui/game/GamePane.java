@@ -273,7 +273,7 @@ public abstract class GamePane extends BorderPane {
 
     private void initFocusLoseListener() {
         controlPanel.getStage().focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (gamePaneInitialData.isBestMoveAutoPlay() && oldValue && !showingHeuristic && !reloading) {
+            if (gamePaneInitialData.isBestMoveAutoPlay() && !showingHeuristic && !reloading) {
                 if (hasPrediction && bestAiPrediction != null && !showingAddLeftTilesWindow) {
                     Move move = bestAiPrediction.getMove();
                     onMyTileEntered(new Tile(move.getLeft(), move.getRight()), move.getDirection());
@@ -326,6 +326,9 @@ public abstract class GamePane extends BorderPane {
                     break;
                 case BACK_SPACE:
                     firstPressedNumber = null;
+                    pressedTile = null;
+                    mainInfoLabel.setText("");
+                    reload(false, false);
                     break;
                 case ALT:
                     fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, true, true, true, true));
@@ -713,34 +716,42 @@ public abstract class GamePane extends BorderPane {
     }
 
     private void onUpArrowPressed() {
-        if (pressedOnMyTile) {
-            onMyTileEntered(pressedTile, MoveDirection.TOP);
-        } else {
-            onOpponentTileEntered(pressedTile, MoveDirection.TOP);
+        if (pressedTile != null) {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, MoveDirection.TOP);
+            } else {
+                onOpponentTileEntered(pressedTile, MoveDirection.TOP);
+            }
         }
     }
 
     private void onRightArrowPressed() {
-        if (pressedOnMyTile) {
-            onMyTileEntered(pressedTile, MoveDirection.RIGHT);
-        } else {
-            onOpponentTileEntered(pressedTile, MoveDirection.RIGHT);
+        if (pressedTile != null) {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, MoveDirection.RIGHT);
+            } else {
+                onOpponentTileEntered(pressedTile, MoveDirection.RIGHT);
+            }
         }
     }
 
     private void onDownArrowPressed() {
-        if (pressedOnMyTile) {
-            onMyTileEntered(pressedTile, MoveDirection.BOTTOM);
-        } else {
-            onOpponentTileEntered(pressedTile, MoveDirection.BOTTOM);
+        if (pressedTile != null) {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, MoveDirection.BOTTOM);
+            } else {
+                onOpponentTileEntered(pressedTile, MoveDirection.BOTTOM);
+            }
         }
     }
 
     private void onLeftArrowPressed() {
-        if (pressedOnMyTile) {
-            onMyTileEntered(pressedTile, MoveDirection.LEFT);
-        } else {
-            onOpponentTileEntered(pressedTile, MoveDirection.LEFT);
+        if (pressedTile != null) {
+            if (pressedOnMyTile) {
+                onMyTileEntered(pressedTile, MoveDirection.LEFT);
+            } else {
+                onOpponentTileEntered(pressedTile, MoveDirection.LEFT);
+            }
         }
     }
 

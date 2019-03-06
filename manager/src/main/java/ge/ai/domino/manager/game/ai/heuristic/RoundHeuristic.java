@@ -55,8 +55,9 @@ public abstract class RoundHeuristic {
     }
 
     private double getFinishedRoundHeuristic(GameInfo gameInfo, boolean startMe, double pointForWin) {
-        return getBalancedPointDiff(gameInfo.getMyPoint(), gameInfo.getOpponentPoint(), pointForWin)
-                + (startMe ? heuristicValueForStartNextRoundValue : -1 * heuristicValueForStartNextRoundValue);
+        double myPoint = gameInfo.getMyPoint() + (startMe ? heuristicValueForStartNextRoundValue : 0);
+        double opponentPoint = gameInfo.getOpponentPoint() + (startMe ? 0 : heuristicValueForStartNextRoundValue);
+        return getBalancedPointDiff(myPoint, opponentPoint, pointForWin);
     }
 
     private boolean isNewRound(Round round) {

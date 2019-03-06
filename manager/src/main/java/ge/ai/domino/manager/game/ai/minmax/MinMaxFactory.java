@@ -21,7 +21,7 @@ public class MinMaxFactory {
 		MinMax minMaxBFS = new MinMaxBFS();
 		MultiProcessorMinMaxBFS multiProcessorMinMaxBFS = new MultiProcessorMinMaxBFS();
 
-		MinMax result = minMaxBFS;
+		MinMax result = null;
 
 		if (type.equals(minMaxDFS.getType())) {
 			result = minMaxDFS;

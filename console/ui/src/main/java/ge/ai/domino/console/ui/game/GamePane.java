@@ -277,9 +277,6 @@ public abstract class GamePane extends BorderPane {
                 if (hasPrediction && bestAiPrediction != null && !showingAddLeftTilesWindow) {
                     Move move = bestAiPrediction.getMove();
                     onMyTileEntered(new Tile(move.getLeft(), move.getRight()), move.getDirection());
-                } else if (AppController.round != null && !hasPrediction && AppController.round.getTableInfo().isMyMove() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
-                    Tile tile = new ArrayList<>(AppController.round.getOpponentTiles().keySet()).get(0);
-                    onOpponentTileEntered(tile, null);
                 }
             }
         });

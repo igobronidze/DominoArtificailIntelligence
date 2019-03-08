@@ -237,6 +237,7 @@ public abstract class GamePane extends BorderPane {
                 && AppController.round.getTableInfo().getBazaarTilesCount() != 2 && AppController.round.getTableInfo().getLeft() != null) {
             showAddedTilesDetectWindow();
         }
+        reloading = false;
     }
 
     private void initTopPane() {
@@ -637,6 +638,9 @@ public abstract class GamePane extends BorderPane {
     }
 
     private void onMyTileEntered(Tile tile, MoveDirection direction) {
+        if (reloading) {
+            return;
+        }
         mainInfoLabel.setText(tile.getLeft() + " - " + tile.getRight() + " " + (direction == null ? "" : direction.name()));
 
         if (AppController.round.getMyTiles().size() == 1) {
@@ -656,6 +660,9 @@ public abstract class GamePane extends BorderPane {
     }
 
     private void onOpponentTileEntered(Tile tile, MoveDirection direction) {
+        if (reloading) {
+            return;
+        }
         mainInfoLabel.setText(tile.getLeft() + " - " + tile.getRight() + " " + (direction == null ? "" : direction.name()));
 
         if (AppController.round.getTableInfo().isMyMove()) {
@@ -676,7 +683,11 @@ public abstract class GamePane extends BorderPane {
                     public void onAsyncProcessFinish() {
                         mainInfoSecondaryLabel.setText("");
                         reload(true, false);
-                        reloading = false;
+                    }
+
+                    @Override
+                    public void onError() {
+                        reload(false, false);
                     }
                 }.execute(() -> {
                     reloading = true;
@@ -702,7 +713,11 @@ public abstract class GamePane extends BorderPane {
                     public void onAsyncProcessFinish() {
                         mainInfoSecondaryLabel.setText("");
                         reload(true, false);
-                        reloading = false;
+                    }
+
+                    @Override
+                    public void onError() {
+                        reload(false, false);
                     }
                 }.execute(() -> {
                     reloading = true;

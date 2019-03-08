@@ -18,8 +18,10 @@ public abstract class ServiceExecutor {
 					Platform.runLater(this::onAsyncProcessFinish);
 				}
 			} catch (DAIException ex) {
+				Platform.runLater(this::onError);
 				Platform.runLater(() -> WarnDialog.showWarnDialog(ex));
 			} catch (Exception e) {
+				Platform.runLater(this::onError);
 				logger.error("Unexpected Error", e);
 				Platform.runLater(WarnDialog::showUnexpectedError);
 			}
@@ -39,4 +41,6 @@ public abstract class ServiceExecutor {
 	public boolean isAsync() {
 		return false;
 	}
+
+	public void onError() {}
 }

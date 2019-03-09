@@ -19,9 +19,11 @@ public class AddForOpponentProcessor extends MoveProcessor {
 		TableInfo tableInfo = round.getTableInfo();
 
 		// If it's first time, make possible tiles as bazaar and distribute their probabilities for other
-		if (tableInfo.getTilesFromBazaar() == 0 && !tableInfo.getRoundBlockingInfo().isOmitOpponent()) {
+		if (tableInfo.getTilesFromBazaar() == 0) {
 			double sum = GameOperations.makeTilesAsBazaarAndReturnProbabilitiesSum(round);
-			ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
+			if (sum != 0) {
+				ProbabilitiesDistributor.distributeProbabilitiesOpponentProportional(round.getOpponentTiles(), sum);
+			}
 		}
 
 		if (tableInfo.getBazaarTilesCount() == 2) { // If omit

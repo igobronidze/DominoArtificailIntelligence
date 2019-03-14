@@ -4,88 +4,88 @@
         <index>1</index>
         <moves>
             <direction>RIGHT</direction>
-            <left>4</left>
-            <right>2</right>
+            <left>3</left>
+            <right>3</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>2</index>
         <moves>
-            <direction>RIGHT</direction>
-            <left>1</left>
-            <right>0</right>
+            <direction>LEFT</direction>
+            <left>6</left>
+            <right>1</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>3</index>
         <moves>
             <direction>RIGHT</direction>
-            <left>6</left>
-            <right>5</right>
+            <left>5</left>
+            <right>1</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>4</index>
         <moves>
-            <direction>LEFT</direction>
+            <direction>RIGHT</direction>
             <left>5</left>
-            <right>4</right>
+            <right>0</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>5</index>
         <moves>
-            <direction>BOTTOM</direction>
-            <left>0</left>
-            <right>0</right>
+            <direction>LEFT</direction>
+            <left>4</left>
+            <right>1</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>6</index>
         <moves>
             <direction>LEFT</direction>
-            <left>6</left>
-            <right>4</right>
+            <left>4</left>
+            <right>2</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>7</index>
         <moves>
             <direction>RIGHT</direction>
-            <left>5</left>
+            <left>4</left>
             <right>2</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>8</index>
         <moves>
-            <direction>LEFT</direction>
-            <left>3</left>
-            <right>1</right>
+            <direction>RIGHT</direction>
+            <left>5</left>
+            <right>4</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>9</index>
         <moves>
             <direction>RIGHT</direction>
-            <left>4</left>
-            <right>0</right>
+            <left>6</left>
+            <right>6</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>10</index>
         <moves>
-            <direction>RIGHT</direction>
-            <left>4</left>
-            <right>4</right>
+            <direction>BOTTOM</direction>
+            <left>6</left>
+            <right>1</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>11</index>
         <moves>
-            <direction>RIGHT</direction>
-            <left>4</left>
-            <right>1</right>
+            <direction>BOTTOM</direction>
+            <left>5</left>
+            <right>5</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
@@ -99,64 +99,64 @@
     <possibleMoves>
         <index>13</index>
         <moves>
-            <direction>RIGHT</direction>
-            <left>1</left>
-            <right>0</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>14</index>
-        <moves>
-            <direction>BOTTOM</direction>
-            <left>6</left>
-            <right>0</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>15</index>
-        <moves>
-            <direction>LEFT</direction>
-            <left>6</left>
-            <right>4</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>16</index>
-        <moves>
-            <direction>BOTTOM</direction>
-            <left>6</left>
-            <right>0</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>17</index>
-        <moves>
-            <direction>BOTTOM</direction>
-            <left>6</left>
-            <right>3</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>18</index>
-        <moves>
             <direction>TOP</direction>
             <left>4</left>
             <right>2</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
-        <index>19</index>
+        <index>14</index>
+        <moves>
+            <direction>RIGHT</direction>
+            <left>1</left>
+            <right>0</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>15</index>
         <moves>
             <direction>TOP</direction>
+            <left>4</left>
+            <right>0</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>16</index>
+        <moves>
+            <direction>TOP</direction>
+            <left>4</left>
+            <right>4</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>17</index>
+        <moves>
+            <direction>TOP</direction>
+            <left>4</left>
+            <right>1</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>18</index>
+        <moves>
+            <direction>LEFT</direction>
             <left>6</left>
-            <right>5</right>
+            <right>3</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>19</index>
+        <moves>
+            <direction>RIGHT</direction>
+            <left>5</left>
+            <right>2</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>20</index>
         <moves>
-            <direction>RIGHT</direction>
-            <left>6</left>
+            <direction>BOTTOM</direction>
+            <left>3</left>
             <right>1</right>
         </moves>
     </possibleMoves>
@@ -165,19 +165,27 @@
         <moves>
             <direction>RIGHT</direction>
             <left>5</left>
-            <right>3</right>
+            <right>1</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>22</index>
         <moves>
-            <direction>RIGHT</direction>
-            <left>5</left>
-            <right>4</right>
+            <direction>BOTTOM</direction>
+            <left>3</left>
+            <right>1</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>23</index>
+        <moves>
+            <direction>BOTTOM</direction>
+            <left>3</left>
+            <right>3</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>24</index>
         <moves>
             <direction>RIGHT</direction>
             <left>2</left>
@@ -185,15 +193,55 @@
         </moves>
     </possibleMoves>
     <possibleMoves>
-        <index>24</index>
+        <index>25</index>
+        <moves>
+            <direction>RIGHT</direction>
+            <left>1</left>
+            <right>1</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>26</index>
+        <moves>
+            <direction>LEFT</direction>
+            <left>6</left>
+            <right>3</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>27</index>
         <moves>
             <direction>BOTTOM</direction>
             <left>6</left>
+            <right>4</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>28</index>
+        <moves>
+            <direction>BOTTOM</direction>
+            <left>0</left>
+            <right>0</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>29</index>
+        <moves>
+            <direction>BOTTOM</direction>
+            <left>5</left>
             <right>5</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
-        <index>25</index>
+        <index>30</index>
+        <moves>
+            <direction>BOTTOM</direction>
+            <left>4</left>
+            <right>4</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>31</index>
         <moves>
             <direction>BOTTOM</direction>
             <left>5</left>
@@ -201,58 +249,10 @@
         </moves>
     </possibleMoves>
     <possibleMoves>
-        <index>26</index>
-        <moves>
-            <direction>RIGHT</direction>
-            <left>3</left>
-            <right>2</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>27</index>
-        <moves>
-            <direction>RIGHT</direction>
-            <left>6</left>
-            <right>2</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>28</index>
-        <moves>
-            <direction>RIGHT</direction>
-            <left>3</left>
-            <right>2</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>29</index>
-        <moves>
-            <direction>LEFT</direction>
-            <left>2</left>
-            <right>2</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>30</index>
-        <moves>
-            <direction>LEFT</direction>
-            <left>2</left>
-            <right>0</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
-        <index>31</index>
-        <moves>
-            <direction>LEFT</direction>
-            <left>6</left>
-            <right>6</right>
-        </moves>
-    </possibleMoves>
-    <possibleMoves>
         <index>32</index>
         <moves>
-            <direction>LEFT</direction>
-            <left>6</left>
+            <direction>RIGHT</direction>
+            <left>5</left>
             <right>3</right>
         </moves>
     </possibleMoves>
@@ -260,38 +260,38 @@
         <index>33</index>
         <moves>
             <direction>RIGHT</direction>
-            <left>5</left>
-            <right>3</right>
+            <left>3</left>
+            <right>1</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>34</index>
         <moves>
-            <direction>LEFT</direction>
-            <left>5</left>
-            <right>1</right>
+            <direction>RIGHT</direction>
+            <left>3</left>
+            <right>0</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>35</index>
         <moves>
-            <direction>LEFT</direction>
-            <left>2</left>
-            <right>2</right>
+            <direction>RIGHT</direction>
+            <left>3</left>
+            <right>1</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>36</index>
         <moves>
-            <direction>LEFT</direction>
-            <left>2</left>
-            <right>0</right>
+            <direction>RIGHT</direction>
+            <left>6</left>
+            <right>1</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>37</index>
         <moves>
-            <direction>LEFT</direction>
+            <direction>RIGHT</direction>
             <left>4</left>
             <right>0</right>
         </moves>
@@ -299,8 +299,8 @@
     <possibleMoves>
         <index>38</index>
         <moves>
-            <direction>LEFT</direction>
-            <left>6</left>
+            <direction>RIGHT</direction>
+            <left>1</left>
             <right>0</right>
         </moves>
     </possibleMoves>
@@ -308,24 +308,24 @@
         <index>39</index>
         <moves>
             <direction>RIGHT</direction>
-            <left>1</left>
-            <right>0</right>
+            <left>6</left>
+            <right>3</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>40</index>
         <moves>
-            <direction>RIGHT</direction>
-            <left>3</left>
-            <right>2</right>
+            <direction>LEFT</direction>
+            <left>6</left>
+            <right>0</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>41</index>
         <moves>
             <direction>RIGHT</direction>
-            <left>2</left>
-            <right>2</right>
+            <left>6</left>
+            <right>3</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
@@ -339,17 +339,17 @@
     <possibleMoves>
         <index>43</index>
         <moves>
-            <direction>RIGHT</direction>
-            <left>6</left>
-            <right>4</right>
+            <direction>BOTTOM</direction>
+            <left>2</left>
+            <right>2</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>44</index>
         <moves>
-            <direction>TOP</direction>
-            <left>5</left>
-            <right>1</right>
+            <direction>RIGHT</direction>
+            <left>4</left>
+            <right>2</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
@@ -357,23 +357,39 @@
         <moves>
             <direction>RIGHT</direction>
             <left>6</left>
-            <right>2</right>
+            <right>0</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>46</index>
         <moves>
-            <direction>RIGHT</direction>
-            <left>6</left>
-            <right>1</right>
+            <direction>BOTTOM</direction>
+            <left>4</left>
+            <right>3</right>
         </moves>
     </possibleMoves>
     <possibleMoves>
         <index>47</index>
         <moves>
-            <direction>LEFT</direction>
-            <left>4</left>
-            <right>4</right>
+            <direction>TOP</direction>
+            <left>5</left>
+            <right>5</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>48</index>
+        <moves>
+            <direction>TOP</direction>
+            <left>5</left>
+            <right>2</right>
+        </moves>
+    </possibleMoves>
+    <possibleMoves>
+        <index>49</index>
+        <moves>
+            <direction>RIGHT</direction>
+            <left>6</left>
+            <right>6</right>
         </moves>
     </possibleMoves>
 </PossibleMovesWrapper>

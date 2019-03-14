@@ -7,7 +7,6 @@ import ge.ai.domino.dao.played.PlayedGameDAOImpl;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.played.ReplayMoveInfo;
 import ge.ai.domino.manager.function.FunctionManager;
-import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.replaygame.ReplayGameManager;
 import ge.ai.domino.manager.script.ScriptManager;
@@ -16,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -27,14 +25,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public class GamesTest {
 
     private static final boolean CREATE_MODE = false;
 
-    private static final List<Integer> idsForCreateMode = Collections.singletonList(1);
+    private static final List<Integer> idsForCreateMode = Arrays.asList(4, 5, 6, 7, 8, 9, 10);
 
     private static final String TEST_DAI_PROPERTIES_FILE_PATH = "../../dai/properties/dai_test.properties";
 
@@ -58,7 +56,7 @@ public class GamesTest {
             String line;
             StringBuilder script = new StringBuilder();
             while ((line = br.readLine()) != null) {
-                script.append(line);
+                script.append(line).append(System.lineSeparator());
             }
 
             scriptManager.executeUpdateScript(script.toString());

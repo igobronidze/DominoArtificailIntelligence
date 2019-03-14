@@ -8,7 +8,7 @@ public class GamesTestFailure {
 
     private PossibleMoves possibleMoves;
 
-    int index;
+    private int index;
 
     public ReplayMoveInfo getReplayMoveInfo() {
         return replayMoveInfo;

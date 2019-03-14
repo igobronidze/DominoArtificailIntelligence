@@ -38,6 +38,8 @@ public class MinMaxBFS extends MinMax {
 
     private final Logger logger = Logger.getLogger(MinMaxBFS.class);
 
+    private int playForMe, playForOpponent, addForMe, addForOpponent;
+
     private final SysParam minMaxIteration = new SysParam("minMaxIteration", "100000");
 
     private int iteration;
@@ -92,6 +94,8 @@ public class MinMaxBFS extends MinMax {
             if (OpponentTilesPredictorFactory.useMinMaxPredictor()) {
                 CachedMinMax.setCachedPrediction(nodeRound.getRound().getGameInfo().getGameId(), CachedPrediction.getCachedPrediction(nodeRound, 2), true);
             }
+
+            logger.info("playForMe = " + playForMe + "  playForOpponent = " + playForOpponent + "  addForMe = " + addForMe + "  addForOpponent = " + addForOpponent);
             return aiPredictionsWrapper;
         }
     }
@@ -213,6 +217,7 @@ public class MinMaxBFS extends MinMax {
             nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
             nodeRound.getChildren().add(nextNodeRound);
             validateOpponentTiles(nextNodeRound, "playForOpponent");
+            playForOpponent++;
             addInQueue(nextNodeRound);
         }
 
@@ -227,6 +232,7 @@ public class MinMaxBFS extends MinMax {
             nextNodeRound.setTreeHeight(nodeRound.getTreeHeight() + 1);
             nodeRound.getBazaarNodeRounds().add(nextNodeRound);
             validateOpponentTiles(nextNodeRound, "addForOpponent");
+            addForOpponent++;
             addInQueue(nextNodeRound);
         }
     }
@@ -249,6 +255,7 @@ public class MinMaxBFS extends MinMax {
                 nodeRound.getChildren().add(nextNodeRound);
                 validateOpponentTiles(nextNodeRound, "playForMe");
                 addInQueue(nextNodeRound);
+                playForMe++;
             }
         } else if (addBazaarPlay) {
             double bazaarProbSum = round.getTableInfo().getBazaarTilesCount();
@@ -256,7 +263,7 @@ public class MinMaxBFS extends MinMax {
                 Tile tile = entry.getKey();
                 double prob = entry.getValue();
                 if (prob != 1.0) {
-                    double probForPickTile = (1 - prob) / bazaarProbSum; // Probability fot choose this tile
+                    double probForPickTile = (1 - prob) / bazaarProbSum; // Probability for choose this tile
                     Move move = TileAndMoveHelper.getMove(tile, MoveDirection.LEFT);
                     Round nextRound = addForMeProcessorVirtual.move(CloneUtil.getClone(round), move);
                     NodeRound nextNodeRound = new NodeRound();
@@ -268,6 +275,7 @@ public class MinMaxBFS extends MinMax {
                     nodeRound.getBazaarNodeRounds().add(nextNodeRound);
                     validateOpponentTiles(nextNodeRound, "addForMe");
                     addInQueue(nextNodeRound);
+                    addForMe++;
                 }
             }
         }

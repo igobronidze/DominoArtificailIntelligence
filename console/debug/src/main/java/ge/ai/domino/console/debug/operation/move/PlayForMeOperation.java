@@ -32,6 +32,6 @@ public class PlayForMeOperation implements GameDebuggerOperation {
 			PlayForMeProcessor playForMeProcessor = new PlayForMeProcessor();
 			GameDebuggerHelper.round = playForMeProcessor.move(GameDebuggerHelper.round, new Move(left, right, direction));
 		}
-		logger.info("Played fot me successfully");
+		logger.info("Played for me successfully");
 	}
 }

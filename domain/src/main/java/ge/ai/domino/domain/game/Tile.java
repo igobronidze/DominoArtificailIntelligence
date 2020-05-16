@@ -1,7 +1,12 @@
 package ge.ai.domino.domain.game;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.io.Serializable;
 
+@Getter
+@AllArgsConstructor
 public class Tile implements Serializable {
 
 	public static final String DELIMITER = "-";
@@ -9,19 +14,6 @@ public class Tile implements Serializable {
 	private final int left;
 
 	private final int right;
-
-	public Tile(int left, int right) {
-		this.left = left;
-		this.right = right;
-	}
-
-	public int getLeft() {
-		return left;
-	}
-
-	public int getRight() {
-		return right;
-	}
 
 	@Override
 	public boolean equals(Object o) {

@@ -74,7 +74,7 @@ public class MultiProcessorClientManager {
                     case FINISH:
                         finish = true;
                         break;
-                    case GET_CLIEND_ID:
+                    case GET_CLIENT_ID:
                         oos.writeObject(clientId);
                         break;
                     case LOAD_SYS_PARAMS:

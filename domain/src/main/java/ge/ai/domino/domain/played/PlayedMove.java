@@ -2,9 +2,13 @@ package ge.ai.domino.domain.played;
 
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlType;
 
+@Getter
+@Setter
 @XmlType(name = "PlayedMove")
 public class PlayedMove {
 
@@ -17,46 +21,6 @@ public class PlayedMove {
     private int right;
 
     private SkipRoundInfo skipRoundInfo;
-
-    public MoveType getType() {
-        return type;
-    }
-
-    public void setType(MoveType type) {
-        this.type = type;
-    }
-
-    public MoveDirection getDirection() {
-        return direction;
-    }
-
-    public void setDirection(MoveDirection direction) {
-        this.direction = direction;
-    }
-
-    public int getLeft() {
-        return left;
-    }
-
-    public void setLeft(int left) {
-        this.left = left;
-    }
-
-    public int getRight() {
-        return right;
-    }
-
-    public void setRight(int right) {
-        this.right = right;
-    }
-
-    public SkipRoundInfo getSkipRoundInfo() {
-        return skipRoundInfo;
-    }
-
-    public void setSkipRoundInfo(SkipRoundInfo skipRoundInfo) {
-        this.skipRoundInfo = skipRoundInfo;
-    }
 
     @Override
     public String toString() {

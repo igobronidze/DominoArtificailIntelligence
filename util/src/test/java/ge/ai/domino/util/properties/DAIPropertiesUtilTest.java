@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 
 public class DAIPropertiesUtilTest {
 
@@ -19,7 +20,7 @@ public class DAIPropertiesUtilTest {
     }
 
     @Test
-    public void testGetProperty() {
+    public void testGetProperty() throws IOException {
         String value = DAIPropertiesUtil.getProperty(PROPERTY_KEY);
         Assert.assertEquals(PROPERTY_VALUE, value);
     }

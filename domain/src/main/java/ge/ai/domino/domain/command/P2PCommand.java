@@ -1,7 +1,6 @@
 package ge.ai.domino.domain.command;
 
 public enum P2PCommand {
-
     GET_GAME_PROPERTIES,
     CAN_NOT_LISTEN_PLAY_COMMAND,
     CAN_LISTEN_PLAY_COMMAND,

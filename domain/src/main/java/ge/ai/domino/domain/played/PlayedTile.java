@@ -1,7 +1,16 @@
 package ge.ai.domino.domain.played;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.io.Serializable;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayedTile implements Serializable {
 
     private int openSide;
@@ -11,50 +20,4 @@ public class PlayedTile implements Serializable {
     private boolean considerInSum;
 
     private boolean center;
-
-    public PlayedTile() {
-    }
-
-    public PlayedTile(int openSide) {
-        this.openSide = openSide;
-    }
-
-    public PlayedTile(int openSide, boolean twin, boolean considerInSum, boolean center) {
-        this.openSide = openSide;
-        this.twin = twin;
-        this.considerInSum = considerInSum;
-        this.center = center;
-    }
-
-    public int getOpenSide() {
-        return openSide;
-    }
-
-    public void setOpenSide(int openSide) {
-        this.openSide = openSide;
-    }
-
-    public boolean isTwin() {
-        return twin;
-    }
-
-    public void setTwin(boolean twin) {
-        this.twin = twin;
-    }
-
-    public boolean isConsiderInSum() {
-        return considerInSum;
-    }
-
-    public void setConsiderInSum(boolean considerInSum) {
-        this.considerInSum = considerInSum;
-    }
-
-    public boolean isCenter() {
-        return center;
-    }
-
-    public void setCenter(boolean center) {
-        this.center = center;
-    }
 }

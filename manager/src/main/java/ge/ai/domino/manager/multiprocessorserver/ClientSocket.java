@@ -50,7 +50,7 @@ public class ClientSocket {
     }
 
     public void specifyClient() throws IOException, ClassNotFoundException, DAIException {
-        oos.writeObject(MultiProcessorCommand.GET_CLIEND_ID);
+        oos.writeObject(MultiProcessorCommand.GET_CLIENT_ID);
         Integer clientId = (Integer) ois.readObject();
 
         client = clientDAO.getClientById(clientId);

@@ -1,9 +1,14 @@
 package ge.ai.domino.domain.function;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class FunctionArgsAndValues implements Serializable {
 
 	private String name;
@@ -14,30 +19,6 @@ public class FunctionArgsAndValues implements Serializable {
 
 	public FunctionArgsAndValues(String name) {
 		this.name = name;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public List<Double> getArgs() {
-		return args;
-	}
-
-	public void setArgs(List<Double> args) {
-		this.args = args;
-	}
-
-	public List<Double> getValues() {
-		return values;
-	}
-
-	public void setValues(List<Double> values) {
-		this.values = values;
 	}
 
 	@Override

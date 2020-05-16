@@ -3,6 +3,7 @@ package ge.ai.domino.dao.connection;
 import ge.ai.domino.util.properties.DAIPropertiesUtil;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -44,7 +45,7 @@ public class ConnectionUtil {
         }
     }
 
-    private static void initParams() {
+    private static void initParams() throws IOException {
         if (databaseDriver == null) {
             databaseDriver = DAIPropertiesUtil.getProperty("jdbc.driver");
             databaseURL = DAIPropertiesUtil.getProperty("jdbc.url");

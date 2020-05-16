@@ -18,11 +18,11 @@ import javafx.stage.Stage;
 
 public class ControlPanel extends Application {
 
-    private FunctionService functionService = new FunctionServiceImpl();
+    private final FunctionService functionService = new FunctionServiceImpl();
 
-    private InitialDataService initialDataService = new InitialDataServiceImpl();
+    private final InitialDataService initialDataService = new InitialDataServiceImpl();
 
-    private MultiProcessorServerService multiProcessorServerService = new MultiProcessorServerServiceImpl();
+    private final MultiProcessorServerService multiProcessorServerService = new MultiProcessorServerServiceImpl();
 
     private Stage stage;
 
@@ -34,7 +34,7 @@ public class ControlPanel extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        new ServiceExecutor() {}.execute(() -> functionService.initFunctions());
+        new ServiceExecutor() {}.execute(functionService::initFunctions);
 
         new ServiceExecutor() {}.execute(() -> initialData = initialDataService.getInitialData());
 
@@ -52,7 +52,7 @@ public class ControlPanel extends Application {
                     @Override
                     public void onSave() {
                         AppController.round = null;
-                        new ServiceExecutor() {}.execute(() -> multiProcessorServerService.stopServer());
+                        new ServiceExecutor() {}.execute(multiProcessorServerService::stopServer);
                     }
 
                     @Override
@@ -61,7 +61,7 @@ public class ControlPanel extends Application {
                     }
                 }.showWindow(false);
             } else {
-                new ServiceExecutor() {}.execute(() -> multiProcessorServerService.stopServer());
+                new ServiceExecutor() {}.execute(multiProcessorServerService::stopServer);
             }
         });
     }

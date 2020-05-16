@@ -9,8 +9,6 @@ import java.util.List;
 
 public class StringUtilTest {
 
-    private static final String EMPTY_0 = null;
-
     private static final String EMPTY_1 = "";
 
     private static final String NOT_EMPTY = "test";
@@ -26,7 +24,6 @@ public class StringUtilTest {
 
     @Test
     public void testIsEmpty() {
-        Assert.assertTrue(StringUtil.isEmpty(EMPTY_0));
         Assert.assertTrue(StringUtil.isEmpty(EMPTY_1));
         Assert.assertFalse(StringUtil.isEmpty(NOT_EMPTY));
     }

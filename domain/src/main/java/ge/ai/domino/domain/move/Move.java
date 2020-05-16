@@ -1,7 +1,12 @@
 package ge.ai.domino.domain.move;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.io.Serializable;
 
+@Getter
+@AllArgsConstructor
 public class Move implements Serializable {
 
     private final int left;
@@ -9,24 +14,6 @@ public class Move implements Serializable {
     private final int right;
 
     private final MoveDirection direction;
-
-    public Move(int left, int right, MoveDirection direction) {
-        this.left = left;
-        this.right = right;
-        this.direction = direction;
-    }
-
-    public int getLeft() {
-        return left;
-    }
-
-    public int getRight() {
-        return right;
-    }
-
-    public MoveDirection getDirection() {
-        return direction;
-    }
 
     @Override
     public boolean equals(Object o) {

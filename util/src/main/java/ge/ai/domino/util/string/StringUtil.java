@@ -1,13 +1,9 @@
 package ge.ai.domino.util.string;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class StringUtil {
-
-    private static final Logger logger = Logger.getLogger(StringUtil.class);
 
     private static final String DEFAULT_DELIMITER = ",";
 
@@ -35,16 +31,12 @@ public class StringUtil {
         return getIntegerListFromString(input, DEFAULT_DELIMITER);
     }
 
-    public static List<Integer> getIntegerListFromString(String input, String delimiter) {
+    public static List<Integer> getIntegerListFromString(String input, String delimiter) throws NumberFormatException {
         List<Integer> result = new ArrayList<>();
         for (String part : input.split(delimiter)) {
             part = part.trim();
             if (!isEmpty(part)) {
-                try {
-                    result.add(Integer.parseInt(part));
-                } catch (NumberFormatException ex) {
-                    logger.warn("Can't parse to int", ex);
-                }
+                result.add(Integer.parseInt(part));
             }
         }
         return result;

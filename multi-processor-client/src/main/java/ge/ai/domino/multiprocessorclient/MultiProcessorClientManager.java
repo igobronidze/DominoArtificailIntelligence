@@ -51,11 +51,11 @@ public class MultiProcessorClientManager {
 
     private final SysParam multiProcessorMinMaxThreadsCount = new SysParam("multiProcessorMinMaxThreadsCount", "3");
 
-    private ObjectInputStream ois;
+    private final ObjectInputStream ois;
 
-    private ObjectOutputStream oos;
+    private final ObjectOutputStream oos;
 
-    private int clientId;
+    private final int clientId;
 
     public MultiProcessorClientManager(ObjectInputStream ois, ObjectOutputStream oos, int clientId) {
         this.ois = ois;

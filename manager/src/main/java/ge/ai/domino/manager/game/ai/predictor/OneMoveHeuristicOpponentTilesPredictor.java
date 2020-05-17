@@ -26,7 +26,7 @@ public class OneMoveHeuristicOpponentTilesPredictor implements OpponentTilesPred
 
     private final HeuristicManager heuristicManager = new HeuristicManager();
 
-    private FunctionManager functionManager = new FunctionManager();
+    private final FunctionManager functionManager = new FunctionManager();
 
     @Override
     public void predict(Round round, Round roundBeforePlay, Move move) throws DAIException {

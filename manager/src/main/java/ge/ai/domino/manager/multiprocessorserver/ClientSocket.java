@@ -25,23 +25,23 @@ public class ClientSocket {
 
     private static final Logger logger = Logger.getLogger(ClientSocket.class);
 
-    private FunctionDAO functionDAO = new FunctionDAOImpl();
-
     private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
     private final SysParam multiProcessorClientRankSysParam = new SysParam("multiProcessorClientRankSysParam", "minMaxIteration");
 
-    private ClientDAO clientDAO = new ClientDAOImpl();
+    private final FunctionDAO functionDAO = new FunctionDAOImpl();
+
+    private final ClientDAO clientDAO = new ClientDAOImpl();
+
+    private final ObjectInputStream ois;
+
+    private final ObjectOutputStream oos;
 
     private Client client;
 
     private int rank;
 
-    private Socket socket;
-
-    private ObjectInputStream ois;
-
-    private ObjectOutputStream oos;
+    private final Socket socket;
 
     public ClientSocket(Socket socket) throws IOException {
         this.socket = socket;

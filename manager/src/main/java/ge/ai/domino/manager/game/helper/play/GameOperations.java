@@ -104,11 +104,7 @@ public class GameOperations {
 			newRound.getTableInfo().setMyMove(addForMe);
 		} else {
 			newRound.getTableInfo().setMyMove(true); // For pick up new tiles
-			if (addForMe) {
-				CachedGames.changeNextRoundBeginner(gameId, true);
-			} else {
-				CachedGames.changeNextRoundBeginner(gameId, false);
-			}
+			CachedGames.changeNextRoundBeginner(gameId, addForMe);
 		}
 
 		if (!virtual) {
@@ -136,10 +132,8 @@ public class GameOperations {
 		newRound.setGameInfo(round.getGameInfo());
 		if (virtual) {
 			newRound.getTableInfo().setMyMove(round.getTableInfo().getRoundBlockingInfo().isLastNotTwinPlayedTileMy());
-		} else if (round.getTableInfo().getRoundBlockingInfo().isLastNotTwinPlayedTileMy()) {
-			CachedGames.changeNextRoundBeginner(gameId, true);
 		} else {
-			CachedGames.changeNextRoundBeginner(gameId, false);
+			CachedGames.changeNextRoundBeginner(gameId, round.getTableInfo().getRoundBlockingInfo().isLastNotTwinPlayedTileMy());
 		}
 
 		if (!virtual) {

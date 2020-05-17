@@ -31,7 +31,7 @@ public class MultiProcessorMinMaxBFS extends MinMaxBFS {
 
 	private final Logger logger = Logger.getLogger(MultiProcessorMinMaxBFS.class);
 
-	private Map<Integer, NodeRound> roundsForProcess = new HashMap<>();
+	private final Map<Integer, NodeRound> roundsForProcess = new HashMap<>();
 
 	@Override
 	public AiPredictionsWrapper solve(Round round) throws DAIException {

@@ -15,9 +15,9 @@ public abstract class UnimodalOptimizationWithMultipleParams {
 
     private static final double INTERVAL_MIN_LENGTH_FOR_INDEX = 0;
 
-    private UnimodalOptimizationType unimodalOptimizationType;
+    private final UnimodalOptimizationType unimodalOptimizationType;
 
-    private OptimizationDirection optimizationDirection;
+    private final OptimizationDirection optimizationDirection;
 
     private int index;
 

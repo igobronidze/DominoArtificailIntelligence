@@ -1,10 +1,10 @@
 package ge.ai.domino.p2pserver;
 
+import ge.ai.domino.domain.command.P2PCommand;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveType;
-import ge.ai.domino.domain.command.P2PCommand;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -18,19 +18,21 @@ public class P2PGame implements Runnable {
 
     private static final Logger logger = Logger.getLogger(P2PGame.class);
 
-    private Socket player1;
+    private static final int SLEEP_MS = 100;
 
-    private Socket player2;
+    private final Socket player1;
 
-    private GameProperties gameProperties;
+    private final Socket player2;
 
-    private ObjectInputStream ois1;
+    private final GameProperties gameProperties;
 
-    private ObjectInputStream ois2;
+    private final ObjectInputStream ois1;
 
-    private ObjectOutputStream oos1;
+    private final ObjectInputStream ois2;
 
-    private ObjectOutputStream oos2;
+    private final ObjectOutputStream oos1;
+
+    private final ObjectOutputStream oos2;
 
     private GameData gameData;
 
@@ -173,18 +175,18 @@ public class P2PGame implements Runnable {
 
     private void sleepWhileNotPickAllInitialTile() throws InterruptedException {
         while (gameData.getTiles1().size() != 7 || gameData.getTiles2().size() != 7) {
-            Thread.sleep(100);
+            Thread.sleep(SLEEP_MS);
         }
     }
 
     private void sleepWhileCantListen(boolean firstPlayer) throws InterruptedException {
         if (firstPlayer) {
             while (!secondPlayerCanListenPlayCommand) {
-                Thread.sleep(100);
+                Thread.sleep(SLEEP_MS);
             }
         } else {
             while (!firstPlayerCanListenPlayCommand) {
-                Thread.sleep(100);
+                Thread.sleep(SLEEP_MS);
             }
         }
     }

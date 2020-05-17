@@ -21,7 +21,7 @@ public class FunctionManager {
 
 	private final SysParam opponentPlayHeuristicsDiffsFunctionName = new SysParam("opponentPlayHeuristicsDiffsFunctionName", OPPONENT_PLAY_HEURISTICS_DIFFS_FUNCTION_NAME_PREFIX + "_M");
 
-	private FunctionDAO functionDAO = new FunctionDAOImpl();
+	private final FunctionDAO functionDAO = new FunctionDAOImpl();
 
 	public void initFunctions() {
 		CachedFunctions.putOpponentPlayHeuristicsDiffsFunctions(functionDAO.getFunctionArgsAndValues(OPPONENT_PLAY_HEURISTICS_DIFFS_FUNCTION_NAME_PREFIX)

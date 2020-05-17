@@ -36,9 +36,9 @@ public class P2PGame {
 
     private static final PlayedGameManager playedGameManager = new PlayedGameManager();
 
-    private ObjectInputStream ois;
+    private final ObjectInputStream ois;
 
-    private ObjectOutputStream oos;
+    private final ObjectOutputStream oos;
 
     private Round round;
 

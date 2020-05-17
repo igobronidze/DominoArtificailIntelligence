@@ -1,9 +1,13 @@
 package ge.ai.domino.manager;
 
 import ge.ai.domino.domain.move.MoveDirection;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlType;
 
+@Getter
+@Setter
 @XmlType(name = "Move")
 public class Move {
 
@@ -12,30 +16,6 @@ public class Move {
     private int right;
 
     private MoveDirection direction;
-
-    public int getLeft() {
-        return left;
-    }
-
-    public void setLeft(int left) {
-        this.left = left;
-    }
-
-    public int getRight() {
-        return right;
-    }
-
-    public void setRight(int right) {
-        this.right = right;
-    }
-
-    public MoveDirection getDirection() {
-        return direction;
-    }
-
-    public void setDirection(MoveDirection direction) {
-        this.direction = direction;
-    }
 
     @Override
     public String toString() {

@@ -1,5 +1,8 @@
 package ge.ai.domino.imageprocessing;
 
+import lombok.Getter;
+
+@Getter
 public class TilesDetectorParams {
 
 	private double heightPercentage;
@@ -42,29 +45,5 @@ public class TilesDetectorParams {
 	public TilesDetectorParams blurCoefficient(int blurCoefficient) {
 		this.blurCoefficient = blurCoefficient;
 		return this;
-	}
-
-	public double getHeightPercentage() {
-		return heightPercentage;
-	}
-
-	public double getMarginBottomPercentage() {
-		return marginBottomPercentage;
-	}
-
-	public double getWidthPercentage() {
-		return widthPercentage;
-	}
-
-	public double getMarginLeftPercentage() {
-		return marginLeftPercentage;
-	}
-
-	public int getContourMinArea() {
-		return contourMinArea;
-	}
-
-	public int getBlurCoefficient() {
-		return blurCoefficient;
 	}
 }

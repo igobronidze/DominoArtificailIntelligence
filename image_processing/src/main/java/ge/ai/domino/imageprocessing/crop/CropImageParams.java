@@ -1,5 +1,8 @@
 package ge.ai.domino.imageprocessing.crop;
 
+import lombok.Getter;
+
+@Getter
 public class CropImageParams {
 
 	private int x;
@@ -28,21 +31,5 @@ public class CropImageParams {
 	public CropImageParams height(int height) {
 		this.height = height;
 		return this;
-	}
-
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
 	}
 }

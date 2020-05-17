@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class CachedFunctions {
 
-	private static Map<String, PolynomialSplineFunction> opponentPlayHeuristicsDiffsFunctions = new HashMap<>();
+	private static final Map<String, PolynomialSplineFunction> opponentPlayHeuristicsDiffsFunctions = new HashMap<>();
 
 	public static PolynomialSplineFunction getOpponentPlayHeuristicsDiffsFunction(String name) {
 		return opponentPlayHeuristicsDiffsFunctions.get(name);

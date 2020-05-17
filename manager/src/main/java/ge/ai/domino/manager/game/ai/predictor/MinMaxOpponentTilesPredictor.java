@@ -19,7 +19,7 @@ public class MinMaxOpponentTilesPredictor implements OpponentTilesPredictor {
 
 	private static final Logger logger = Logger.getLogger(MinMaxOpponentTilesPredictor.class);
 
-	private FunctionManager functionManager = new FunctionManager();
+	private final FunctionManager functionManager = new FunctionManager();
 
 	@Override
 	public void predict(Round round, Round roundBeforePlay, Move move) throws DAIException {

@@ -5,13 +5,13 @@ import java.util.Map;
 
 public class CachedMinMax {
 
-	private static Map<Integer, Boolean> needChangesMap = new HashMap<>();
+	private static final Map<Integer, Boolean> needChangesMap = new HashMap<>();
 
-	private static Map<Integer, Boolean> minMaxInProgressMap = new HashMap<>();
+	private static final Map<Integer, Boolean> minMaxInProgressMap = new HashMap<>();
 
-	private static Map<Integer, Boolean> useFirstChildMap = new HashMap<>();
+	private static final Map<Integer, Boolean> useFirstChildMap = new HashMap<>();
 
-	private static Map<Integer, CachedPrediction> cachedPredictionMap = new HashMap<>();
+	private static final Map<Integer, CachedPrediction> cachedPredictionMap = new HashMap<>();
 
 	public static void cleanUp(int gameId) {
 		needChangesMap.remove(gameId);

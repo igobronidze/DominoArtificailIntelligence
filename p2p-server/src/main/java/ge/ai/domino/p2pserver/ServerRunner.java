@@ -9,7 +9,7 @@ public class ServerRunner {
         GameProperties gameProperties = new GameProperties();
         gameProperties.setPointsForWin(175);
         gameProperties.setChannel(new Channel());
-        gameProperties.setOpponentName("rame");
+        gameProperties.setOpponentName("Name");
 
         P2PServer p2PServer = new P2PServer();
         p2PServer.startServer(gameProperties);

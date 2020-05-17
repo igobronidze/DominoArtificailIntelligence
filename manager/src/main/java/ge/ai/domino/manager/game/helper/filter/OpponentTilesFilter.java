@@ -104,9 +104,7 @@ public class OpponentTilesFilter {
 			}
 		}
 		if (valueLessThan != null) {
-			if (prob >= valueLessThan) {
-				return false;
-			}
+			return prob < valueLessThan;
 		}
 		return true;
 	}

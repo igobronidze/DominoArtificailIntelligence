@@ -9,18 +9,13 @@ import org.apache.log4j.Logger;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class OpponentPlaysManager {
 
-	private Logger logger = Logger.getLogger(OpponentPlaysManager.class);
+	private final Logger logger = Logger.getLogger(getClass());
 
-	private OpponentPlayDAO opponentPlayDAO = new OpponentPlayDAOImpl();
+	private final OpponentPlayDAO opponentPlayDAO = new OpponentPlayDAOImpl();
 
 	public List<GroupedOpponentPlay> getGroupedOpponentPlays(Integer gameId, String version, boolean groupByGame, boolean groupByVersion, boolean groupInOneResult) {
 		List<OpponentPlay> opponentPlays = opponentPlayDAO.getOpponentPlays(version, gameId);

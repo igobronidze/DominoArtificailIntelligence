@@ -111,7 +111,7 @@ public class TilesDetectorTest {
 		initBetliveExpectedTiles4(index++);
 		initBetliveExpectedTiles5(index++);
 		initBetliveExpectedTiles6(index++);
-		initBetliveExpectedTiles7(index++);
+		initBetliveExpectedTiles7(index);
 	}
 
 	private static void initBetliveExpectedTiles1(int index) {
@@ -195,7 +195,7 @@ public class TilesDetectorTest {
 		initLiderbetExpectedTiles2(index++);
 		initLiderbetExpectedTiles3(index++);
 		initLiderbetExpectedTiles4(index++);
-		initLiderbetExpectedTiles5(index++);
+		initLiderbetExpectedTiles5(index);
 	}
 
 	private static void initLiderbetExpectedTiles1(int index) {

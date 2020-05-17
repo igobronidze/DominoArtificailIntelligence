@@ -23,9 +23,9 @@ public class MultiProcessorServer {
 
     private final SysParam executeRankTestForMultiProcessorClient = new SysParam("executeRankTestForMultiProcessorClient", "true");
 
-    private ServerSocket server = null;
+    private static final List<ClientSocket> clients = new ArrayList<>();
 
-    private static List<ClientSocket> clients = new ArrayList<>();
+    private ServerSocket server = null;
 
     private boolean open;
 

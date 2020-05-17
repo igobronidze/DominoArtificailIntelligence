@@ -3,14 +3,7 @@ package ge.ai.domino.console.ui.game;
 import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.controlpanel.ControlPanel;
 import ge.ai.domino.console.ui.game.helper.GamePaneHelper;
-import ge.ai.domino.console.ui.game.windows.AddLeftTilesCountWindow;
-import ge.ai.domino.console.ui.game.windows.AddTilesDetectWindow;
-import ge.ai.domino.console.ui.game.windows.DetectTilesWindow;
-import ge.ai.domino.console.ui.game.windows.EditNameWindow;
-import ge.ai.domino.console.ui.game.windows.GameStarterWindow;
-import ge.ai.domino.console.ui.game.windows.HeuristicsWindow;
-import ge.ai.domino.console.ui.game.windows.SaveGameWindow;
-import ge.ai.domino.console.ui.game.windows.SkipRoundWindow;
+import ge.ai.domino.console.ui.game.windows.*;
 import ge.ai.domino.console.ui.gameproperties.GamePropertiesPane;
 import ge.ai.domino.console.ui.tchcomponents.TCHLabel;
 import ge.ai.domino.console.ui.util.ImageFactory;
@@ -42,7 +35,6 @@ import javafx.scene.layout.VBox;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +49,14 @@ public abstract class GamePane extends BorderPane {
 
     private final ControlPanel controlPanel;
 
+    private final Map<Tile, ImageView> myTilesImages = new HashMap<>();
+
+    private final Map<Tile, ImageView> opponentTilesImages = new HashMap<>();
+
+    private final GameProperties gameProperties;
+
+    private final GamePaneInitialData gamePaneInitialData;
+
     private ImageView upArrow;
 
     private ImageView rightArrow;
@@ -65,10 +65,6 @@ public abstract class GamePane extends BorderPane {
 
     private ImageView leftArrow;
 
-    private Map<Tile, ImageView> myTilesImages = new HashMap<>();
-
-    private Map<Tile, ImageView> opponentTilesImages = new HashMap<>();
-
     private Tile pressedTile;
 
     private boolean pressedOnMyTile;
@@ -76,8 +72,6 @@ public abstract class GamePane extends BorderPane {
     private boolean arrowsVisible;
 
     private Integer firstPressedNumber;
-
-    private GameProperties gameProperties;
 
     private AiPrediction bestAiPrediction;
 
@@ -90,8 +84,6 @@ public abstract class GamePane extends BorderPane {
     private Label mainInfoLabel;
 
     private Label mainInfoSecondaryLabel;
-
-    private GamePaneInitialData gamePaneInitialData;
 
     private boolean roundWillBeBlocked;
 
@@ -214,7 +206,7 @@ public abstract class GamePane extends BorderPane {
 
     private void reload(boolean showDetectTilesWindow, boolean specifyWinner) {
         this.setPadding(new Insets(8));
-        initTopPane();
+        this.setTop(getTopPane());
         this.setCenter(getCenterPane());
         this.setBottom(getMyTilesPane());
         if (AppController.round.getGameInfo().isFinished()) {
@@ -240,7 +232,7 @@ public abstract class GamePane extends BorderPane {
         reloading = false;
     }
 
-    private void initTopPane() {
+    private FlowPane getTopPane() {
         TableInfo tableInfo = AppController.round.getTableInfo();
         GameInfo gameInfo = AppController.round.getGameInfo();
         Label myPointsLabel = new TCHLabel(Messages.get("me") + " - " + gameInfo.getMyPoint() + " (" + AppController.round.getMyTiles().size() + ")");
@@ -248,6 +240,14 @@ public abstract class GamePane extends BorderPane {
         Label bazaarCountLabel = new TCHLabel(Messages.get("bazaar") + " (" + (int) tableInfo.getBazaarTilesCount() + ")");
         Label opponentLabel = new TCHLabel(Messages.get("opponent") + " - " + gameProperties.getOpponentName() + "(" + gameProperties.getChannel().getName() + ")");
         Label pointWorWinLabel = new TCHLabel(Messages.get("pointForWin") + " - " + gameProperties.getPointsForWin());
+
+        ImageView addImage = new ImageView(ImageFactory.getImage("add_black.png"));
+        addImage.setCursor(Cursor.HAND);
+        addImage.setOnMouseClicked(e -> {
+            if (!AppController.round.getTableInfo().isMyMove()) {
+                onAddTileEntered();
+            }
+        });
 
         ImageView undoImage = new ImageView(ImageFactory.getImage("undo.png"));
         undoImage.setCursor(Cursor.HAND);
@@ -268,8 +268,8 @@ public abstract class GamePane extends BorderPane {
         FlowPane flowPane = new FlowPane(30, 10);
         flowPane.setPadding(new Insets(0, 4, 8, 4));
         flowPane.getChildren().addAll(myPointsLabel, opponentPointLabel, bazaarCountLabel, opponentLabel, pointWorWinLabel,
-                undoImage, skipImage, editImage, calculatorImage);
-        this.setTop(flowPane);
+                addImage, undoImage, skipImage, editImage, calculatorImage);
+        return flowPane;
     }
 
     private void initFocusLoseListener() {
@@ -307,7 +307,7 @@ public abstract class GamePane extends BorderPane {
                     }
                     break;
                 case ADD:
-                    ontAddTileEntered();
+                    onAddTileEntered();
                     break;
                 case Z:
                     mainInfoLabel.setText("UNDO");
@@ -337,7 +337,7 @@ public abstract class GamePane extends BorderPane {
                         firstPressedNumber = Integer.parseInt(e.getText());
                         mainInfoLabel.setText(String.valueOf(firstPressedNumber));
                     } else {
-                        Integer secondPressedNumber = Integer.parseInt(e.getText());
+                        int secondPressedNumber = Integer.parseInt(e.getText());
                         int tmp = secondPressedNumber;
                         if (secondPressedNumber > firstPressedNumber) {
                             secondPressedNumber = firstPressedNumber;
@@ -467,14 +467,14 @@ public abstract class GamePane extends BorderPane {
 
         if (mainInfoLabel == null) {
             mainInfoLabel = new Label("");
-            mainInfoLabel.setStyle("-fx-font-size: 100px; -fx-text-fill: green;");
+            mainInfoLabel.setStyle("-fx-font-size: 70px; -fx-text-fill: green;");
 
             mainInfoSecondaryLabel = new Label("");
-            mainInfoSecondaryLabel.setStyle("-fx-font-size: 40px; -fx-text-fill: green;");
+            mainInfoSecondaryLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: green;");
         }
 
         VBox vBox = new VBox();
-        vBox.setSpacing(20);
+        vBox.setSpacing(10);
         vBox.setAlignment(Pos.TOP_CENTER);
         vBox.getChildren().addAll(opponentTilesPane, mainInfoLabel, mainInfoSecondaryLabel);
 
@@ -575,14 +575,6 @@ public abstract class GamePane extends BorderPane {
                 }
             }
             flowPane.getChildren().add(hBox);
-        }
-        if (!AppController.round.getTableInfo().isMyMove()) {
-            ImageView addImageView = new ImageView(ImageFactory.getImage("add_black.png"));
-            addImageView.setOnMouseEntered(event -> this.setCursor(Cursor.HAND));
-            addImageView.setOnMouseExited(event -> this.setCursor(Cursor.DEFAULT));
-            setImageStyle(addImageView);
-            flowPane.getChildren().add(addImageView);
-            addImageView.setOnMouseClicked(e -> ontAddTileEntered());
         }
     }
 
@@ -767,7 +759,7 @@ public abstract class GamePane extends BorderPane {
         }
     }
 
-    private void ontAddTileEntered() {
+    private void onAddTileEntered() {
         if (AppController.round.getTableInfo().getRoundBlockingInfo().isOmitMe() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
             showAddLeftTilesCount(null, null, MoveType.ADD_FOR_OPPONENT);
             reload(true, false);

@@ -6,7 +6,7 @@ public class MultiProcessorClientRunner {
 
     private static final Logger logger = Logger.getLogger(MultiProcessorClientManager.class);
 
-    // java -jar domino.jar localhost 8080 name
+    // java -jar domino.jar localhost 8080 id
     public static void main(String[] args) throws Exception {
         MultiProcessorClient client = new MultiProcessorClient();
 

@@ -10,6 +10,8 @@ import java.util.List;
 
 public class MixedRoundHeuristic extends RoundHeuristic {
 
+	private static final int ROUND_HEURISTIC_PARAMS_COUNT = 3;
+
 	private final SystemParameterManager sysParamManager = new SystemParameterManager();
 
 	private final SysParam mixedRoundHeuristicTilesDiffRate = new SysParam("mixedRoundHeuristicTilesDiffRate", "2");
@@ -38,12 +40,14 @@ public class MixedRoundHeuristic extends RoundHeuristic {
 
 	@Override
 	public void setParams(List<Double> params) {
-		super.setParams(params.subList(0, 5));
-		mixedRoundHeuristicTilesDiffRateValue = params.get(5);
-		mixedRoundHeuristicMovesDiffRateValue = params.get(6);
-		mixedRoundHeuristicPointsBalancingRateValue = params.get(7);
-		mixedRoundHeuristicOpenTilesSumBalancingRateValue = params.get(8);
-		mixedRoundHeuristicPointsDiffCoefficientRateValue = params.get(9);
+		super.setParams(params.subList(0, ROUND_HEURISTIC_PARAMS_COUNT));
+		int ind = ROUND_HEURISTIC_PARAMS_COUNT;
+		mixedRoundHeuristicTilesDiffRateValue = params.get(ind++);
+		mixedRoundHeuristicMovesDiffRateValue = params.get(ind++);
+		mixedRoundHeuristicPointsBalancingRateValue = params.get(ind++);
+		mixedRoundHeuristicOpenTilesSumBalancingRateValue = params.get(ind++);
+		mixedRoundHeuristicPointsDiffCoefficientRateValue = params.get(ind++);
+		mixedRoundHeuristicPLayTurnRateValue = params.get(ind);
 	}
 
 	@Override

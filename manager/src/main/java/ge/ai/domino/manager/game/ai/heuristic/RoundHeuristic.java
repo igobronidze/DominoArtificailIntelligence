@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class RoundHeuristic {
 
-    final RoundStatisticProcessor roundStatisticProcessor = new RoundStatisticProcessor();
+    protected final RoundStatisticProcessor roundStatisticProcessor = new RoundStatisticProcessor();
 
     private static final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
@@ -19,16 +19,14 @@ public abstract class RoundHeuristic {
 
     private static final SysParam rateForFinishedGameHeuristic = new SysParam("rateForFinishedGameHeuristic", "1.6");
 
-    private double heuristicValueForStartNextRoundValue = systemParameterManager.getDoubleParameterValue(heuristicValueForStartNextRound);
+    private final double heuristicValueForStartNextRoundValue = systemParameterManager.getDoubleParameterValue(heuristicValueForStartNextRound);
 
-    private double rateForFinishedGameHeuristicValue = systemParameterManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
+    private final double rateForFinishedGameHeuristicValue = systemParameterManager.getDoubleParameterValue(rateForFinishedGameHeuristic);
 
     abstract double getNotFinishedRoundHeuristic(Round round);
 
     public void setParams(List<Double> params) {
         roundStatisticProcessor.setParams(params.subList(0, 3));
-        heuristicValueForStartNextRoundValue = params.get(3);
-        rateForFinishedGameHeuristicValue = params.get(4);
     }
 
     public double getHeuristic(Round round) {

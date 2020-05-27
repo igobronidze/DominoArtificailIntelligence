@@ -21,6 +21,11 @@ public class GameDebuggerHelper {
 
 	public static Round round;
 
+	public static int readInt(Logger logger, Scanner scanner, String text) {
+		logger.info(text);
+		return Integer.parseInt(scanner.nextLine());
+	}
+
 	public static List<Integer> getIdsForProcess(Scanner scanner) {
 		logger.info("Game ids( Format example - 1_20/3,15 ):");
 		String inputIds = scanner.nextLine();

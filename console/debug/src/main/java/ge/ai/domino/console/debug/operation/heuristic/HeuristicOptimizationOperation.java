@@ -146,8 +146,8 @@ public class HeuristicOptimizationOperation implements GameDebuggerOperation {
 
 	private double getHeuristicsAverage(List<Round> rounds, String chosenType, List<Double> params) throws DAIException {
 		List<Heuristic> heuristics = new ArrayList<>();
+		logger.info("Executing check round heuristic, params: " + params);
 		for (Round round : rounds) {
-			logger.info("Executing check round heuristic");
 			Heuristic heuristic = heuristicManager.getHeuristic(round, RoundHeuristicType.valueOf(chosenType), params);
 			heuristics.add(heuristic);
 		}

@@ -12,31 +12,31 @@ public class MixedRoundHeuristic extends RoundHeuristic {
 
 	private static final int ROUND_HEURISTIC_PARAMS_COUNT = 3;
 
-	private final SystemParameterManager sysParamManager = new SystemParameterManager();
+	private static final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-	private final SysParam mixedRoundHeuristicTilesDiffRate = new SysParam("mixedRoundHeuristicTilesDiffRate", "2");
+	private static final SysParam mixedRoundHeuristicTilesDiffRate = new SysParam("mixedRoundHeuristicTilesDiffRate", "2");
 
-	private final SysParam mixedRoundHeuristicMovesDiffRate = new SysParam("mixedRoundHeuristicMovesDiffRate", "10");
+	private static final SysParam mixedRoundHeuristicMovesDiffRate = new SysParam("mixedRoundHeuristicMovesDiffRate", "10");
 
-	private final SysParam mixedRoundHeuristicPointsBalancingRate = new SysParam("mixedRoundHeuristicPointsBalancingRate", "0.3");
+	private static final SysParam mixedRoundHeuristicPointsBalancingRate = new SysParam("mixedRoundHeuristicPointsBalancingRate", "0.3");
 
-	private final SysParam mixedRoundHeuristicOpenTilesSumBalancingRate = new SysParam("mixedRoundHeuristicOpenTilesSumBalancingRate", "0.15");
+	private static final SysParam mixedRoundHeuristicOpenTilesSumBalancingRate = new SysParam("mixedRoundHeuristicOpenTilesSumBalancingRate", "0.15");
 
-	private final SysParam mixedRoundHeuristicPointsDiffCoefficientRate = new SysParam("mixedRoundHeuristicPointsDiffCoefficientRate", "0.5");
+	private static final SysParam mixedRoundHeuristicPointsDiffCoefficientRate = new SysParam("mixedRoundHeuristicPointsDiffCoefficientRate", "0.5");
 
-	private final SysParam mixedRoundHeuristicPLayTurnRate = new SysParam("mixedRoundHeuristicPLayTurnRate", "0.3");
+	private static final SysParam mixedRoundHeuristicPLayTurnRate = new SysParam("mixedRoundHeuristicPLayTurnRate", "0.3");
 
-	private double mixedRoundHeuristicTilesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicTilesDiffRate);
+	private static double mixedRoundHeuristicTilesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicTilesDiffRate);
 
-	private double mixedRoundHeuristicMovesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicMovesDiffRate);
+	private static double mixedRoundHeuristicMovesDiffRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicMovesDiffRate);
 
-	private double mixedRoundHeuristicPointsBalancingRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicPointsBalancingRate);
+	private static double mixedRoundHeuristicPointsBalancingRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicPointsBalancingRate);
 
-	private double mixedRoundHeuristicOpenTilesSumBalancingRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicOpenTilesSumBalancingRate);
+	private static double mixedRoundHeuristicOpenTilesSumBalancingRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicOpenTilesSumBalancingRate);
 
-	private double mixedRoundHeuristicPointsDiffCoefficientRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicPointsDiffCoefficientRate);
+	private static double mixedRoundHeuristicPointsDiffCoefficientRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicPointsDiffCoefficientRate);
 
-	private double mixedRoundHeuristicPLayTurnRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicPLayTurnRate);
+	private static double mixedRoundHeuristicPLayTurnRateValue = sysParamManager.getDoubleParameterValue(mixedRoundHeuristicPLayTurnRate);
 
 	@Override
 	public void setParams(List<Double> params) {

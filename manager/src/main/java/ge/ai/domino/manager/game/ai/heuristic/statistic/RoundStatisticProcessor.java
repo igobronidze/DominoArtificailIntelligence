@@ -12,19 +12,19 @@ import java.util.Map;
 
 public class RoundStatisticProcessor {
 
-	private final SystemParameterManager sysParamManager = new SystemParameterManager();
+	private static final SystemParameterManager sysParamManager = new SystemParameterManager();
 
-	private final SysParam roundStatisticProcessorParam1 = new SysParam("roundStatisticProcessorParam1", "0.4");
+	private static final SysParam roundStatisticProcessorParam1 = new SysParam("roundStatisticProcessorParam1", "0.4");
 
-	private final SysParam roundStatisticProcessorParam2 = new SysParam("roundStatisticProcessorParam2", "0.2");
+	private static final SysParam roundStatisticProcessorParam2 = new SysParam("roundStatisticProcessorParam2", "0.2");
 
-	private final SysParam roundStatisticProcessorParam3 = new SysParam("roundStatisticProcessorParam3", "0.1");
+	private static final SysParam roundStatisticProcessorParam3 = new SysParam("roundStatisticProcessorParam3", "0.1");
 
-	private double roundStatisticProcessorParam1Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam1);
+	private static double roundStatisticProcessorParam1Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam1);
 
-	private double roundStatisticProcessorParam2Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam2);
+	private static double roundStatisticProcessorParam2Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam2);
 
-	private double roundStatisticProcessorParam3Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam3);
+	private static double roundStatisticProcessorParam3Value = sysParamManager.getDoubleParameterValue(roundStatisticProcessorParam3);
 
 	private Round round;
 

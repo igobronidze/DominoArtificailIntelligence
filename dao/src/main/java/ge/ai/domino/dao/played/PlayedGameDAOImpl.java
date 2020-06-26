@@ -16,11 +16,7 @@ import ge.ai.domino.domain.played.PlayedGame;
 import ge.ai.domino.util.string.StringUtil;
 import org.apache.log4j.Logger;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -222,7 +218,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
+    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
         List<Channel> channels = channelDAO.getChannels();
         Map<Integer, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getId, channel -> channel));
 
@@ -256,6 +252,12 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             sb.append(" sum(case when " + RESULT_COLUMN_NAME + " = '").append(GameResult.I_WIN).append("' then 1 else 0 end) as " + WIN_ME + ", sum(case when " + RESULT_COLUMN_NAME + " = '")
                     .append(GameResult.OPPONENT_WIN).append("' then 1 else 0 end) as " + WIN_OPPONENT + ", sum(case when " + RESULT_COLUMN_NAME + " = '").append(GameResult.STOPPED)
                     .append("' then 1 else 0 end) as " + STOPPED + " FROM " + PLAYED_GAME_TABLE_NAME + " ");
+
+            if (!StringUtil.isEmpty(version)) {
+                sb.append(" WHERE 1 = 1 ");
+                QueryUtil.addFilter(sb, VERSION_COLUMN_NAME, version, FilterCondition.EQUAL, true);
+            }
+
             first = true;
             if (groupByVersion) {
                 sb.append("GROUP BY ").append(VERSION_COLUMN_NAME);

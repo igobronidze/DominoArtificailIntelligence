@@ -45,7 +45,7 @@ public class MinMaxSolveOperation implements GameDebuggerOperation {
 		}
 
 		logger.info("Use multiProcessor:");
-		boolean useMultiProcessor = Boolean.valueOf(scanner.nextLine());
+		boolean useMultiProcessor = Boolean.parseBoolean(scanner.nextLine());
 
 		for (Round round : rounds) {
 			MinMax minMax = MinMaxFactory.getMinMax(useMultiProcessor);

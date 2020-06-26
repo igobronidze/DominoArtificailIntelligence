@@ -43,6 +43,8 @@ public class PlayedGamePane extends BorderPane {
 
     private final ChannelService channelService = new ChannelServiceImpl();
 
+    private final DoubleBinding doubleBinding;
+
     private TableView<PlayedGameProperty> tableView;
 
     private TCHTextField versionField;
@@ -54,8 +56,6 @@ public class PlayedGamePane extends BorderPane {
     private TCHComboBox<String> channelCombo;
 
     private TCHTextField levelField;
-
-    private DoubleBinding doubleBinding;
 
     private Map<String, Integer> channelsMap;
 

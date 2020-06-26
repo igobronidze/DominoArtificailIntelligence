@@ -22,7 +22,7 @@ public interface PlayedGameDAO {
 
     void deletePlayedGame(int gameId);
 
-    List<GroupedPlayedGame> getGroupedPlayedGames(boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel);
+    List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel);
 
     int getLastPlayedGameId();
 

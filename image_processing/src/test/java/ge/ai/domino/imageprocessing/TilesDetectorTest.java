@@ -24,7 +24,7 @@ public class TilesDetectorTest {
 
 	private static final int betliveImageCount = 7;
 
-	private static final int liderbetImageCount = 5;
+	private static final int liderbetImageCount = 6;
 
 	private static final Map<Integer, BufferedImage> betliveBufferedImageMap = new HashMap<>();
 
@@ -85,7 +85,7 @@ public class TilesDetectorTest {
 				.heightPercentage(12)
 				.marginBottomPercentage(5)
 				.marginLeftPercentage(15)
-				.widthPercentage(75)
+				.widthPercentage(63)
 				.blurCoefficient(1);
 	}
 
@@ -195,7 +195,8 @@ public class TilesDetectorTest {
 		initLiderbetExpectedTiles2(index++);
 		initLiderbetExpectedTiles3(index++);
 		initLiderbetExpectedTiles4(index++);
-		initLiderbetExpectedTiles5(index);
+		initLiderbetExpectedTiles5(index++);
+		initLiderbetExpectedTiles6(index);
 	}
 
 	private static void initLiderbetExpectedTiles1(int index) {
@@ -253,6 +254,16 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(3, 4));
 		expectedTiles.add(new Tile(3, 5));
 		expectedTiles.add(new Tile(1, 1));
+		liderbetExpectedTilesMap.put(index, expectedTiles);
+	}
+
+	private static void initLiderbetExpectedTiles6(int index) {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(1, 4));
+		expectedTiles.add(new Tile(2, 6));
+		expectedTiles.add(new Tile(0, 1));
+		expectedTiles.add(new Tile(2, 3));
+		expectedTiles.add(new Tile(2, 2));
 		liderbetExpectedTilesMap.put(index, expectedTiles);
 	}
 }

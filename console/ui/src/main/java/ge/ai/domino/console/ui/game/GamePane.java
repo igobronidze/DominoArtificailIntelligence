@@ -322,7 +322,7 @@ public abstract class GamePane extends BorderPane {
                 case H:
                     showHeuristicsWindow();
                     break;
-                case BACK_SPACE:
+                case ESCAPE:
                     firstPressedNumber = null;
                     pressedTile = null;
                     mainInfoLabel.setText("");

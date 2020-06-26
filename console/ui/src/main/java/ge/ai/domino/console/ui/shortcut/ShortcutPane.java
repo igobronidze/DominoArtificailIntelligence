@@ -49,7 +49,7 @@ public class ShortcutPane extends HBox {
     private void loadShortcuts() {
         List<ShortcutProperty> shortcuts = new ArrayList<>();
         shortcuts.add(new ShortcutProperty("x_y", Messages.get("shortcut_x_y")));
-        shortcuts.add(new ShortcutProperty("backspace", Messages.get("shortcut_backspace")));
+        shortcuts.add(new ShortcutProperty("esc", Messages.get("shortcut_esc")));
         shortcuts.add(new ShortcutProperty("arrow", Messages.get("shortcut_arrow")));
         shortcuts.add(new ShortcutProperty("+", Messages.get("shortcut_+")));
         shortcuts.add(new ShortcutProperty("Z", Messages.get("shortcut_Z")));

@@ -30,10 +30,10 @@ public class TilesDetector {
 		ContoursDetector contoursDetector = new ContoursDetector();
 		List<Contour> contours = contoursDetector.detectContours(image, tilesDetectorParams.getContourMinArea());
 
-		return contours.stream().map(this::getTile).collect(Collectors.toList());
+		return contours.stream().map(contour -> getTile(contour, tilesDetectorParams.isCombinedPoints())).collect(Collectors.toList());
 	}
 
-	private Tile getTile(Contour contour) {
+	private Tile getTile(Contour contour, boolean combinedPoints) {
 		List<Contour> topContours = new ArrayList<>();
 		List<Contour> bottomContours = new ArrayList<>();
 		int middle = contour.getTop() + (contour.getBottom() - contour.getTop()) / 2;
@@ -44,15 +44,21 @@ public class TilesDetector {
 				bottomContours.add(child);
 			}
 		}
-		return new Tile(countPoints(topContours), countPoints(bottomContours));
+		return new Tile(countPoints(topContours, combinedPoints), countPoints(bottomContours, combinedPoints));
 	}
 
-	private int countPoints(List<Contour> contours) {
+	private int countPoints(List<Contour> contours, boolean combinedPoints) {
 		int count = 0;
 		for (Contour contour : contours) {
 			int max = Math.max(contour.getBottom() - contour.getTop(), contour.getRight() - contour.getLeft()) + 1;
 			int min = Math.min(contour.getBottom() - contour.getTop(), contour.getRight() - contour.getLeft()) + 1;
-			count += Math.round((double) max / min);
+			if (combinedPoints) {
+				count += Math.round((double) max / min);
+			} else {
+				if (Math.abs(max - min) <= 1) {
+					count++;
+				}
+			}
 		}
 		return count;
 	}

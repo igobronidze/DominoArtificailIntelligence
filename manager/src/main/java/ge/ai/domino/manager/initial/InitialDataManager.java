@@ -87,7 +87,8 @@ public class InitialDataManager {
                 .marginBottomPercentage(5)
                 .marginLeftPercentage(15)
                 .widthPercentage(70)
-                .blurCoefficient(3);
+                .blurCoefficient(3)
+                .combinedPoints(true);
     }
 
     private int initGame() {

@@ -41,6 +41,10 @@ public class TilesDetectorManager {
 
     private static final int BLUR_COEFFICIENT = 3;
 
+    private static final String COMBINE_POINTS_KEY = "combinePoints";
+
+    private static final boolean COMBINE_POINTS = true;
+
     public static final String TMP_IMAGE_EXTENSION = ".png";
 
     private static final String SECOND_PARAM_SUFFIX = "_2";
@@ -76,17 +80,19 @@ public class TilesDetectorManager {
         Map<String, String> params = channel.getParams();
 
         int contourMinArea = params.containsKey(CONTOUR_MIN_AREA_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
-                ? Integer.valueOf(params.get(CONTOUR_MIN_AREA_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : CONTOUR_MIN_AREA;
+                ? Integer.parseInt(params.get(CONTOUR_MIN_AREA_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : CONTOUR_MIN_AREA;
         double heightPercentage = params.containsKey(TILES_HEIGHT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
-                ? Double.valueOf(params.get(TILES_HEIGHT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_HEIGHT_PERCENTAGE;
+                ? Double.parseDouble(params.get(TILES_HEIGHT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_HEIGHT_PERCENTAGE;
         double marginBottomPercentage = params.containsKey(TILES_MARGIN_BOTTOM_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
-                ? Double.valueOf(params.get(TILES_MARGIN_BOTTOM_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_MARGIN_BOTTOM_PERCENTAGE;
+                ? Double.parseDouble(params.get(TILES_MARGIN_BOTTOM_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_MARGIN_BOTTOM_PERCENTAGE;
         double marginLeftPercentage = params.containsKey(TILES_MARGIN_LEFT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
-                ? Double.valueOf(params.get(TILES_MARGIN_LEFT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_MARGIN_LEFT_PERCENTAGE;
+                ? Double.parseDouble(params.get(TILES_MARGIN_LEFT_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_MARGIN_LEFT_PERCENTAGE;
         double widthPercentage = params.containsKey(TILES_WIDTH_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
-                ? Double.valueOf(params.get(TILES_WIDTH_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_WIDTH_PERCENTAGE;
+                ? Double.parseDouble(params.get(TILES_WIDTH_PERCENTAGE_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : TILES_WIDTH_PERCENTAGE;
         int blurCoefficient = params.containsKey(BLUR_COEFFICIENT_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
-                ? Integer.valueOf(params.get(BLUR_COEFFICIENT_KEY  + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : BLUR_COEFFICIENT;
+                ? Integer.parseInt(params.get(BLUR_COEFFICIENT_KEY  + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : BLUR_COEFFICIENT;
+        boolean combinedPoints = params.containsKey(COMBINE_POINTS_KEY + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))
+                ? Boolean.parseBoolean(params.get(COMBINE_POINTS_KEY  + (withSecondParams ? SECOND_PARAM_SUFFIX : ""))) : COMBINE_POINTS;
 
         return new TilesDetectorParams()
                 .contourMinArea(contourMinArea)
@@ -94,7 +100,8 @@ public class TilesDetectorManager {
                 .marginBottomPercentage(marginBottomPercentage)
                 .marginLeftPercentage(marginLeftPercentage)
                 .widthPercentage(widthPercentage)
-                .blurCoefficient(blurCoefficient);
+                .blurCoefficient(blurCoefficient)
+                .combinedPoints(combinedPoints);
     }
 
     private List<Tile> balanceTiles(List<Tile> tiles) {

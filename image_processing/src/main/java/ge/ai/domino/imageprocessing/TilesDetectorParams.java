@@ -17,6 +17,8 @@ public class TilesDetectorParams {
 
 	private int blurCoefficient;
 
+	private boolean combinedPoints;
+
 	public TilesDetectorParams heightPercentage(double heightPercentage) {
 		this.heightPercentage = heightPercentage;
 		return this;
@@ -44,6 +46,11 @@ public class TilesDetectorParams {
 
 	public TilesDetectorParams blurCoefficient(int blurCoefficient) {
 		this.blurCoefficient = blurCoefficient;
+		return this;
+	}
+
+	public TilesDetectorParams combinedPoints(boolean combinedPoints) {
+		this.combinedPoints = combinedPoints;
 		return this;
 	}
 }

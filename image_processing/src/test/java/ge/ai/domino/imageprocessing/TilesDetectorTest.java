@@ -196,7 +196,8 @@ public class TilesDetectorTest {
 		initLiderbetExpectedTiles3(index++);
 		initLiderbetExpectedTiles4(index++);
 		initLiderbetExpectedTiles5(index++);
-		initLiderbetExpectedTiles6(index);
+		initLiderbetExpectedTiles6(index++);
+		initLiderbetExpectedTiles7(index);
 	}
 
 	private static void initLiderbetExpectedTiles1(int index) {
@@ -264,6 +265,20 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(0, 1));
 		expectedTiles.add(new Tile(2, 3));
 		expectedTiles.add(new Tile(2, 2));
+		liderbetExpectedTilesMap.put(index, expectedTiles);
+	}
+
+	private static void initLiderbetExpectedTiles7(int index) {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(0, 2));
+		expectedTiles.add(new Tile(3, 4));
+		expectedTiles.add(new Tile(6, 6));
+		expectedTiles.add(new Tile(1, 4));
+		expectedTiles.add(new Tile(1, 2));
+		expectedTiles.add(new Tile(3, 5));
+		expectedTiles.add(new Tile(2, 5));
+		expectedTiles.add(new Tile(4, 5));
+		expectedTiles.add(new Tile(1, 1));
 		liderbetExpectedTilesMap.put(index, expectedTiles);
 	}
 }

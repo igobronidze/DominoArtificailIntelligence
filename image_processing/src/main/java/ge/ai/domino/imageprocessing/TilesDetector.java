@@ -55,7 +55,7 @@ public class TilesDetector {
 			if (combinedPoints) {
 				count += Math.round((double) max / min);
 			} else {
-				if (Math.abs(max - min) <= 1) {
+				if (Math.abs(max - min) <= 2) {
 					count++;
 				}
 			}

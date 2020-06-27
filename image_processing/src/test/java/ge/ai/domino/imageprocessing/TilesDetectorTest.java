@@ -60,7 +60,7 @@ public class TilesDetectorTest {
 			List<Tile> expectedTiles = liderbetExpectedTilesMap.get(entry.getKey());
 			Assert.assertEquals(expectedTiles.size(), resultTiles.size());
 			for (int i = 0; i < expectedTiles.size() ; i++) {
-				Assert.assertEquals(expectedTiles.get(i), resultTiles.get(i));
+				Assert.assertEquals("Problem occurred for image " + entry.getKey(), expectedTiles.get(i), resultTiles.get(i));
 			}
 		}
 	}
@@ -196,7 +196,8 @@ public class TilesDetectorTest {
 		initLiderbetExpectedTiles5(index++);
 		initLiderbetExpectedTiles6(index++);
 		initLiderbetExpectedTiles7(index++);
-		initLiderbetExpectedTiles8(index);
+		initLiderbetExpectedTiles8(index++);
+		initLiderbetExpectedTiles9(index);
 	}
 
 	private static void initLiderbetExpectedTiles1(int index) {
@@ -294,6 +295,20 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(5, 5));
 		expectedTiles.add(new Tile(2, 4));
 		expectedTiles.add(new Tile(0, 6));
+		liderbetExpectedTilesMap.put(index, expectedTiles);
+	}
+
+	private static void initLiderbetExpectedTiles9(int index) {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(1, 6));
+		expectedTiles.add(new Tile(0, 3));
+		expectedTiles.add(new Tile(2, 5));
+		expectedTiles.add(new Tile(4, 6));
+		expectedTiles.add(new Tile(0, 6));
+		expectedTiles.add(new Tile(3, 3));
+		expectedTiles.add(new Tile(0, 5));
+		expectedTiles.add(new Tile(6, 6));
+		expectedTiles.add(new Tile(0, 4));
 		liderbetExpectedTilesMap.put(index, expectedTiles);
 	}
 }

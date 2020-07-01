@@ -28,7 +28,7 @@ import java.util.List;
 
 public class GroupedPlayedGamePane extends BorderPane {
 
-    private static final int COLUMN_COUNT = 10;
+    private static final int COLUMN_COUNT = 11;
 
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
@@ -89,14 +89,15 @@ public class GroupedPlayedGamePane extends BorderPane {
         TableColumn<GroupedPlayedGameProperty, Boolean> opponentNameColumn = getOpponentNameColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> channelColumn = getChannelColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> levelColumn = getLevelColumn();
+        TableColumn<GroupedPlayedGameProperty, Boolean> finishedColumn = getFinishedColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentColumn = getWinPercentColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> losePercentColumn = getLosePercentColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> stoppedColumn = getStoppedColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentForFinishedColumn = getWinPercentForFinishedColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> profitColumn = getProfitColumn();
 
-        tableView.getColumns().addAll(Arrays.asList(versionColumn, pointForWinColumn, opponentNameColumn,
-                channelColumn, levelColumn, winPercentColumn, losePercentColumn, stoppedColumn, winPercentForFinishedColumn, profitColumn));
+        tableView.getColumns().addAll(Arrays.asList(versionColumn, pointForWinColumn, opponentNameColumn, channelColumn, levelColumn,
+                finishedColumn, winPercentColumn, losePercentColumn, stoppedColumn, winPercentForFinishedColumn, profitColumn));
         this.setCenter(tableView);
     }
 
@@ -131,6 +132,13 @@ public class GroupedPlayedGamePane extends BorderPane {
     private TableColumn<GroupedPlayedGameProperty, Boolean> getWinPercentColumn() {
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentColumn = new TableColumn<>(Messages.get("winPercent"));
         winPercentColumn.setCellValueFactory(new PropertyValueFactory<>("winPercent"));
+        winPercentColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return winPercentColumn;
+    }
+
+    private TableColumn<GroupedPlayedGameProperty, Boolean> getFinishedColumn() {
+        TableColumn<GroupedPlayedGameProperty, Boolean> winPercentColumn = new TableColumn<>(Messages.get("finished"));
+        winPercentColumn.setCellValueFactory(new PropertyValueFactory<>("finished"));
         winPercentColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         return winPercentColumn;
     }

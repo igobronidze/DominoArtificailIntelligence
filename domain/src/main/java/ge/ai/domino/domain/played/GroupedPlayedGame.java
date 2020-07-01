@@ -18,6 +18,8 @@ public class GroupedPlayedGame {
 
     private Integer level;
 
+    private int finished;
+
     private int win;
 
     private int lose;

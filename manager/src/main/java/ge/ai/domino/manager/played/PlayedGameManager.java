@@ -57,6 +57,8 @@ public class PlayedGameManager {
 
     public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
         List<GroupedPlayedGame> groupedPlayedGames = playedGameDAO.getGroupedPlayedGames(version, groupByVersion, groupByOpponentName, groupByChannel, groupedByPointForWin, groupByLevel);
+
+        groupedPlayedGames.forEach(groupedPlayedGame -> groupedPlayedGame.setFinished(getFinishedAmount(groupedPlayedGame)));
         if (groupByChannel && groupByLevel) {
             groupedPlayedGames.forEach(groupedPlayedGame -> groupedPlayedGame.setProfit(getProfit(groupedPlayedGame)));
         }
@@ -107,6 +109,10 @@ public class PlayedGameManager {
 
     public void updateGameInfo(GameInfo gameInfo) {
         playedGameDAO.updateGameInfo(gameInfo);
+    }
+
+    private int getFinishedAmount(GroupedPlayedGame groupedPlayedGame) {
+        return groupedPlayedGame.getWin() + groupedPlayedGame.getLose();
     }
 
     private double getProfit(GroupedPlayedGame groupedPlayedGame) {

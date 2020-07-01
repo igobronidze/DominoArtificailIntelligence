@@ -2,6 +2,7 @@ package ge.ai.domino.console.ui.played;
 
 import ge.ai.domino.domain.played.GroupedPlayedGame;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.text.DecimalFormat;
@@ -18,6 +19,8 @@ public class GroupedPlayedGameProperty {
     private final SimpleStringProperty opponentName;
 
     private final SimpleStringProperty channel;
+
+    private final SimpleIntegerProperty finished;
 
     private final SimpleStringProperty winPercent;
 
@@ -36,6 +39,7 @@ public class GroupedPlayedGameProperty {
         pointForWin = new SimpleStringProperty(game.getPointForWin() == null ? "" : "" + game.getPointForWin());
         opponentName = new SimpleStringProperty(game.getOpponentName());
         channel = new SimpleStringProperty(game.getChannel() == null ? "" : game.getChannel().getName());
+        finished = new SimpleIntegerProperty(game.getFinished());
         int sum = game.getWin() + game.getLose() + game.getStopped();
         winPercent = new SimpleStringProperty("" + game.getWin() + " (" + formatter.format((double)game.getWin() / sum * 100) + "%)");
         losePercent = new SimpleStringProperty("" + game.getLose() + " (" + formatter.format((double)game.getLose() / sum * 100) + "%)");
@@ -75,6 +79,14 @@ public class GroupedPlayedGameProperty {
 
     public void setChannel(String channel) {
         this.channel.set(channel);
+    }
+
+    public Integer getFinished() {
+        return finished.get();
+    }
+
+    public void setFinished(Integer finished) {
+        this.finished.set(finished);
     }
 
     public String getWinPercent() {

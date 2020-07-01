@@ -24,6 +24,10 @@ import java.util.List;
 
 public class PlayedGameManager {
 
+    private static final String PROFIT_RATE_PARAM_KEY = "profitRate";
+
+    private static final String DEFAULT_PROFIT_KEY = "0.0";
+
     private final PlayedGameDAO playedGameDAO = new PlayedGameDAOImpl();
 
     private final OpponentPlayDAO opponentPlayDAO = new OpponentPlayDAOImpl();
@@ -52,7 +56,11 @@ public class PlayedGameManager {
     }
 
     public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
-        return playedGameDAO.getGroupedPlayedGames(version, groupByVersion, groupByOpponentName, groupByChannel, groupedByPointForWin, groupByLevel);
+        List<GroupedPlayedGame> groupedPlayedGames = playedGameDAO.getGroupedPlayedGames(version, groupByVersion, groupByOpponentName, groupByChannel, groupedByPointForWin, groupByLevel);
+        if (groupByChannel && groupByLevel) {
+            groupedPlayedGames.forEach(groupedPlayedGame -> groupedPlayedGame.setProfit(getProfit(groupedPlayedGame)));
+        }
+        return groupedPlayedGames;
     }
 
     public void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays, boolean specifyWinner) {
@@ -99,6 +107,15 @@ public class PlayedGameManager {
 
     public void updateGameInfo(GameInfo gameInfo) {
         playedGameDAO.updateGameInfo(gameInfo);
+    }
+
+    private double getProfit(GroupedPlayedGame groupedPlayedGame) {
+        String profitRateStr = groupedPlayedGame.getChannel().getParams().getOrDefault(PROFIT_RATE_PARAM_KEY, DEFAULT_PROFIT_KEY);
+        double profitRate = Double.parseDouble(profitRateStr);
+
+        double minus = groupedPlayedGame.getLose();
+        double plus = profitRate * groupedPlayedGame.getWin();
+        return (plus - minus) * groupedPlayedGame.getLevel();
     }
 
     private List<OpponentPlay> removeExtraPlays(List<OpponentPlay> opponentPlays) {

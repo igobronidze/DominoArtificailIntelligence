@@ -1,6 +1,7 @@
 package ge.ai.domino.console.ui.played;
 
 import ge.ai.domino.domain.played.GroupedPlayedGame;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.text.DecimalFormat;
@@ -8,25 +9,27 @@ import java.text.NumberFormat;
 
 public class GroupedPlayedGameProperty {
 
-    private final NumberFormat formatter = new DecimalFormat("#0.0000");
+    private static final NumberFormat formatter = new DecimalFormat("#0.0000");
 
-    private SimpleStringProperty version;
+    private final SimpleStringProperty version;
 
-    private SimpleStringProperty pointForWin;
+    private final SimpleStringProperty pointForWin;
 
-    private SimpleStringProperty opponentName;
+    private final SimpleStringProperty opponentName;
 
-    private SimpleStringProperty channel;
+    private final SimpleStringProperty channel;
 
-    private SimpleStringProperty winPercent;
+    private final SimpleStringProperty winPercent;
 
-    private SimpleStringProperty losePercent;
+    private final SimpleStringProperty losePercent;
 
-    private SimpleStringProperty stoppedPercent;
+    private final SimpleStringProperty stoppedPercent;
 
-    private SimpleStringProperty winPercentForFinished;
+    private final SimpleStringProperty winPercentForFinished;
 
-    private SimpleStringProperty level;
+    private final SimpleStringProperty level;
+
+    private final SimpleDoubleProperty profit;
 
     GroupedPlayedGameProperty(GroupedPlayedGame game) {
         version = new SimpleStringProperty(game.getVersion());
@@ -39,6 +42,7 @@ public class GroupedPlayedGameProperty {
         stoppedPercent = new SimpleStringProperty("" + game.getStopped() + " (" + formatter.format((double)game.getStopped() / sum * 100) + "%)");
         winPercentForFinished = new SimpleStringProperty("" + formatter.format((double)game.getWin() / (game.getWin() + game.getLose()) * 100) + "%");
         level = new SimpleStringProperty(game.getLevel() == null ? "" : "" + game.getLevel());
+        profit = new SimpleDoubleProperty(game.getProfit() == null ? 0.0 : game.getProfit());
     }
 
     public String getVersion() {
@@ -111,5 +115,13 @@ public class GroupedPlayedGameProperty {
 
     public void setLevel(String level) {
         this.winPercentForFinished.set(level);
+    }
+
+    public Double getProfit() {
+        return profit.get();
+    }
+
+    public void setProfit(Double profit) {
+        this.profit.set(profit);
     }
 }

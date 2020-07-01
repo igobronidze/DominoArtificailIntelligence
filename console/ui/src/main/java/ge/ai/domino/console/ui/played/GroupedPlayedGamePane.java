@@ -28,7 +28,7 @@ import java.util.List;
 
 public class GroupedPlayedGamePane extends BorderPane {
 
-    private static final int COLUMN_COUNT = 9;
+    private static final int COLUMN_COUNT = 10;
 
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
@@ -93,17 +93,24 @@ public class GroupedPlayedGamePane extends BorderPane {
         TableColumn<GroupedPlayedGameProperty, Boolean> losePercentColumn = getLosePercentColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> stoppedColumn = getStoppedColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentForFinishedColumn = getWinPercentForFinishedColumn();
+        TableColumn<GroupedPlayedGameProperty, Boolean> profitColumn = getProfitColumn();
 
         tableView.getColumns().addAll(Arrays.asList(versionColumn, pointForWinColumn, opponentNameColumn,
-                channelColumn, levelColumn, winPercentColumn, losePercentColumn, stoppedColumn, winPercentForFinishedColumn));
+                channelColumn, levelColumn, winPercentColumn, losePercentColumn, stoppedColumn, winPercentForFinishedColumn, profitColumn));
         this.setCenter(tableView);
     }
 
+    private TableColumn<GroupedPlayedGameProperty, Boolean> getProfitColumn() {
+        TableColumn<GroupedPlayedGameProperty, Boolean> versionColumn = new TableColumn<>(Messages.get("profit"));
+        versionColumn.setCellValueFactory(new PropertyValueFactory<>("profit"));
+        versionColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return versionColumn;
+    }
 
     private TableColumn<GroupedPlayedGameProperty, Boolean> getWinPercentForFinishedColumn() {
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentForFinishedColumn = new TableColumn<>(Messages.get("winPercentForFinished"));
         winPercentForFinishedColumn.setCellValueFactory(new PropertyValueFactory<>("winPercentForFinished"));
-        winPercentForFinishedColumn.prefWidthProperty().bind(doubleBinding.divide(8));
+        winPercentForFinishedColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         return winPercentForFinishedColumn;
     }
 

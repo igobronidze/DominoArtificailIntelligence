@@ -23,4 +23,6 @@ public class GroupedPlayedGame {
     private int lose;
 
     private int stopped;
+
+    private Double profit;
 }

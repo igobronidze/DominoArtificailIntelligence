@@ -18,15 +18,17 @@ import ge.ai.domino.domain.played.PlayedGame;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class PlayedGameManager {
 
-    private static final String PROFIT_RATE_PARAM_KEY = "profitRate";
+    private static final String COMMISSION_PARAM_KEY = "commission";
 
-    private static final String DEFAULT_PROFIT_KEY = "0.0";
+    private static final String DEFAULT_COMMISSION = "0.0";
 
     private final PlayedGameDAO playedGameDAO = new PlayedGameDAOImpl();
 
@@ -116,12 +118,17 @@ public class PlayedGameManager {
     }
 
     private double getProfit(GroupedPlayedGame groupedPlayedGame) {
-        String profitRateStr = groupedPlayedGame.getChannel().getParams().getOrDefault(PROFIT_RATE_PARAM_KEY, DEFAULT_PROFIT_KEY);
-        double profitRate = Double.parseDouble(profitRateStr);
+        String commissionStr = groupedPlayedGame.getChannel().getParams().getOrDefault(COMMISSION_PARAM_KEY, DEFAULT_COMMISSION);
+        BigDecimal commission = new BigDecimal(commissionStr);
 
-        double minus = groupedPlayedGame.getLose();
-        double plus = profitRate * groupedPlayedGame.getWin();
-        return (plus - minus) * groupedPlayedGame.getLevel();
+        double minus = groupedPlayedGame.getLose() * groupedPlayedGame.getLevel();
+        double plus = groupedPlayedGame.getWin() * groupedPlayedGame.getLevel();
+        BigDecimal commissionMinus = new BigDecimal(Double.toString(groupedPlayedGame.getLevel() * 2))
+                .multiply(commission)
+                .divide(new BigDecimal(100), 2, RoundingMode.UP)
+                .multiply(new BigDecimal(Double.toString(groupedPlayedGame.getWin())));
+
+        return plus - minus - commissionMinus.doubleValue();
     }
 
     private List<OpponentPlay> removeExtraPlays(List<OpponentPlay> opponentPlays) {

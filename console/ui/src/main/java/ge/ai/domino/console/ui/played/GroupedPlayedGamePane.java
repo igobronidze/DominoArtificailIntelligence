@@ -40,8 +40,6 @@ public class GroupedPlayedGamePane extends BorderPane {
 
     private TCHCheckBox groupByVersionCheckBox;
 
-    private TCHCheckBox groupByOpponentNameCheckBox;
-
     private TCHCheckBox groupByChannelCheckBox;
 
     private TCHCheckBox groupByPointForWinCheckBox;
@@ -65,7 +63,6 @@ public class GroupedPlayedGamePane extends BorderPane {
 
         groupByVersionCheckBox = new TCHCheckBox(Messages.get("groupByVersion"));
         groupByVersionCheckBox.setSelected(true);
-        groupByOpponentNameCheckBox = new TCHCheckBox(Messages.get("groupByOpponentName"));
         groupByChannelCheckBox = new TCHCheckBox(Messages.get("groupByChannel"));
         groupByPointForWinCheckBox = new TCHCheckBox(Messages.get("groupByPointForWin"));
         groupByLevelCheckBox = new TCHCheckBox(Messages.get("groupByLevel"));
@@ -76,7 +73,7 @@ public class GroupedPlayedGamePane extends BorderPane {
         flowPane.setVgap(10);
         flowPane.setHgap(10);
         flowPane.setPadding(new Insets(15));
-        flowPane.getChildren().addAll(versionField, groupByVersionCheckBox, groupByOpponentNameCheckBox, groupByChannelCheckBox, groupByPointForWinCheckBox, groupByLevelCheckBox, searchButton);
+        flowPane.getChildren().addAll(versionField, groupByVersionCheckBox, groupByChannelCheckBox, groupByPointForWinCheckBox, groupByLevelCheckBox, searchButton);
         this.setTop(flowPane);
     }
 
@@ -86,7 +83,6 @@ public class GroupedPlayedGamePane extends BorderPane {
 
         TableColumn<GroupedPlayedGameProperty, Boolean> versionColumn = getVersionColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> pointForWinColumn = getPointForWinColumn();
-        TableColumn<GroupedPlayedGameProperty, Boolean> opponentNameColumn = getOpponentNameColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> channelColumn = getChannelColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> levelColumn = getLevelColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> finishedColumn = getFinishedColumn();
@@ -96,7 +92,7 @@ public class GroupedPlayedGamePane extends BorderPane {
         TableColumn<GroupedPlayedGameProperty, Boolean> winPercentForFinishedColumn = getWinPercentForFinishedColumn();
         TableColumn<GroupedPlayedGameProperty, Boolean> profitColumn = getProfitColumn();
 
-        tableView.getColumns().addAll(Arrays.asList(versionColumn, pointForWinColumn, opponentNameColumn, channelColumn, levelColumn,
+        tableView.getColumns().addAll(Arrays.asList(versionColumn, pointForWinColumn, channelColumn, levelColumn,
                 finishedColumn, winPercentColumn, losePercentColumn, stoppedColumn, winPercentForFinishedColumn, profitColumn));
         this.setCenter(tableView);
     }
@@ -157,13 +153,6 @@ public class GroupedPlayedGamePane extends BorderPane {
         return channelColumn;
     }
 
-    private TableColumn<GroupedPlayedGameProperty, Boolean> getOpponentNameColumn() {
-        TableColumn<GroupedPlayedGameProperty, Boolean> opponentNameColumn = new TableColumn<>(Messages.get("opponentName"));
-        opponentNameColumn.setCellValueFactory(new PropertyValueFactory<>("opponentName"));
-        opponentNameColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        return opponentNameColumn;
-    }
-
     private TableColumn<GroupedPlayedGameProperty, Boolean> getPointForWinColumn() {
         TableColumn<GroupedPlayedGameProperty, Boolean> pointForWinColumn = new TableColumn<>(Messages.get("pointForWin"));
         pointForWinColumn.setCellValueFactory(new PropertyValueFactory<>("pointForWin"));
@@ -180,7 +169,7 @@ public class GroupedPlayedGamePane extends BorderPane {
 
     private void loadPlayedGames() {
         List<GroupedPlayedGame> games = new ArrayList<>();
-        new ServiceExecutor() {}.execute(() -> games.addAll(playedGameService.getGroupedPlayedGames(versionField.getText(), groupByVersionCheckBox.isSelected(), groupByOpponentNameCheckBox.isSelected(),
+        new ServiceExecutor() {}.execute(() -> games.addAll(playedGameService.getGroupedPlayedGames(versionField.getText(), groupByVersionCheckBox.isSelected(),
                 groupByChannelCheckBox.isSelected(), groupByPointForWinCheckBox.isSelected(), groupByLevelCheckBox.isSelected())));
 
         List<GroupedPlayedGameProperty> groupedPlayedGameProperties = new ArrayList<>();

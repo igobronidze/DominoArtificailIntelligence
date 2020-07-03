@@ -16,8 +16,6 @@ public class GroupedPlayedGameProperty {
 
     private final SimpleStringProperty pointForWin;
 
-    private final SimpleStringProperty opponentName;
-
     private final SimpleStringProperty channel;
 
     private final SimpleIntegerProperty finished;
@@ -37,7 +35,6 @@ public class GroupedPlayedGameProperty {
     GroupedPlayedGameProperty(GroupedPlayedGame game) {
         version = new SimpleStringProperty(game.getVersion());
         pointForWin = new SimpleStringProperty(game.getPointForWin() == null ? "" : "" + game.getPointForWin());
-        opponentName = new SimpleStringProperty(game.getOpponentName());
         channel = new SimpleStringProperty(game.getChannel() == null ? "" : game.getChannel().getName());
         finished = new SimpleIntegerProperty(game.getFinished());
         int sum = game.getWin() + game.getLose() + game.getStopped();
@@ -63,14 +60,6 @@ public class GroupedPlayedGameProperty {
 
     public void setPointForWin(String pointForWin) {
         this.pointForWin.set(pointForWin);
-    }
-
-    public String getOpponentName() {
-        return opponentName.get();
-    }
-
-    public void setOpponentName(String opponentName) {
-        this.opponentName.set(opponentName);
     }
 
     public String getChannel() {

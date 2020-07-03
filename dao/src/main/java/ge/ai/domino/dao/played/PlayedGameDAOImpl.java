@@ -218,7 +218,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
+    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
         List<Channel> channels = channelDAO.getChannels();
         Map<Integer, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getId, channel -> channel));
 
@@ -228,10 +228,6 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             boolean first = true;
             if (groupByVersion) {
                 sb.append(VERSION_COLUMN_NAME);
-                first = false;
-            }
-            if (groupByOpponentName) {
-                QueryUtil.addParameter(sb, OPPONENT_NAME_COLUMN_NAME, !first);
                 first = false;
             }
             if (groupByChannel) {
@@ -263,14 +259,6 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 sb.append("GROUP BY ").append(VERSION_COLUMN_NAME);
                 first = false;
             }
-            if (groupByOpponentName) {
-                if (!first) {
-                    sb.append(", ").append(OPPONENT_NAME_COLUMN_NAME);
-                } else {
-                    sb.append("GROUP BY ").append(OPPONENT_NAME_COLUMN_NAME);
-                }
-                first = false;
-            }
             if (groupByChannel) {
                 if (!first) {
                     sb.append(", ").append(CHANNEL_ID_COLUMN_NAME);
@@ -297,8 +285,6 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 sb.append(" ORDER BY " + VERSION_COLUMN_NAME);
             } else if (groupedByPointForWin) {
                 sb.append(" ORDER BY " + POINT_FOR_WIN_COLUMN_NAME);
-            } else if (groupByOpponentName) {
-                sb.append(" ORDER BY " + OPPONENT_NAME_COLUMN_NAME);
             } else if (groupByChannel) {
                 sb.append(" ORDER BY " + CHANNEL_ID_COLUMN_NAME);
             }
@@ -308,9 +294,6 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 GroupedPlayedGame game = new GroupedPlayedGame();
                 if (groupByVersion) {
                     game.setVersion(rs.getString(VERSION_COLUMN_NAME));
-                }
-                if (groupByOpponentName) {
-                    game.setOpponentName(rs.getString(OPPONENT_NAME_COLUMN_NAME));
                 }
                 if (groupByChannel) {
                     game.setChannel(channelsMap.get(rs.getInt(CHANNEL_ID_COLUMN_NAME)));

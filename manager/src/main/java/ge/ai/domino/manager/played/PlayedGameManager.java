@@ -57,8 +57,8 @@ public class PlayedGameManager {
         return playedGameDAO.getGameProperties(gameId);
     }
 
-    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
-        List<GroupedPlayedGame> groupedPlayedGames = playedGameDAO.getGroupedPlayedGames(version, groupByVersion, groupByOpponentName, groupByChannel, groupedByPointForWin, groupByLevel);
+    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
+        List<GroupedPlayedGame> groupedPlayedGames = playedGameDAO.getGroupedPlayedGames(version, groupByVersion, groupByChannel, groupedByPointForWin, groupByLevel);
 
         groupedPlayedGames.forEach(groupedPlayedGame -> groupedPlayedGame.setFinished(getFinishedAmount(groupedPlayedGame)));
         if (groupByChannel && groupByLevel) {

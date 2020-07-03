@@ -12,7 +12,7 @@ public interface PlayedGameService {
 
     List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId, String level) throws DAIException;
 
-    List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel,
+    List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByChannel,
                                                   boolean groupedByPointForWin, boolean groupByLevel) throws DAIException;
 
     void finishGame(int gameId, boolean saveGame, boolean saveOpponentPlays, boolean specifyWinner) throws DAIException;

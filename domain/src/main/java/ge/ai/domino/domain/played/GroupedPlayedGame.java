@@ -10,8 +10,6 @@ public class GroupedPlayedGame {
 
     private String version;
 
-    private String opponentName;
-
     private Channel channel;
 
     private Integer pointForWin;

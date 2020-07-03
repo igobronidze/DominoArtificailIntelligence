@@ -18,8 +18,8 @@ public class PlayedGameServiceImpl implements PlayedGameService {
     }
 
     @Override
-    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByOpponentName, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
-        return playedGameManager.getGroupedPlayedGames(version, groupByVersion, groupByOpponentName, groupByChannel, groupedByPointForWin, groupByLevel);
+    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
+        return playedGameManager.getGroupedPlayedGames(version, groupByVersion, groupByChannel, groupedByPointForWin, groupByLevel);
     }
 
     @Override

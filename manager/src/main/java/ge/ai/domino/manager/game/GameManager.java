@@ -2,12 +2,7 @@ package ge.ai.domino.manager.game;
 
 import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
-import ge.ai.domino.domain.game.Game;
-import ge.ai.domino.domain.game.GameInitialData;
-import ge.ai.domino.domain.game.GameProperties;
-import ge.ai.domino.domain.game.Round;
-import ge.ai.domino.domain.game.TableInfo;
-import ge.ai.domino.domain.game.Tile;
+import ge.ai.domino.domain.game.*;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.game.opponentplay.OpponentTile;
 import ge.ai.domino.domain.game.opponentplay.OpponentTilesWrapper;
@@ -23,11 +18,7 @@ import ge.ai.domino.manager.game.helper.play.GameOperations;
 import ge.ai.domino.manager.game.helper.play.MoveHelper;
 import ge.ai.domino.manager.game.logging.GameLogger;
 import ge.ai.domino.manager.game.logging.RoundLogger;
-import ge.ai.domino.manager.game.move.AddForMeProcessor;
-import ge.ai.domino.manager.game.move.AddForOpponentProcessor;
-import ge.ai.domino.manager.game.move.MoveProcessor;
-import ge.ai.domino.manager.game.move.PlayForMeProcessor;
-import ge.ai.domino.manager.game.move.PlayForOpponentProcessor;
+import ge.ai.domino.manager.game.move.*;
 import ge.ai.domino.manager.game.validator.MoveValidator;
 import ge.ai.domino.manager.game.validator.OpponentTilesValidator;
 import ge.ai.domino.manager.imageprocessing.TilesDetectorManager;
@@ -39,17 +30,9 @@ import org.apache.log4j.Logger;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GameManager {
@@ -271,6 +254,10 @@ public class GameManager {
         return GameOperations.isRoundBlocked(round);
     }
 
+    public Map<Tile, Integer> getTilesOrder(int gameId) {
+        return CachedGames.getTilesOrder(gameId);
+    }
+
     private void logImage(BufferedImage image) throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss");
 
@@ -281,18 +268,6 @@ public class GameManager {
 
         File outputfile = new File(destPath);
         ImageIO.write(image, "jpg", outputfile);
-    }
-
-    private void copyFiles(File source, File dest) {
-        try (InputStream is = new FileInputStream(source); OutputStream os = new FileOutputStream(dest);){
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = is.read(buffer)) > 0) {
-                os.write(buffer, 0, length);
-            }
-        } catch (Exception ex) {
-            logger.error("Can't copy image", ex);
-        }
     }
 
     private void checkMinMaxInProgress(int gameId) throws DAIException {

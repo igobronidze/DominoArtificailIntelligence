@@ -48,6 +48,7 @@ public class AddForMeProcessor extends MoveProcessor {
 		// Add for me
 		Tile tile = new Tile(move.getLeft(), move.getRight());
 		round.getMyTiles().add(tile);
+		CachedGames.addTileForOrder(gameId, tile);
 
 		// Delete for opponent and produce probability
 		Map<Tile, Double> opponentTiles = round.getOpponentTiles();

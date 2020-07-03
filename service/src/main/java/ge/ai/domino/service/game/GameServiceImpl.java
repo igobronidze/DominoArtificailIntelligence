@@ -3,8 +3,11 @@ package ge.ai.domino.service.game;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.manager.game.GameManager;
+
+import java.util.Map;
 
 public class GameServiceImpl implements GameService {
 
@@ -78,5 +81,10 @@ public class GameServiceImpl implements GameService {
     @Override
     public boolean roundWillBeBlocked(int gameId, Move move) {
         return gameManager.roundWillBeBlocked(gameId, move);
+    }
+
+    @Override
+    public Map<Tile, Integer> getTilesOrder(int gameId) {
+        return gameManager.getTilesOrder(gameId);
     }
 }

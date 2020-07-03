@@ -4,6 +4,7 @@ import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Game;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.GameHistory;
@@ -24,6 +25,8 @@ public class CachedGames {
 
     private static final Map<Integer, GameHistory> createdGameHistory = new HashMap<>();
 
+    private static final Map<Integer, Map<Tile, Integer>> tilesOrder = new HashMap<>();
+
     public static void addCreatedGameHistory(int gameId, GameHistory gameHistory) {
         createdGameHistory.put(gameId, gameHistory);
     }
@@ -38,10 +41,12 @@ public class CachedGames {
 
     public static void addGame(Game game) {
         cachedGames.put(game.getId(), game);
+        tilesOrder.put(game.getId(), new HashMap<>());
     }
 
     public static void removeGame(int gameId) {
         cachedGames.remove(gameId);
+        tilesOrder.remove(gameId);
     }
 
     public static GameProperties getGameProperties(int gameId) {
@@ -123,5 +128,17 @@ public class CachedGames {
 
     public static List<OpponentPlay> getOpponentPlays(int gameId) {
         return new ArrayList<>(cachedGames.get(gameId).getOpponentPlays());
+    }
+
+    public static Map<Tile, Integer> getTilesOrder(int gameId) {
+        return tilesOrder.get(gameId);
+    }
+
+    public static void addTileForOrder(int gameId, Tile tile) {
+        tilesOrder.get(gameId).put(tile, tilesOrder.get(gameId).size() + 1);
+    }
+
+    public static void clearTilesOrder(int gameId) {
+        tilesOrder.get(gameId).clear();
     }
 }

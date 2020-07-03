@@ -3,7 +3,10 @@ package ge.ai.domino.service.game;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
+import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
+
+import java.util.Map;
 
 public interface GameService {
 
@@ -34,4 +37,6 @@ public interface GameService {
     String getCurrentRoundInfoInString(int gameId) throws DAIException;
 
     boolean roundWillBeBlocked(int gameId, Move move) throws DAIException;
+
+    Map<Tile, Integer> getTilesOrder(int gameId);
 }

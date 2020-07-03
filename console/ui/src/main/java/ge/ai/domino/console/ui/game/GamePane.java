@@ -35,9 +35,7 @@ import javafx.scene.layout.VBox;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class GamePane extends BorderPane {
 
@@ -520,7 +518,8 @@ public abstract class GamePane extends BorderPane {
             }
         }
         hasPrediction = false;
-        AppController.round.getMyTiles().stream().filter(tile -> AppController.round.getMyTiles().contains(tile)).forEach(tile -> {
+        List<Tile> myTiles = getSortedTiles();
+        myTiles.forEach(tile -> {
             VBox vBox = new VBox();
             vBox.setAlignment(Pos.TOP_CENTER);
             ImageView imageView = getImageView(tile, AppController.round.getTableInfo().isMyMove());
@@ -545,6 +544,13 @@ public abstract class GamePane extends BorderPane {
         });
 
         flowPane.getChildren().addAll(leftArrow, upArrow, downArrow, rightArrow);
+    }
+
+    private List<Tile> getSortedTiles() {
+        Map<Tile, Integer> order = gameService.getTilesOrder(AppController.round.getGameInfo().getGameId());
+        List<Tile> tiles = new ArrayList<>(AppController.round.getMyTiles());
+        tiles.sort(Comparator.comparingInt(order::get));
+        return tiles;
     }
 
     private void initOpponentTilesComponents(FlowPane flowPane) {

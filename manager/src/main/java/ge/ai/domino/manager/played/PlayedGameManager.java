@@ -1,6 +1,8 @@
 package ge.ai.domino.manager.played;
 
 import ge.ai.domino.caching.game.CachedGames;
+import ge.ai.domino.common.params.playedgames.GetGroupedPlayedGamesParams;
+import ge.ai.domino.common.params.playedgames.GetPlayedGamesParams;
 import ge.ai.domino.dao.opponentplay.OpponentPlayDAO;
 import ge.ai.domino.dao.opponentplay.OpponentPlayDAOImpl;
 import ge.ai.domino.dao.played.PlayedGameDAO;
@@ -45,8 +47,8 @@ public class PlayedGameManager {
         return playedGameDAO.addPlayedGame(playedGame);
     }
 
-    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId, String level) {
-        return playedGameDAO.getPlayedGames(version, result, opponentName, channelId, level);
+    public List<PlayedGame> getPlayedGames(GetPlayedGamesParams params) {
+        return playedGameDAO.getPlayedGames(params);
     }
 
     public GameHistory getGameHistory(int gameId) throws DAIException {
@@ -57,11 +59,11 @@ public class PlayedGameManager {
         return playedGameDAO.getGameProperties(gameId);
     }
 
-    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
-        List<GroupedPlayedGame> groupedPlayedGames = playedGameDAO.getGroupedPlayedGames(version, groupByVersion, groupByChannel, groupedByPointForWin, groupByLevel);
+    public List<GroupedPlayedGame> getGroupedPlayedGames(GetGroupedPlayedGamesParams params) {
+        List<GroupedPlayedGame> groupedPlayedGames = playedGameDAO.getGroupedPlayedGames(params);
 
         groupedPlayedGames.forEach(groupedPlayedGame -> groupedPlayedGame.setFinished(getFinishedAmount(groupedPlayedGame)));
-        if (groupByChannel && groupByLevel) {
+        if (params.isGroupByChannel() && params.isGroupByChannel()) {
             groupedPlayedGames.forEach(groupedPlayedGame -> groupedPlayedGame.setProfit(getProfit(groupedPlayedGame)));
         }
         return groupedPlayedGames;

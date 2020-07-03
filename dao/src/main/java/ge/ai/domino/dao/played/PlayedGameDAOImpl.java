@@ -1,5 +1,7 @@
 package ge.ai.domino.dao.played;
 
+import ge.ai.domino.common.params.playedgames.GetGroupedPlayedGamesParams;
+import ge.ai.domino.common.params.playedgames.GetPlayedGamesParams;
 import ge.ai.domino.dao.channel.ChannelDAO;
 import ge.ai.domino.dao.channel.ChannelDAOImpl;
 import ge.ai.domino.dao.connection.ConnectionUtil;
@@ -17,6 +19,7 @@ import ge.ai.domino.util.string.StringUtil;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +28,9 @@ import java.util.stream.Collectors;
 
 public class PlayedGameDAOImpl implements PlayedGameDAO {
 
-    private Logger logger = Logger.getLogger(PlayedGameDAOImpl.class);
+    private static final Logger logger = Logger.getLogger(PlayedGameDAOImpl.class);
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private static final String PLAYED_GAME_TABLE_NAME = "played_game";
 
@@ -119,7 +124,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     }
 
     @Override
-    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId, String level) {
+    public List<PlayedGame> getPlayedGames(GetPlayedGamesParams params) {
         List<Channel> channels = channelDAO.getChannels();
         Map<Integer, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getId, channel -> channel));
 
@@ -128,24 +133,24 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             StringBuilder sql = new StringBuilder(String.format("SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s FROM %s WHERE 1 = 1 ",
                     ID_COLUMN_NAME, VERSION_COLUMN_NAME, RESULT_COLUMN_NAME, DATE_COLUMN_NAME, TIME_COLUMN_NAME, MY_POINT_COLUMN_NAME, OPPONENT_POINT_COLUMN_NAME,
                     POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, LEVEL_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
-            if (!StringUtil.isEmpty(version)) {
-                QueryUtil.addFilter(sql, VERSION_COLUMN_NAME, version, FilterCondition.EQUAL, true);
+            if (!StringUtil.isEmpty(params.getVersion())) {
+                QueryUtil.addFilter(sql, VERSION_COLUMN_NAME, params.getVersion(), FilterCondition.EQUAL, true);
             }
-            if (result != null) {
-                QueryUtil.addFilter(sql, RESULT_COLUMN_NAME, result.name(), FilterCondition.EQUAL, true);
+            if (params.getResult() != null) {
+                QueryUtil.addFilter(sql, RESULT_COLUMN_NAME, params.getResult().name(), FilterCondition.EQUAL, true);
             }
-            if (!StringUtil.isEmpty(opponentName)) {
-                QueryUtil.addFilter(sql, OPPONENT_NAME_COLUMN_NAME, opponentName, FilterCondition.EQUAL, true);
+            if (!StringUtil.isEmpty(params.getOpponentName())) {
+                QueryUtil.addFilter(sql, OPPONENT_NAME_COLUMN_NAME, params.getOpponentName(), FilterCondition.EQUAL, true);
             }
-            if (channelId != null) {
-                QueryUtil.addFilter(sql, CHANNEL_ID_COLUMN_NAME, String.valueOf(channelId), FilterCondition.EQUAL, false);
+            if (params.getChannelId() != null) {
+                QueryUtil.addFilter(sql, CHANNEL_ID_COLUMN_NAME, String.valueOf(params.getChannelId()), FilterCondition.EQUAL, false);
             }
-            if (level != null) {
+            if (params.getLevel() != null) {
                 try {
-                    int levelIntValue = Integer.parseInt(level);
+                    int levelIntValue = Integer.parseInt(params.getLevel());
                     QueryUtil.addFilter(sql, LEVEL_COLUMN_NAME, String.valueOf(levelIntValue), FilterCondition.EQUAL, false);
                 } catch (NumberFormatException ex) {
-                    logger.warn("Can't parse level[" + level + "]");
+                    logger.warn("Can't parse level[" + params.getLevel() + "]");
                 }
             }
             sql.append(" ORDER BY " + ID_COLUMN_NAME + " DESC");
@@ -218,7 +223,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
+    public List<GroupedPlayedGame> getGroupedPlayedGames(GetGroupedPlayedGamesParams params) {
         List<Channel> channels = channelDAO.getChannels();
         Map<Integer, Channel> channelsMap = channels.stream().collect(Collectors.toMap(Channel::getId, channel -> channel));
 
@@ -226,19 +231,19 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
         try {
             StringBuilder sb = new StringBuilder("SELECT ");
             boolean first = true;
-            if (groupByVersion) {
+            if (params.isGroupByVersion()) {
                 sb.append(VERSION_COLUMN_NAME);
                 first = false;
             }
-            if (groupByChannel) {
+            if (params.isGroupByChannel()) {
                 QueryUtil.addParameter(sb, CHANNEL_ID_COLUMN_NAME, !first);
                 first = false;
             }
-            if (groupedByPointForWin) {
+            if (params.isGroupedByPointForWin()) {
                 QueryUtil.addParameter(sb, POINT_FOR_WIN_COLUMN_NAME, !first);
                 first = false;
             }
-            if (groupByLevel) {
+            if (params.isGroupByLevel()) {
                 QueryUtil.addParameter(sb, LEVEL_COLUMN_NAME, !first);
                 first = false;
             }
@@ -249,17 +254,23 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                     .append(GameResult.OPPONENT_WIN).append("' then 1 else 0 end) as " + WIN_OPPONENT + ", sum(case when " + RESULT_COLUMN_NAME + " = '").append(GameResult.STOPPED)
                     .append("' then 1 else 0 end) as " + STOPPED + " FROM " + PLAYED_GAME_TABLE_NAME + " ");
 
-            if (!StringUtil.isEmpty(version)) {
-                sb.append(" WHERE 1 = 1 ");
-                QueryUtil.addFilter(sb, VERSION_COLUMN_NAME, version, FilterCondition.EQUAL, true);
+            sb.append(" WHERE 1 = 1 ");
+            if (!StringUtil.isEmpty(params.getVersion())) {
+                QueryUtil.addFilter(sb, VERSION_COLUMN_NAME, params.getVersion(), FilterCondition.EQUAL, true);
+            }
+            if (params.getFromDate() != null) {
+                QueryUtil.addFilter(sb, DATE_COLUMN_NAME, params.getFromDate().format(DateTimeFormatter.ofPattern(DATE_FORMAT)), FilterCondition.GREAT_OR_EQUAL, true);
+            }
+            if (params.getToDate() != null) {
+                QueryUtil.addFilter(sb, DATE_COLUMN_NAME, params.getToDate().format(DateTimeFormatter.ofPattern(DATE_FORMAT)), FilterCondition.LESS_OR_EQUAL, true);
             }
 
             first = true;
-            if (groupByVersion) {
+            if (params.isGroupByVersion()) {
                 sb.append("GROUP BY ").append(VERSION_COLUMN_NAME);
                 first = false;
             }
-            if (groupByChannel) {
+            if (params.isGroupByChannel()) {
                 if (!first) {
                     sb.append(", ").append(CHANNEL_ID_COLUMN_NAME);
                 } else {
@@ -267,41 +278,41 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 }
                 first = false;
             }
-            if (groupedByPointForWin) {
+            if (params.isGroupedByPointForWin()) {
                 if (!first) {
                     sb.append(", ").append(POINT_FOR_WIN_COLUMN_NAME);
                 } else {
                     sb.append("GROUP BY ").append(POINT_FOR_WIN_COLUMN_NAME);
                 }
             }
-            if (groupByLevel) {
+            if (params.isGroupByLevel()) {
                 if (!first) {
                     sb.append(", ").append(LEVEL_COLUMN_NAME);
                 } else {
                     sb.append("GROUP BY ").append(LEVEL_COLUMN_NAME);
                 }
             }
-            if (groupByVersion) {
+            if (params.isGroupByVersion()) {
                 sb.append(" ORDER BY " + VERSION_COLUMN_NAME);
-            } else if (groupedByPointForWin) {
+            } else if (params.isGroupedByPointForWin()) {
                 sb.append(" ORDER BY " + POINT_FOR_WIN_COLUMN_NAME);
-            } else if (groupByChannel) {
+            } else if (params.isGroupByChannel()) {
                 sb.append(" ORDER BY " + CHANNEL_ID_COLUMN_NAME);
             }
             pstmt = ConnectionUtil.getConnection().prepareStatement(sb.toString());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 GroupedPlayedGame game = new GroupedPlayedGame();
-                if (groupByVersion) {
+                if (params.isGroupByVersion()) {
                     game.setVersion(rs.getString(VERSION_COLUMN_NAME));
                 }
-                if (groupByChannel) {
+                if (params.isGroupByChannel()) {
                     game.setChannel(channelsMap.get(rs.getInt(CHANNEL_ID_COLUMN_NAME)));
                 }
-                if (groupedByPointForWin) {
+                if (params.isGroupedByPointForWin()) {
                     game.setPointForWin(rs.getInt(POINT_FOR_WIN_COLUMN_NAME));
                 }
-                if (groupByLevel) {
+                if (params.isGroupByLevel()) {
                     game.setLevel(rs.getInt(LEVEL_COLUMN_NAME));
                 }
                 game.setWin(rs.getInt(WIN_ME));

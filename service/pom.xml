@@ -13,6 +13,11 @@
     <dependencies>
         <dependency>
             <groupId>ge.ai.domino</groupId>
+            <artifactId>common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ge.ai.domino</groupId>
             <artifactId>dao</artifactId>
             <version>${project.version}</version>
         </dependency>

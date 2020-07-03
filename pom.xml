@@ -33,6 +33,7 @@
             </activation>
             <modules>
                 <module>domain</module>
+                <module>common</module>
                 <module>caching</module>
                 <module>console</module>
                 <module>util</module>

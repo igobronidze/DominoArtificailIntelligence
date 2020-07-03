@@ -33,7 +33,7 @@ public class GroupedOpponentPlaysPane extends BorderPane {
 
     private TableView<Map<String, String>> tableView;
 
-    private DoubleBinding doubleBinding;
+    private final DoubleBinding doubleBinding;
 
     private TCHCheckBox groupByOpponentGameIdCheckBox;
 

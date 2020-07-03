@@ -1,9 +1,7 @@
 package ge.ai.domino.console.ui.played;
 
-import ge.ai.domino.console.ui.tchcomponents.TCHButton;
-import ge.ai.domino.console.ui.tchcomponents.TCHCheckBox;
-import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
-import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
+import ge.ai.domino.common.params.playedgames.GetGroupedPlayedGamesParams;
+import ge.ai.domino.console.ui.tchcomponents.*;
 import ge.ai.domino.console.ui.util.ImageFactory;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.service.ServiceExecutor;
@@ -30,6 +28,8 @@ public class GroupedPlayedGamePane extends BorderPane {
 
     private static final int COLUMN_COUNT = 11;
 
+    private static final int FILTER_FIELD_WIDTH = 120;
+
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
     private TableView<GroupedPlayedGameProperty> tableView;
@@ -37,6 +37,10 @@ public class GroupedPlayedGamePane extends BorderPane {
     private final DoubleBinding doubleBinding;
 
     private TCHTextField versionField;
+
+    private TCHDatePicker fromDatePicker;
+
+    private TCHDatePicker toDatePicker;
 
     private TCHCheckBox groupByVersionCheckBox;
 
@@ -58,9 +62,8 @@ public class GroupedPlayedGamePane extends BorderPane {
     }
 
     private void initFilters() {
-        versionField = new TCHTextField(TCHComponentSize.SMALL);
-        versionField.setPromptText(Messages.get("version"));
-
+        initVersionField();
+        initDatePickers();
         groupByVersionCheckBox = new TCHCheckBox(Messages.get("groupByVersion"));
         groupByVersionCheckBox.setSelected(true);
         groupByChannelCheckBox = new TCHCheckBox(Messages.get("groupByChannel"));
@@ -73,8 +76,28 @@ public class GroupedPlayedGamePane extends BorderPane {
         flowPane.setVgap(10);
         flowPane.setHgap(10);
         flowPane.setPadding(new Insets(15));
-        flowPane.getChildren().addAll(versionField, groupByVersionCheckBox, groupByChannelCheckBox, groupByPointForWinCheckBox, groupByLevelCheckBox, searchButton);
+        flowPane.getChildren().addAll(versionField,
+                fromDatePicker,
+                toDatePicker,
+                groupByVersionCheckBox,
+                groupByChannelCheckBox,
+                groupByPointForWinCheckBox,
+                groupByLevelCheckBox,
+                searchButton);
         this.setTop(flowPane);
+    }
+
+    private void initVersionField() {
+        versionField = new TCHTextField(TCHComponentSize.SMALL);
+        versionField.setPrefWidth(FILTER_FIELD_WIDTH);
+        versionField.setPromptText(Messages.get("version"));
+    }
+
+    private void initDatePickers() {
+        fromDatePicker = new TCHDatePicker();
+        fromDatePicker.setPrefWidth(FILTER_FIELD_WIDTH);
+        toDatePicker = new TCHDatePicker();
+        toDatePicker.setPrefWidth(FILTER_FIELD_WIDTH);
     }
 
     private void initTable() {
@@ -169,8 +192,15 @@ public class GroupedPlayedGamePane extends BorderPane {
 
     private void loadPlayedGames() {
         List<GroupedPlayedGame> games = new ArrayList<>();
-        new ServiceExecutor() {}.execute(() -> games.addAll(playedGameService.getGroupedPlayedGames(versionField.getText(), groupByVersionCheckBox.isSelected(),
-                groupByChannelCheckBox.isSelected(), groupByPointForWinCheckBox.isSelected(), groupByLevelCheckBox.isSelected())));
+        new ServiceExecutor() {}.execute(() -> games.addAll(playedGameService.getGroupedPlayedGames(
+                new GetGroupedPlayedGamesParams(
+                        versionField.getText(),
+                        fromDatePicker.getValue(),
+                        toDatePicker.getValue(),
+                        groupByVersionCheckBox.isSelected(),
+                        groupByChannelCheckBox.isSelected(),
+                        groupByPointForWinCheckBox.isSelected(),
+                        groupByLevelCheckBox.isSelected()))));
 
         List<GroupedPlayedGameProperty> groupedPlayedGameProperties = new ArrayList<>();
         for (GroupedPlayedGame game : games) {

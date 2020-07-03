@@ -1,5 +1,6 @@
 package ge.ai.domino.console.ui.played;
 
+import ge.ai.domino.common.params.playedgames.GetPlayedGamesParams;
 import ge.ai.domino.console.ui.tchcomponents.TCHButton;
 import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
 import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
@@ -161,8 +162,13 @@ public class PlayedGamePane extends BorderPane {
 
     private void loadPlayedGames() {
         List<PlayedGame> playedGames = new ArrayList<>();
-        new ServiceExecutor() {}.execute(() -> playedGames.addAll(playedGameService.getPlayedGames(versionField.getText(), resultComboBox.getValue(),
-                opponentNameField.getText(), channelsMap.get(channelCombo.getValue()), levelField.getText())));
+        new ServiceExecutor() {}.execute(() -> playedGames.addAll(playedGameService.getPlayedGames(
+                new GetPlayedGamesParams(
+                        versionField.getText(),
+                        resultComboBox.getValue(),
+                        opponentNameField.getText(),
+                        channelsMap.get(channelCombo.getValue()),
+                        levelField.getText()))));
 
         List<PlayedGameProperty> playedGameProperties = new ArrayList<>();
         for (PlayedGame playedGame : playedGames) {

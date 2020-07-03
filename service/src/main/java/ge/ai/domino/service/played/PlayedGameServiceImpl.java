@@ -1,7 +1,8 @@
 package ge.ai.domino.service.played;
 
+import ge.ai.domino.common.params.playedgames.GetGroupedPlayedGamesParams;
+import ge.ai.domino.common.params.playedgames.GetPlayedGamesParams;
 import ge.ai.domino.domain.game.GameInfo;
-import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.GroupedPlayedGame;
 import ge.ai.domino.domain.played.PlayedGame;
 import ge.ai.domino.manager.played.PlayedGameManager;
@@ -13,13 +14,13 @@ public class PlayedGameServiceImpl implements PlayedGameService {
     private final PlayedGameManager playedGameManager = new PlayedGameManager();
 
     @Override
-    public List<PlayedGame> getPlayedGames(String version, GameResult result, String opponentName, Integer channelId, String level) {
-        return playedGameManager.getPlayedGames(version, result, opponentName, channelId, level);
+    public List<PlayedGame> getPlayedGames(GetPlayedGamesParams params) {
+        return playedGameManager.getPlayedGames(params);
     }
 
     @Override
-    public List<GroupedPlayedGame> getGroupedPlayedGames(String version, boolean groupByVersion, boolean groupByChannel, boolean groupedByPointForWin, boolean groupByLevel) {
-        return playedGameManager.getGroupedPlayedGames(version, groupByVersion, groupByChannel, groupedByPointForWin, groupByLevel);
+    public List<GroupedPlayedGame> getGroupedPlayedGames(GetGroupedPlayedGamesParams params) {
+        return playedGameManager.getGroupedPlayedGames(params);
     }
 
     @Override

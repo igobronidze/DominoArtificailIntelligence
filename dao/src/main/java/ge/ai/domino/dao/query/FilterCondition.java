@@ -4,9 +4,11 @@ public enum  FilterCondition {
 
 	EQUAL("="),
 	LIKE("LIKE"),
-	GREAT(">");
+	GREAT(">"),
+	GREAT_OR_EQUAL(">="),
+	LESS_OR_EQUAL("<=");
 
-	private String value;
+	private final String value;
 
 	FilterCondition(String value) {
 		this.value = value;

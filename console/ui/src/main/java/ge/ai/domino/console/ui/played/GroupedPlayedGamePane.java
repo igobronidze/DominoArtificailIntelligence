@@ -26,7 +26,7 @@ import java.util.List;
 
 public class GroupedPlayedGamePane extends BorderPane {
 
-    private static final int COLUMN_COUNT = 11;
+    private static final int COLUMN_COUNT = 10;
 
     private static final int FILTER_FIELD_WIDTH = 120;
 

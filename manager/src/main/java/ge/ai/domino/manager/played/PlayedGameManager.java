@@ -63,7 +63,7 @@ public class PlayedGameManager {
         List<GroupedPlayedGame> groupedPlayedGames = playedGameDAO.getGroupedPlayedGames(params);
 
         groupedPlayedGames.forEach(groupedPlayedGame -> groupedPlayedGame.setFinished(getFinishedAmount(groupedPlayedGame)));
-        if (params.isGroupByChannel() && params.isGroupByChannel()) {
+        if (params.isGroupByChannel() && params.isGroupByLevel()) {
             groupedPlayedGames.forEach(groupedPlayedGame -> groupedPlayedGame.setProfit(getProfit(groupedPlayedGame)));
         }
         return groupedPlayedGames;

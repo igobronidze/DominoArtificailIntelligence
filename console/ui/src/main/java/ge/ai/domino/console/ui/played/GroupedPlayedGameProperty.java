@@ -7,10 +7,13 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 
 public class GroupedPlayedGameProperty {
 
-    private static final NumberFormat formatter = new DecimalFormat("#0.0000");
+    private static final NumberFormat decimalFormatter = new DecimalFormat("#0.0000");
+
+    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd");
 
     private final SimpleStringProperty version;
 
@@ -30,6 +33,8 @@ public class GroupedPlayedGameProperty {
 
     private final SimpleStringProperty level;
 
+    private final SimpleStringProperty date;
+
     private final SimpleDoubleProperty profit;
 
     GroupedPlayedGameProperty(GroupedPlayedGame game) {
@@ -38,11 +43,12 @@ public class GroupedPlayedGameProperty {
         channel = new SimpleStringProperty(game.getChannel() == null ? "" : game.getChannel().getName());
         finished = new SimpleIntegerProperty(game.getFinished());
         int sum = game.getWin() + game.getLose() + game.getStopped();
-        winPercent = new SimpleStringProperty("" + game.getWin() + " (" + formatter.format((double)game.getWin() / sum * 100) + "%)");
-        losePercent = new SimpleStringProperty("" + game.getLose() + " (" + formatter.format((double)game.getLose() / sum * 100) + "%)");
-        stoppedPercent = new SimpleStringProperty("" + game.getStopped() + " (" + formatter.format((double)game.getStopped() / sum * 100) + "%)");
-        winPercentForFinished = new SimpleStringProperty("" + formatter.format((double)game.getWin() / (game.getWin() + game.getLose()) * 100) + "%");
+        winPercent = new SimpleStringProperty("" + game.getWin() + " (" + decimalFormatter.format((double)game.getWin() / sum * 100) + "%)");
+        losePercent = new SimpleStringProperty("" + game.getLose() + " (" + decimalFormatter.format((double)game.getLose() / sum * 100) + "%)");
+        stoppedPercent = new SimpleStringProperty("" + game.getStopped() + " (" + decimalFormatter.format((double)game.getStopped() / sum * 100) + "%)");
+        winPercentForFinished = new SimpleStringProperty("" + decimalFormatter.format((double)game.getWin() / (game.getWin() + game.getLose()) * 100) + "%");
         level = new SimpleStringProperty(game.getLevel() == null ? "" : "" + game.getLevel());
+        date = new SimpleStringProperty(game.getDate() == null ? "" : dateFormatter.format(game.getDate()));
         profit = new SimpleDoubleProperty(game.getProfit() == null ? 0.0 : game.getProfit());
     }
 
@@ -116,6 +122,14 @@ public class GroupedPlayedGameProperty {
 
     public void setLevel(String level) {
         this.winPercentForFinished.set(level);
+    }
+
+    public String getDate() {
+        return date.get();
+    }
+
+    public void setDate(String date) {
+        this.date.set(date);
     }
 
     public Double getProfit() {

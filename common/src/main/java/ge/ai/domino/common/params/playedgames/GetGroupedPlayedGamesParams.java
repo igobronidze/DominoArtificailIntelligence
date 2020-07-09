@@ -15,6 +15,12 @@ public class GetGroupedPlayedGamesParams {
 
     private String version;
 
+    private Integer channelId;
+
+    private Integer pointForWin;
+
+    private Double level;
+
     private LocalDate fromDate;
 
     private LocalDate toDate;
@@ -26,4 +32,6 @@ public class GetGroupedPlayedGamesParams {
     private boolean groupedByPointForWin;
 
     private boolean groupByLevel;
+
+    private boolean groupByDate;
 }

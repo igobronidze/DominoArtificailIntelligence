@@ -32,5 +32,5 @@ public class PlayedGame {
 
     private String marshaledGameHistory;
 
-    private int level;
+    private double level;
 }

@@ -71,7 +71,7 @@ public class TilesDetectorTest {
 				.heightPercentage(15)
 				.marginBottomPercentage(5)
 				.marginLeftPercentage(15)
-				.widthPercentage(70)
+				.widthPercentage(63)
 				.blurCoefficient(3)
 				.combinedPoints(true);
 	}

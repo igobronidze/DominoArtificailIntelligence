@@ -16,5 +16,5 @@ public class GameProperties implements Serializable {
 
     private int pointsForWin;
 
-    private int level;
+    private double level;
 }

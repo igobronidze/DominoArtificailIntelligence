@@ -80,7 +80,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             pstmt.setString(3, game.getOpponentName());
             pstmt.setInt(4, game.getChannel().getId());
             pstmt.setString(5, game.getResult().name());
-            pstmt.setInt(6, game.getLevel());
+            pstmt.setDouble(6, game.getLevel());
             pstmt.executeUpdate();
 
             String maxId = "max_id";
@@ -172,7 +172,7 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 game.setPointForWin(rs.getInt(POINT_FOR_WIN_COLUMN_NAME));
                 game.setOpponentName(rs.getString(OPPONENT_NAME_COLUMN_NAME));
                 game.setChannel(channelsMap.get(rs.getInt(CHANNEL_ID_COLUMN_NAME)));
-                game.setLevel(rs.getInt(LEVEL_COLUMN_NAME));
+                game.setLevel(rs.getDouble(LEVEL_COLUMN_NAME));
                 games.add(game);
             }
         } catch (SQLException ex) {
@@ -247,9 +247,14 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 QueryUtil.addParameter(sb, LEVEL_COLUMN_NAME, !first);
                 first = false;
             }
+            if (params.isGroupByDate()) {
+                QueryUtil.addParameter(sb, DATE_COLUMN_NAME, !first);
+                first = false;
+            }
             if (!first) {
                 sb.append(", ");
             }
+
             sb.append(" sum(case when " + RESULT_COLUMN_NAME + " = '").append(GameResult.I_WIN).append("' then 1 else 0 end) as " + WIN_ME + ", sum(case when " + RESULT_COLUMN_NAME + " = '")
                     .append(GameResult.OPPONENT_WIN).append("' then 1 else 0 end) as " + WIN_OPPONENT + ", sum(case when " + RESULT_COLUMN_NAME + " = '").append(GameResult.STOPPED)
                     .append("' then 1 else 0 end) as " + STOPPED + " FROM " + PLAYED_GAME_TABLE_NAME + " ");
@@ -257,6 +262,15 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             sb.append(" WHERE 1 = 1 ");
             if (!StringUtil.isEmpty(params.getVersion())) {
                 QueryUtil.addFilter(sb, VERSION_COLUMN_NAME, params.getVersion(), FilterCondition.EQUAL, true);
+            }
+            if (params.getChannelId() != null) {
+                QueryUtil.addFilter(sb, CHANNEL_ID_COLUMN_NAME, String.valueOf(params.getChannelId()), FilterCondition.EQUAL, false);
+            }
+            if (params.getPointForWin() != null) {
+                QueryUtil.addFilter(sb, POINT_FOR_WIN_COLUMN_NAME, String.valueOf(params.getPointForWin()), FilterCondition.EQUAL, false);
+            }
+            if (params.getLevel() != null) {
+                QueryUtil.addFilter(sb, LEVEL_COLUMN_NAME, String.valueOf(params.getLevel()), FilterCondition.EQUAL, false);
             }
             if (params.getFromDate() != null) {
                 QueryUtil.addFilter(sb, DATE_COLUMN_NAME, params.getFromDate().format(DateTimeFormatter.ofPattern(DATE_FORMAT)), FilterCondition.GREAT_OR_EQUAL, true);
@@ -292,13 +306,14 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                     sb.append("GROUP BY ").append(LEVEL_COLUMN_NAME);
                 }
             }
-            if (params.isGroupByVersion()) {
-                sb.append(" ORDER BY " + VERSION_COLUMN_NAME);
-            } else if (params.isGroupedByPointForWin()) {
-                sb.append(" ORDER BY " + POINT_FOR_WIN_COLUMN_NAME);
-            } else if (params.isGroupByChannel()) {
-                sb.append(" ORDER BY " + CHANNEL_ID_COLUMN_NAME);
+            if (params.isGroupByDate()) {
+                if (!first) {
+                    sb.append(", ").append(DATE_COLUMN_NAME);
+                } else {
+                    sb.append("GROUP BY ").append(DATE_COLUMN_NAME);
+                }
             }
+
             pstmt = ConnectionUtil.getConnection().prepareStatement(sb.toString());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -313,7 +328,10 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                     game.setPointForWin(rs.getInt(POINT_FOR_WIN_COLUMN_NAME));
                 }
                 if (params.isGroupByLevel()) {
-                    game.setLevel(rs.getInt(LEVEL_COLUMN_NAME));
+                    game.setLevel(rs.getDouble(LEVEL_COLUMN_NAME));
+                }
+                if (params.isGroupByDate()) {
+                    game.setDate(rs.getDate(DATE_COLUMN_NAME));
                 }
                 game.setWin(rs.getInt(WIN_ME));
                 game.setLose(rs.getInt(WIN_OPPONENT));

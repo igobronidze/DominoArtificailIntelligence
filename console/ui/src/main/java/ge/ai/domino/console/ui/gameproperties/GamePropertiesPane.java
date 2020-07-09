@@ -4,12 +4,7 @@ import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.controlpanel.ControlPanel;
 import ge.ai.domino.console.ui.game.GamePane;
 import ge.ai.domino.console.ui.game.GamePaneInitialData;
-import ge.ai.domino.console.ui.tchcomponents.TCHButton;
-import ge.ai.domino.console.ui.tchcomponents.TCHComboBox;
-import ge.ai.domino.console.ui.tchcomponents.TCHComponentSize;
-import ge.ai.domino.console.ui.tchcomponents.TCHFieldLabel;
-import ge.ai.domino.console.ui.tchcomponents.TCHNumberTextField;
-import ge.ai.domino.console.ui.tchcomponents.TCHTextField;
+import ge.ai.domino.console.ui.tchcomponents.*;
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.console.ui.util.dialog.WarnDialog;
 import ge.ai.domino.console.ui.util.service.ServiceExecutor;
@@ -106,7 +101,7 @@ public class GamePropertiesPane extends VBox {
                 gameProperties.setPointsForWin(Integer.parseInt(pointComboBox.getValue().toString()));
                 gameProperties.setChannel(channelsMap.get(channelsCombo.getValue()));
                 gameProperties.setOpponentName(nameField.getText());
-                gameProperties.setLevel(levelField.getNumber().intValue());
+                gameProperties.setLevel(levelField.getNumber().doubleValue());
 
                 new ServiceExecutor() {}.execute(() -> AppController.round =  gameService.startGame(gameProperties));
 

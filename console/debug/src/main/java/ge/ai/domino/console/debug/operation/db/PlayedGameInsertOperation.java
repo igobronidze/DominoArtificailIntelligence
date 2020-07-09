@@ -7,11 +7,7 @@ import ge.ai.domino.domain.played.GameResult;
 import ge.ai.domino.domain.played.PlayedGame;
 import org.apache.log4j.Logger;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -48,7 +44,7 @@ public class PlayedGameInsertOperation implements GameDebuggerOperation {
                 pstmt.setString(9, game.getOpponentName());
                 pstmt.setString(10, game.getMarshaledGameHistory());
                 pstmt.setInt(11, game.getChannel().getId());
-                pstmt.setInt(12, game.getLevel());
+                pstmt.setDouble(12, game.getLevel());
                 pstmt.executeUpdate();
             } catch (SQLException ex) {
                 logger.error("Error occurred while getting game games", ex);
@@ -86,7 +82,7 @@ public class PlayedGameInsertOperation implements GameDebuggerOperation {
                 Channel channel = new Channel();
                 channel.setId(rs.getInt("c11"));
                 game.setChannel(channel);
-                game.setLevel(0);
+                game.setLevel(0.0);
 
                 games.add(game);
             }

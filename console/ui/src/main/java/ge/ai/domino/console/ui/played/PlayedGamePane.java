@@ -125,39 +125,97 @@ public class PlayedGamePane extends BorderPane {
     private void initTable() {
         tableView = new TableView<>();
         tableView.setStyle("-fx-font-family: sylfaen; -fx-text-alignment: center; -fx-font-size: 16px;");
-        TableColumn<PlayedGameProperty, Boolean> idColumn = new TableColumn<>(Messages.get("id"));
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        idColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        TableColumn<PlayedGameProperty, Boolean> versionColumn = new TableColumn<>(Messages.get("version"));
-        versionColumn.setCellValueFactory(new PropertyValueFactory<>("version"));
-        versionColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        TableColumn<PlayedGameProperty, Boolean> resultColumn = new TableColumn<>(Messages.get("result"));
-        resultColumn.setCellValueFactory(new PropertyValueFactory<>("result"));
-        resultColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        TableColumn<PlayedGameProperty, Boolean> dateColumn = new TableColumn<>(Messages.get("date"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        dateColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        TableColumn<PlayedGameProperty, Boolean> myPointColumn = new TableColumn<>(Messages.get("myPoint"));
-        myPointColumn.setCellValueFactory(new PropertyValueFactory<>("myPoint"));
-        myPointColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        TableColumn<PlayedGameProperty, Boolean> opponentPointColumn = new TableColumn<>(Messages.get("opponentPoint"));
-        opponentPointColumn.setCellValueFactory(new PropertyValueFactory<>("opponentPoint"));
-        opponentPointColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        TableColumn<PlayedGameProperty, Boolean> pointForWinColumn = new TableColumn<>(Messages.get("pointForWin"));
-        pointForWinColumn.setCellValueFactory(new PropertyValueFactory<>("pointForWin"));
-        pointForWinColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        TableColumn<PlayedGameProperty, Boolean> opponentNameColumn = new TableColumn<>(Messages.get("opponentName"));
-        opponentNameColumn.setCellValueFactory(new PropertyValueFactory<>("opponentName"));
-        opponentNameColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        TableColumn<PlayedGameProperty, Boolean> channelColumn = new TableColumn<>(Messages.get("channel"));
-        channelColumn.setCellValueFactory(new PropertyValueFactory<>("channel"));
-        channelColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        TableColumn<PlayedGameProperty, Boolean> idColumn = getIdColumn();
+        TableColumn<PlayedGameProperty, Boolean> versionColumn = getVersionColumn();
+        TableColumn<PlayedGameProperty, Boolean> resultColumn = getResultColumn();
+        TableColumn<PlayedGameProperty, Boolean> dateColumn = getDateColumn();
+        TableColumn<PlayedGameProperty, Boolean> myPointColumn = getMyPointColumn();
+        TableColumn<PlayedGameProperty, Boolean> opponentPointColumn = getOpponentPointColumn();
+        TableColumn<PlayedGameProperty, Boolean> pointForWinColumn = getPointForWinColumn();
+        TableColumn<PlayedGameProperty, Boolean> opponentNameColumn = getOpponentNameColumn();
+        TableColumn<PlayedGameProperty, Boolean> channelColumn = getChannelColumn();
+        TableColumn<PlayedGameProperty, Boolean> levelColumn = getLevelColumn();
+        tableView.getColumns().addAll(Arrays.asList(idColumn,
+                versionColumn,
+                resultColumn,
+                dateColumn,
+                myPointColumn,
+                opponentPointColumn,
+                pointForWinColumn,
+                opponentNameColumn,
+                channelColumn,
+                levelColumn));
+        this.setCenter(tableView);
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getLevelColumn() {
         TableColumn<PlayedGameProperty, Boolean> levelColumn = new TableColumn<>(Messages.get("level"));
         levelColumn.setCellValueFactory(new PropertyValueFactory<>("level"));
         levelColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
-        tableView.getColumns().addAll(Arrays.asList(idColumn, versionColumn, resultColumn, dateColumn, myPointColumn, opponentPointColumn,
-                pointForWinColumn, opponentNameColumn, channelColumn, levelColumn));
-        this.setCenter(tableView);
+        return levelColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getChannelColumn() {
+        TableColumn<PlayedGameProperty, Boolean> channelColumn = new TableColumn<>(Messages.get("channel"));
+        channelColumn.setCellValueFactory(new PropertyValueFactory<>("channel"));
+        channelColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return channelColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getOpponentNameColumn() {
+        TableColumn<PlayedGameProperty, Boolean> opponentNameColumn = new TableColumn<>(Messages.get("opponentName"));
+        opponentNameColumn.setCellValueFactory(new PropertyValueFactory<>("opponentName"));
+        opponentNameColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return opponentNameColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getPointForWinColumn() {
+        TableColumn<PlayedGameProperty, Boolean> pointForWinColumn = new TableColumn<>(Messages.get("pointForWin"));
+        pointForWinColumn.setCellValueFactory(new PropertyValueFactory<>("pointForWin"));
+        pointForWinColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return pointForWinColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getOpponentPointColumn() {
+        TableColumn<PlayedGameProperty, Boolean> opponentPointColumn = new TableColumn<>(Messages.get("opponentPoint"));
+        opponentPointColumn.setCellValueFactory(new PropertyValueFactory<>("opponentPoint"));
+        opponentPointColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return opponentPointColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getMyPointColumn() {
+        TableColumn<PlayedGameProperty, Boolean> myPointColumn = new TableColumn<>(Messages.get("myPoint"));
+        myPointColumn.setCellValueFactory(new PropertyValueFactory<>("myPoint"));
+        myPointColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return myPointColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getDateColumn() {
+        TableColumn<PlayedGameProperty, Boolean> dateColumn = new TableColumn<>(Messages.get("date"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        dateColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return dateColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getResultColumn() {
+        TableColumn<PlayedGameProperty, Boolean> resultColumn = new TableColumn<>(Messages.get("result"));
+        resultColumn.setCellValueFactory(new PropertyValueFactory<>("result"));
+        resultColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return resultColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getVersionColumn() {
+        TableColumn<PlayedGameProperty, Boolean> versionColumn = new TableColumn<>(Messages.get("version"));
+        versionColumn.setCellValueFactory(new PropertyValueFactory<>("version"));
+        versionColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return versionColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getIdColumn() {
+        TableColumn<PlayedGameProperty, Boolean> idColumn = new TableColumn<>(Messages.get("id"));
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return idColumn;
     }
 
     private void loadPlayedGames() {

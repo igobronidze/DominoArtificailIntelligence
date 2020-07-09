@@ -4,6 +4,8 @@ import ge.ai.domino.domain.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 public class GroupedPlayedGame {
@@ -14,7 +16,9 @@ public class GroupedPlayedGame {
 
     private Integer pointForWin;
 
-    private Integer level;
+    private Double level;
+
+    private Date date;
 
     private int finished;
 

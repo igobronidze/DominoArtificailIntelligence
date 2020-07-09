@@ -2,6 +2,7 @@ package ge.ai.domino.console.ui.played;
 
 import ge.ai.domino.console.ui.util.Messages;
 import ge.ai.domino.domain.played.PlayedGame;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -29,7 +30,7 @@ public class PlayedGameProperty {
 
     private SimpleStringProperty channel;
 
-    private SimpleIntegerProperty level;
+    private SimpleDoubleProperty level;
 
     public PlayedGameProperty(PlayedGame game) {
         id = new SimpleIntegerProperty(game.getId());
@@ -45,7 +46,7 @@ public class PlayedGameProperty {
         pointForWin = new SimpleIntegerProperty(game.getPointForWin());
         opponentName = new SimpleStringProperty(game.getOpponentName());
         channel = new SimpleStringProperty(game.getChannel().getName());
-        level = new SimpleIntegerProperty(game.getLevel());
+        level = new SimpleDoubleProperty(game.getLevel());
     }
 
     public int getId() {
@@ -120,11 +121,11 @@ public class PlayedGameProperty {
         this.channel.set(channel);
     }
 
-    public int getLevel() {
+    public double getLevel() {
         return level.get();
     }
 
-    public void setLevel(int level) {
+    public void setLevel(double level) {
         this.level.set(level);
     }
 }

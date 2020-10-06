@@ -20,15 +20,17 @@ public class TilesDetectorTest {
 
 	private static final String LIDERBET_IMAGE_PATH_SUFFIX = "test_images/src/liderbet/domino_";
 
+	private static final String EUROPEBET_IMAGE_PATH_SUFFIX = "test_images/src/europebet/domino_";
+
 	private static final String IMAGE_EXTENSION = ".png";
 
 	private static final Map<Integer, BufferedImage> betliveBufferedImageMap = new HashMap<>();
-
 	private static final Map<Integer, BufferedImage> liderbetBufferedImageMap = new HashMap<>();
+	private static final Map<Integer, BufferedImage> europebetBufferedImageMap = new HashMap<>();
 
 	private static final Map<Integer, List<Tile>> betliveExpectedTilesMap = new HashMap<>();
-
 	private static final Map<Integer, List<Tile>> liderbetExpectedTilesMap = new HashMap<>();
+	private static final Map<Integer, List<Tile>> europebetExpectedTilesMap = new HashMap<>();
 
 	private static final TilesDetector tilesDetector = new TilesDetector();
 
@@ -36,9 +38,11 @@ public class TilesDetectorTest {
 	public static void init() throws IOException {
 		initBetliveExpectedTiles();
 		initLiderbetExpectedTiles();
+		initEuropebetExpectedTiles();
 
 		initBetliveImagesMap();
 		initLiderbetImagesMap();
+		initEuropebetImagesMap();
 	}
 
 	@Test
@@ -58,6 +62,18 @@ public class TilesDetectorTest {
 		for (Map.Entry<Integer, BufferedImage> entry : liderbetBufferedImageMap.entrySet()) {
 			List<Tile> resultTiles = tilesDetector.getTiles(entry.getValue(), getTilesDetectorParamsForLiderbet());
 			List<Tile> expectedTiles = liderbetExpectedTilesMap.get(entry.getKey());
+			Assert.assertEquals(expectedTiles.size(), resultTiles.size());
+			for (int i = 0; i < expectedTiles.size() ; i++) {
+				Assert.assertEquals("Problem occurred for image " + entry.getKey(), expectedTiles.get(i), resultTiles.get(i));
+			}
+		}
+	}
+
+	@Test
+	public void testGetTilesForEuropebet() {
+		for (Map.Entry<Integer, BufferedImage> entry : europebetBufferedImageMap.entrySet()) {
+			List<Tile> resultTiles = tilesDetector.getTiles(entry.getValue(), getTilesDetectorParamsForEuropebet());
+			List<Tile> expectedTiles = europebetExpectedTilesMap.get(entry.getKey());
 			Assert.assertEquals(expectedTiles.size(), resultTiles.size());
 			for (int i = 0; i < expectedTiles.size() ; i++) {
 				Assert.assertEquals("Problem occurred for image " + entry.getKey(), expectedTiles.get(i), resultTiles.get(i));
@@ -87,6 +103,17 @@ public class TilesDetectorTest {
 				.combinedPoints(false);
 	}
 
+	private TilesDetectorParams getTilesDetectorParamsForEuropebet() {
+		return new TilesDetectorParams()
+				.contourMinArea(200)
+				.heightPercentage(12)
+				.marginBottomPercentage(5)
+				.marginLeftPercentage(15)
+				.widthPercentage(63)
+				.blurCoefficient(1)
+				.combinedPoints(false);
+	}
+
 	private static void initBetliveImagesMap() throws IOException {
 		for (int i = 1; i <= betliveExpectedTilesMap.size(); i++) {
 			BufferedImage img = ImageIO.read(new File(BETLIVE_IMAGE_PATH_SUFFIX + i + IMAGE_EXTENSION));
@@ -98,6 +125,13 @@ public class TilesDetectorTest {
 		for (int i = 1; i <= liderbetExpectedTilesMap.size(); i++) {
 			BufferedImage img = ImageIO.read(new File(LIDERBET_IMAGE_PATH_SUFFIX + i + IMAGE_EXTENSION));
 			liderbetBufferedImageMap.put(i, img);
+		}
+	}
+
+	private static void initEuropebetImagesMap() throws IOException {
+		for (int i = 1; i <= europebetExpectedTilesMap.size(); i++) {
+			BufferedImage img = ImageIO.read(new File(EUROPEBET_IMAGE_PATH_SUFFIX + i + IMAGE_EXTENSION));
+			europebetBufferedImageMap.put(i, img);
 		}
 	}
 
@@ -198,6 +232,15 @@ public class TilesDetectorTest {
 		initLiderbetExpectedTiles7(index++);
 		initLiderbetExpectedTiles8(index++);
 		initLiderbetExpectedTiles9(index);
+	}
+
+	private static void initEuropebetExpectedTiles() {
+		int index = 1;
+		initEuropebetExpectedTiles1(index++);
+		initEuropebetExpectedTiles2(index++);
+		initEuropebetExpectedTiles3(index++);
+		initEuropebetExpectedTiles4(index++);
+		initEuropebetExpectedTiles5(index);
 	}
 
 	private static void initLiderbetExpectedTiles1(int index) {
@@ -310,5 +353,62 @@ public class TilesDetectorTest {
 		expectedTiles.add(new Tile(6, 6));
 		expectedTiles.add(new Tile(0, 4));
 		liderbetExpectedTilesMap.put(index, expectedTiles);
+	}
+
+	private static void initEuropebetExpectedTiles1(int index) {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(2, 4));
+		expectedTiles.add(new Tile(1, 6));
+		expectedTiles.add(new Tile(0, 6));
+		expectedTiles.add(new Tile(4, 4));
+		expectedTiles.add(new Tile(0, 5));
+		expectedTiles.add(new Tile(1, 2));
+		expectedTiles.add(new Tile(1, 1));
+		europebetExpectedTilesMap.put(index, expectedTiles);
+	}
+
+	private static void initEuropebetExpectedTiles2(int index) {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(1, 2));
+		expectedTiles.add(new Tile(4, 6));
+		expectedTiles.add(new Tile(4, 5));
+		expectedTiles.add(new Tile(6, 6));
+		expectedTiles.add(new Tile(2, 5));
+		expectedTiles.add(new Tile(0, 5));
+		expectedTiles.add(new Tile(0, 4));
+		europebetExpectedTilesMap.put(index, expectedTiles);
+	}
+
+	private static void initEuropebetExpectedTiles3(int index) {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(0, 4));
+		expectedTiles.add(new Tile(4, 4));
+		europebetExpectedTilesMap.put(index, expectedTiles);
+	}
+
+	private static void initEuropebetExpectedTiles4(int index) {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(0, 0));
+		expectedTiles.add(new Tile(1, 1));
+		expectedTiles.add(new Tile(2, 5));
+		expectedTiles.add(new Tile(0, 5));
+		expectedTiles.add(new Tile(2, 2));
+		expectedTiles.add(new Tile(1, 5));
+		expectedTiles.add(new Tile(6, 6));
+		expectedTiles.add(new Tile(0, 6));
+		expectedTiles.add(new Tile(4, 6));
+		europebetExpectedTilesMap.put(index, expectedTiles);
+	}
+
+	private static void initEuropebetExpectedTiles5(int index) {
+		List<Tile> expectedTiles = new ArrayList<>();
+		expectedTiles.add(new Tile(2, 4));
+		expectedTiles.add(new Tile(5, 5));
+		expectedTiles.add(new Tile(1, 6));
+		expectedTiles.add(new Tile(2, 3));
+		expectedTiles.add(new Tile(2, 2));
+		expectedTiles.add(new Tile(5, 6));
+		expectedTiles.add(new Tile(1, 5));
+		europebetExpectedTilesMap.put(index, expectedTiles);
 	}
 }

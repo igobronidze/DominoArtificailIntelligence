@@ -6,6 +6,7 @@ import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
+import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.GameHistory;
 import ge.ai.domino.domain.played.PlayedMove;
@@ -27,6 +28,8 @@ public class CachedGames {
 
     private static final Map<Integer, Map<Tile, Integer>> tilesOrder = new HashMap<>();
 
+    private static final Map<Integer, Map<MoveDirection, MoveDirection>> directionsMap = new HashMap<>();
+
     public static void addCreatedGameHistory(int gameId, GameHistory gameHistory) {
         createdGameHistory.put(gameId, gameHistory);
     }
@@ -42,11 +45,13 @@ public class CachedGames {
     public static void addGame(Game game) {
         cachedGames.put(game.getId(), game);
         tilesOrder.put(game.getId(), new HashMap<>());
+        initDirectionsMap(game.getId());
     }
 
     public static void removeGame(int gameId) {
         cachedGames.remove(gameId);
         tilesOrder.remove(gameId);
+        directionsMap.remove(gameId);
     }
 
     public static GameProperties getGameProperties(int gameId) {
@@ -140,5 +145,18 @@ public class CachedGames {
 
     public static void clearTilesOrder(int gameId) {
         tilesOrder.get(gameId).clear();
+    }
+
+    public static Map<MoveDirection, MoveDirection> getDirectionsMap(int gameId) {
+        return directionsMap.get(gameId);
+    }
+
+    public static void initDirectionsMap(int gameId) {
+        Map<MoveDirection, MoveDirection> map = new HashMap<>();
+        map.put(MoveDirection.LEFT, MoveDirection.LEFT);
+        map.put(MoveDirection.RIGHT, MoveDirection.RIGHT);
+        map.put(MoveDirection.BOTTOM, MoveDirection.BOTTOM);
+        map.put(MoveDirection.TOP, MoveDirection.TOP);
+        directionsMap.put(gameId, map);
     }
 }

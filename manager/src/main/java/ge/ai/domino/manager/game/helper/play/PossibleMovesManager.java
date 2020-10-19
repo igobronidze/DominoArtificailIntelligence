@@ -50,6 +50,20 @@ public class PossibleMovesManager {
 		return moves;
 	}
 
+	public static List<MoveDirection> getMovePriority(int gameId) {
+		if (!cachedMoveDirections.containsKey(gameId)) {
+			Map<String, String> params = CachedGames.getGameProperties(gameId).getChannel().getParams();
+			String movePriority = params.getOrDefault(MOVE_PRIORITY_KEY, MOVE_PRIORITY_DEFAULT_VALUE);
+
+			List<MoveDirection> moveDirections = new ArrayList<>();
+			for (String direction : movePriority.split(MOVE_PRIORITY_DELIMITER)) {
+				moveDirections.add(MoveDirection.valueOf(direction));
+			}
+			cachedMoveDirections.put(gameId, moveDirections);
+		}
+		return cachedMoveDirections.get(gameId);
+	}
+
 	private static void addPossibleMovesForTile(Round round, Tile tile, PlayedTile left, PlayedTile right, PlayedTile top, PlayedTile bottom, List<Move> moves, boolean allMove) {
 		Set<Integer> played = new HashSet<>();
 
@@ -69,20 +83,6 @@ public class PossibleMovesManager {
 					break;
 			}
 		}
-	}
-
-	private static List<MoveDirection> getMovePriority(int gameId) {
-		if (!cachedMoveDirections.containsKey(gameId)) {
-			Map<String, String> params = CachedGames.getGameProperties(gameId).getChannel().getParams();
-			String movePriority = params.getOrDefault(MOVE_PRIORITY_KEY, MOVE_PRIORITY_DEFAULT_VALUE);
-
-			List<MoveDirection> moveDirections = new ArrayList<>();
-			for (String direction : movePriority.split(MOVE_PRIORITY_DELIMITER)) {
-				moveDirections.add(MoveDirection.valueOf(direction));
-			}
-			cachedMoveDirections.put(gameId, moveDirections);
-		}
-		return cachedMoveDirections.get(gameId);
 	}
 
 	private static void addLeftPossibleMove(Tile tile, PlayedTile left, List<Move> moves, Set<Integer> played, boolean allMove, boolean withCenter) {

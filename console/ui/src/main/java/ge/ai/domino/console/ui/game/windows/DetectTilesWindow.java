@@ -31,7 +31,7 @@ public abstract class DetectTilesWindow {
 		});
 		TCHButton startHeButton = new TCHButton(Messages.get("yesAndStartHe"));
 		startHeButton.setOnAction(event -> {
-			onStartHe(withSecondParams.isSelected());
+			onStartOpponent(withSecondParams.isSelected());
 			stage.close();
 		});
 		TCHButton noButton = new TCHButton(Messages.get("no"));
@@ -63,7 +63,7 @@ public abstract class DetectTilesWindow {
 
 	public abstract void onStartMe(boolean withSecondParams);
 
-	public abstract void onStartHe(boolean withSecondParams);
+	public abstract void onStartOpponent(boolean withSecondParams);
 
 	public abstract void onNo();
 }

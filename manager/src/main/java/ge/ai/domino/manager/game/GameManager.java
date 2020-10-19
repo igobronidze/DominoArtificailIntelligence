@@ -3,12 +3,14 @@ package ge.ai.domino.manager.game;
 import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.*;
+import ge.ai.domino.domain.game.ai.AiPrediction;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.game.opponentplay.OpponentTile;
 import ge.ai.domino.domain.game.opponentplay.OpponentTilesWrapper;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
+import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.domain.sysparam.SysParam;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
@@ -16,6 +18,7 @@ import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictorFactory;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
 import ge.ai.domino.manager.game.helper.play.GameOperations;
 import ge.ai.domino.manager.game.helper.play.MoveHelper;
+import ge.ai.domino.manager.game.helper.play.PossibleMovesManager;
 import ge.ai.domino.manager.game.logging.GameLogger;
 import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.*;
@@ -25,6 +28,7 @@ import ge.ai.domino.manager.imageprocessing.TilesDetectorManager;
 import ge.ai.domino.manager.multiprocessorserver.MultiProcessorServer;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
+import ge.ai.domino.serverutil.TileAndMoveHelper;
 import org.apache.log4j.Logger;
 
 import javax.imageio.ImageIO;
@@ -71,7 +75,7 @@ public class GameManager {
 
     public Round addTileForMe(int gameId, int left, int right) throws DAIException {
         Round round = CachedGames.getCurrentRound(gameId, true);
-        Move move = getMove(left, right, MoveDirection.LEFT);
+        Move move = getLeftMove(left, right);
         Round newRound = addForMeProcessor.move(round, move);
         newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, 0, "addTileForMe"));
         CachedGames.addRound(gameId, newRound);
@@ -80,6 +84,7 @@ public class GameManager {
         } else {
             CachedGames.addMove(gameId, round.getTableInfo().getRoundBlockingInfo().isOmitMe() ? MoveHelper.getOmittedMeMove() : MoveHelper.getAddTileForMeMove(move));
         }
+        fixAiPredictionsMoves(newRound.getAiPredictions().getAiPredictions(), gameId, newRound.getTableInfo());
         return newRound;
     }
 
@@ -88,16 +93,17 @@ public class GameManager {
         Round round = CachedGames.getCurrentRound(gameId, true);
         CachedGames.addOpponentPlay(gameId, new OpponentPlay(0, gameId, ProjectVersionUtil.getVersion(), MoveType.ADD_FOR_OPPONENT,
                 new Tile(0, 0), getOpponentTilesWrapper(round.getOpponentTiles()), new ArrayList<>(GameOperations.getPossiblePlayNumbers(round.getTableInfo()))));
-        Round newRound = addForOpponentProcessor.move(round, getMove(0, 0, MoveDirection.LEFT));
+        Round newRound = addForOpponentProcessor.move(round, getLeftMove(0, 0));
         newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, round.getTableInfo().getTilesFromBazaar(), "addTileForOpponent"));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, round.getTableInfo().getRoundBlockingInfo().isOmitOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove());
+        fixAiPredictionsMoves(newRound.getAiPredictions().getAiPredictions(), gameId, newRound.getTableInfo());
         return newRound;
     }
 
     public Round playForMe(int gameId, Move move) throws DAIException {
-        move = getMove(move);
         Round round = CachedGames.getCurrentRound(gameId, true);
+        move = getMoveForPlay(move, gameId, round.getTableInfo());
         MoveValidator.validateMove(round, move);
         round.setAiPredictions(null);
         Round newRound = playForMeProcessor.move(round, move);
@@ -109,13 +115,15 @@ public class GameManager {
             changeCachedNodeRound(gameId, move, round);
         }
 
+        fixDirections(gameId, newRound.getTableInfo());
+
         return newRound;
     }
 
     public Round playForOpponent(int gameId, Move move) throws DAIException {
         checkMinMaxInProgress(gameId);
-        move = getMove(move);
         Round round = CachedGames.getCurrentRound(gameId, true);
+        move = getMoveForPlay(move, gameId, round.getTableInfo());
         MoveValidator.validateMove(round, move);
         CachedGames.addOpponentPlay(gameId, new OpponentPlay(0, gameId, ProjectVersionUtil.getVersion(), MoveType.PLAY_FOR_OPPONENT,
                 new Tile(move.getLeft(), move.getRight()), getOpponentTilesWrapper(round.getOpponentTiles()), new ArrayList<>()));
@@ -123,6 +131,8 @@ public class GameManager {
         newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, 0, "playForOpponent " + move));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForOpponentMove(move));
+        fixDirections(gameId, newRound.getTableInfo());
+        fixAiPredictionsMoves(newRound.getAiPredictions().getAiPredictions(), gameId, newRound.getTableInfo());
         return newRound;
     }
 
@@ -296,12 +306,87 @@ public class GameManager {
         return tiles.stream().filter(tile -> !myTiles.contains(tile)).collect(Collectors.toList());
     }
 
-    private Move getMove(int left, int right, MoveDirection direction) {
-        return new Move(Math.max(left, right), Math.min(left, right), direction);
+    private Move getLeftMove(int left, int right) {
+        return new Move(Math.max(left, right), Math.min(left, right), MoveDirection.LEFT);
     }
 
-    private Move getMove(Move move) {
-        return new Move(Math.max(move.getLeft(), move.getRight()), Math.min(move.getLeft(), move.getRight()), move.getDirection());
+    private Move getMoveForPlay(Move move, int gameId, TableInfo tableInfo) {
+        MoveDirection direction = CachedGames.getDirectionsMap(gameId).get(move.getDirection());
+
+        if (direction != null) {
+            List<MoveDirection> movePriorities = PossibleMovesManager.getMovePriority(gameId);
+            for (MoveDirection md : movePriorities) {
+                if (md == direction) {
+                    break;
+                }
+
+                if (isSameMove(direction, md, tableInfo)) {
+                    Map<MoveDirection, MoveDirection> directionsMap = CachedGames.getDirectionsMap(gameId);
+                    directionsMap.put(md, direction);
+                    directionsMap.put(direction, md);
+                    direction = md;
+                    break;
+                }
+            }
+        }
+
+        return new Move(Math.max(move.getLeft(), move.getRight()), Math.min(move.getLeft(), move.getRight()), direction);
+    }
+
+    private boolean isSameMove(MoveDirection direction1, MoveDirection direction2, TableInfo tableInfo) {
+        PlayedTile playedTile1 = TileAndMoveHelper.getPlayedTile(tableInfo, direction1);
+        PlayedTile playedTile2 = TileAndMoveHelper.getPlayedTile(tableInfo, direction2);
+
+        if (playedTile1.getOpenSide() != playedTile2.getOpenSide()) {
+            return false;
+        }
+        if (playedTile1.isTwin() != playedTile2.isTwin() && playedTile1.getOpenSide() != 0) {
+            return false;
+        }
+        if (playedTile1.isConsiderInSum() != playedTile2.isConsiderInSum()) {
+            return false;
+        }
+        return playedTile1.isCenter() == playedTile2.isCenter();
+    }
+
+    private void fixDirections(int gameId, TableInfo tableInfo) {
+        Map<MoveDirection, MoveDirection> directionsMap = CachedGames.getDirectionsMap(gameId);
+        new ArrayList<>(directionsMap.keySet()).forEach(direction1 -> {
+            MoveDirection direction2 = directionsMap.get(direction1);
+            if (direction1 != direction2) {
+                if (direction1 == directionsMap.get(direction2) && direction2 == directionsMap.get(direction1) && isSameMove(direction1, direction2, tableInfo)) {
+                    directionsMap.put(direction1, direction1);
+                    directionsMap.put(direction2, direction2);
+                }
+            }
+        });
+    }
+
+    private void fixAiPredictionsMoves(List<AiPrediction> aiPredictions, int gameId, TableInfo tableInfo) {
+        Map<MoveDirection, MoveDirection> directionsMap = CachedGames.getDirectionsMap(gameId);
+
+        if (aiPredictions != null && !aiPredictions.isEmpty()) {
+            aiPredictions.forEach(aiPrediction -> {
+                MoveDirection direction = aiPrediction.getMove().getDirection();
+                MoveDirection reversedDirection = getReversMoveDirection(directionsMap, direction);
+
+                if (direction != reversedDirection) {
+                    if (!isSameMove(direction, reversedDirection, tableInfo)) {
+                        Move move = new Move(aiPrediction.getMove().getLeft(), aiPrediction.getMove().getRight(), reversedDirection);
+                        aiPrediction.setMove(move);
+                    }
+                }
+            });
+        }
+    }
+
+    private MoveDirection getReversMoveDirection(Map<MoveDirection, MoveDirection> directionsMap, MoveDirection direction) {
+        for (Map.Entry<MoveDirection, MoveDirection> entry : directionsMap.entrySet()) {
+            if (entry.getValue() == direction) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     private OpponentTilesWrapper getOpponentTilesWrapper(Map<Tile, Double> opponentTiles) {

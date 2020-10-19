@@ -1,6 +1,5 @@
 package ge.ai.domino.console.ui.game;
 
-import ge.ai.domino.console.ui.controlpanel.AppController;
 import ge.ai.domino.console.ui.controlpanel.ControlPanel;
 import ge.ai.domino.console.ui.game.helper.GamePaneHelper;
 import ge.ai.domino.console.ui.game.windows.*;
@@ -36,6 +35,8 @@ import javafx.scene.layout.VBox;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
+
+import static ge.ai.domino.console.ui.controlpanel.AppController.*;
 
 public abstract class GamePane extends BorderPane {
 
@@ -121,7 +122,7 @@ public abstract class GamePane extends BorderPane {
                         controlPanel.getStage().requestFocus();
                         reload(false, false);
                     }
-                }.execute(() -> AppController.round = gameService.detectAndAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), null, withSecondParams));
+                }.execute(() -> round = gameService.detectAndAddInitialTilesForMe(round.getGameInfo().getGameId(), null, withSecondParams));
             }
 
             @Override
@@ -141,12 +142,12 @@ public abstract class GamePane extends BorderPane {
                         Tile highestTile = GamePaneHelper.getHighestTile();
                         onMyTileEntered(highestTile, null);
                     }
-                }.execute(() -> AppController.round = gameService.detectAndAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), true, withSecondParams));
+                }.execute(() -> round = gameService.detectAndAddInitialTilesForMe(round.getGameInfo().getGameId(), true, withSecondParams));
             }
 
             @Override
             @SuppressWarnings("Duplicates")
-            public void onStartHe(boolean withSecondParams) {
+            public void onStartOpponent(boolean withSecondParams) {
                 new ServiceExecutor() {
                     @Override
                     public boolean isAsync() {
@@ -159,7 +160,7 @@ public abstract class GamePane extends BorderPane {
                         controlPanel.getStage().requestFocus();
                         reload(false, false);
                     }
-                }.execute(() -> AppController.round = gameService.detectAndAddInitialTilesForMe(AppController.round.getGameInfo().getGameId(), false, withSecondParams));
+                }.execute(() -> round = gameService.detectAndAddInitialTilesForMe(round.getGameInfo().getGameId(), false, withSecondParams));
             }
 
             @Override
@@ -192,7 +193,7 @@ public abstract class GamePane extends BorderPane {
                         controlPanel.getStage().requestFocus();
                         reload(false, false);
                     }
-                }.execute(() -> AppController.round = gameService.detectAndAddNewTilesForMe(AppController.round.getGameInfo().getGameId(), withSecondParams));
+                }.execute(() -> round = gameService.detectAndAddNewTilesForMe(round.getGameInfo().getGameId(), withSecondParams));
             }
 
             @Override
@@ -207,11 +208,11 @@ public abstract class GamePane extends BorderPane {
         this.setTop(getTopPane());
         this.setCenter(getCenterPane());
         this.setBottom(getMyTilesPane());
-        if (AppController.round.getGameInfo().isFinished()) {
+        if (round.getGameInfo().isFinished()) {
             new SaveGameWindow() {
                 @Override
                 public void onSave() {
-                    AppController.round = null;
+                    round = null;
                     onNewGame();
                     controlPanel.getRoot().setCenter(new GamePropertiesPane(controlPanel));
                 }
@@ -220,20 +221,20 @@ public abstract class GamePane extends BorderPane {
                 public void onCancel() {}
             }.showWindow(specifyWinner);
         }
-        if (showDetectTilesWindow && isFirsMove() && AppController.round.getMyTiles().isEmpty()) {
+        if (showDetectTilesWindow && isFirsMove() && round.getMyTiles().isEmpty()) {
             showDetectTilesWindow(false);
         }
-        if (AppController.round != null && gamePaneInitialData.isDetectAddedTiles() && !hasPrediction && AppController.round.getTableInfo().isMyMove()
-                && AppController.round.getTableInfo().getBazaarTilesCount() != 2 && AppController.round.getTableInfo().getLeft() != null) {
+        if (round != null && gamePaneInitialData.isDetectAddedTiles() && !hasPrediction && round.getTableInfo().isMyMove()
+                && round.getTableInfo().getBazaarTilesCount() != 2 && round.getTableInfo().getLeft() != null) {
             showAddedTilesDetectWindow();
         }
         reloading = false;
     }
 
     private FlowPane getTopPane() {
-        TableInfo tableInfo = AppController.round.getTableInfo();
-        GameInfo gameInfo = AppController.round.getGameInfo();
-        Label myPointsLabel = new TCHLabel(Messages.get("me") + " - " + gameInfo.getMyPoint() + " (" + AppController.round.getMyTiles().size() + ")");
+        TableInfo tableInfo = round.getTableInfo();
+        GameInfo gameInfo = round.getGameInfo();
+        Label myPointsLabel = new TCHLabel(Messages.get("me") + " - " + gameInfo.getMyPoint() + " (" + round.getMyTiles().size() + ")");
         Label opponentPointLabel = new TCHLabel(Messages.get("opponent") + " - " + gameInfo.getOpponentPoint() + " (" + (int) tableInfo.getOpponentTilesCount() + ")");
         Label bazaarCountLabel = new TCHLabel(Messages.get("bazaar") + " (" + (int) tableInfo.getBazaarTilesCount() + ")");
         Label opponentLabel = new TCHLabel(Messages.get("opponent") + " - " + gameProperties.getOpponentName() + "(" + gameProperties.getChannel().getName() + ")");
@@ -242,7 +243,7 @@ public abstract class GamePane extends BorderPane {
         ImageView addImage = new ImageView(ImageFactory.getImage("add_black.png"));
         addImage.setCursor(Cursor.HAND);
         addImage.setOnMouseClicked(e -> {
-            if (!AppController.round.getTableInfo().isMyMove()) {
+            if (!round.getTableInfo().isMyMove()) {
                 onAddTileEntered();
             }
         });
@@ -342,9 +343,9 @@ public abstract class GamePane extends BorderPane {
                             firstPressedNumber = tmp;
                         }
                         Tile tile = new Tile(firstPressedNumber, secondPressedNumber);
-                        if (AppController.round.getMyTiles().contains(tile)) {
+                        if (round.getMyTiles().contains(tile)) {
                             onMyTilePressed(tile);
-                        } else if (AppController.round.getOpponentTiles().containsKey(tile)) {
+                        } else if (round.getOpponentTiles().containsKey(tile)) {
                             onOpponentTilePressed(tile);
                         }
                         firstPressedNumber = null;
@@ -355,7 +356,7 @@ public abstract class GamePane extends BorderPane {
     }
 
     private void onUndo() {
-        new ServiceExecutor() {}.execute(() -> AppController.round = gameService.getLastPlayedRound(AppController.round.getGameInfo().getGameId()));
+        new ServiceExecutor() {}.execute(() -> round = gameService.getLastPlayedRound(round.getGameInfo().getGameId()));
         reload(true, false);
     }
 
@@ -364,7 +365,7 @@ public abstract class GamePane extends BorderPane {
             @Override
             public void onSkip(int myPoint, int opponentPoint, int leftTilesCount, boolean startMe, boolean finishGame) {
                 new ServiceExecutor() {}.execute(() ->
-                        AppController.round = gameService.skipRound(AppController.round.getGameInfo().getGameId(), myPoint, opponentPoint, leftTilesCount, startMe, finishGame));
+                        round = gameService.skipRound(round.getGameInfo().getGameId(), myPoint, opponentPoint, leftTilesCount, startMe, finishGame));
                 reload(true, finishGame);
             }
         }.showWindow();
@@ -375,7 +376,7 @@ public abstract class GamePane extends BorderPane {
 
             @Override
             public void onSave(String opponentName) {
-                new ServiceExecutor() {}.execute(() -> gameService.editOpponentNameInCache(AppController.round.getGameInfo().getGameId(), opponentName));
+                new ServiceExecutor() {}.execute(() -> gameService.editOpponentNameInCache(round.getGameInfo().getGameId(), opponentName));
                 gameProperties.setOpponentName(opponentName);
                 reload(false, false);
             }
@@ -402,19 +403,19 @@ public abstract class GamePane extends BorderPane {
             @Override
             public void onSave(int count) {
                 new ServiceExecutor() {}.execute(() -> {
-                    gameService.specifyOpponentLeftTiles(AppController.round.getGameInfo().getGameId(), count);
+                    gameService.specifyOpponentLeftTiles(round.getGameInfo().getGameId(), count);
                     switch (moveType) {
                         case ADD_FOR_ME:
-                            AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), playedTile.getLeft(), playedTile.getRight());
+                            round = gameService.addTileForMe(round.getGameInfo().getGameId(), playedTile.getLeft(), playedTile.getRight());
                             break;
                         case ADD_FOR_OPPONENT:
-                            AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId());
+                            round = gameService.addTileForOpponent(round.getGameInfo().getGameId());
                             break;
                         case PLAY_FOR_ME:
-                            AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), new Move(playedTile.getLeft(), playedTile.getRight(), direction));
+                            round = gameService.playForMe(round.getGameInfo().getGameId(), new Move(playedTile.getLeft(), playedTile.getRight(), direction));
                             break;
                         case PLAY_FOR_OPPONENT:
-                            AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), new Move(playedTile.getLeft(), playedTile.getRight(), direction));
+                            round = gameService.playForOpponent(round.getGameInfo().getGameId(), new Move(playedTile.getLeft(), playedTile.getRight(), direction));
                             break;
                     }
                 });
@@ -429,8 +430,8 @@ public abstract class GamePane extends BorderPane {
             @Override
             public void onMe() {
                 new ServiceExecutor() {}.execute(() -> {
-                    gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), true);
-                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                    gameService.specifyRoundBeginner(round.getGameInfo().getGameId(), true);
+                    round = gameService.addTileForMe(round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                 });
                 reload(true, false);
             }
@@ -438,8 +439,8 @@ public abstract class GamePane extends BorderPane {
             @Override
             public void onHe() {
                 new ServiceExecutor() {}.execute(() -> {
-                    gameService.specifyRoundBeginner(AppController.round.getGameInfo().getGameId(), false);
-                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                    gameService.specifyRoundBeginner(round.getGameInfo().getGameId(), false);
+                    round = gameService.addTileForMe(round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                 });
                 reload(true, false);
             }
@@ -511,8 +512,8 @@ public abstract class GamePane extends BorderPane {
     }
 
     private void initMyTilesComponents(FlowPane flowPane) {
-        if (AppController.round.getAiPredictions() != null) {
-            String warnMsgKey = AppController.round.getAiPredictions().getWarnMsgKey();
+        if (round.getAiPredictions() != null) {
+            String warnMsgKey = round.getAiPredictions().getWarnMsgKey();
             if (warnMsgKey != null) {
                 WarnDialog.showWarnDialog(Messages.get(warnMsgKey));
             }
@@ -522,9 +523,9 @@ public abstract class GamePane extends BorderPane {
         myTiles.forEach(tile -> {
             VBox vBox = new VBox();
             vBox.setAlignment(Pos.TOP_CENTER);
-            ImageView imageView = getImageView(tile, AppController.round.getTableInfo().isMyMove());
+            ImageView imageView = getImageView(tile, round.getTableInfo().isMyMove());
             myTilesImages.put(tile, imageView);
-            List<AiPrediction> tilePredictions = GamePaneHelper.getAiPredictionByTile(AppController.round.getAiPredictions() == null ? null : AppController.round.getAiPredictions().getAiPredictions(), tile);
+            List<AiPrediction> tilePredictions = GamePaneHelper.getAiPredictionByTile(round.getAiPredictions() == null ? null : round.getAiPredictions().getAiPredictions(), tile);
             if (!tilePredictions.isEmpty()) {
                 hasPrediction = true;
                 NumberFormat formatter = new DecimalFormat("#0.0000");
@@ -547,8 +548,8 @@ public abstract class GamePane extends BorderPane {
     }
 
     private List<Tile> getSortedTiles() {
-        Map<Tile, Integer> order = gameService.getTilesOrder(AppController.round.getGameInfo().getGameId());
-        List<Tile> tiles = new ArrayList<>(AppController.round.getMyTiles());
+        Map<Tile, Integer> order = gameService.getTilesOrder(round.getGameInfo().getGameId());
+        List<Tile> tiles = new ArrayList<>(round.getMyTiles());
         tiles.sort(Comparator.comparingInt(order::get));
         return tiles;
     }
@@ -562,8 +563,8 @@ public abstract class GamePane extends BorderPane {
             hBox.setPadding(new Insets(8));
             for (int j = i; j >= 0; j--) {
                 Tile tile = new Tile(i, j);
-                Double prob = AppController.round.getOpponentTiles().get(tile);
-                if (AppController.round.getOpponentTiles().containsKey(tile)) {
+                Double prob = round.getOpponentTiles().get(tile);
+                if (round.getOpponentTiles().containsKey(tile)) {
                     ImageView imageView = getImageView(tile, true);
                     Label opponentLabel = new Label("" + (prob == null ? "N" : formatter.format(prob)));
                     opponentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red; -fx-font-weight: bold");
@@ -585,7 +586,7 @@ public abstract class GamePane extends BorderPane {
     }
 
     private void onMyTilePressed(Tile tile) {
-        if (AppController.round.getTableInfo().isMyMove()) {
+        if (round.getTableInfo().isMyMove()) {
             if (isFirsMove()) {
                 onMyTileEntered(tile, null);
             } else {
@@ -600,7 +601,7 @@ public abstract class GamePane extends BorderPane {
     }
 
     private void onOpponentTilePressed(Tile tile) {
-        if (!AppController.round.getTableInfo().isMyMove()) {
+        if (!round.getTableInfo().isMyMove()) {
             if (isFirsMove()) {
                 onOpponentTileEntered(tile, null);
             } else {
@@ -628,10 +629,10 @@ public abstract class GamePane extends BorderPane {
     }
 
     private boolean isFirsMove() {
-        if (AppController.round == null) {
+        if (round == null) {
             return false;
         }
-        TableInfo tableInfo = AppController.round.getTableInfo();
+        TableInfo tableInfo = round.getTableInfo();
         return tableInfo.getTop() == null && tableInfo.getRight() == null && tableInfo.getBottom() == null && tableInfo.getLeft() == null;
     }
 
@@ -641,17 +642,17 @@ public abstract class GamePane extends BorderPane {
         }
         mainInfoLabel.setText(tile.getLeft() + " - " + tile.getRight() + " " + (direction == null ? "" : direction.name()));
 
-        if (AppController.round.getMyTiles().size() == 1) {
+        if (round.getMyTiles().size() == 1) {
             showAddLeftTilesCount(tile, direction, MoveType.PLAY_FOR_ME);
         } else {
             Move move = TileAndMoveHelper.getMove(tile, direction);
 
-            new ServiceExecutor() {}.execute(() -> roundWillBeBlocked = gameService.roundWillBeBlocked(AppController.round.getGameInfo().getGameId(), move));
+            new ServiceExecutor() {}.execute(() -> roundWillBeBlocked = gameService.roundWillBeBlocked(round.getGameInfo().getGameId(), move));
 
             if (roundWillBeBlocked) {
                 showAddLeftTilesCount(new Tile(move.getLeft(), move.getRight()), move.getDirection(), MoveType.PLAY_FOR_ME);
             } else {
-                new ServiceExecutor() {}.execute(() -> AppController.round = gameService.playForMe(AppController.round.getGameInfo().getGameId(), move));
+                new ServiceExecutor() {}.execute(() -> round = gameService.playForMe(round.getGameInfo().getGameId(), move));
                 reload(true, false);
             }
         }
@@ -663,11 +664,11 @@ public abstract class GamePane extends BorderPane {
         }
         mainInfoLabel.setText(tile.getLeft() + " - " + tile.getRight() + " " + (direction == null ? "" : direction.name()));
 
-        if (AppController.round.getTableInfo().isMyMove()) {
-            TableInfo tableInfo = AppController.round.getTableInfo();
+        if (round.getTableInfo().isMyMove()) {
+            TableInfo tableInfo = round.getTableInfo();
             if (tableInfo.getRoundBlockingInfo().isOmitOpponent() && tableInfo.getBazaarTilesCount() == 2) {
                 showAddLeftTilesCount(tile, null, MoveType.ADD_FOR_ME);
-            } else if (tableInfo.getLeft() == null && tableInfo.isFirstRound() && AppController.round.getMyTiles().size() == 6) {
+            } else if (tableInfo.getLeft() == null && tableInfo.isFirstRound() && round.getMyTiles().size() == 6) {
                 showGameStarterWindow(tile);
             } else {
                 mainInfoSecondaryLabel.setText(Messages.get("working"));
@@ -689,13 +690,13 @@ public abstract class GamePane extends BorderPane {
                     }
                 }.execute(() -> {
                     reloading = true;
-                    AppController.round = gameService.addTileForMe(AppController.round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
+                    round = gameService.addTileForMe(round.getGameInfo().getGameId(), tile.getLeft(), tile.getRight());
                 });
             }
         } else {
             Move move = TileAndMoveHelper.getMove(tile, direction);
 
-            new ServiceExecutor() {}.execute(() -> roundWillBeBlocked = gameService.roundWillBeBlocked(AppController.round.getGameInfo().getGameId(), move));
+            new ServiceExecutor() {}.execute(() -> roundWillBeBlocked = gameService.roundWillBeBlocked(round.getGameInfo().getGameId(), move));
 
             if (roundWillBeBlocked) {
                 showAddLeftTilesCount(new Tile(move.getLeft(), move.getRight()), move.getDirection(), MoveType.PLAY_FOR_OPPONENT);
@@ -719,7 +720,7 @@ public abstract class GamePane extends BorderPane {
                     }
                 }.execute(() -> {
                     reloading = true;
-                    AppController.round = gameService.playForOpponent(AppController.round.getGameInfo().getGameId(), move);
+                    round = gameService.playForOpponent(round.getGameInfo().getGameId(), move);
                 });
             }
         }
@@ -766,13 +767,12 @@ public abstract class GamePane extends BorderPane {
     }
 
     private void onAddTileEntered() {
-        if (AppController.round.getTableInfo().getRoundBlockingInfo().isOmitMe() && AppController.round.getTableInfo().getBazaarTilesCount() == 2) {
+        if (round.getTableInfo().getRoundBlockingInfo().isOmitMe() && round.getTableInfo().getBazaarTilesCount() == 2) {
             showAddLeftTilesCount(null, null, MoveType.ADD_FOR_OPPONENT);
-            reload(true, false);
         } else {
-            new ServiceExecutor() {}.execute(() -> AppController.round = gameService.addTileForOpponent(AppController.round.getGameInfo().getGameId()));
-            mainInfoLabel.setText("ADD(" + (int)AppController.round.getTableInfo().getOpponentTilesCount() + ")");
-            reload(true, false);
+            new ServiceExecutor() {}.execute(() -> round = gameService.addTileForOpponent(round.getGameInfo().getGameId()));
+            mainInfoLabel.setText("ADD(" + (int)round.getTableInfo().getOpponentTilesCount() + ")");
         }
+        reload(true, false);
     }
 }

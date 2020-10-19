@@ -106,6 +106,7 @@ public class GameOperations {
 			newRound.getTableInfo().setMyMove(true); // For pick up new tiles
 			CachedGames.changeNextRoundBeginner(gameId, addForMe);
 			CachedGames.clearTilesOrder(gameId);
+			CachedGames.initDirectionsMap(gameId);
 		}
 
 		if (!virtual) {

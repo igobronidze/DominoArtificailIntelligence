@@ -21,7 +21,7 @@ public class AddTileForMeOperation implements GameDebuggerOperation {
 		logger.info("Right:");
 		int right = Integer.parseInt(scanner.nextLine());
 		logger.info("Virtual:");
-		boolean virtual = Boolean.valueOf(scanner.nextLine());
+		boolean virtual = Boolean.parseBoolean(scanner.nextLine());
 		if (virtual) {
 			AddForMeProcessorVirtual addForMeProcessor = new AddForMeProcessorVirtual();
 			GameDebuggerHelper.round = addForMeProcessor.move(GameDebuggerHelper.round, new Move(left, right, null));

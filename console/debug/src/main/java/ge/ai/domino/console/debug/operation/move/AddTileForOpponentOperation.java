@@ -17,7 +17,7 @@ public class AddTileForOpponentOperation implements GameDebuggerOperation {
 	@Override
 	public void process(Scanner scanner) throws DAIException {
 		logger.info("Virtual:");
-		boolean virtual = Boolean.valueOf(scanner.nextLine());
+		boolean virtual = Boolean.parseBoolean(scanner.nextLine());
 		if (virtual) {
 			AddForOpponentProcessorVirtual addForOpponentProcessor = new AddForOpponentProcessorVirtual();
 			GameDebuggerHelper.round = addForOpponentProcessor.move(GameDebuggerHelper.round, new Move(0, 0, null));

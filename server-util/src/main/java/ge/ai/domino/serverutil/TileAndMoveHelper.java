@@ -38,7 +38,7 @@ public class TileAndMoveHelper {
 		return playedTile != null && mayBePlayedTile != null && hashForPlayedTile(playedTile, false) == hashForPlayedTile(mayBePlayedTile, false);
 	}
 
-	private static PlayedTile getPlayedTile(TableInfo tableInfo, MoveDirection moveDirection) {
+	public static PlayedTile getPlayedTile(TableInfo tableInfo, MoveDirection moveDirection) {
 		switch (moveDirection) {
 			case LEFT:
 				return tableInfo.getLeft();

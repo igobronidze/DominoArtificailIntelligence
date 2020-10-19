@@ -24,7 +24,7 @@ public class PlayForMeOperation implements GameDebuggerOperation {
 		logger.info("Direction:");
 		MoveDirection direction = MoveDirection.valueOf(scanner.nextLine());
 		logger.info("Virtual:");
-		boolean virtual = Boolean.valueOf(scanner.nextLine());
+		boolean virtual = Boolean.parseBoolean(scanner.nextLine());
 		if (virtual) {
 			PlayForMeProcessorVirtual playForMeProcessor = new PlayForMeProcessorVirtual();
 			GameDebuggerHelper.round = playForMeProcessor.move(GameDebuggerHelper.round, new Move(left, right, direction));

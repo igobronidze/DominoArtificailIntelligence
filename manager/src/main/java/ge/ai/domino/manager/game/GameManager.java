@@ -337,6 +337,9 @@ public class GameManager {
         PlayedTile playedTile1 = TileAndMoveHelper.getPlayedTile(tableInfo, direction1);
         PlayedTile playedTile2 = TileAndMoveHelper.getPlayedTile(tableInfo, direction2);
 
+        if (playedTile1 == null || playedTile2 == null) {
+            return false;
+        }
         if (playedTile1.getOpenSide() != playedTile2.getOpenSide()) {
             return false;
         }

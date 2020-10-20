@@ -22,10 +22,10 @@ public class PlayedGameInsertOperation implements GameDebuggerOperation {
     @Override
     public void process(Scanner scanner) {
         List<PlayedGame> playedGames = getPlayedGames();
-        insetGames(playedGames);
+        insertGames(playedGames);
     }
 
-    private void insetGames(List<PlayedGame> games) {
+    private void insertGames(List<PlayedGame> games) {
         for (PlayedGame game : games) {
             try {
                 String sql = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",

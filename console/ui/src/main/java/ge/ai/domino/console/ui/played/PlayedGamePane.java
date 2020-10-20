@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 public class PlayedGamePane extends BorderPane {
 
-    private static final int COLUMN_COUNT = 10;
+    private static final int COLUMN_COUNT = 11;
 
     private final PlayedGameService playedGameService = new PlayedGameServiceImpl();
 
@@ -128,7 +128,8 @@ public class PlayedGamePane extends BorderPane {
         TableColumn<PlayedGameProperty, Boolean> idColumn = getIdColumn();
         TableColumn<PlayedGameProperty, Boolean> versionColumn = getVersionColumn();
         TableColumn<PlayedGameProperty, Boolean> resultColumn = getResultColumn();
-        TableColumn<PlayedGameProperty, Boolean> dateColumn = getDateColumn();
+        TableColumn<PlayedGameProperty, Boolean> startDateColumn = getStartDateColumn();
+        TableColumn<PlayedGameProperty, Boolean> endDateColumn = getEndDateColumn();
         TableColumn<PlayedGameProperty, Boolean> myPointColumn = getMyPointColumn();
         TableColumn<PlayedGameProperty, Boolean> opponentPointColumn = getOpponentPointColumn();
         TableColumn<PlayedGameProperty, Boolean> pointForWinColumn = getPointForWinColumn();
@@ -138,7 +139,8 @@ public class PlayedGamePane extends BorderPane {
         tableView.getColumns().addAll(Arrays.asList(idColumn,
                 versionColumn,
                 resultColumn,
-                dateColumn,
+                startDateColumn,
+                endDateColumn,
                 myPointColumn,
                 opponentPointColumn,
                 pointForWinColumn,
@@ -190,9 +192,16 @@ public class PlayedGamePane extends BorderPane {
         return myPointColumn;
     }
 
-    private TableColumn<PlayedGameProperty, Boolean> getDateColumn() {
-        TableColumn<PlayedGameProperty, Boolean> dateColumn = new TableColumn<>(Messages.get("date"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+    private TableColumn<PlayedGameProperty, Boolean> getStartDateColumn() {
+        TableColumn<PlayedGameProperty, Boolean> dateColumn = new TableColumn<>(Messages.get("startDate"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        dateColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
+        return dateColumn;
+    }
+
+    private TableColumn<PlayedGameProperty, Boolean> getEndDateColumn() {
+        TableColumn<PlayedGameProperty, Boolean> dateColumn = new TableColumn<>(Messages.get("endDate"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         dateColumn.prefWidthProperty().bind(doubleBinding.divide(COLUMN_COUNT));
         return dateColumn;
     }

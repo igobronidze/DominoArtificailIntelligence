@@ -18,6 +18,8 @@ public class PlayedGame {
 
     private Date endDate;
 
+    private Date startDate;
+
     private int myPoint;
 
     private int opponentPoint;

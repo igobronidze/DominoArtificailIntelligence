@@ -44,6 +44,7 @@ public class PlayedGameManager {
         playedGame.setLevel(gameProperties.getLevel());
         playedGame.setVersion(ProjectVersionUtil.getVersion());
         playedGame.setResult(GameResult.RUNS);
+        playedGame.setStartDate(new Date());
         return playedGameDAO.addPlayedGame(playedGame);
     }
 

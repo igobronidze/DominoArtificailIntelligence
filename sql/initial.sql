@@ -24,6 +24,8 @@ ALTER TABLE played_game ADD COLUMN channel_id INT NOT NULL DEFAULT 0;
 ALTER TABLE played_game DROP COLUMN website;
 ALTER TABLE played_game ADD COLUMN level INT NOT NULL DEFAULT 0;
 ALTER TABLE played_game ALTER COLUMN level TYPE decimal;
+ALTER TABLE played_game ADD COLUMN start_date DATE;
+ALTER TABLE played_game ADD COLUMN start_time TIME;
 
 -- Opponent Plays
 CREATE TABLE opponent_play (

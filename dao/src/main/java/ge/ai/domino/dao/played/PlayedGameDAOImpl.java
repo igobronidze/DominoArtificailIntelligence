@@ -50,6 +50,10 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
     private static final String GAME_HISTORY_COLUMN_NAME = "game_history";
 
+    private static final String START_DATE_COLUMN_NAME = "start_date";
+
+    private static final String START_TIME_COLUMN_NAME = "start_time";
+
     private static final String DATE_COLUMN_NAME = "date";
 
     private static final String TIME_COLUMN_NAME = "time";
@@ -72,8 +76,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
     public int addPlayedGame(PlayedGame game) {
         try {
             logger.info("Start addGame method");
-            String sql = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?);",
-                    PLAYED_GAME_TABLE_NAME, VERSION_COLUMN_NAME, POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, RESULT_COLUMN_NAME, LEVEL_COLUMN_NAME);
+            String sql = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s) VALUES (?,?,?,?,?,?,?,?);",
+                    PLAYED_GAME_TABLE_NAME, VERSION_COLUMN_NAME, POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, RESULT_COLUMN_NAME, LEVEL_COLUMN_NAME, START_DATE_COLUMN_NAME, START_TIME_COLUMN_NAME);
             pstmt = ConnectionUtil.getConnection().prepareStatement(sql);
             pstmt.setString(1, game.getVersion());
             pstmt.setInt(2, game.getPointForWin());
@@ -81,6 +85,8 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
             pstmt.setInt(4, game.getChannel().getId());
             pstmt.setString(5, game.getResult().name());
             pstmt.setDouble(6, game.getLevel());
+            pstmt.setDate(7, new Date(game.getStartDate().getTime()));
+            pstmt.setTime(8, new Time(game.getStartDate().getTime()));
             pstmt.executeUpdate();
 
             String maxId = "max_id";
@@ -130,9 +136,9 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
 
         List<PlayedGame> games = new ArrayList<>();
         try {
-            StringBuilder sql = new StringBuilder(String.format("SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s FROM %s WHERE 1 = 1 ",
-                    ID_COLUMN_NAME, VERSION_COLUMN_NAME, RESULT_COLUMN_NAME, DATE_COLUMN_NAME, TIME_COLUMN_NAME, MY_POINT_COLUMN_NAME, OPPONENT_POINT_COLUMN_NAME,
-                    POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, LEVEL_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
+            StringBuilder sql = new StringBuilder(String.format("SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s FROM %s WHERE 1 = 1 ",
+                    ID_COLUMN_NAME, VERSION_COLUMN_NAME, RESULT_COLUMN_NAME, DATE_COLUMN_NAME, TIME_COLUMN_NAME, START_DATE_COLUMN_NAME, START_TIME_COLUMN_NAME, MY_POINT_COLUMN_NAME,
+                    OPPONENT_POINT_COLUMN_NAME, POINT_FOR_WIN_COLUMN_NAME, OPPONENT_NAME_COLUMN_NAME, CHANNEL_ID_COLUMN_NAME, LEVEL_COLUMN_NAME, PLAYED_GAME_TABLE_NAME));
             if (!StringUtil.isEmpty(params.getVersion())) {
                 QueryUtil.addFilter(sql, VERSION_COLUMN_NAME, params.getVersion(), FilterCondition.EQUAL, true);
             }
@@ -161,11 +167,16 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 game.setId(rs.getInt(ID_COLUMN_NAME));
                 game.setVersion(rs.getString(VERSION_COLUMN_NAME));
                 game.setResult(GameResult.valueOf(rs.getString(RESULT_COLUMN_NAME)));
-                Date dateFromDB = rs.getDate(DATE_COLUMN_NAME);
-                Time timeFromDB = rs.getTime(TIME_COLUMN_NAME);
-                if (dateFromDB != null && timeFromDB != null) {
-                    TimeZone tz = TimeZone.getDefault();
-                    game.setEndDate(new java.util.Date(dateFromDB.getTime() + timeFromDB.getTime() + tz.getOffset(new java.util.Date().getTime())));
+                Date endDateFromDB = rs.getDate(DATE_COLUMN_NAME);
+                Time endTimeFromDB = rs.getTime(TIME_COLUMN_NAME);
+                Date startDateFromDB = rs.getDate(START_DATE_COLUMN_NAME);
+                Time startTimeFromDB = rs.getTime(START_TIME_COLUMN_NAME);
+                TimeZone tz = TimeZone.getDefault();
+                if (endDateFromDB != null && endTimeFromDB != null) {
+                    game.setEndDate(new java.util.Date(endDateFromDB.getTime() + endTimeFromDB.getTime() + tz.getOffset(new java.util.Date().getTime())));
+                }
+                if (startDateFromDB != null && startTimeFromDB != null) {
+                    game.setStartDate(new java.util.Date(startDateFromDB.getTime() + startTimeFromDB.getTime() + tz.getOffset(new java.util.Date().getTime())));
                 }
                 game.setMyPoint(rs.getInt(MY_POINT_COLUMN_NAME));
                 game.setOpponentPoint(rs.getInt(OPPONENT_POINT_COLUMN_NAME));
@@ -255,8 +266,11 @@ public class PlayedGameDAOImpl implements PlayedGameDAO {
                 sb.append(", ");
             }
 
-            sb.append(" sum(case when " + RESULT_COLUMN_NAME + " = '").append(GameResult.I_WIN).append("' then 1 else 0 end) as " + WIN_ME + ", sum(case when " + RESULT_COLUMN_NAME + " = '")
-                    .append(GameResult.OPPONENT_WIN).append("' then 1 else 0 end) as " + WIN_OPPONENT + ", sum(case when " + RESULT_COLUMN_NAME + " = '").append(GameResult.STOPPED)
+            sb.append(" sum(case when " + RESULT_COLUMN_NAME + " = '")
+                    .append(GameResult.I_WIN).append("' then 1 else 0 end) as " + WIN_ME + ", sum(case when " + RESULT_COLUMN_NAME + " = '")
+                    .append(GameResult.OPPONENT_WIN)
+                    .append("' then 1 else 0 end) as " + WIN_OPPONENT + ", sum(case when " + RESULT_COLUMN_NAME + " = '")
+                    .append(GameResult.STOPPED)
                     .append("' then 1 else 0 end) as " + STOPPED + " FROM " + PLAYED_GAME_TABLE_NAME + " ");
 
             sb.append(" WHERE 1 = 1 ");

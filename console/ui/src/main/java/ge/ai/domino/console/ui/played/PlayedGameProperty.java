@@ -18,7 +18,9 @@ public class PlayedGameProperty {
 
     private SimpleStringProperty result;
 
-    private SimpleStringProperty date;
+    private SimpleStringProperty startDate;
+
+    private SimpleStringProperty endDate;
 
     private SimpleIntegerProperty myPoint;
 
@@ -36,11 +38,8 @@ public class PlayedGameProperty {
         id = new SimpleIntegerProperty(game.getId());
         version = new SimpleStringProperty(game.getVersion());
         result = new SimpleStringProperty(Messages.get(game.getResult().name()));
-        if (game.getEndDate() != null) {
-            date = new SimpleStringProperty(df.format(game.getEndDate()));
-        } else {
-            date = new SimpleStringProperty("");
-        }
+        endDate = new SimpleStringProperty(game.getEndDate() == null ? "" : df.format(game.getEndDate()));
+        startDate = new SimpleStringProperty(game.getStartDate() == null ? "" : df.format(game.getStartDate()));
         myPoint = new SimpleIntegerProperty(game.getMyPoint());
         opponentPoint = new SimpleIntegerProperty(game.getOpponentPoint());
         pointForWin = new SimpleIntegerProperty(game.getPointForWin());
@@ -73,12 +72,20 @@ public class PlayedGameProperty {
         this.result.set(result);
     }
 
-    public String getDate() {
-        return date.get();
+    public String getEndDate() {
+        return endDate.get();
     }
 
-    public void setDate(String date) {
-        this.date.set(date);
+    public void setEndDate(String date) {
+        this.endDate.set(date);
+    }
+
+    public String getStartDate() {
+        return startDate.get();
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate.set(startDate);
     }
 
     public int getMyPoint() {

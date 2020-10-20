@@ -3,7 +3,7 @@ package ge.ai.domino.manager.game;
 import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.*;
-import ge.ai.domino.domain.game.ai.AiPrediction;
+import ge.ai.domino.domain.game.ai.AiPredictionsWrapper;
 import ge.ai.domino.domain.game.opponentplay.OpponentPlay;
 import ge.ai.domino.domain.game.opponentplay.OpponentTile;
 import ge.ai.domino.domain.game.opponentplay.OpponentTilesWrapper;
@@ -84,7 +84,7 @@ public class GameManager {
         } else {
             CachedGames.addMove(gameId, round.getTableInfo().getRoundBlockingInfo().isOmitMe() ? MoveHelper.getOmittedMeMove() : MoveHelper.getAddTileForMeMove(move));
         }
-        fixAiPredictionsMoves(newRound.getAiPredictions().getAiPredictions(), gameId, newRound.getTableInfo());
+        fixAiPredictionsMoves(newRound.getAiPredictions(), gameId, newRound.getTableInfo());
         return newRound;
     }
 
@@ -97,7 +97,7 @@ public class GameManager {
         newRound.setWarnMsgKey(OpponentTilesValidator.validateOpponentTiles(round, round.getTableInfo().getTilesFromBazaar(), "addTileForOpponent"));
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, round.getTableInfo().getRoundBlockingInfo().isOmitOpponent() ? MoveHelper.getOmittedOpponentMove() : MoveHelper.getAddTileForOpponentMove());
-        fixAiPredictionsMoves(newRound.getAiPredictions().getAiPredictions(), gameId, newRound.getTableInfo());
+        fixAiPredictionsMoves(newRound.getAiPredictions(), gameId, newRound.getTableInfo());
         return newRound;
     }
 
@@ -132,7 +132,7 @@ public class GameManager {
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getPlayForOpponentMove(move));
         fixDirections(gameId, newRound.getTableInfo());
-        fixAiPredictionsMoves(newRound.getAiPredictions().getAiPredictions(), gameId, newRound.getTableInfo());
+        fixAiPredictionsMoves(newRound.getAiPredictions(), gameId, newRound.getTableInfo());
         return newRound;
     }
 
@@ -362,11 +362,11 @@ public class GameManager {
         });
     }
 
-    private void fixAiPredictionsMoves(List<AiPrediction> aiPredictions, int gameId, TableInfo tableInfo) {
+    private void fixAiPredictionsMoves(AiPredictionsWrapper aiPredictionsWrapper, int gameId, TableInfo tableInfo) {
         Map<MoveDirection, MoveDirection> directionsMap = CachedGames.getDirectionsMap(gameId);
 
-        if (aiPredictions != null && !aiPredictions.isEmpty()) {
-            aiPredictions.forEach(aiPrediction -> {
+        if (aiPredictionsWrapper != null && aiPredictionsWrapper.getAiPredictions() != null) {
+            aiPredictionsWrapper.getAiPredictions().forEach(aiPrediction -> {
                 MoveDirection direction = aiPrediction.getMove().getDirection();
                 MoveDirection reversedDirection = getReversMoveDirection(directionsMap, direction);
 

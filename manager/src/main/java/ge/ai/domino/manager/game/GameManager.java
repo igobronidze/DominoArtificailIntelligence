@@ -334,6 +334,9 @@ public class GameManager {
     }
 
     private boolean isSameMove(MoveDirection direction1, MoveDirection direction2, TableInfo tableInfo) {
+        if (direction1 == null || direction2 == null) {
+            return false;
+        }
         PlayedTile playedTile1 = TileAndMoveHelper.getPlayedTile(tableInfo, direction1);
         PlayedTile playedTile2 = TileAndMoveHelper.getPlayedTile(tableInfo, direction2);
 

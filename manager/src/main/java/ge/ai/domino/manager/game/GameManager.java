@@ -170,6 +170,7 @@ public class GameManager {
 
         CachedGames.addRound(gameId, newRound);
         CachedGames.addMove(gameId, MoveHelper.getSkipRoundMove(myPoint, opponentPoint, leftTiles, startMe, finishGame));
+        CachedGames.initDirectionsMap(gameId);
         logger.info("Skipped round, gameId[" + gameId + "]");
         return newRound;
     }

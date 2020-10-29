@@ -30,7 +30,9 @@ public class TilesDetector {
 		ContoursDetector contoursDetector = new ContoursDetector();
 		List<Contour> contours = contoursDetector.detectContours(image, tilesDetectorParams.getContourMinArea());
 
-		return contours.stream().map(contour -> getTile(contour, tilesDetectorParams.isCombinedPoints())).collect(Collectors.toList());
+		return contours.stream()
+				.map(contour -> getTile(contour, tilesDetectorParams.isCombinedPoints()))
+				.collect(Collectors.toList());
 	}
 
 	private Tile getTile(Contour contour, boolean combinedPoints) {
@@ -38,9 +40,9 @@ public class TilesDetector {
 		List<Contour> bottomContours = new ArrayList<>();
 		int middle = contour.getTop() + (contour.getBottom() - contour.getTop()) / 2;
 		for (Contour child : contour.getChildren()) {
-			if (child.getTop() < middle - 3) {
+			if (child.getTop() <= middle - 3) {
 				topContours.add(child);
-			} else if (child.getTop() > middle + 3) {
+			} else if (child.getTop() >= middle + 3) {
 				bottomContours.add(child);
 			}
 		}

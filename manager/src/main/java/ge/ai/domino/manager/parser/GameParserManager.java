@@ -89,7 +89,7 @@ public class GameParserManager {
 	 * Log Example
 	 *
 	 ------------Started new game[223]------------
-	 Opponent Name: tmp     |     Channel: BetLive     |     Point for win: 255
+	 Opponent Name: tmp     |     Channel: Real     |     Point for win: 255
 	 *
 	 * @param log - Game log
 	 * @return Parsed game

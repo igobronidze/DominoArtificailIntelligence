@@ -7,9 +7,9 @@ import org.junit.Test;
 
 public class ImageCropperTest {
 
-	private static final String SRC_IMAGE_PATH = "test_images/src/crop/for_crop.png";
+	private static final String SRC_IMAGE_PATH = "test_images/crop/src/for_crop.png";
 
-	private static final String RESULT_IMAGE_PATH = "test_images/result/crop/cropped.png";
+	private static final String RESULT_IMAGE_PATH = "test_images/crop/result/cropped.png";
 
 	private static final int X = 100;
 

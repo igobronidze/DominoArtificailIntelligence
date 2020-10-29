@@ -41,7 +41,10 @@ public class ABTilesDetectorTest extends TilesDetectorTest {
         initExpectedTiles2(index++);
         initExpectedTiles3(index++);
         initExpectedTiles4(index++);
-        initExpectedTiles5(index);
+        initExpectedTiles5(index++);
+        initExpectedTiles6(index++);
+        initExpectedTiles7(index++);
+        initExpectedTiles8(index);
     }
 
     private void initExpectedTiles1(int index) {
@@ -94,6 +97,42 @@ public class ABTilesDetectorTest extends TilesDetectorTest {
         expectedTiles.add(new Tile(2, 4));
         expectedTiles.add(new Tile(3, 5));
         expectedTiles.add(new Tile(5, 5));
+        expectedTilesMap.put(index, expectedTiles);
+    }
+
+    private void initExpectedTiles6(int index) {
+        List<Tile> expectedTiles = new ArrayList<>();
+        expectedTiles.add(new Tile(0, 0));
+        expectedTiles.add(new Tile(2, 2));
+        expectedTiles.add(new Tile(2, 3));
+        expectedTiles.add(new Tile(1, 5));
+        expectedTiles.add(new Tile(2, 5));
+        expectedTiles.add(new Tile(0, 6));
+        expectedTiles.add(new Tile(6, 6));
+        expectedTilesMap.put(index, expectedTiles);
+    }
+
+    private void initExpectedTiles7(int index) {
+        List<Tile> expectedTiles = new ArrayList<>();
+        expectedTiles.add(new Tile(0, 0));
+        expectedTiles.add(new Tile(1, 1));
+        expectedTiles.add(new Tile(1, 5));
+        expectedTiles.add(new Tile(2, 5));
+        expectedTiles.add(new Tile(0, 6));
+        expectedTiles.add(new Tile(2, 6));
+        expectedTiles.add(new Tile(4, 6));
+        expectedTilesMap.put(index, expectedTiles);
+    }
+
+    private void initExpectedTiles8(int index) {
+        List<Tile> expectedTiles = new ArrayList<>();
+        expectedTiles.add(new Tile(0, 0));
+        expectedTiles.add(new Tile(1, 1));
+        expectedTiles.add(new Tile(1, 2));
+        expectedTiles.add(new Tile(2, 2));
+        expectedTiles.add(new Tile(1, 3));
+        expectedTiles.add(new Tile(4, 5));
+        expectedTiles.add(new Tile(3, 6));
         expectedTilesMap.put(index, expectedTiles);
     }
 }

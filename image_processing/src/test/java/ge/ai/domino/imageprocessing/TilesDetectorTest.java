@@ -1,6 +1,5 @@
 package ge.ai.domino.imageprocessing;
 
-import ge.ai.domino.domain.game.Tile;
 import org.junit.Assert;
 
 import javax.imageio.ImageIO;
@@ -15,7 +14,7 @@ public abstract class TilesDetectorTest {
 
 	protected static final String IMAGE_EXTENSION = ".png";
 
-	protected final Map<Integer, List<Tile>> expectedTilesMap = new HashMap<>();
+	protected final Map<Integer, List<TileContour>> expectedTilesMap = new HashMap<>();
 
 	private final TilesDetector tilesDetector = new TilesDetector();
 
@@ -23,11 +22,11 @@ public abstract class TilesDetectorTest {
 
 	protected void innerTestGetTiles() {
 		for (Map.Entry<Integer, BufferedImage> entry : imagesMap.entrySet()) {
-			List<Tile> resultTiles = tilesDetector.getTiles(entry.getValue(), getTilesDetectorParams());
-			List<Tile> expectedTiles = expectedTilesMap.get(entry.getKey());
-			Assert.assertEquals(expectedTiles.size(), resultTiles.size());
-			for (int i = 0; i < expectedTiles.size() ; i++) {
-				Assert.assertEquals("Problem occurred for image " + entry.getKey(), expectedTiles.get(i), resultTiles.get(i));
+			List<TileContour> resultTileContours = tilesDetector.getTiles(entry.getValue(), getTilesDetectorParams());
+			List<TileContour> expectedTileContours = expectedTilesMap.get(entry.getKey());
+			Assert.assertEquals(expectedTileContours.size(), resultTileContours.size());
+			for (int i = 0; i < expectedTileContours.size() ; i++) {
+				Assert.assertEquals("Problem occurred for image " + entry.getKey(), expectedTileContours.get(i), resultTileContours.get(i));
 			}
 		}
 	}

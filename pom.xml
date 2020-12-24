@@ -46,6 +46,7 @@
                 <module>p2p-client</module>
                 <module>math</module>
                 <module>multi-processor-client</module>
+                <module>robot</module>
             </modules>
         </profile>
     </profiles>

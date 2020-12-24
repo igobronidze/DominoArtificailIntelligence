@@ -41,98 +41,65 @@ public class ABTilesDetectorTest extends TilesDetectorTest {
         initExpectedTiles2(index++);
         initExpectedTiles3(index++);
         initExpectedTiles4(index++);
-        initExpectedTiles5(index++);
-        initExpectedTiles6(index++);
-        initExpectedTiles7(index++);
-        initExpectedTiles8(index);
+        initExpectedTiles5(index);
     }
 
     private void initExpectedTiles1(int index) {
-        List<Tile> expectedTiles = new ArrayList<>();
-        expectedTiles.add(new Tile(0, 2));
-        expectedTiles.add(new Tile(1, 2));
-        expectedTiles.add(new Tile(0, 5));
-        expectedTiles.add(new Tile(2, 5));
-        expectedTiles.add(new Tile(4, 6));
+        List<TileContour> expectedTiles = new ArrayList<>();
+        expectedTiles.add(new TileContour(new Tile(0, 2), 584, 648, 621, 718));
+        expectedTiles.add(new TileContour(new Tile(1, 2), 625, 648, 661, 718));
+        expectedTiles.add(new TileContour(new Tile(0, 5), 665, 648, 701, 718));
+        expectedTiles.add(new TileContour(new Tile(2, 5), 705, 648, 741, 718));
+        expectedTiles.add(new TileContour(new Tile(4, 6), 745, 648, 782, 718));
         expectedTilesMap.put(index, expectedTiles);
     }
 
     private void initExpectedTiles2(int index) {
-        List<Tile> expectedTiles = new ArrayList<>();
-        expectedTiles.add(new Tile(1, 4));
-        expectedTiles.add(new Tile(4, 4));
-        expectedTiles.add(new Tile(1, 5));
-        expectedTiles.add(new Tile(2, 5));
-        expectedTiles.add(new Tile(1, 6));
-        expectedTiles.add(new Tile(6, 6));
+        List<TileContour> expectedTiles = new ArrayList<>();
+        expectedTiles.add(new TileContour(new Tile(1, 4), 564, 648, 601, 718));
+        expectedTiles.add(new TileContour(new Tile(4, 4), 604, 648, 641, 718));
+        expectedTiles.add(new TileContour(new Tile(1, 5), 645, 648, 681, 718));
+        expectedTiles.add(new TileContour(new Tile(2, 5), 685, 648, 721, 718));
+        expectedTiles.add(new TileContour(new Tile(1, 6), 725, 648, 761, 718));
+        expectedTiles.add(new TileContour(new Tile(6, 6), 765, 648, 802, 718));
         expectedTilesMap.put(index, expectedTiles);
     }
 
     private void initExpectedTiles3(int index) {
-        List<Tile> expectedTiles = new ArrayList<>();
-        expectedTiles.add(new Tile(1, 4));
-        expectedTiles.add(new Tile(4, 4));
-        expectedTiles.add(new Tile(1, 5));
-        expectedTiles.add(new Tile(2, 5));
-        expectedTiles.add(new Tile(5, 5));
-        expectedTiles.add(new Tile(1, 6));
-        expectedTiles.add(new Tile(4, 6));
-        expectedTiles.add(new Tile(5, 6));
-        expectedTiles.add(new Tile(6, 6));
+        List<TileContour> expectedTiles = new ArrayList<>();
+        expectedTiles.add(new TileContour(new Tile(1, 4), 504, 648, 541, 718));
+        expectedTiles.add(new TileContour(new Tile(4, 4), 544, 648, 581, 718));
+        expectedTiles.add(new TileContour(new Tile(1, 5), 584, 648, 621, 718));
+        expectedTiles.add(new TileContour(new Tile(2, 5), 625, 648, 661, 718));
+        expectedTiles.add(new TileContour(new Tile(5, 5), 665, 648, 701, 718));
+        expectedTiles.add(new TileContour(new Tile(1, 6), 705, 648, 741, 718));
+        expectedTiles.add(new TileContour(new Tile(4, 6), 745, 648, 782, 718));
+        expectedTiles.add(new TileContour(new Tile(5, 6), 785, 648, 822, 718));
+        expectedTiles.add(new TileContour(new Tile(6, 6), 825, 648, 862, 718));
         expectedTilesMap.put(index, expectedTiles);
     }
 
     private void initExpectedTiles4(int index) {
-        List<Tile> expectedTiles = new ArrayList<>();
-        expectedTiles.add(new Tile(0, 5));
+        List<TileContour> expectedTiles = new ArrayList<>();
+        expectedTiles.add(new TileContour(new Tile(1, 1), 544, 648, 581, 718));
+        expectedTiles.add(new TileContour(new Tile(0, 2), 584, 648, 621, 718));
+        expectedTiles.add(new TileContour(new Tile(2, 2), 625, 648, 661, 718));
+        expectedTiles.add(new TileContour(new Tile(3, 3), 665, 648, 701, 718));
+        expectedTiles.add(new TileContour(new Tile(2, 4), 705, 648, 741, 718));
+        expectedTiles.add(new TileContour(new Tile(3, 5), 745, 648, 782, 718));
+        expectedTiles.add(new TileContour(new Tile(5, 5), 785, 648, 822, 718));
         expectedTilesMap.put(index, expectedTiles);
     }
 
     private void initExpectedTiles5(int index) {
-        List<Tile> expectedTiles = new ArrayList<>();
-        expectedTiles.add(new Tile(1, 1));
-        expectedTiles.add(new Tile(0, 2));
-        expectedTiles.add(new Tile(2, 2));
-        expectedTiles.add(new Tile(3, 3));
-        expectedTiles.add(new Tile(2, 4));
-        expectedTiles.add(new Tile(3, 5));
-        expectedTiles.add(new Tile(5, 5));
-        expectedTilesMap.put(index, expectedTiles);
-    }
-
-    private void initExpectedTiles6(int index) {
-        List<Tile> expectedTiles = new ArrayList<>();
-        expectedTiles.add(new Tile(0, 0));
-        expectedTiles.add(new Tile(2, 2));
-        expectedTiles.add(new Tile(2, 3));
-        expectedTiles.add(new Tile(1, 5));
-        expectedTiles.add(new Tile(2, 5));
-        expectedTiles.add(new Tile(0, 6));
-        expectedTiles.add(new Tile(6, 6));
-        expectedTilesMap.put(index, expectedTiles);
-    }
-
-    private void initExpectedTiles7(int index) {
-        List<Tile> expectedTiles = new ArrayList<>();
-        expectedTiles.add(new Tile(0, 0));
-        expectedTiles.add(new Tile(1, 1));
-        expectedTiles.add(new Tile(1, 5));
-        expectedTiles.add(new Tile(2, 5));
-        expectedTiles.add(new Tile(0, 6));
-        expectedTiles.add(new Tile(2, 6));
-        expectedTiles.add(new Tile(4, 6));
-        expectedTilesMap.put(index, expectedTiles);
-    }
-
-    private void initExpectedTiles8(int index) {
-        List<Tile> expectedTiles = new ArrayList<>();
-        expectedTiles.add(new Tile(0, 0));
-        expectedTiles.add(new Tile(1, 1));
-        expectedTiles.add(new Tile(1, 2));
-        expectedTiles.add(new Tile(2, 2));
-        expectedTiles.add(new Tile(1, 3));
-        expectedTiles.add(new Tile(4, 5));
-        expectedTiles.add(new Tile(3, 6));
+        List<TileContour> expectedTiles = new ArrayList<>();
+        expectedTiles.add(new TileContour(new Tile(0, 0), 544, 648, 581, 718));
+        expectedTiles.add(new TileContour(new Tile(1, 1), 584, 648, 621, 718));
+        expectedTiles.add(new TileContour(new Tile(1, 5), 625, 648, 661, 718));
+        expectedTiles.add(new TileContour(new Tile(2, 5), 665, 648, 701, 718));
+        expectedTiles.add(new TileContour(new Tile(0, 6), 705, 648, 741, 718));
+        expectedTiles.add(new TileContour(new Tile(2, 6), 745, 648, 782, 718));
+        expectedTiles.add(new TileContour(new Tile(4, 6), 785, 648, 822, 718));
         expectedTilesMap.put(index, expectedTiles);
     }
 }

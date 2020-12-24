@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class TilesDetector {
 
-	public List<Tile> getTiles(BufferedImage initialImage, TilesDetectorParams tilesDetectorParams) {
+	public List<TileContour> getTiles(BufferedImage initialImage, TilesDetectorParams tilesDetectorParams) {
 		opencv_core.Mat srcMat = OpenCVUtil.bufferedImageToMat(initialImage);
 
 		CropImageParams cropImageParams = CropImageParamsCreator.createCropImageParams(srcMat.cols(), srcMat.rows(), tilesDetectorParams.getHeightPercentage(),
@@ -31,11 +31,11 @@ public class TilesDetector {
 		List<Contour> contours = contoursDetector.detectContours(image, tilesDetectorParams.getContourMinArea());
 
 		return contours.stream()
-				.map(contour -> getTile(contour, tilesDetectorParams.isCombinedPoints()))
+				.map(contour -> getTile(contour, tilesDetectorParams.isCombinedPoints(), cropImageParams.getX(), cropImageParams.getY()))
 				.collect(Collectors.toList());
 	}
 
-	private Tile getTile(Contour contour, boolean combinedPoints) {
+	private TileContour getTile(Contour contour, boolean combinedPoints, int croppedX, int croppedY) {
 		List<Contour> topContours = new ArrayList<>();
 		List<Contour> bottomContours = new ArrayList<>();
 		int middle = contour.getTop() + (contour.getBottom() - contour.getTop()) / 2;
@@ -46,7 +46,15 @@ public class TilesDetector {
 				bottomContours.add(child);
 			}
 		}
-		return new Tile(countPoints(topContours, combinedPoints), countPoints(bottomContours, combinedPoints));
+		Tile tile = new Tile(countPoints(topContours, combinedPoints), countPoints(bottomContours, combinedPoints));
+
+		TileContour tileContour = new TileContour();
+		tileContour.setTile(tile);
+		tileContour.setTopLeftX(contour.getLeft() + croppedX);
+		tileContour.setTopLeftY(contour.getTop() + croppedY);
+		tileContour.setBottomRightX(contour.getRight() + croppedX);
+		tileContour.setBottomRightY(contour.getBottom() + croppedY);
+		return tileContour;
 	}
 
 	private int countPoints(List<Contour> contours, boolean combinedPoints) {

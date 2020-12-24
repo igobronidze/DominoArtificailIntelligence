@@ -4,6 +4,7 @@ import ge.ai.domino.caching.game.CachedGames;
 import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Tile;
+import ge.ai.domino.imageprocessing.TileContour;
 import ge.ai.domino.imageprocessing.TilesDetector;
 import ge.ai.domino.imageprocessing.TilesDetectorParams;
 import ge.ai.domino.manager.game.GameManager;
@@ -14,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TilesDetectorManager {
 
@@ -65,7 +67,8 @@ public class TilesDetectorManager {
             logger.info("Screenshot took " + (System.currentTimeMillis() - ms) + "ms");
 
             ms = System.currentTimeMillis();
-            List<Tile> tiles = balanceTiles(tilesDetector.getTiles(lastImage, getTilesDetectorParams(gameId, withSecondParams)));
+            List<TileContour> tileContours = tilesDetector.getTiles(lastImage, getTilesDetectorParams(gameId, withSecondParams));
+            List<Tile> tiles = balanceTiles(tileContours.stream().map(TileContour::getTile).collect(Collectors.toList()));
             logger.info("Detection took " + (System.currentTimeMillis() - ms) + "ms");
             logger.info("Detected tiles: " + tiles);
             return tiles;

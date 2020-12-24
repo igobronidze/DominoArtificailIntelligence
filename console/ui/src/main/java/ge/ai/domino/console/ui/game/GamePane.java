@@ -133,6 +133,7 @@ public abstract class GamePane extends BorderPane {
                         controlPanel.getStage().requestFocus();
 
                         Tile highestTile = GamePaneHelper.getHighestTile();
+                        new ServiceExecutor() {}.execute(() -> gameService.simulatePlayMove(round.getGameInfo().getGameId(), highestTile.getLeft(), highestTile.getRight()));
                         onMyTileEntered(highestTile, null, false);
                     }
                 }.execute(() -> round = gameService.detectAndAddInitialTilesForMe(round.getGameInfo().getGameId(), true, withSecondParams));
@@ -470,13 +471,8 @@ public abstract class GamePane extends BorderPane {
 
         if (bestAiPrediction != null && gamePaneInitialData.isBestMoveAutoPlay()) {
             Move move = bestAiPrediction.getMove();
+            new ServiceExecutor() {}.execute(() -> gameService.simulatePlayMove(round.getGameInfo().getGameId(), move.getLeft(), move.getRight()));
             onMyTileEntered(new Tile(move.getLeft(), move.getRight()), move.getDirection(), true);
-            new ServiceExecutor() {
-                @Override
-                public boolean isAsync() {
-                    return true;
-                }
-            }.execute(() -> gameService.simulatePlayMove(round.getGameInfo().getGameId(), move));
 
             return null;
         }

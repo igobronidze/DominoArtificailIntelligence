@@ -89,7 +89,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public void simulatePlayMove(int gameId, Move move) throws DAIException {
-        gameManager.simulatePlayMove(gameId, move);
+    public void simulatePlayMove(int gameId, int left, int right) throws DAIException {
+        gameManager.simulatePlayMove(gameId, left, right);
     }
 }

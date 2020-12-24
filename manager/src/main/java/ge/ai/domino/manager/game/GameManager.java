@@ -275,15 +275,17 @@ public class GameManager {
         return CachedGames.getTilesOrder(gameId);
     }
 
-    public void simulatePlayMove(int gameId, Move move) throws DAIException {
+    public void simulatePlayMove(int gameId, int left, int right) throws DAIException {
         Round round = CachedGames.getCurrentRound(gameId, true);
-
-        TileContour tileContour = tilesDetectorManager.detectTileContour(gameId, move.getLeft(), move.getRight());
-        int randomPositionX = RandomUtils.getRandomBetween(tileContour.getTopLeftX() + TILE_CONTOUR_CLICK_BORDER_SIZE, tileContour.getBottomRightX() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
-        int randomPositionY = RandomUtils.getRandomBetween(tileContour.getTopLeftY() + TILE_CONTOUR_CLICK_BORDER_SIZE, tileContour.getBottomRightY() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
 
         try {
             ScreenRobot.changeScreen();
+            Thread.sleep(500);
+
+            TileContour tileContour = tilesDetectorManager.detectTileContour(gameId, left, right);
+            int randomPositionX = RandomUtils.getRandomBetween(tileContour.getTopLeftX() + TILE_CONTOUR_CLICK_BORDER_SIZE, tileContour.getBottomRightX() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
+            int randomPositionY = RandomUtils.getRandomBetween(tileContour.getTopLeftY() + TILE_CONTOUR_CLICK_BORDER_SIZE, tileContour.getBottomRightY() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
+
             MouseRobot.moveAndClick(randomPositionX, randomPositionY);
         } catch (Exception ex) {
             logger.error("Error occurred while simulate click");

@@ -40,5 +40,5 @@ public interface GameService {
 
     Map<Tile, Integer> getTilesOrder(int gameId);
 
-    void simulatePlayMove(int gameId, Move move) throws DAIException;
+    void simulatePlayMove(int gameId, int left, int right) throws DAIException;
 }

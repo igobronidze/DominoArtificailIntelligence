@@ -12,6 +12,7 @@ import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.domain.sysparam.SysParam;
+import ge.ai.domino.imageprocessing.TileContour;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictorFactory;
@@ -28,7 +29,10 @@ import ge.ai.domino.manager.imageprocessing.TilesDetectorManager;
 import ge.ai.domino.manager.multiprocessorserver.MultiProcessorServer;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
+import ge.ai.domino.robot.MouseRobot;
+import ge.ai.domino.robot.ScreenRobot;
 import ge.ai.domino.serverutil.TileAndMoveHelper;
+import ge.ai.domino.util.random.RandomUtils;
 import org.apache.log4j.Logger;
 
 import javax.imageio.ImageIO;
@@ -42,6 +46,8 @@ import java.util.stream.Collectors;
 public class GameManager {
 
     private static final Logger logger = Logger.getLogger(GameManager.class);
+
+    private static final int TILE_CONTOUR_CLICK_BORDER_SIZE = 2;
 
     private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
 
@@ -269,6 +275,22 @@ public class GameManager {
         return CachedGames.getTilesOrder(gameId);
     }
 
+    public void simulatePlayMove(int gameId, Move move) throws DAIException {
+        Round round = CachedGames.getCurrentRound(gameId, true);
+
+        TileContour tileContour = tilesDetectorManager.detectTileContour(gameId, move.getLeft(), move.getRight());
+        int randomPositionX = RandomUtils.getRandomBetween(tileContour.getTopLeftX() + TILE_CONTOUR_CLICK_BORDER_SIZE, tileContour.getBottomRightX() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
+        int randomPositionY = RandomUtils.getRandomBetween(tileContour.getTopLeftY() + TILE_CONTOUR_CLICK_BORDER_SIZE, tileContour.getBottomRightY() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
+
+        try {
+            ScreenRobot.changeScreen();
+            MouseRobot.moveAndClick(randomPositionX, randomPositionY);
+        } catch (Exception ex) {
+            logger.error("Error occurred while simulate click");
+            throw new DAIException("clickSimulateError");
+        }
+    }
+
     private void logImage(BufferedImage image) throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss");
 
@@ -277,8 +299,8 @@ public class GameManager {
 
         String destPath = folder.getPath() + "/" + sdf.format(new Date()) + TilesDetectorManager.TMP_IMAGE_EXTENSION;
 
-        File outputfile = new File(destPath);
-        ImageIO.write(image, "jpg", outputfile);
+        File outputFile = new File(destPath);
+        ImageIO.write(image, "jpg", outputFile);
     }
 
     private void checkMinMaxInProgress(int gameId) throws DAIException {

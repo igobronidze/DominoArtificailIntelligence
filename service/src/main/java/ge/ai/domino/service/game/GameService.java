@@ -39,4 +39,6 @@ public interface GameService {
     boolean roundWillBeBlocked(int gameId, Move move) throws DAIException;
 
     Map<Tile, Integer> getTilesOrder(int gameId);
+
+    void simulatePlayMove(int gameId, Move move) throws DAIException;
 }

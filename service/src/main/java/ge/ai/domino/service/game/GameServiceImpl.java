@@ -87,4 +87,9 @@ public class GameServiceImpl implements GameService {
     public Map<Tile, Integer> getTilesOrder(int gameId) {
         return gameManager.getTilesOrder(gameId);
     }
+
+    @Override
+    public void simulatePlayMove(int gameId, Move move) throws DAIException {
+        gameManager.simulatePlayMove(gameId, move);
+    }
 }

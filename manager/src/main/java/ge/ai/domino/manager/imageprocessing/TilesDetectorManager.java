@@ -8,9 +8,9 @@ import ge.ai.domino.imageprocessing.TileContour;
 import ge.ai.domino.imageprocessing.TilesDetector;
 import ge.ai.domino.imageprocessing.TilesDetectorParams;
 import ge.ai.domino.manager.game.GameManager;
+import ge.ai.domino.robot.ScreenRobot;
 import org.apache.log4j.Logger;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,9 +61,7 @@ public class TilesDetectorManager {
         try {
             logger.info("Start detectTiles method");
             long ms = System.currentTimeMillis();
-            Robot robot = new Robot();
-            Rectangle capture = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-            lastImage = robot.createScreenCapture(capture);
+            lastImage = ScreenRobot.getScreenCapture();
             logger.info("Screenshot took " + (System.currentTimeMillis() - ms) + "ms");
 
             ms = System.currentTimeMillis();
@@ -74,6 +72,33 @@ public class TilesDetectorManager {
             return tiles;
         } catch (Exception ex) {
             logger.error("Error occurred while detect tiles", ex);
+            throw new DAIException("cantDetectTiles");
+        }
+    }
+
+    public TileContour detectTileContour(int gameId, int left, int right) throws DAIException {
+        try {
+            logger.info("Start detectTileContour method");
+            long ms = System.currentTimeMillis();
+
+            lastImage = ScreenRobot.getScreenCapture();
+
+            logger.info("Screenshot took " + (System.currentTimeMillis() - ms) + "ms");
+
+            ms = System.currentTimeMillis();
+            List<TileContour> tileContours = tilesDetector.getTiles(lastImage, getTilesDetectorParams(gameId, false));
+            TileContour detectedContour = null;
+            for (TileContour tileContour : tileContours) {
+                if ((tileContour.getTile().getLeft() == left && tileContour.getTile().getRight() == right) ||
+                        (tileContour.getTile().getLeft() == right && tileContour.getTile().getRight() == left)) {
+                    detectedContour = tileContour;
+                }
+            }
+
+            logger.info("Detection took " + (System.currentTimeMillis() - ms) + "ms");
+            return detectedContour;
+        } catch (Exception ex) {
+            logger.error("Error occurred while detect tile contour", ex);
             throw new DAIException("cantDetectTiles");
         }
     }

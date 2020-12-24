@@ -20,7 +20,7 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class HeuristicsWindow {
+public class HeuristicsWindow {
 
 	private final HeuristicService heuristicService = new HeuristicServiceImpl();
 
@@ -51,7 +51,6 @@ public abstract class HeuristicsWindow {
 
 		TCHButton cancelButton = new TCHButton(Messages.get("cancel"));
 		cancelButton.setOnAction(event -> {
-			onClose();
 			stage.close();
 		});
 		HBox hBox = new HBox(25);
@@ -62,12 +61,9 @@ public abstract class HeuristicsWindow {
 		vBox.setAlignment(Pos.TOP_CENTER);
 		vBox.getChildren().addAll(scrollPane, hBox);
 
-		stage.setOnCloseRequest(event -> onClose());
 		stage.setScene(new Scene(vBox));
 		stage.setWidth(550);
 		stage.setHeight(330);
 		stage.showAndWait();
 	}
-
-	public abstract void onClose();
 }

@@ -16,17 +16,13 @@ public class TileContour {
 
     private Tile tile;
 
-    private double topLeftX;
+    private int topLeftX;
 
-    private double topLeftY;
+    private int topLeftY;
 
-    private double bottomRightX;
+    private int bottomRightX;
 
-    private double bottomRightY;
-
-    public TileContour(Tile tile) {
-        this.tile = tile;
-    }
+    private int bottomRightY;
 
     @Override
     public boolean equals(Object o) {

@@ -9,6 +9,12 @@ import java.awt.event.InputEvent;
 
 public class MouseRobot {
 
+    public static void move(int xPosition, int yPosition) throws Exception {
+        MouseMotionFactory mouseMotionFactory = MouseMotionFactory.getDefault();
+        MouseMotion mouseMotion = mouseMotionFactory.build(xPosition, yPosition);
+        mouseMotion.move();
+    }
+
     public static void moveAndClick(int xPosition, int yPosition) throws Exception {
         MouseMotionFactory mouseMotionFactory = MouseMotionFactory.getDefault();
         MouseMotion mouseMotion = mouseMotionFactory.build(xPosition, yPosition);

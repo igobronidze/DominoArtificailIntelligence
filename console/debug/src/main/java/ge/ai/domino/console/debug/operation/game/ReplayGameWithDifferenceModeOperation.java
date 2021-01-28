@@ -149,7 +149,7 @@ public class ReplayGameWithDifferenceModeOperation implements GameDebuggerOperat
 				multiProcessorServer.updateSysParams(params);
 			}
 		} catch (IOException ex) {
-			logger.error("Error occurred while read property file[" + filePath + "]");
+			logger.error("Error occurred while read property file[" + filePath + "]", ex);
 		}
 	}
 }

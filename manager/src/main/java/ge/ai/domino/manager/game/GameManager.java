@@ -283,12 +283,17 @@ public class GameManager {
             clickOnRandomPosition(tileLocation);
 
             if (isMultiplePossibleMove(gameId, left, right)) {
-                Thread.sleep(RandomUtils.getRandomBetween(100, 150));
+                Thread.sleep(RandomUtils.getRandomBetween(400, 500));
                 Rectangle possibleMoveRectangle = recognizeTableManager.getPossibleMoveRectangle(gameId, direction);
                 clickOnRandomPosition(possibleMoveRectangle);
             }
         } catch (Exception ex) {
-            logger.error("Error occurred while simulate click");
+            try {
+                logImage(recognizeTableManager.getLastImage());
+            } catch (IOException ioEx) {
+                logger.warn("Can't save log image", ioEx);
+            }
+            logger.error("Error occurred while simulate click", ex);
             throw new DAIException("clickSimulateError");
         }
     }
@@ -306,12 +311,12 @@ public class GameManager {
                 possMovesCount++;
             }
         }
-        if (tableInfo.getTop() != null) {
+        if (tableInfo.getTop() != null && !tableInfo.getLeft().isCenter() && !tableInfo.getRight().isCenter()) {
             if (tableInfo.getTop().getOpenSide() == left || tableInfo.getTop().getOpenSide() == right) {
                 possMovesCount++;
             }
         }
-        if (tableInfo.getBottom() != null) {
+        if (tableInfo.getBottom() != null && !tableInfo.getLeft().isCenter() && !tableInfo.getRight().isCenter()) {
             if (tableInfo.getBottom().getOpenSide() == left || tableInfo.getBottom().getOpenSide() == right) {
                 possMovesCount++;
             }

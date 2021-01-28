@@ -84,8 +84,15 @@ public class RecognizeTableManager {
         }
     }
 
-    public Rectangle getPossibleMoveRectangle(int gameId, MoveDirection moveDirection) {
+    public Rectangle getPossibleMoveRectangle(int gameId, MoveDirection moveDirection) throws DAIException {
         logger.info("Start get possible move rectangles method");
+        try {
+            lastImage = ScreenRobot.getScreenCapture();
+        } catch (Exception ex) {
+            logger.error("Error occurred while screen capture", ex);
+            throw new DAIException("cantDetectPossibleMoveRectangles");
+        }
+
         PossMoveTileRecognizeParams params = getPossMoveTileRecognizeParams(gameId);
         List<IPPossMoveTile> possMoveTiles = TableRecognizer.recognizePossMoveTiles(lastImage, params);
         List<Rectangle> possMoveRectangles = possMoveTiles.stream()

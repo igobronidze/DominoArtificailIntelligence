@@ -206,7 +206,7 @@ public class MultiProcessorClientManager {
 
             oos.writeObject(result);
         } catch (DAIException ex) {
-            logger.error("Error occurred while execute rank test");
+            logger.error("Error occurred while execute rank test", ex);
         } finally {
             CachedGames.removeGame(gameId);
             CachedMinMax.cleanUp(gameId);

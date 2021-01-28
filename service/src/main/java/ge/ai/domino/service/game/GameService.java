@@ -5,6 +5,7 @@ import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
+import ge.ai.domino.domain.move.MoveDirection;
 
 import java.util.Map;
 
@@ -28,9 +29,9 @@ public interface GameService {
 
     Round skipRound(int gameId, int myPoint, int opponentPoint, int leftTiles, boolean startMe, boolean finishGame) throws DAIException;
 
-    Round detectAndAddNewTilesForMe(int gameId, boolean withSecondParams) throws DAIException;
+    Round recognizeAndAddNewTilesForMe(int gameId) throws DAIException;
 
-    Round detectAndAddInitialTilesForMe(int gameId, Boolean startMe, boolean withSecondParams) throws DAIException;
+    Round recognizeAndAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException;
 
     void editOpponentNameInCache(int gameId, String opponentName) throws DAIException;
 
@@ -40,5 +41,5 @@ public interface GameService {
 
     Map<Tile, Integer> getTilesOrder(int gameId);
 
-    void simulatePlayMove(int gameId, int left, int right) throws DAIException;
+    void simulatePlayMove(int gameId, int left, int right, MoveDirection direction) throws DAIException;
 }

@@ -5,6 +5,7 @@ import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.game.Round;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.Move;
+import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.manager.game.GameManager;
 
 import java.util.Map;
@@ -59,13 +60,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Round detectAndAddNewTilesForMe(int gameId, boolean withSecondParams) throws DAIException {
-        return gameManager.detectAndAddNewTilesForMe(gameId, withSecondParams);
+    public Round recognizeAndAddNewTilesForMe(int gameId) throws DAIException {
+        return gameManager.recognizeAndAddNewTilesForMe(gameId);
     }
 
     @Override
-    public Round detectAndAddInitialTilesForMe(int gameId, Boolean startMe, boolean withSecondParams) throws DAIException {
-        return gameManager.detectAndAddInitialTilesForMe(gameId, startMe, withSecondParams);
+    public Round recognizeAndAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException {
+        return gameManager.recognizeAndAddInitialTilesForMe(gameId, startMe);
     }
 
     @Override
@@ -89,7 +90,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public void simulatePlayMove(int gameId, int left, int right) throws DAIException {
-        gameManager.simulatePlayMove(gameId, left, right);
+    public void simulatePlayMove(int gameId, int left, int right, MoveDirection direction) throws DAIException {
+        gameManager.simulatePlayMove(gameId, left, right, direction);
     }
 }

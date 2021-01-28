@@ -12,7 +12,7 @@ import ge.ai.domino.domain.move.MoveDirection;
 import ge.ai.domino.domain.move.MoveType;
 import ge.ai.domino.domain.played.PlayedTile;
 import ge.ai.domino.domain.sysparam.SysParam;
-import ge.ai.domino.imageprocessing.TileContour;
+import ge.ai.domino.imageprocessing.service.Rectangle;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.ai.minmax.CachedPrediction;
 import ge.ai.domino.manager.game.ai.predictor.OpponentTilesPredictorFactory;
@@ -25,7 +25,7 @@ import ge.ai.domino.manager.game.logging.RoundLogger;
 import ge.ai.domino.manager.game.move.*;
 import ge.ai.domino.manager.game.validator.MoveValidator;
 import ge.ai.domino.manager.game.validator.OpponentTilesValidator;
-import ge.ai.domino.manager.imageprocessing.TilesDetectorManager;
+import ge.ai.domino.manager.imageprocessing.RecognizeTableManager;
 import ge.ai.domino.manager.multiprocessorserver.MultiProcessorServer;
 import ge.ai.domino.manager.sysparam.SystemParameterManager;
 import ge.ai.domino.manager.util.ProjectVersionUtil;
@@ -57,7 +57,7 @@ public class GameManager {
 
     private final MoveProcessor addForOpponentProcessor = new AddForOpponentProcessor();
 
-    private final TilesDetectorManager tilesDetectorManager = new TilesDetectorManager();
+    private final RecognizeTableManager recognizeTableManager = new RecognizeTableManager();
 
     private final SystemParameterManager systemParameterManager = new SystemParameterManager();
 
@@ -181,11 +181,11 @@ public class GameManager {
         return newRound;
     }
 
-    public Round detectAndAddNewTilesForMe(int gameId, boolean withSecondParams) throws DAIException {
-        logger.info("Start detectAndAddNewTilesForMe method, gameId[" + gameId + "], withSecondParams[" + withSecondParams + "]");
+    public Round recognizeAndAddNewTilesForMe(int gameId) throws DAIException {
+        logger.info("Start detectAndAddNewTilesForMe method, gameId[" + gameId + "]");
         Round round = CachedGames.getCurrentRound(gameId, true);
         try {
-            List<Tile> tiles = tilesDetectorManager.detectTiles(gameId, withSecondParams);
+            List<Tile> tiles = recognizeTableManager.recognizeMyTiles(gameId);
             List<Tile> tilesForAdd = getAddedTiles(tiles, round.getMyTiles());
             Tile lastAddedTile = getLastAddedTile(tilesForAdd, round.getTableInfo());
             logger.info("Last added tile: " + lastAddedTile);
@@ -203,7 +203,7 @@ public class GameManager {
             }
         } catch (Exception ex) {
             try {
-                logImage(tilesDetectorManager.getLastImage());
+                logImage(recognizeTableManager.getLastImage());
             } catch (IOException ioEx) {
                 logger.warn("Can't save log image", ioEx);
             }
@@ -213,10 +213,10 @@ public class GameManager {
         return CachedGames.getCurrentRound(gameId, false);
     }
 
-    public Round detectAndAddInitialTilesForMe(int gameId, Boolean startMe, boolean withSecondParams) throws DAIException {
-        logger.info("Start detectAndAddInitialTilesForMe method, gameId[" + gameId + "], startMe[" + startMe + "], withSecondParams[" + withSecondParams + "]");
+    public Round recognizeAndAddInitialTilesForMe(int gameId, Boolean startMe) throws DAIException {
+        logger.info("Start detectAndAddInitialTilesForMe method, gameId[" + gameId + "], startMe[" + startMe + "]");
         try {
-            List<Tile> tiles = tilesDetectorManager.detectTiles(gameId, withSecondParams);
+            List<Tile> tiles = recognizeTableManager.recognizeMyTiles(gameId);
             for (int i = 0; i < tiles.size() - 1; i++) {
                 Tile tile = tiles.get(i);
                 addTileForMe(gameId, tile.getLeft(), tile.getRight());
@@ -228,7 +228,7 @@ public class GameManager {
             addTileForMe(gameId, tile.getLeft(), tile.getRight());
         } catch (Exception ex) {
             try {
-                logImage(tilesDetectorManager.getLastImage());
+                logImage(recognizeTableManager.getLastImage());
             } catch (IOException ioEx) {
                 logger.warn("Can't save log image", ioEx);
             }
@@ -275,22 +275,57 @@ public class GameManager {
         return CachedGames.getTilesOrder(gameId);
     }
 
-    public void simulatePlayMove(int gameId, int left, int right) throws DAIException {
-        Round round = CachedGames.getCurrentRound(gameId, true);
-
+    public void simulatePlayMove(int gameId, int left, int right, MoveDirection direction) throws DAIException {
         try {
             ScreenRobot.changeScreen();
-            Thread.sleep(500);
 
-            TileContour tileContour = tilesDetectorManager.detectTileContour(gameId, left, right);
-            int randomPositionX = RandomUtils.getRandomBetween(tileContour.getTopLeftX() + TILE_CONTOUR_CLICK_BORDER_SIZE, tileContour.getBottomRightX() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
-            int randomPositionY = RandomUtils.getRandomBetween(tileContour.getTopLeftY() + TILE_CONTOUR_CLICK_BORDER_SIZE, tileContour.getBottomRightY() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
+            Rectangle tileLocation = recognizeTableManager.getRecognizeTileLocation(gameId, left, right);
+            clickOnRandomPosition(tileLocation);
 
-            MouseRobot.moveAndClick(randomPositionX, randomPositionY);
+            if (isMultiplePossibleMove(gameId, left, right)) {
+                Thread.sleep(RandomUtils.getRandomBetween(100, 150));
+                Rectangle possibleMoveRectangle = recognizeTableManager.getPossibleMoveRectangle(gameId, direction);
+                clickOnRandomPosition(possibleMoveRectangle);
+            }
         } catch (Exception ex) {
             logger.error("Error occurred while simulate click");
             throw new DAIException("clickSimulateError");
         }
+    }
+
+    private boolean isMultiplePossibleMove(int gameId, int left, int right) {
+        TableInfo tableInfo = CachedGames.getCurrentRound(gameId, true).getTableInfo();
+        int possMovesCount = 0;
+        if (tableInfo.getLeft() != null) {
+            if (tableInfo.getLeft().getOpenSide() == left || tableInfo.getLeft().getOpenSide() == right) {
+                possMovesCount++;
+            }
+        }
+        if (tableInfo.getRight() != null) {
+            if (tableInfo.getRight().getOpenSide() == left || tableInfo.getRight().getOpenSide() == right) {
+                possMovesCount++;
+            }
+        }
+        if (tableInfo.getTop() != null) {
+            if (tableInfo.getTop().getOpenSide() == left || tableInfo.getTop().getOpenSide() == right) {
+                possMovesCount++;
+            }
+        }
+        if (tableInfo.getBottom() != null) {
+            if (tableInfo.getBottom().getOpenSide() == left || tableInfo.getBottom().getOpenSide() == right) {
+                possMovesCount++;
+            }
+        }
+        return possMovesCount > 1;
+    }
+
+    private void clickOnRandomPosition(Rectangle rectangle) throws Exception {
+        int randomPositionX = RandomUtils.getRandomBetween(rectangle.getTopLeft().getX() + TILE_CONTOUR_CLICK_BORDER_SIZE,
+                rectangle.getBottomRight().getX() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
+        int randomPositionY = RandomUtils.getRandomBetween(rectangle.getTopLeft().getY() + TILE_CONTOUR_CLICK_BORDER_SIZE,
+                rectangle.getBottomRight().getY() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
+
+        MouseRobot.moveAndClick(randomPositionX, randomPositionY);
     }
 
     private void logImage(BufferedImage image) throws IOException {
@@ -299,7 +334,7 @@ public class GameManager {
         File folder = new File(LOG_IMAGES_DIRECTORY_PATH);
         folder.mkdirs();
 
-        String destPath = folder.getPath() + "/" + sdf.format(new Date()) + TilesDetectorManager.TMP_IMAGE_EXTENSION;
+        String destPath = folder.getPath() + "/" + sdf.format(new Date()) + RecognizeTableManager.TMP_IMAGE_EXTENSION;
 
         File outputFile = new File(destPath);
         ImageIO.write(image, "jpg", outputFile);

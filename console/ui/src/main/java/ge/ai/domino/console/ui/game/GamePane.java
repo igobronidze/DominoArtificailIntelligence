@@ -87,7 +87,7 @@ public abstract class GamePane extends BorderPane {
         this.gameProperties = gameProperties;
         this.gamePaneInitialData = gamePaneInitialData;
 
-        showDetectTilesWindow(true);
+        showRecognizeTilesWindow(true);
 
         reload(false, false);
 
@@ -96,13 +96,13 @@ public abstract class GamePane extends BorderPane {
 
     public abstract void onNewGame();
 
-    private void showDetectTilesWindow(boolean firstRound) {
+    private void showRecognizeTilesWindow(boolean firstRound) {
         controlPanel.getStage().setIconified(true);
 
-        new DetectTilesWindow() {
+        new RecognizeTilesWindow() {
             @Override
             @SuppressWarnings("Duplicates")
-            public void onYes(boolean withSecondParams) {
+            public void onYes() {
                 new ServiceExecutor() {
                     @Override
                     public boolean isAsync() {
@@ -115,11 +115,11 @@ public abstract class GamePane extends BorderPane {
                         controlPanel.getStage().requestFocus();
                         reload(false, false);
                     }
-                }.execute(() -> round = gameService.detectAndAddInitialTilesForMe(round.getGameInfo().getGameId(), null, withSecondParams));
+                }.execute(() -> round = gameService.recognizeAndAddInitialTilesForMe(round.getGameInfo().getGameId(), null));
             }
 
             @Override
-            public void onStartMe(boolean withSecondParams) {
+            public void onStartMe() {
                 new ServiceExecutor() {
                     @Override
                     public boolean isAsync() {
@@ -133,15 +133,15 @@ public abstract class GamePane extends BorderPane {
                         controlPanel.getStage().requestFocus();
 
                         Tile highestTile = GamePaneHelper.getHighestTile();
-                        new ServiceExecutor() {}.execute(() -> gameService.simulatePlayMove(round.getGameInfo().getGameId(), highestTile.getLeft(), highestTile.getRight()));
+                        new ServiceExecutor() {}.execute(() -> gameService.simulatePlayMove(round.getGameInfo().getGameId(), highestTile.getLeft(), highestTile.getRight(), MoveDirection.LEFT));
                         onMyTileEntered(highestTile, null, false);
                     }
-                }.execute(() -> round = gameService.detectAndAddInitialTilesForMe(round.getGameInfo().getGameId(), true, withSecondParams));
+                }.execute(() -> round = gameService.recognizeAndAddInitialTilesForMe(round.getGameInfo().getGameId(), true));
             }
 
             @Override
             @SuppressWarnings("Duplicates")
-            public void onStartOpponent(boolean withSecondParams) {
+            public void onStartOpponent() {
                 new ServiceExecutor() {
                     @Override
                     public boolean isAsync() {
@@ -154,7 +154,7 @@ public abstract class GamePane extends BorderPane {
                         controlPanel.getStage().requestFocus();
                         reload(false, false);
                     }
-                }.execute(() -> round = gameService.detectAndAddInitialTilesForMe(round.getGameInfo().getGameId(), false, withSecondParams));
+                }.execute(() -> round = gameService.recognizeAndAddInitialTilesForMe(round.getGameInfo().getGameId(), false));
             }
 
             @Override
@@ -187,7 +187,7 @@ public abstract class GamePane extends BorderPane {
                         controlPanel.getStage().requestFocus();
                         reload(false, false);
                     }
-                }.execute(() -> round = gameService.detectAndAddNewTilesForMe(round.getGameInfo().getGameId(), withSecondParams));
+                }.execute(() -> round = gameService.recognizeAndAddNewTilesForMe(round.getGameInfo().getGameId()));
             }
 
             @Override
@@ -221,8 +221,8 @@ public abstract class GamePane extends BorderPane {
                 public void onCancel() {}
             }.showWindow(specifyWinner);
         }
-        if (showDetectTilesWindow && isFirsMove() && round.getMyTiles().isEmpty()) {
-            showDetectTilesWindow(false);
+        if (showDetectTilesWindow && isFirstMove() && round.getMyTiles().isEmpty()) {
+            showRecognizeTilesWindow(false);
         }
         if (round != null && gamePaneInitialData.isDetectAddedTiles() && !hasPrediction && round.getTableInfo().isMyMove()
                 && round.getTableInfo().getBazaarTilesCount() != 2 && round.getTableInfo().getLeft() != null) {
@@ -471,7 +471,7 @@ public abstract class GamePane extends BorderPane {
 
         if (bestAiPrediction != null && gamePaneInitialData.isBestMoveAutoPlay()) {
             Move move = bestAiPrediction.getMove();
-            new ServiceExecutor() {}.execute(() -> gameService.simulatePlayMove(round.getGameInfo().getGameId(), move.getLeft(), move.getRight()));
+            new ServiceExecutor() {}.execute(() -> gameService.simulatePlayMove(round.getGameInfo().getGameId(), move.getLeft(), move.getRight(), move.getDirection()));
             onMyTileEntered(new Tile(move.getLeft(), move.getRight()), move.getDirection(), true);
 
             return null;
@@ -575,7 +575,7 @@ public abstract class GamePane extends BorderPane {
 
     private void onMyTilePressed(Tile tile) {
         if (round.getTableInfo().isMyMove()) {
-            if (isFirsMove()) {
+            if (isFirstMove()) {
                 onMyTileEntered(tile, null, false);
             } else {
                 myTilesImages.get(tile).setFitHeight(TILE_IMAGE_HEIGHT + 10);
@@ -590,7 +590,7 @@ public abstract class GamePane extends BorderPane {
 
     private void onOpponentTilePressed(Tile tile) {
         if (!round.getTableInfo().isMyMove()) {
-            if (isFirsMove()) {
+            if (isFirstMove()) {
                 onOpponentTileEntered(tile, null);
             } else {
                 opponentTilesImages.get(tile).setFitHeight(TILE_IMAGE_HEIGHT + 12);
@@ -616,7 +616,7 @@ public abstract class GamePane extends BorderPane {
         return imageView;
     }
 
-    private boolean isFirsMove() {
+    private boolean isFirstMove() {
         if (round == null) {
             return false;
         }

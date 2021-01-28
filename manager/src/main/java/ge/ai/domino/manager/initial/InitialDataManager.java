@@ -8,8 +8,9 @@ import ge.ai.domino.domain.game.GameProperties;
 import ge.ai.domino.domain.initial.InitialData;
 import ge.ai.domino.domain.move.Move;
 import ge.ai.domino.domain.move.MoveDirection;
-import ge.ai.domino.imageprocessing.TilesDetector;
-import ge.ai.domino.imageprocessing.TilesDetectorParams;
+import ge.ai.domino.imageprocessing.recognizer.MyTileRecognizeParams;
+import ge.ai.domino.imageprocessing.recognizer.TableRecognizer;
+import ge.ai.domino.imageprocessing.service.Point;
 import ge.ai.domino.manager.game.GameManager;
 import ge.ai.domino.manager.game.ai.minmax.CachedMinMax;
 import ge.ai.domino.manager.game.helper.initial.InitialUtil;
@@ -25,11 +26,9 @@ public class InitialDataManager {
 
     private static final Logger logger = Logger.getLogger(GameManager.class);
 
-    private static final String INITIAL_EXTA_TILES_IMAGE_PATH = "../properties/domino.png";
+    private static final String INITIAL_EXTRA_TILES_IMAGE_PATH = "../properties/domino.png";
 
     private final GameManager gameManager = new GameManager();
-
-    private final TilesDetector tilesDetector = new TilesDetector();
 
     public InitialData getInitialData() {
         InitialData initialData = new InitialData();
@@ -75,19 +74,17 @@ public class InitialDataManager {
 
     private void detectTiles() throws IOException {
         logger.info("Start extra tiles detect method");
-        BufferedImage img = ImageIO.read(new File(INITIAL_EXTA_TILES_IMAGE_PATH));
-        tilesDetector.getTiles(img, getTestTilesDetectorParams());
+        BufferedImage img = ImageIO.read(new File(INITIAL_EXTRA_TILES_IMAGE_PATH));
+        TableRecognizer.recognizeMyTiles(img, geMyTilesRecognizeParams());
         logger.info("Finished extra tiles detect method");
     }
 
-    private TilesDetectorParams getTestTilesDetectorParams() {
-        return new TilesDetectorParams()
+    private MyTileRecognizeParams geMyTilesRecognizeParams() {
+        return new MyTileRecognizeParams()
+                .topLeft(new Point(310, 655))
+                .bottomRight(new Point(1050, 725))
                 .contourMinArea(200)
-                .heightPercentage(15)
-                .marginBottomPercentage(5)
-                .marginLeftPercentage(15)
-                .widthPercentage(70)
-                .blurCoefficient(3)
+                .blurCoefficient(1)
                 .combinedPoints(true);
     }
 

@@ -12,11 +12,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>ge.ai.domino</groupId>
-            <artifactId>domain</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv</artifactId>
             <version>1.1</version>

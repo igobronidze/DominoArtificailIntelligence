@@ -286,6 +286,9 @@ public class GameManager {
                 Thread.sleep(RandomUtils.getRandomBetween(400, 500));
                 Rectangle possibleMoveRectangle = recognizeTableManager.getPossibleMoveRectangle(gameId, direction);
                 clickOnRandomPosition(possibleMoveRectangle);
+            } else {
+                Thread.sleep(RandomUtils.getRandomBetween(200, 400));
+                MouseRobot.moveDeltaPosition(RandomUtils.getRandomBetween(-30, 30), RandomUtils.getRandomBetween(-120, -75));
             }
         } catch (Exception ex) {
             try {

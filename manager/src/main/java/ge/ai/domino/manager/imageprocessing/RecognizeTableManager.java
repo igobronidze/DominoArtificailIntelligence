@@ -98,7 +98,10 @@ public class RecognizeTableManager {
         List<Rectangle> possMoveRectangles = possMoveTiles.stream()
                 .map(possMoveTile -> new Rectangle(possMoveTile.getTopLeft(), possMoveTile.getBottomRight()))
                 .collect(Collectors.toList());
-        return getRelevantRectangle(possMoveRectangles, moveDirection, params);
+        logger.info("Recognized rectangles: " + possMoveRectangles);
+        Rectangle relevantRectangle = getRelevantRectangle(possMoveRectangles, moveDirection, params);
+        logger.info("Relevant rectangle: " + possMoveRectangles);
+        return relevantRectangle;
     }
 
     private List<IPTile> recognizeIPTiles(int gameId) throws Exception {
@@ -134,7 +137,7 @@ public class RecognizeTableManager {
         switch (direction) {
             case RIGHT:
                 for (Rectangle rectangle : rectangles) {
-                    if (!rectangle.isHorizontal() && rectangle.getBottomRight().getX() > params.getBottomRight().getX() - 180) {
+                    if (!rectangle.isHorizontal() && rectangle.getBottomRight().getX() > params.getBottomRight().getX() - 280) {
                         return rectangle;
                     }
                     if (rectangle.isHorizontal()) {
@@ -146,7 +149,7 @@ public class RecognizeTableManager {
                 break;
             case LEFT:
                 for (Rectangle rectangle : rectangles) {
-                    if (!rectangle.isHorizontal() && rectangle.getTopLeft().getX() < params.getTopLeft().getX() + 180) {
+                    if (!rectangle.isHorizontal() && rectangle.getTopLeft().getX() < params.getTopLeft().getX() + 280) {
                         return rectangle;
                     }
                     if (rectangle.isHorizontal()) {
@@ -158,7 +161,7 @@ public class RecognizeTableManager {
                 break;
             case BOTTOM:
                 for (Rectangle rectangle : rectangles) {
-                    if (rectangle.isHorizontal() && rectangle.getBottomRight().getY() > params.getBottomRight().getY() - 80) {
+                    if (rectangle.isHorizontal() && rectangle.getBottomRight().getY() > params.getBottomRight().getY() - 120) {
                         return rectangle;
                     }
                     if (!rectangle.isHorizontal()) {
@@ -170,7 +173,7 @@ public class RecognizeTableManager {
                 break;
             case TOP:
                 for (Rectangle rectangle : rectangles) {
-                    if (rectangle.isHorizontal() && rectangle.getTopLeft().getY() < params.getTopLeft().getY() + 80) {
+                    if (rectangle.isHorizontal() && rectangle.getTopLeft().getY() < params.getTopLeft().getY() + 120) {
                         return rectangle;
                     }
                     if (!rectangle.isHorizontal()) {

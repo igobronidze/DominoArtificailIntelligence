@@ -33,4 +33,12 @@ public class Rectangle {
     public int hashCode() {
         return Objects.hash(topLeft, bottomRight);
     }
+
+    @Override
+    public String toString() {
+        return "Rectangle{" +
+                "topLeft=" + topLeft +
+                ", bottomRight=" + bottomRight +
+                '}';
+    }
 }

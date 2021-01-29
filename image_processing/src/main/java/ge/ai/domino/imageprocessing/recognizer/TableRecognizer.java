@@ -9,8 +9,10 @@ import ge.ai.domino.imageprocessing.service.Point;
 import ge.ai.domino.imageprocessing.service.contour.Contour;
 import ge.ai.domino.imageprocessing.service.contour.ContoursDetector;
 import ge.ai.domino.imageprocessing.service.rectangle.Color;
-import ge.ai.domino.imageprocessing.service.table.IPPossMoveTile;
+import ge.ai.domino.imageprocessing.service.table.IPPossMovesAndCenter;
+import ge.ai.domino.imageprocessing.service.table.IPRectangle;
 import ge.ai.domino.imageprocessing.service.table.IPTile;
+import ge.ai.domino.imageprocessing.util.BufferedImageUtil;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.awt.image.BufferedImage;
@@ -25,29 +27,8 @@ public class TableRecognizer {
 
         CropImageParams myTilesCropParams = CropImageParamsFactory.getCropImageParams(myTileRecognizeParams.getTopLeft(), myTileRecognizeParams.getBottomRight());
         opencv_core.Mat myTilesMat = ImageCropper.cropImage(srcMat, myTilesCropParams);
-        return getMyTiles(myTilesMat, myTileRecognizeParams);
-    }
 
-    public static List<IPPossMoveTile> recognizePossMoveTiles(BufferedImage srcImage, PossMoveTileRecognizeParams possMoveTileRecognizeParams) {
-        opencv_core.Mat srcMat = OpenCVUtil.bufferedImageToMat(srcImage);
-
-        CropImageParams tableCropParams = CropImageParamsFactory.getCropImageParams(possMoveTileRecognizeParams.getTopLeft(), possMoveTileRecognizeParams.getBottomRight());
-        opencv_core.Mat playedContentMat = ImageCropper.cropImage(srcMat, tableCropParams);
-        return getPossMoveTiles(playedContentMat, possMoveTileRecognizeParams);
-    }
-
-    private static List<IPPossMoveTile> getPossMoveTiles(opencv_core.Mat srcMat, PossMoveTileRecognizeParams possMoveTileRecognizeParams) {
-        BufferedImage srcImage = OpenCVUtil.matToBufferedImage(srcMat);
-
-        ContoursDetector contoursDetector = new ContoursDetector();
-        List<Contour> contours = contoursDetector.detectContours(srcImage, possMoveTileRecognizeParams.getContourMinArea(), new Color().redFrom(20).redTo(50).greenFrom(55).greenTo(150).blueFrom(10).blueTo(40));
-        return contours.stream()
-                .map(contour -> getPossMoveTile(contour, possMoveTileRecognizeParams.getTopLeft().getX(), possMoveTileRecognizeParams.getTopLeft().getY()))
-                .collect(Collectors.toList());
-    }
-
-    private static List<IPTile> getMyTiles(opencv_core.Mat srcMat, MyTileRecognizeParams myTileRecognizeParams) {
-        BufferedImage image = ImageCleaner.cleanImage(srcMat, myTileRecognizeParams.getBlurCoefficient());
+        BufferedImage image = ImageCleaner.cleanImage(myTilesMat, myTileRecognizeParams.getBlurCoefficient());
 
         ContoursDetector contoursDetector = new ContoursDetector();
         List<Contour> contours = contoursDetector.detectContours(image, myTileRecognizeParams.getContourMinArea(), new Color().redFrom(255).redTo(256).greenFrom(255).greenTo(256).blueFrom(255).blueTo(256));
@@ -57,8 +38,25 @@ public class TableRecognizer {
                 .collect(Collectors.toList());
     }
 
-    private static IPPossMoveTile getPossMoveTile(Contour contour, int croppedX, int croppedY) {
-        IPPossMoveTile possMoveTile = new IPPossMoveTile();
+    public static IPPossMovesAndCenter recognizePossMoveTiles(BufferedImage srcImage, PossMoveTileRecognizeParams possMoveTileRecognizeParams) {
+        ContoursDetector contoursDetector = new ContoursDetector();
+
+        int[][] croppedImage = BufferedImageUtil.bufferedImageToIntMatrix(srcImage, possMoveTileRecognizeParams.getTopLeft().getX(), possMoveTileRecognizeParams.getBottomRight().getX(),
+                possMoveTileRecognizeParams.getTopLeft().getY(), possMoveTileRecognizeParams.getBottomRight().getY());
+
+        List<Contour> possMoveContours = contoursDetector.detectContours(croppedImage, possMoveTileRecognizeParams.getContourMinArea(), new Color().redFrom(20).redTo(50).greenFrom(55).greenTo(150).blueFrom(10).blueTo(40));
+        List<Contour> centerTileContours = contoursDetector.detectContours(croppedImage, possMoveTileRecognizeParams.getContourMinArea(), new Color().redFrom(241).redTo(245).greenFrom(87).greenTo(91).blueFrom(9).blueTo(13));
+
+        IPPossMovesAndCenter ipPossMovesAndCenter = new IPPossMovesAndCenter();
+        ipPossMovesAndCenter.setPossMoves(possMoveContours.stream()
+                .map(contour -> getPossMoveTile(contour, possMoveTileRecognizeParams.getTopLeft().getX(), possMoveTileRecognizeParams.getTopLeft().getY()))
+                .collect(Collectors.toList()));
+        ipPossMovesAndCenter.setCenter(centerTileContours.isEmpty() ? null : getPossMoveTile(centerTileContours.get(0), possMoveTileRecognizeParams.getTopLeft().getX(), possMoveTileRecognizeParams.getTopLeft().getY()));
+        return ipPossMovesAndCenter;
+    }
+
+    private static IPRectangle getPossMoveTile(Contour contour, int croppedX, int croppedY) {
+        IPRectangle possMoveTile = new IPRectangle();
         possMoveTile.setTopLeft(new Point(contour.getLeft() + croppedX, contour.getTop() + croppedY));
         possMoveTile.setBottomRight(new Point(contour.getRight() + croppedX, contour.getBottom() + croppedY));
         return possMoveTile;

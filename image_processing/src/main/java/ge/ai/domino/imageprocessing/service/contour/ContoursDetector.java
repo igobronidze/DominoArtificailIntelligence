@@ -2,6 +2,7 @@ package ge.ai.domino.imageprocessing.service.contour;
 
 import ge.ai.domino.imageprocessing.service.Point;
 import ge.ai.domino.imageprocessing.service.rectangle.Color;
+import ge.ai.domino.imageprocessing.util.BufferedImageUtil;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -20,6 +21,10 @@ public class ContoursDetector {
     private boolean[][] checked;
 
     public List<Contour> detectContours(BufferedImage image, int minArea, Color contourColor) {
+        return detectContours(BufferedImageUtil.bufferedImageToIntMatrix(image, 0, image.getWidth(), 0, image.getHeight()), minArea, contourColor);
+    }
+
+    public List<Contour> detectContours(int[][] image, int minArea, Color contourColor) {
         initSize(image);
         initMatrix(image, contourColor);
 
@@ -84,11 +89,11 @@ public class ContoursDetector {
         contour.setLeft(Math.min(contour.getLeft(), point.getY()));
     }
 
-    private void initMatrix(BufferedImage image, Color contourColor) {
+    private void initMatrix(int[][] image, Color contourColor) {
         coloredMatrix = new boolean[height][width];
         for (short i = 0; i < height; i++) {
             for (short j = 0; j < width; j++) {
-                int rgb = image.getRGB(j, i);
+                int rgb = image[i][j];
                 int red = (rgb & 0x00ff0000) >> 16;
                 int green = (rgb & 0x0000ff00) >> 8;
                 int blue = rgb & 0x000000ff;
@@ -103,9 +108,9 @@ public class ContoursDetector {
         checked = new boolean[height][width];
     }
 
-    private void initSize(BufferedImage image) {
-        this.width = image.getWidth();
-        this.height = image.getHeight();
+    private void initSize(int[][] image) {
+        this.width = image[0].length;
+        this.height = image.length;
     }
 
     private int getArea(Contour contour) {

@@ -10,7 +10,7 @@ import ge.ai.domino.imageprocessing.recognizer.PossMoveTileRecognizeParams;
 import ge.ai.domino.imageprocessing.recognizer.TableRecognizer;
 import ge.ai.domino.imageprocessing.service.Point;
 import ge.ai.domino.imageprocessing.service.Rectangle;
-import ge.ai.domino.imageprocessing.service.table.IPPossMoveTile;
+import ge.ai.domino.imageprocessing.service.table.IPPossMovesAndCenter;
 import ge.ai.domino.imageprocessing.service.table.IPTile;
 import ge.ai.domino.manager.game.GameManager;
 import ge.ai.domino.robot.ScreenRobot;
@@ -94,12 +94,14 @@ public class RecognizeTableManager {
         }
 
         PossMoveTileRecognizeParams params = getPossMoveTileRecognizeParams(gameId);
-        List<IPPossMoveTile> possMoveTiles = TableRecognizer.recognizePossMoveTiles(lastImage, params);
-        List<Rectangle> possMoveRectangles = possMoveTiles.stream()
+        IPPossMovesAndCenter ipPossMovesAndCenter = TableRecognizer.recognizePossMoveTiles(lastImage, params);
+        List<Rectangle> possMoveRectangles = ipPossMovesAndCenter.getPossMoves().stream()
                 .map(possMoveTile -> new Rectangle(possMoveTile.getTopLeft(), possMoveTile.getBottomRight()))
                 .collect(Collectors.toList());
+        Rectangle centerRectangle = ipPossMovesAndCenter.getCenter() == null ? null : new Rectangle(ipPossMovesAndCenter.getCenter().getTopLeft(), ipPossMovesAndCenter.getCenter().getBottomRight());
         logger.info("Recognized rectangles: " + possMoveRectangles);
-        Rectangle relevantRectangle = getRelevantRectangle(possMoveRectangles, moveDirection, params);
+        logger.info("Center: " + centerRectangle);
+        Rectangle relevantRectangle = getRelevantRectangle(possMoveRectangles, centerRectangle, moveDirection);
         logger.info("Relevant rectangle: " + possMoveRectangles);
         return relevantRectangle;
     }
@@ -132,12 +134,12 @@ public class RecognizeTableManager {
         return result;
     }
 
-    protected Rectangle getRelevantRectangle(List<Rectangle> rectangles, MoveDirection direction, PossMoveTileRecognizeParams params) {
+    protected Rectangle getRelevantRectangle(List<Rectangle> rectangles, Rectangle centerRectangle, MoveDirection direction) {
         Rectangle result = null;
         switch (direction) {
             case RIGHT:
                 for (Rectangle rectangle : rectangles) {
-                    if (!rectangle.isHorizontal() && rectangle.getBottomRight().getX() > params.getBottomRight().getX() - 280) {
+                    if (!rectangle.isHorizontal() && centerRectangle != null && rectangle.getTopLeft().getX() > centerRectangle.getTopLeft().getX() + 5) {
                         return rectangle;
                     }
                     if (rectangle.isHorizontal()) {
@@ -149,7 +151,7 @@ public class RecognizeTableManager {
                 break;
             case LEFT:
                 for (Rectangle rectangle : rectangles) {
-                    if (!rectangle.isHorizontal() && rectangle.getTopLeft().getX() < params.getTopLeft().getX() + 280) {
+                    if (!rectangle.isHorizontal() && centerRectangle != null && rectangle.getTopLeft().getX() < centerRectangle.getTopLeft().getX() - 5) {
                         return rectangle;
                     }
                     if (rectangle.isHorizontal()) {
@@ -161,7 +163,7 @@ public class RecognizeTableManager {
                 break;
             case BOTTOM:
                 for (Rectangle rectangle : rectangles) {
-                    if (rectangle.isHorizontal() && rectangle.getBottomRight().getY() > params.getBottomRight().getY() - 120) {
+                    if (rectangle.isHorizontal() && centerRectangle != null && rectangle.getTopLeft().getY() > centerRectangle.getBottomRight().getY() + 5) {
                         return rectangle;
                     }
                     if (!rectangle.isHorizontal()) {
@@ -173,7 +175,7 @@ public class RecognizeTableManager {
                 break;
             case TOP:
                 for (Rectangle rectangle : rectangles) {
-                    if (rectangle.isHorizontal() && rectangle.getTopLeft().getY() < params.getTopLeft().getY() + 120) {
+                    if (rectangle.isHorizontal() && centerRectangle != null && rectangle.getTopLeft().getY() < centerRectangle.getTopLeft().getY() - 5) {
                         return rectangle;
                     }
                     if (!rectangle.isHorizontal()) {

@@ -9,15 +9,26 @@ import java.awt.event.InputEvent;
 
 public class MouseRobot {
 
-    public static void moveAndClick(int xPosition, int yPosition) throws Exception {
+    public static void move(int xPosition, int yPosition) throws Exception {
         MouseMotionFactory mouseMotionFactory = MouseMotionFactory.getDefault();
         MouseMotion mouseMotion = mouseMotionFactory.build(xPosition, yPosition);
         mouseMotion.move();
+    }
 
+    public static void click() throws Exception {
         Robot robot = new Robot();
-        robot.mousePress(InputEvent.BUTTON1_MASK);
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         Thread.sleep(RandomUtils.getRandomBetween(70, 100));
-        robot.mouseRelease(InputEvent.BUTTON1_MASK);
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    }
+
+    public static void drag(int xPosition, int yPosition) throws Exception {
+        Robot robot = new Robot();
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        MouseMotionFactory mouseMotionFactory = MouseMotionFactory.getDefault();
+        MouseMotion mouseMotion = mouseMotionFactory.build(xPosition, yPosition);
+        mouseMotion.move();
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
 
     public static void moveDeltaPosition(int deltaX, int deltaY) throws Exception {

@@ -280,13 +280,22 @@ public class GameManager {
             ScreenRobot.changeScreen();
 
             Rectangle tileLocation = recognizeTableManager.getRecognizeTileLocation(gameId, left, right);
-            clickOnRandomPosition(tileLocation);
 
             if (isMultiplePossibleMove(gameId, left, right)) {
-                Thread.sleep(RandomUtils.getRandomBetween(400, 500));
+                moveOnRandomPosition(tileLocation);
+                Thread.sleep(RandomUtils.getRandomBetween(100, 150));
                 Rectangle possibleMoveRectangle = recognizeTableManager.getPossibleMoveRectangle(gameId, direction);
-                clickOnRandomPosition(possibleMoveRectangle);
+
+                if (RandomUtils.getBooleanByProbability(0.2)) {
+                    MouseRobot.click();
+                    moveOnRandomPosition(possibleMoveRectangle);
+                    MouseRobot.click();
+                } else {
+                    dragOnRandomPosition(possibleMoveRectangle);
+                }
             } else {
+                moveOnRandomPosition(tileLocation);
+                MouseRobot.click();
                 Thread.sleep(RandomUtils.getRandomBetween(200, 400));
                 MouseRobot.moveDeltaPosition(RandomUtils.getRandomBetween(-30, 30), RandomUtils.getRandomBetween(-120, -75));
             }
@@ -327,13 +336,22 @@ public class GameManager {
         return possMovesCount > 1;
     }
 
-    private void clickOnRandomPosition(Rectangle rectangle) throws Exception {
+    private void moveOnRandomPosition(Rectangle rectangle) throws Exception {
         int randomPositionX = RandomUtils.getRandomBetween(rectangle.getTopLeft().getX() + TILE_CONTOUR_CLICK_BORDER_SIZE,
                 rectangle.getBottomRight().getX() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
         int randomPositionY = RandomUtils.getRandomBetween(rectangle.getTopLeft().getY() + TILE_CONTOUR_CLICK_BORDER_SIZE,
                 rectangle.getBottomRight().getY() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
 
-        MouseRobot.moveAndClick(randomPositionX, randomPositionY);
+        MouseRobot.move(randomPositionX, randomPositionY);
+    }
+
+    private void dragOnRandomPosition(Rectangle rectangle) throws Exception {
+        int randomPositionX = RandomUtils.getRandomBetween(rectangle.getTopLeft().getX() + TILE_CONTOUR_CLICK_BORDER_SIZE,
+                rectangle.getBottomRight().getX() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
+        int randomPositionY = RandomUtils.getRandomBetween(rectangle.getTopLeft().getY() + TILE_CONTOUR_CLICK_BORDER_SIZE,
+                rectangle.getBottomRight().getY() - TILE_CONTOUR_CLICK_BORDER_SIZE + 1);
+
+        MouseRobot.drag(randomPositionX, randomPositionY);
     }
 
     private void logImage(BufferedImage image) throws IOException {

@@ -111,8 +111,10 @@ public abstract class GamePane extends BorderPane {
 
                     @Override
                     public void onAsyncProcessFinish() {
-                        controlPanel.getStage().setIconified(false);
-                        controlPanel.getStage().requestFocus();
+                        if (round.getTableInfo().isMyMove()) {
+                            controlPanel.getStage().setIconified(false);
+                            controlPanel.getStage().requestFocus();
+                        }
                         reload(false, false);
                     }
                 }.execute(() -> round = gameService.recognizeAndAddInitialTilesForMe(round.getGameInfo().getGameId(), null));
@@ -150,8 +152,6 @@ public abstract class GamePane extends BorderPane {
 
                     @Override
                     public void onAsyncProcessFinish() {
-                        controlPanel.getStage().setIconified(false);
-                        controlPanel.getStage().requestFocus();
                         reload(false, false);
                     }
                 }.execute(() -> round = gameService.recognizeAndAddInitialTilesForMe(round.getGameInfo().getGameId(), false));

@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -101,7 +102,8 @@ public class RecognizeTableManager {
         Rectangle centerRectangle = ipPossMovesAndCenter.getCenter() == null ? null : new Rectangle(ipPossMovesAndCenter.getCenter().getTopLeft(), ipPossMovesAndCenter.getCenter().getBottomRight());
         logger.info("Recognized rectangles: " + possMoveRectangles);
         logger.info("Center: " + centerRectangle);
-        Rectangle relevantRectangle = getRelevantRectangle(possMoveRectangles, centerRectangle, moveDirection);
+        Map<MoveDirection, Rectangle> rectanglesByDirections = getRectanglesByDirections(possMoveRectangles, centerRectangle);
+        Rectangle relevantRectangle = rectanglesByDirections.get(moveDirection);
         logger.info("Relevant rectangle: " + possMoveRectangles);
         return relevantRectangle;
     }
@@ -134,59 +136,48 @@ public class RecognizeTableManager {
         return result;
     }
 
-    protected Rectangle getRelevantRectangle(List<Rectangle> rectangles, Rectangle centerRectangle, MoveDirection direction) {
-        Rectangle result = null;
-        switch (direction) {
-            case RIGHT:
-                for (Rectangle rectangle : rectangles) {
-                    if (!rectangle.isHorizontal() && centerRectangle != null && rectangle.getTopLeft().getX() > centerRectangle.getTopLeft().getX() + 5) {
-                        return rectangle;
+    protected Map<MoveDirection, Rectangle> getRectanglesByDirections(List<Rectangle> rectangles, Rectangle center) {
+        Map<MoveDirection, Rectangle> map = new HashMap<>();
+        if (rectangles.isEmpty()) return map;
+        if (center == null) {
+            Rectangle rectangle1 = rectangles.get(0);
+            Rectangle rectangle2 = rectangles.get(1);
+            map.put(MoveDirection.LEFT, rectangle1.getTopLeft().getX() < rectangle2.getTopLeft().getX() ? rectangle1 : rectangle2);
+            map.put(MoveDirection.RIGHT, rectangle1.getTopLeft().getX() < rectangle2.getTopLeft().getX() ? rectangle2 : rectangle1);
+        } else {
+            for (Rectangle rectangle : rectangles) {
+                if (rectangle.isHorizontal() && center.getTopLeft().getY() - 5 < rectangle.getTopLeft().getY() && center.getBottomRight().getY() + 5 > rectangle.getBottomRight().getY()) {
+                    if (rectangle.getTopLeft().getX() < center.getTopLeft().getX()) {
+                        map.put(MoveDirection.LEFT, rectangle);
+                    } else {
+                        map.put(MoveDirection.RIGHT, rectangle);
                     }
-                    if (rectangle.isHorizontal()) {
-                        if (result == null || result.getTopLeft().getX() < rectangle.getTopLeft().getX()) {
-                            result = rectangle;
-                        }
+                    continue;
+                }
+                if (!rectangle.isHorizontal() && center.getTopLeft().getX() - 5 < rectangle.getTopLeft().getX() && center.getBottomRight().getX() + 5 > rectangle.getBottomRight().getX()) {
+                    if (rectangle.getTopLeft().getY() < center.getTopLeft().getY()) {
+                        map.put(MoveDirection.TOP, rectangle);
+                    } else {
+                        map.put(MoveDirection.BOTTOM, rectangle);
+                    }
+                    continue;
+                }
+                if (rectangle.isHorizontal()) {
+                    if (rectangle.getTopLeft().getY() < center.getTopLeft().getY()) {
+                        map.put(MoveDirection.TOP, rectangle);
+                    } else {
+                        map.put(MoveDirection.BOTTOM, rectangle);
+                    }
+                } else {
+                    if (rectangle.getTopLeft().getX() < center.getTopLeft().getX()) {
+                        map.put(MoveDirection.LEFT, rectangle);
+                    } else {
+                        map.put(MoveDirection.RIGHT, rectangle);
                     }
                 }
-                break;
-            case LEFT:
-                for (Rectangle rectangle : rectangles) {
-                    if (!rectangle.isHorizontal() && centerRectangle != null && rectangle.getTopLeft().getX() < centerRectangle.getTopLeft().getX() - 5) {
-                        return rectangle;
-                    }
-                    if (rectangle.isHorizontal()) {
-                        if (result == null || result.getTopLeft().getX() > rectangle.getTopLeft().getX()) {
-                            result = rectangle;
-                        }
-                    }
-                }
-                break;
-            case BOTTOM:
-                for (Rectangle rectangle : rectangles) {
-                    if (rectangle.isHorizontal() && centerRectangle != null && rectangle.getTopLeft().getY() > centerRectangle.getBottomRight().getY() + 5) {
-                        return rectangle;
-                    }
-                    if (!rectangle.isHorizontal()) {
-                        if (result == null || result.getTopLeft().getY() < rectangle.getTopLeft().getY()) {
-                            result = rectangle;
-                        }
-                    }
-                }
-                break;
-            case TOP:
-                for (Rectangle rectangle : rectangles) {
-                    if (rectangle.isHorizontal() && centerRectangle != null && rectangle.getTopLeft().getY() < centerRectangle.getTopLeft().getY() - 5) {
-                        return rectangle;
-                    }
-                    if (!rectangle.isHorizontal()) {
-                        if (result == null || result.getTopLeft().getY() > rectangle.getTopLeft().getY()) {
-                            result = rectangle;
-                        }
-                    }
-                }
-                break;
+            }
         }
-        return result;
+        return map;
     }
 
     private PossMoveTileRecognizeParams getPossMoveTileRecognizeParams(int gameId) {

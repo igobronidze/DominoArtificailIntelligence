@@ -290,6 +290,7 @@ public class GameManager {
 
                 if (RandomUtils.getBooleanByProbability(0.25)) {
                     MouseRobot.click();
+                    Thread.sleep(RandomUtils.getRandomBetween(50, 100));
                     moveOnRandomPosition(possibleMoveRectangle);
                     MouseRobot.click();
                 } else {

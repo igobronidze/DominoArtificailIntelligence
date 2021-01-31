@@ -39,8 +39,6 @@ public class AddForOpponentProcessor extends MoveProcessor {
 			}
 
 			logger.info("Opponent omitted, gameId[" + gameId + "]");
-			RoundLogger.logRoundFullInfo(round);
-			return round;
 		} else {
 			tableInfo.setTilesFromBazaar(tableInfo.getTilesFromBazaar() + 1);
 
@@ -48,8 +46,8 @@ public class AddForOpponentProcessor extends MoveProcessor {
 			tableInfo.setBazaarTilesCount(tableInfo.getBazaarTilesCount() - 1);
 
 			logger.info("Added tile for opponent, gameId[" + gameId + "]");
-			RoundLogger.logRoundFullInfo(round);
-			return round;
 		}
+		RoundLogger.logRoundFullInfo(round);
+		return round;
 	}
 }

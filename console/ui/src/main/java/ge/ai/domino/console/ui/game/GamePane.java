@@ -224,9 +224,26 @@ public abstract class GamePane extends BorderPane {
         if (showDetectTilesWindow && isFirstMove() && round.getMyTiles().isEmpty()) {
             showRecognizeTilesWindow(false);
         }
-        if (round != null && gamePaneInitialData.isDetectAddedTiles() && !hasPrediction && round.getTableInfo().isMyMove()
+        if (round != null && !hasPrediction && round.getTableInfo().isMyMove()
                 && round.getTableInfo().getBazaarTilesCount() != 2 && round.getTableInfo().getLeft() != null) {
-            showAddedTilesDetectWindow();
+            if (gamePaneInitialData.isDetectAddedTiles()) {
+                showAddedTilesDetectWindow();
+            } else {
+                controlPanel.getStage().setIconified(true);
+                while (true) {
+                    if (round.getTableInfo().getBazaarTilesCount() == 2) {
+                        break;
+                    }
+                    if (round.getAiPredictions() != null && !round.getAiPredictions().getAiPredictions().isEmpty()) {
+                        break;
+                    }
+                    new ServiceExecutor() {}.execute(() -> round = gameService.simulateAddNewTile(round.getGameInfo().getGameId()));
+                }
+                mainInfoSecondaryLabel.setText("");
+                controlPanel.getStage().setIconified(false);
+                controlPanel.getStage().requestFocus();
+                reload(false, false);
+            }
         }
         reloading = false;
     }

@@ -93,4 +93,9 @@ public class GameServiceImpl implements GameService {
     public void simulatePlayMove(int gameId, int left, int right, MoveDirection direction) throws DAIException {
         gameManager.simulatePlayMove(gameId, left, right, direction);
     }
+
+    @Override
+    public Round simulateAddNewTile(int gameId) throws DAIException {
+        return gameManager.simulateAddNewTile(gameId);
+    }
 }

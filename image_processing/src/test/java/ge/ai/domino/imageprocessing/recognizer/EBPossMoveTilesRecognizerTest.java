@@ -17,20 +17,20 @@ public class EBPossMoveTilesRecognizerTest {
 
     @Test
     public void testRecognizePossMoveTiles1() throws Exception {
-        testMyTiles("pmt1.png", getPossMoveTilesAndCenter1());
+        testPossMovesAndCenter("pmt1.png", getPossMoveTilesAndCenter1());
     }
 
     @Test
     public void testRecognizePossMoveTiles2() throws Exception {
-        testMyTiles("pmt2.png", getPossMoveTilesAndCenter2());
+        testPossMovesAndCenter("pmt2.png", getPossMoveTilesAndCenter2());
     }
 
     @Test
     public void testRecognizePossMoveTiles3() throws Exception {
-        testMyTiles("pmt3.png", getPossMoveTilesAndCenter3());
+        testPossMovesAndCenter("pmt3.png", getPossMoveTilesAndCenter3());
     }
 
-    private void testMyTiles(String imageName, IPPossMovesAndCenter expected) throws Exception {
+    private void testPossMovesAndCenter(String imageName, IPPossMovesAndCenter expected) throws Exception {
         BufferedImage img = ImageIO.read(new File(IMAGE_PATH_SUFFIX + imageName));
         IPPossMovesAndCenter real = TableRecognizer.recognizePossMoveTiles(img, getPossMoveTileRecognizeParams());
         TilesDetectorHelper.assertPossMoveTilesAndCenter(expected, real);

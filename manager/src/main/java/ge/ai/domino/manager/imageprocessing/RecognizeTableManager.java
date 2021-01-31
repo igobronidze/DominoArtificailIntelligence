@@ -5,6 +5,7 @@ import ge.ai.domino.domain.channel.Channel;
 import ge.ai.domino.domain.exception.DAIException;
 import ge.ai.domino.domain.game.Tile;
 import ge.ai.domino.domain.move.MoveDirection;
+import ge.ai.domino.imageprocessing.recognizer.MyBazaarTileRecognizeParams;
 import ge.ai.domino.imageprocessing.recognizer.MyTileRecognizeParams;
 import ge.ai.domino.imageprocessing.recognizer.PossMoveTileRecognizeParams;
 import ge.ai.domino.imageprocessing.recognizer.TableRecognizer;
@@ -42,6 +43,12 @@ public class RecognizeTableManager {
     private static final String POSS_MOVES_TOP_LEFT_Y = "possMovesDetectorTopLeftY";
     private static final String POSS_MOVES_BOTTOM_RIGHT_X = "possMovesDetectorBottomRightX";
     private static final String POSS_MOVES_BOTTOM_RIGHT_Y = "possMovesDetectorBottomRightY";
+
+    private static final String MY_BAZAAR_TILES_SCREEN_WIDTH = "myBazaarTilesScreenWidth";
+    private static final String MY_BAZAAR_TILES_TILE_WIDTH = "myBazaarTilesTileWidth";
+    private static final String MY_BAZAAR_TILES_TILES_SPACING = "myBazaarTilesTilesSpacing";
+    private static final String MY_BAZAAR_TILES_TILE_TOP = "myBazaarTilesTileTop";
+    private static final String MY_BAZAAR_TILES_TILE_BOTTOM = "myBazaarTilesTileBottom";
 
     private BufferedImage lastImage;
 
@@ -106,6 +113,16 @@ public class RecognizeTableManager {
         Rectangle relevantRectangle = rectanglesByDirections.get(moveDirection);
         logger.info("Relevant rectangle: " + possMoveRectangles);
         return relevantRectangle;
+    }
+
+    public List<Rectangle> getMyBazaarTileRectangles(int gameId, int bazaarTilesCount) {
+        logger.info("Start get my bazaar tile rectangles method");
+        MyBazaarTileRecognizeParams params = getMyBazaarTileRecognizeParams(gameId, bazaarTilesCount);
+        List<Rectangle> myBazaarTilesRectangles = TableRecognizer.recognizeMyBazaarTiles(params).stream()
+                .map(possMoveTile -> new Rectangle(possMoveTile.getTopLeft(), possMoveTile.getBottomRight()))
+                .collect(Collectors.toList());
+        logger.info("Recognized rectangles: " + myBazaarTilesRectangles);
+        return myBazaarTilesRectangles;
     }
 
     private List<IPTile> recognizeIPTiles(int gameId) throws Exception {
@@ -181,8 +198,7 @@ public class RecognizeTableManager {
     }
 
     private PossMoveTileRecognizeParams getPossMoveTileRecognizeParams(int gameId) {
-        Channel channel = CachedGames.getGameProperties(gameId).getChannel();
-        Map<String, String> params = channel.getParams();
+        Map<String, String> params = getChannelParams(gameId);
 
         int topLeftX = Integer.parseInt(params.get(POSS_MOVES_TOP_LEFT_X));
         int topLeftY = Integer.parseInt(params.get(POSS_MOVES_TOP_LEFT_Y));
@@ -197,8 +213,7 @@ public class RecognizeTableManager {
     }
 
     private MyTileRecognizeParams getMyTileRecognizeParams(int gameId) {
-        Channel channel = CachedGames.getGameProperties(gameId).getChannel();
-        Map<String, String> params = channel.getParams();
+        Map<String, String> params = getChannelParams(gameId);
 
         int topLeftX = Integer.parseInt(params.get(MY_TILES_TOP_LEFT_X));
         int topLeftY = Integer.parseInt(params.get(MY_TILES_TOP_LEFT_Y));
@@ -214,5 +229,28 @@ public class RecognizeTableManager {
                 .contourMinArea(contourMinArea)
                 .blurCoefficient(blurCoefficient)
                 .combinedPoints(combinePoints);
+    }
+
+    private MyBazaarTileRecognizeParams getMyBazaarTileRecognizeParams(int gameId, int bazaarTilesCount) {
+        Map<String, String> params = getChannelParams(gameId);
+
+        int screenWidth = Integer.parseInt(params.get(MY_BAZAAR_TILES_SCREEN_WIDTH));
+        int tileWidth = Integer.parseInt(params.get(MY_BAZAAR_TILES_TILE_WIDTH));
+        int tilesSpacing = Integer.parseInt(params.get(MY_BAZAAR_TILES_TILES_SPACING));
+        int tileTop = Integer.parseInt(params.get(MY_BAZAAR_TILES_TILE_TOP));
+        int tileBottom = Integer.parseInt(params.get(MY_BAZAAR_TILES_TILE_BOTTOM));
+
+        return new MyBazaarTileRecognizeParams()
+                .screenWidth(screenWidth)
+                .tilesCount(bazaarTilesCount)
+                .tileWidth(tileWidth)
+                .tilesSpacing(tilesSpacing)
+                .tileTop(tileTop)
+                .tileBottom(tileBottom);
+    }
+
+    private Map<String, String> getChannelParams(int gameId) {
+        Channel channel = CachedGames.getGameProperties(gameId).getChannel();
+        return channel.getParams();
     }
 }

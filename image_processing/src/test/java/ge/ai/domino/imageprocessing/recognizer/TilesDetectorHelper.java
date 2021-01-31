@@ -24,6 +24,12 @@ public class TilesDetectorHelper {
         }
     }
 
+    public static void assetIPRectangles(List<IPRectangle> expected, List<IPRectangle> real) {
+        for (int i = 0; i < expected.size(); i++) {
+            assertIPRectangle(expected.get(i), real.get(i));
+        }
+    }
+
     private static void assertTiles(IPTile expectedTile, IPTile realTile) {
         Assert.assertEquals("Tile left side", expectedTile.getLeft(), realTile.getLeft());
         Assert.assertEquals("Tile right side", expectedTile.getRight(), realTile.getRight());

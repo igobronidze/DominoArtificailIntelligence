@@ -42,4 +42,6 @@ public interface GameService {
     Map<Tile, Integer> getTilesOrder(int gameId);
 
     void simulatePlayMove(int gameId, int left, int right, MoveDirection direction) throws DAIException;
+
+    Round simulateAddNewTile(int gameId) throws DAIException;
 }

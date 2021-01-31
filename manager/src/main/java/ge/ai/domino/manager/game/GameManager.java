@@ -187,19 +187,21 @@ public class GameManager {
         try {
             List<Tile> tiles = recognizeTableManager.recognizeMyTiles(gameId);
             List<Tile> tilesForAdd = getAddedTiles(tiles, round.getMyTiles());
-            Tile lastAddedTile = getLastAddedTile(tilesForAdd, round.getTableInfo());
-            logger.info("Last added tile: " + lastAddedTile);
+            Tile canPlayTile = getCanPlayTile(tilesForAdd, round.getTableInfo());
+            logger.info("Can play tile: " + canPlayTile);
             for (Tile tile : tilesForAdd) {
-                if (lastAddedTile == null || !lastAddedTile.equals(tile)) {
+                if (canPlayTile == null || !canPlayTile.equals(tile)) {
                     addTileForMe(gameId, tile.getLeft(), tile.getRight());
                 }
             }
-            if (lastAddedTile != null) {
-                addTileForMe(gameId, lastAddedTile.getLeft(), lastAddedTile.getRight());
+            if (canPlayTile != null) {
+                addTileForMe(gameId, canPlayTile.getLeft(), canPlayTile.getRight());
             } else {
-                Tile tile = round.getOpponentTiles().keySet().stream().findAny().get();
-                logger.info("Random tile for add me is " + tile);
-                addTileForMe(gameId, tile.getLeft(), tile.getRight());
+                if (CachedGames.getCurrentRound(gameId, false).getTableInfo().getBazaarTilesCount() == 2) {
+                    Tile tile = round.getOpponentTiles().keySet().stream().findAny().get();
+                    logger.info("Random tile for add me is " + tile);
+                    addTileForMe(gameId, tile.getLeft(), tile.getRight());
+                }
             }
         } catch (Exception ex) {
             try {
@@ -286,7 +288,7 @@ public class GameManager {
                 Thread.sleep(RandomUtils.getRandomBetween(100, 150));
                 Rectangle possibleMoveRectangle = recognizeTableManager.getPossibleMoveRectangle(gameId, direction);
 
-                if (RandomUtils.getBooleanByProbability(0.2)) {
+                if (RandomUtils.getBooleanByProbability(0.25)) {
                     MouseRobot.click();
                     moveOnRandomPosition(possibleMoveRectangle);
                     MouseRobot.click();
@@ -308,6 +310,37 @@ public class GameManager {
             logger.error("Error occurred while simulate click", ex);
             throw new DAIException("clickSimulateError");
         }
+    }
+
+    public Round simulateAddNewTile(int gameId) throws DAIException {
+        Round round = CachedGames.getCurrentRound(gameId, false);
+        List<Rectangle> myBazaarTiles = recognizeTableManager.getMyBazaarTileRectangles(gameId, (int) round.getTableInfo().getBazaarTilesCount());
+
+        try {
+            boolean clicked = false;
+            for (Rectangle rectangle : myBazaarTiles) {
+                if (MouseRobot.isCursorOnRectangle(rectangle.getTopLeft().getX() + TILE_CONTOUR_CLICK_BORDER_SIZE, rectangle.getTopLeft().getY() + TILE_CONTOUR_CLICK_BORDER_SIZE,
+                        rectangle.getBottomRight().getX() - TILE_CONTOUR_CLICK_BORDER_SIZE, rectangle.getBottomRight().getY() - TILE_CONTOUR_CLICK_BORDER_SIZE)) {
+                    MouseRobot.click();
+                    clicked = true;
+                    break;
+                }
+            }
+
+            if (!clicked) {
+                int randomIndex = RandomUtils.getRandomBetween(myBazaarTiles.size() / 2 - 1, myBazaarTiles.size() / 2 + 2);
+                Rectangle randomTile = myBazaarTiles.get(randomIndex);
+                moveOnRandomPosition(randomTile);
+                MouseRobot.click();
+            }
+
+            Thread.sleep(RandomUtils.getRandomBetween(300, 400));
+        } catch (Exception ex) {
+            logger.error("Error occurred while simulate add new tile", ex);
+            throw new DAIException("clickSimulateError");
+        }
+
+        return recognizeAndAddNewTilesForMe(gameId);
     }
 
     private boolean isMultiplePossibleMove(int gameId, int left, int right) {
@@ -372,7 +405,7 @@ public class GameManager {
         }
     }
 
-    private Tile getLastAddedTile(List<Tile> tiles, TableInfo tableInfo) {
+    private Tile getCanPlayTile(List<Tile> tiles, TableInfo tableInfo) {
         for (Tile tile : tiles) {
             if (canPlay(tile.getLeft(), tableInfo) || canPlay(tile.getRight(), tableInfo)) {
                 return tile;

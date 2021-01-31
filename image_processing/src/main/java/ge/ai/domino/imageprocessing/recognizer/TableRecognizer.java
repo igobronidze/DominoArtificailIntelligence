@@ -49,17 +49,32 @@ public class TableRecognizer {
 
         IPPossMovesAndCenter ipPossMovesAndCenter = new IPPossMovesAndCenter();
         ipPossMovesAndCenter.setPossMoves(possMoveContours.stream()
-                .map(contour -> getPossMoveTile(contour, possMoveTileRecognizeParams.getTopLeft().getX(), possMoveTileRecognizeParams.getTopLeft().getY()))
+                .map(contour -> getIPRectangle(contour, possMoveTileRecognizeParams.getTopLeft().getX(), possMoveTileRecognizeParams.getTopLeft().getY()))
                 .collect(Collectors.toList()));
-        ipPossMovesAndCenter.setCenter(centerTileContours.isEmpty() ? null : getPossMoveTile(centerTileContours.get(0), possMoveTileRecognizeParams.getTopLeft().getX(), possMoveTileRecognizeParams.getTopLeft().getY()));
+        ipPossMovesAndCenter.setCenter(centerTileContours.isEmpty() ? null : getIPRectangle(centerTileContours.get(0), possMoveTileRecognizeParams.getTopLeft().getX(), possMoveTileRecognizeParams.getTopLeft().getY()));
         return ipPossMovesAndCenter;
     }
 
-    private static IPRectangle getPossMoveTile(Contour contour, int croppedX, int croppedY) {
-        IPRectangle possMoveTile = new IPRectangle();
-        possMoveTile.setTopLeft(new Point(contour.getLeft() + croppedX, contour.getTop() + croppedY));
-        possMoveTile.setBottomRight(new Point(contour.getRight() + croppedX, contour.getBottom() + croppedY));
-        return possMoveTile;
+    public static List<IPRectangle> recognizeMyBazaarTiles(MyBazaarTileRecognizeParams params) {
+        int tilesContentWidth = params.getTilesCount() * params.getTileWidth() + (params.getTilesCount() - 1) * params.getTilesSpacing();
+        int firstTileLeft = (int) Math.round((double) (params.getScreenWidth() - tilesContentWidth) / 2) + 1;
+
+        List<IPRectangle> rectangles = new ArrayList<>();
+        for (int i = 0; i < params.getTilesCount(); i++) {
+            int left = firstTileLeft + i * (params.getTileWidth() + params.getTilesSpacing());
+            Point leftTop = new Point(left, params.getTileTop());
+            Point rightTop = new Point(left + params.getTileWidth(), params.getTileBottom());
+            rectangles.add(new IPRectangle(leftTop, rightTop));
+        }
+
+        return rectangles;
+    }
+
+    private static IPRectangle getIPRectangle(Contour contour, int croppedX, int croppedY) {
+        IPRectangle ipRectangle = new IPRectangle();
+        ipRectangle.setTopLeft(new Point(contour.getLeft() + croppedX, contour.getTop() + croppedY));
+        ipRectangle.setBottomRight(new Point(contour.getRight() + croppedX, contour.getBottom() + croppedY));
+        return ipRectangle;
     }
 
     private static IPTile getTile(Contour contour, boolean combinedPoints, int croppedX, int croppedY) {

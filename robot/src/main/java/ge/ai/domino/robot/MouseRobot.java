@@ -32,13 +32,19 @@ public class MouseRobot {
     }
 
     public static void moveDeltaPosition(int deltaX, int deltaY) throws Exception {
-        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
-        Point point = pointerInfo.getLocation();
+        Point point = MouseInfo.getPointerInfo().getLocation();
         int xPosition = (int) point.getX();
         int yPosition = (int) point.getY();
 
         MouseMotionFactory mouseMotionFactory = MouseMotionFactory.getDefault();
         MouseMotion mouseMotion = mouseMotionFactory.build(xPosition + deltaX, yPosition + deltaY);
         mouseMotion.move();
+    }
+
+    public static boolean isCursorOnRectangle(int left, int top, int right, int bottom) {
+        Point point = MouseInfo.getPointerInfo().getLocation();
+        int xPosition = (int) point.getX();
+        int yPosition = (int) point.getY();
+        return xPosition >= left && xPosition <= right && yPosition >= top && yPosition <= bottom;
     }
 }

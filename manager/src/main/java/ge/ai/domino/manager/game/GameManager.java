@@ -47,7 +47,7 @@ public class GameManager {
 
     private static final Logger logger = Logger.getLogger(GameManager.class);
 
-    private static final int TILE_CONTOUR_CLICK_BORDER_SIZE = 2;
+    private static final int TILE_CONTOUR_CLICK_BORDER_SIZE = 3;
 
     private final MoveProcessor playForMeProcessor = new PlayForMeProcessor();
 

@@ -136,7 +136,7 @@ public abstract class GamePane extends BorderPane {
 
                         Tile highestTile = GamePaneHelper.getHighestTile();
                         new ServiceExecutor() {}.execute(() -> gameService.simulatePlayMove(round.getGameInfo().getGameId(), highestTile.getLeft(), highestTile.getRight(), MoveDirection.LEFT));
-                        onMyTileEntered(highestTile, null, false);
+                        onMyTileEntered(highestTile, null);
                     }
                 }.execute(() -> round = gameService.recognizeAndAddInitialTilesForMe(round.getGameInfo().getGameId(), true));
             }
@@ -489,7 +489,7 @@ public abstract class GamePane extends BorderPane {
         if (bestAiPrediction != null && gamePaneInitialData.isBestMoveAutoPlay()) {
             Move move = bestAiPrediction.getMove();
             new ServiceExecutor() {}.execute(() -> gameService.simulatePlayMove(round.getGameInfo().getGameId(), move.getLeft(), move.getRight(), move.getDirection()));
-            onMyTileEntered(new Tile(move.getLeft(), move.getRight()), move.getDirection(), true);
+            onMyTileEntered(new Tile(move.getLeft(), move.getRight()), move.getDirection(), bestAiPrediction.getHeuristicValue(), true);
 
             return null;
         }
@@ -593,7 +593,7 @@ public abstract class GamePane extends BorderPane {
     private void onMyTilePressed(Tile tile) {
         if (round.getTableInfo().isMyMove()) {
             if (isFirstMove()) {
-                onMyTileEntered(tile, null, false);
+                onMyTileEntered(tile, null);
             } else {
                 myTilesImages.get(tile).setFitHeight(TILE_IMAGE_HEIGHT + 10);
                 myTilesImages.get(tile).setFitWidth(TILE_IMAGE_WIDTH + 10);
@@ -641,11 +641,17 @@ public abstract class GamePane extends BorderPane {
         return tableInfo.getTop() == null && tableInfo.getRight() == null && tableInfo.getBottom() == null && tableInfo.getLeft() == null;
     }
 
-    private void onMyTileEntered(Tile tile, MoveDirection direction, boolean forceReload) {
+    private void onMyTileEntered(Tile tile, MoveDirection direction) {
+        onMyTileEntered(tile, direction, null, false);
+    }
+
+    private void onMyTileEntered(Tile tile, MoveDirection direction, Double moveHeuristic, boolean forceReload) {
         if (!forceReload && reloading) {
             return;
         }
-        mainInfoLabel.setText(tile.getLeft() + " - " + tile.getRight() + " " + (direction == null ? "" : direction.name()));
+        mainInfoLabel.setText(tile.getLeft() + " - " + tile.getRight() +
+                (direction == null ? "" : " " + direction.name()) +
+                (moveHeuristic == null ? "" : " (" + moveHeuristic + ")"));
 
         if (round.getMyTiles().size() == 1) {
             showAddLeftTilesCount(tile, direction, MoveType.PLAY_FOR_ME);
@@ -734,7 +740,7 @@ public abstract class GamePane extends BorderPane {
     private void onUpArrowPressed() {
         if (pressedTile != null) {
             if (pressedOnMyTile) {
-                onMyTileEntered(pressedTile, MoveDirection.TOP, false);
+                onMyTileEntered(pressedTile, MoveDirection.TOP);
             } else {
                 onOpponentTileEntered(pressedTile, MoveDirection.TOP);
             }
@@ -744,7 +750,7 @@ public abstract class GamePane extends BorderPane {
     private void onRightArrowPressed() {
         if (pressedTile != null) {
             if (pressedOnMyTile) {
-                onMyTileEntered(pressedTile, MoveDirection.RIGHT, false);
+                onMyTileEntered(pressedTile, MoveDirection.RIGHT);
             } else {
                 onOpponentTileEntered(pressedTile, MoveDirection.RIGHT);
             }
@@ -754,7 +760,7 @@ public abstract class GamePane extends BorderPane {
     private void onDownArrowPressed() {
         if (pressedTile != null) {
             if (pressedOnMyTile) {
-                onMyTileEntered(pressedTile, MoveDirection.BOTTOM, false);
+                onMyTileEntered(pressedTile, MoveDirection.BOTTOM);
             } else {
                 onOpponentTileEntered(pressedTile, MoveDirection.BOTTOM);
             }
@@ -764,7 +770,7 @@ public abstract class GamePane extends BorderPane {
     private void onLeftArrowPressed() {
         if (pressedTile != null) {
             if (pressedOnMyTile) {
-                onMyTileEntered(pressedTile, MoveDirection.LEFT, false);
+                onMyTileEntered(pressedTile, MoveDirection.LEFT);
             } else {
                 onOpponentTileEntered(pressedTile, MoveDirection.LEFT);
             }

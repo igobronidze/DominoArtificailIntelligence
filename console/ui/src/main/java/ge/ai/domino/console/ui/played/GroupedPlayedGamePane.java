@@ -182,7 +182,7 @@ public class GroupedPlayedGamePane extends BorderPane {
         groupByLevelCheckBox.setSelected(true);
 
         groupByDateCheckBox = new TCHCheckBox(Messages.get("groupByDate"));
-        groupByDateCheckBox.setSelected(true);
+        groupByDateCheckBox.setSelected(false);
     }
 
     private void initTable() {

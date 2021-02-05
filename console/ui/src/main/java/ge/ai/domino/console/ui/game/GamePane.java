@@ -645,13 +645,13 @@ public abstract class GamePane extends BorderPane {
         onMyTileEntered(tile, direction, null, false);
     }
 
-    private void onMyTileEntered(Tile tile, MoveDirection direction, Double moveHeuristic, boolean forceReload) {
+    private void onMyTileEntered(Tile tile, MoveDirection direction, Double heuristic, boolean forceReload) {
         if (!forceReload && reloading) {
             return;
         }
         mainInfoLabel.setText(tile.getLeft() + " - " + tile.getRight() +
                 (direction == null ? "" : " " + direction.name()) +
-                (moveHeuristic == null ? "" : " (" + moveHeuristic + ")"));
+                (heuristic == null ? "" : " (" + (heuristic == Integer.MIN_VALUE ? "NAN" : new DecimalFormat("#0.0000").format(heuristic)) + ")"));
 
         if (round.getMyTiles().size() == 1) {
             showAddLeftTilesCount(tile, direction, MoveType.PLAY_FOR_ME);

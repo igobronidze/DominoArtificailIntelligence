@@ -230,7 +230,8 @@ public abstract class GamePane extends BorderPane {
                 showAddedTilesDetectWindow();
             } else {
                 controlPanel.getStage().setIconified(true);
-                while (true) {
+                int maxAddFromBazaar = 12;
+                while (maxAddFromBazaar >= 0) {
                     if (round.getTableInfo().getBazaarTilesCount() == 2) {
                         break;
                     }
@@ -238,6 +239,7 @@ public abstract class GamePane extends BorderPane {
                         break;
                     }
                     new ServiceExecutor() {}.execute(() -> round = gameService.simulateAddNewTile(round.getGameInfo().getGameId()));
+                    maxAddFromBazaar--;
                 }
                 mainInfoSecondaryLabel.setText("");
                 controlPanel.getStage().setIconified(false);
